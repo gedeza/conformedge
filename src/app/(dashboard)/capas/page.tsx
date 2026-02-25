@@ -1,27 +1,43 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
-import { Button } from "@/components/ui/button"
-import { AlertTriangle, Plus } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
+import { getCapas, getProjectOptions, getMembers } from "./actions"
+import { CapaTable } from "./capa-table"
+import { CapaFormTrigger } from "./capa-form-trigger"
 
-export default function CAPAsPage() {
+export default async function CAPAsPage() {
+  let capas: Awaited<ReturnType<typeof getCapas>> = []
+  let projects: Awaited<ReturnType<typeof getProjectOptions>> = []
+  let members: Awaited<ReturnType<typeof getMembers>> = []
+  let authError = false
+
+  try {
+    ;[capas, projects, members] = await Promise.all([getCapas(), getProjectOptions(), getMembers()])
+  } catch {
+    authError = true
+  }
+
+  if (authError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader heading="CAPAs" description="Track corrective and preventive actions" />
+        <EmptyState icon={AlertTriangle} title="Organization required" description="Please select or create an organization." />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader heading="CAPAs" description="Track corrective and preventive actions">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New CAPA
-        </Button>
+        <CapaFormTrigger projects={projects} members={members} />
       </PageHeader>
-      <EmptyState
-        icon={AlertTriangle}
-        title="No CAPAs yet"
-        description="Create corrective or preventive actions to address compliance gaps."
-      >
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Create CAPA
-        </Button>
-      </EmptyState>
+      {capas.length === 0 ? (
+        <EmptyState icon={AlertTriangle} title="No CAPAs yet" description="Create corrective or preventive actions to address compliance gaps.">
+          <CapaFormTrigger projects={projects} members={members} />
+        </EmptyState>
+      ) : (
+        <CapaTable data={capas} projects={projects} members={members} />
+      )}
     </div>
   )
 }

@@ -41,6 +41,51 @@ export const CAPA_STATUSES = {
   OVERDUE: { label: "Overdue", color: "bg-red-100 text-red-800" },
 } as const
 
+export const CAPA_PRIORITIES = {
+  LOW: { label: "Low", color: "bg-green-100 text-green-800" },
+  MEDIUM: { label: "Medium", color: "bg-yellow-100 text-yellow-800" },
+  HIGH: { label: "High", color: "bg-orange-100 text-orange-800" },
+  CRITICAL: { label: "Critical", color: "bg-red-100 text-red-800" },
+} as const
+
+export const CAPA_TYPES = {
+  CORRECTIVE: { label: "Corrective", color: "bg-blue-100 text-blue-800" },
+  PREVENTIVE: { label: "Preventive", color: "bg-purple-100 text-purple-800" },
+} as const
+
+export const CHECKLIST_STATUSES = {
+  NOT_STARTED: { label: "Not Started", color: "bg-gray-100 text-gray-800" },
+  IN_PROGRESS: { label: "In Progress", color: "bg-yellow-100 text-yellow-800" },
+  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800" },
+} as const
+
+export const SUBCONTRACTOR_TIERS = {
+  PLATINUM: { label: "Platinum", color: "bg-violet-100 text-violet-800" },
+  GOLD: { label: "Gold", color: "bg-yellow-100 text-yellow-800" },
+  SILVER: { label: "Silver", color: "bg-gray-200 text-gray-800" },
+  BRONZE: { label: "Bronze", color: "bg-orange-100 text-orange-800" },
+  UNRATED: { label: "Unrated", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const AUDIT_PACK_STATUSES = {
+  DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },
+  COMPILING: { label: "Compiling", color: "bg-yellow-100 text-yellow-800" },
+  READY: { label: "Ready", color: "bg-green-100 text-green-800" },
+  SUBMITTED: { label: "Submitted", color: "bg-blue-100 text-blue-800" },
+  ACCEPTED: { label: "Accepted", color: "bg-emerald-100 text-emerald-800" },
+} as const
+
+export const ALLOWED_FILE_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "image/jpeg",
+  "image/png",
+] as const
+
+export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+
 export const NAV_ITEMS = [
   { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
   { title: "Projects", href: "/projects", icon: "FolderKanban" },

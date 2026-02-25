@@ -1,27 +1,49 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
-import { Button } from "@/components/ui/button"
-import { HardHat, Plus } from "lucide-react"
+import { HardHat } from "lucide-react"
+import { getSubcontractors } from "./actions"
+import { SubcontractorTable } from "./subcontractor-table"
+import { SubcontractorFormTrigger } from "./subcontractor-form-trigger"
 
-export default function SubcontractorsPage() {
+export default async function SubcontractorsPage() {
+  let subcontractors: Awaited<ReturnType<typeof getSubcontractors>> = []
+  let authError = false
+
+  try {
+    subcontractors = await getSubcontractors()
+  } catch {
+    authError = true
+  }
+
+  if (authError) {
+    return (
+      <div className="space-y-6">
+        <PageHeader heading="Subcontractors" description="Monitor subcontractor compliance and certifications" />
+        <EmptyState
+          icon={HardHat}
+          title="Organization required"
+          description="Please select or create an organization to manage subcontractors."
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader heading="Subcontractors" description="Monitor subcontractor compliance and certifications">
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Subcontractor
-        </Button>
+        <SubcontractorFormTrigger />
       </PageHeader>
-      <EmptyState
-        icon={HardHat}
-        title="No subcontractors yet"
-        description="Add subcontractors to track their certifications, safety ratings, and compliance status."
-      >
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Subcontractor
-        </Button>
-      </EmptyState>
+      {subcontractors.length === 0 ? (
+        <EmptyState
+          icon={HardHat}
+          title="No subcontractors yet"
+          description="Add subcontractors to track their certifications and compliance status."
+        >
+          <SubcontractorFormTrigger />
+        </EmptyState>
+      ) : (
+        <SubcontractorTable data={subcontractors} />
+      )}
     </div>
   )
 }
