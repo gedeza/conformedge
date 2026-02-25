@@ -1,0 +1,514 @@
+// ConformEdge - Prisma Schema
+// South African compliance & quality management platform
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MANAGER
+  AUDITOR
+  VIEWER
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
+}
+
+enum DocumentStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  EXPIRED
+  ARCHIVED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum CAPAType {
+  CORRECTIVE
+  PREVENTIVE
+}
+
+enum CAPAStatus {
+  OPEN
+  IN_PROGRESS
+  VERIFICATION
+  CLOSED
+  OVERDUE
+}
+
+enum CAPAPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ChecklistStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum SubcontractorTier {
+  PLATINUM
+  GOLD
+  SILVER
+  BRONZE
+  UNRATED
+}
+
+enum AuditPackStatus {
+  DRAFT
+  COMPILING
+  READY
+  SUBMITTED
+  ACCEPTED
+}
+
+enum NotificationType {
+  DOCUMENT_EXPIRY
+  CAPA_DUE
+  ASSESSMENT_SCHEDULED
+  CERT_EXPIRY
+  SYSTEM
+}
+
+// ─────────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────────
+
+model Organization {
+  id               String   @id @default(uuid())
+  clerkOrgId       String   @unique @map("clerk_org_id")
+  name             String
+  slug             String   @unique
+  industry         String?
+  country          String   @default("ZA")
+  settings         Json?
+  subscriptionTier String?  @map("subscription_tier")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  members          OrganizationUser[]
+  projects         Project[]
+  documents        Document[]
+  assessments      Assessment[]
+  capas            Capa[]
+  checklists       ComplianceChecklist[]
+  subcontractors   Subcontractor[]
+  auditPacks       AuditPack[]
+  auditTrailEvents AuditTrailEvent[]
+  notifications    Notification[]
+
+  @@map("organizations")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  clerkUserId String    @unique @map("clerk_user_id")
+  email       String    @unique
+  firstName   String    @map("first_name")
+  lastName    String    @map("last_name")
+  imageUrl    String?   @map("image_url")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  memberships             OrganizationUser[]
+  uploadedDocuments       Document[]               @relation("DocumentUploader")
+  verifiedClassifications DocumentClassification[]  @relation("ClassificationVerifier")
+  conductedAssessments    Assessment[]              @relation("Assessor")
+  assessmentAnswers       AssessmentAnswer[]
+  raisedCapas             Capa[]                    @relation("CapaRaiser")
+  assignedCapas           Capa[]                    @relation("CapaAssignee")
+  assignedCapaActions     CapaAction[]
+  assignedChecklists      ComplianceChecklist[]
+  createdAuditPacks       AuditPack[]
+  auditTrailEvents        AuditTrailEvent[]
+  notifications           Notification[]
+
+  @@map("users")
+}
+
+model OrganizationUser {
+  id             String       @id @default(uuid())
+  userId         String       @map("user_id")
+  organizationId String       @map("organization_id")
+  role           UserRole     @default(VIEWER)
+  isActive       Boolean      @default(true) @map("is_active")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@map("organization_users")
+}
+
+model Project {
+  id             String        @id @default(uuid())
+  name           String
+  description    String?
+  status         ProjectStatus @default(PLANNING)
+  startDate      DateTime?     @map("start_date")
+  endDate        DateTime?     @map("end_date")
+  organizationId String        @map("organization_id")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documents    Document[]
+  assessments  Assessment[]
+  capas        Capa[]
+  checklists   ComplianceChecklist[]
+  auditPacks   AuditPack[]
+
+  @@map("projects")
+}
+
+model Standard {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  version     String?
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  clauses     StandardClause[]
+  assessments Assessment[]
+  checklists  ComplianceChecklist[]
+
+  @@map("standards")
+}
+
+model StandardClause {
+  id           String   @id @default(uuid())
+  clauseNumber String   @map("clause_number")
+  title        String
+  description  String?
+  parentId     String?  @map("parent_id")
+  standardId   String   @map("standard_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  standard        Standard                 @relation(fields: [standardId], references: [id], onDelete: Cascade)
+  parent          StandardClause?          @relation("ClauseHierarchy", fields: [parentId], references: [id])
+  children        StandardClause[]         @relation("ClauseHierarchy")
+  classifications DocumentClassification[]
+  checklistItems  ChecklistItem[]
+
+  @@map("standard_clauses")
+}
+
+model Document {
+  id             String         @id @default(uuid())
+  title          String
+  description    String?
+  fileUrl        String?        @map("file_url")
+  fileType       String?        @map("file_type")
+  fileSize       Int?           @map("file_size")
+  status         DocumentStatus @default(DRAFT)
+  expiresAt      DateTime?      @map("expires_at")
+  organizationId String         @map("organization_id")
+  projectId      String?        @map("project_id")
+  uploadedById   String         @map("uploaded_by_id")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  organization    Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?                 @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  uploadedBy      User                     @relation("DocumentUploader", fields: [uploadedById], references: [id])
+  classifications DocumentClassification[]
+
+  @@map("documents")
+}
+
+model DocumentClassification {
+  id               String    @id @default(uuid())
+  documentId       String    @map("document_id")
+  standardClauseId String    @map("standard_clause_id")
+  confidence       Float
+  isVerified       Boolean   @default(false) @map("is_verified")
+  verifiedById     String?   @map("verified_by_id")
+  verifiedAt       DateTime? @map("verified_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  document       Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  standardClause StandardClause @relation(fields: [standardClauseId], references: [id], onDelete: Cascade)
+  verifiedBy     User?          @relation("ClassificationVerifier", fields: [verifiedById], references: [id])
+
+  @@map("document_classifications")
+}
+
+model Assessment {
+  id             String     @id @default(uuid())
+  title          String
+  description    String?
+  scheduledDate  DateTime?  @map("scheduled_date")
+  completedDate  DateTime?  @map("completed_date")
+  overallScore   Float?     @map("overall_score")
+  riskLevel      RiskLevel? @map("risk_level")
+  organizationId String     @map("organization_id")
+  projectId      String?    @map("project_id")
+  assessorId     String     @map("assessor_id")
+  standardId     String     @map("standard_id")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?             @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  assessor     User                 @relation("Assessor", fields: [assessorId], references: [id])
+  standard     Standard             @relation(fields: [standardId], references: [id])
+  questions    AssessmentQuestion[]
+
+  @@map("assessments")
+}
+
+model AssessmentQuestion {
+  id           String   @id @default(uuid())
+  question     String
+  guidance     String?
+  sortOrder    Int      @map("sort_order")
+  assessmentId String   @map("assessment_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  assessment Assessment         @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  answers    AssessmentAnswer[]
+
+  @@map("assessment_questions")
+}
+
+model AssessmentAnswer {
+  id           String   @id @default(uuid())
+  answer       String?
+  score        Float?
+  evidence     String?
+  notes        String?
+  questionId   String   @map("question_id")
+  answeredById String   @map("answered_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  question   AssessmentQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answeredBy User               @relation(fields: [answeredById], references: [id])
+
+  @@map("assessment_answers")
+}
+
+model Capa {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  type           CAPAType
+  status         CAPAStatus   @default(OPEN)
+  priority       CAPAPriority @default(MEDIUM)
+  rootCause      String?      @map("root_cause")
+  dueDate        DateTime?    @map("due_date")
+  closedDate     DateTime?    @map("closed_date")
+  organizationId String       @map("organization_id")
+  projectId      String?      @map("project_id")
+  raisedById     String       @map("raised_by_id")
+  assignedToId   String?      @map("assigned_to_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  raisedBy     User         @relation("CapaRaiser", fields: [raisedById], references: [id])
+  assignedTo   User?        @relation("CapaAssignee", fields: [assignedToId], references: [id])
+  capaActions  CapaAction[]
+
+  @@map("capas")
+}
+
+model CapaAction {
+  id            String    @id @default(uuid())
+  description   String
+  dueDate       DateTime? @map("due_date")
+  completedDate DateTime? @map("completed_date")
+  isCompleted   Boolean   @default(false) @map("is_completed")
+  capaId        String    @map("capa_id")
+  assignedToId  String?   @map("assigned_to_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  capa       Capa  @relation(fields: [capaId], references: [id], onDelete: Cascade)
+  assignedTo User? @relation(fields: [assignedToId], references: [id])
+
+  @@map("capa_actions")
+}
+
+model ComplianceChecklist {
+  id                   String          @id @default(uuid())
+  title                String
+  description          String?
+  status               ChecklistStatus @default(NOT_STARTED)
+  completionPercentage Float           @default(0) @map("completion_percentage")
+  organizationId       String          @map("organization_id")
+  projectId            String?         @map("project_id")
+  standardId           String          @map("standard_id")
+  assignedToId         String?         @map("assigned_to_id")
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  standard     Standard        @relation(fields: [standardId], references: [id])
+  assignedTo   User?           @relation(fields: [assignedToId], references: [id])
+  items        ChecklistItem[]
+
+  @@map("compliance_checklists")
+}
+
+model ChecklistItem {
+  id               String   @id @default(uuid())
+  description      String
+  isCompliant      Boolean? @map("is_compliant")
+  evidence         String?
+  notes            String?
+  sortOrder        Int      @map("sort_order")
+  checklistId      String   @map("checklist_id")
+  standardClauseId String?  @map("standard_clause_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  checklist      ComplianceChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+  standardClause StandardClause?     @relation(fields: [standardClauseId], references: [id])
+
+  @@map("checklist_items")
+}
+
+model Subcontractor {
+  id                 String            @id @default(uuid())
+  name               String
+  registrationNumber String?           @map("registration_number")
+  beeLevel           String?           @map("bee_level")
+  safetyRating       Float?            @map("safety_rating")
+  tier               SubcontractorTier @default(UNRATED)
+  organizationId     String            @map("organization_id")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  organization   Organization                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  certifications SubcontractorCertification[]
+
+  @@map("subcontractors")
+}
+
+model SubcontractorCertification {
+  id               String    @id @default(uuid())
+  name             String
+  issuedBy         String?   @map("issued_by")
+  issuedDate       DateTime? @map("issued_date")
+  expiresAt        DateTime? @map("expires_at")
+  fileUrl          String?   @map("file_url")
+  subcontractorId  String    @map("subcontractor_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  subcontractor Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)
+
+  @@map("subcontractor_certifications")
+}
+
+model AuditPack {
+  id             String          @id @default(uuid())
+  title          String
+  description    String?
+  status         AuditPackStatus @default(DRAFT)
+  generatedAt    DateTime?       @map("generated_at")
+  fileUrl        String?         @map("file_url")
+  organizationId String          @map("organization_id")
+  projectId      String?         @map("project_id")
+  createdById    String          @map("created_by_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+
+  @@map("audit_packs")
+}
+
+model AuditTrailEvent {
+  id             String   @id @default(uuid())
+  action         String
+  entityType     String   @map("entity_type")
+  entityId       String   @map("entity_id")
+  metadata       Json?
+  userId         String?  @map("user_id")
+  organizationId String   @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user         User?        @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("audit_trail_events")
+}
+
+model Notification {
+  id             String           @id @default(uuid())
+  title          String
+  message        String
+  type           NotificationType
+  isRead         Boolean          @default(false) @map("is_read")
+  readAt         DateTime?        @map("read_at")
+  userId         String           @map("user_id")
+  organizationId String           @map("organization_id")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

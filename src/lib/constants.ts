@@ -1,0 +1,54 @@
+export const APP_NAME = "ConformEdge"
+export const APP_DESCRIPTION = "AI-Powered ISO Compliance Management"
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+
+export const ROLES = {
+  OWNER: "OWNER",
+  ADMIN: "ADMIN",
+  MANAGER: "MANAGER",
+  AUDITOR: "AUDITOR",
+  VIEWER: "VIEWER",
+} as const
+
+export const RISK_LEVELS = {
+  LOW: { label: "Low", color: "bg-green-100 text-green-800" },
+  MEDIUM: { label: "Medium", color: "bg-yellow-100 text-yellow-800" },
+  HIGH: { label: "High", color: "bg-orange-100 text-orange-800" },
+  CRITICAL: { label: "Critical", color: "bg-red-100 text-red-800" },
+} as const
+
+export const PROJECT_STATUSES = {
+  PLANNING: { label: "Planning", color: "bg-blue-100 text-blue-800" },
+  ACTIVE: { label: "Active", color: "bg-green-100 text-green-800" },
+  ON_HOLD: { label: "On Hold", color: "bg-yellow-100 text-yellow-800" },
+  COMPLETED: { label: "Completed", color: "bg-gray-100 text-gray-800" },
+  ARCHIVED: { label: "Archived", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const DOCUMENT_STATUSES = {
+  DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },
+  PENDING_REVIEW: { label: "Pending Review", color: "bg-yellow-100 text-yellow-800" },
+  APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },
+  EXPIRED: { label: "Expired", color: "bg-red-100 text-red-800" },
+  ARCHIVED: { label: "Archived", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const CAPA_STATUSES = {
+  OPEN: { label: "Open", color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { label: "In Progress", color: "bg-yellow-100 text-yellow-800" },
+  VERIFICATION: { label: "Verification", color: "bg-purple-100 text-purple-800" },
+  CLOSED: { label: "Closed", color: "bg-green-100 text-green-800" },
+  OVERDUE: { label: "Overdue", color: "bg-red-100 text-red-800" },
+} as const
+
+export const NAV_ITEMS = [
+  { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
+  { title: "Projects", href: "/projects", icon: "FolderKanban" },
+  { title: "Documents", href: "/documents", icon: "FileText" },
+  { title: "Assessments", href: "/assessments", icon: "ClipboardCheck" },
+  { title: "CAPAs", href: "/capas", icon: "AlertTriangle" },
+  { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
+  { title: "Subcontractors", href: "/subcontractors", icon: "HardHat" },
+  { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
+  { title: "Reports", href: "/reports", icon: "BarChart3" },
+] as const
