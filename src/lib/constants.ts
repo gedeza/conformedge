@@ -95,5 +95,6 @@ export const NAV_ITEMS = [
   { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
   { title: "Subcontractors", href: "/subcontractors", icon: "HardHat" },
   { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
+  { title: "Audit Trail", href: "/audit-trail", icon: "ScrollText" },
   { title: "Reports", href: "/reports", icon: "BarChart3" },
 ] as const
