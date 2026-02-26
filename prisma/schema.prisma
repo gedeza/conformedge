@@ -360,6 +360,7 @@ model Capa {
   raisedBy     User         @relation("CapaRaiser", fields: [raisedById], references: [id])
   assignedTo   User?        @relation("CapaAssignee", fields: [assignedToId], references: [id])
   capaActions  CapaAction[]
+  linkedItems  ChecklistItem[]
 
   @@map("capas")
 }
@@ -414,12 +415,14 @@ model ChecklistItem {
   sortOrder        Int      @map("sort_order")
   checklistId      String   @map("checklist_id")
   standardClauseId String?  @map("standard_clause_id")
+  capaId           String?  @map("capa_id")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   // Relations
   checklist      ComplianceChecklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
   standardClause StandardClause?     @relation(fields: [standardClauseId], references: [id])
+  capa           Capa?               @relation(fields: [capaId], references: [id], onDelete: SetNull)
 
   @@map("checklist_items")
 }

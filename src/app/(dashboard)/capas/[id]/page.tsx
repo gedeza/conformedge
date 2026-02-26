@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format, isBefore } from "date-fns"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, CheckSquare, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getCapa, getMembers } from "../actions"
@@ -31,6 +32,7 @@ export default async function CapaDetailPage({
   const displayStatus = isOverdue ? "OVERDUE" : capa.status
   const completedActions = capa.capaActions.filter((a) => a.isCompleted).length
   const totalActions = capa.capaActions.length
+  const linkedFindings = capa.linkedItems ?? []
 
   return (
     <div className="space-y-6">
@@ -51,6 +53,7 @@ export default async function CapaDetailPage({
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="actions">Actions ({totalActions})</TabsTrigger>
+          <TabsTrigger value="findings">Findings ({linkedFindings.length})</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
@@ -114,6 +117,58 @@ export default async function CapaDetailPage({
             actions={capa.capaActions}
             members={members}
           />
+        </TabsContent>
+
+        <TabsContent value="findings" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckSquare className="h-5 w-5" />
+                Linked Checklist Findings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {linkedFindings.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No checklist findings linked to this CAPA.
+                  <br />
+                  <span className="text-xs">CAPAs can be raised from non-compliant checklist items.</span>
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {linkedFindings.map((item) => (
+                    <div key={item.id} className="rounded-md border p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{item.description}</p>
+                          {item.standardClause && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              Clause {item.standardClause.clauseNumber}: {item.standardClause.title}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-[10px]">
+                              {item.checklist.standard.code}
+                            </Badge>
+                            <Link
+                              href={`/checklists/${item.checklist.id}`}
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              {item.checklist.title}
+                              <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          </div>
+                        </div>
+                        <Badge variant="destructive" className="text-[10px] shrink-0">
+                          Non-Compliant
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="history">

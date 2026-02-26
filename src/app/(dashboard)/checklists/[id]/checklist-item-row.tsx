@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
-import { Check, X, Minus } from "lucide-react"
+import { Check, X, Minus, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { toggleItemCompliance, updateItemEvidence } from "../actions"
+import { toggleItemCompliance, updateItemEvidence, raiseCapaFromItem } from "../actions"
 
 interface ChecklistItemRowProps {
   item: {
@@ -17,6 +18,7 @@ interface ChecklistItemRowProps {
     evidence: string | null
     notes: string | null
     standardClause: { clauseNumber: string; title: string } | null
+    capa: { id: string; title: string; status: string; priority: string } | null
   }
   checklistId: string
 }
@@ -45,6 +47,22 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
     })
   }
 
+  function handleRaiseCapa() {
+    startTransition(async () => {
+      const result = await raiseCapaFromItem(item.id, checklistId)
+      if (result.success) {
+        toast.success("CAPA raised successfully", {
+          action: {
+            label: "View CAPA",
+            onClick: () => window.location.assign(`/capas/${result.data!.capaId}`),
+          },
+        })
+      } else {
+        toast.error(result.error)
+      }
+    })
+  }
+
   return (
     <div className="rounded-md border p-3 space-y-2">
       <div className="flex items-center justify-between">
@@ -54,6 +72,15 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
             <p className="text-xs text-muted-foreground">
               Clause {item.standardClause.clauseNumber}: {item.standardClause.title}
             </p>
+          )}
+          {item.capa && (
+            <Link href={`/capas/${item.capa.id}`} className="inline-flex items-center gap-1 mt-1">
+              <Badge variant="outline" className="text-[10px] gap-1 hover:bg-accent">
+                <AlertTriangle className="h-3 w-3 text-orange-500" />
+                CAPA: {item.capa.title.slice(0, 40)}{item.capa.title.length > 40 ? "..." : ""}
+                <span className="text-muted-foreground">({item.capa.status})</span>
+              </Badge>
+            </Link>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -101,6 +128,18 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
           >
             Evidence
           </Button>
+          {item.isCompliant === false && !item.capa && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleRaiseCapa}
+              disabled={isPending}
+              className="ml-1 text-xs"
+            >
+              <AlertTriangle className="mr-1 h-3 w-3" />
+              Raise CAPA
+            </Button>
+          )}
         </div>
       </div>
       {showEvidence && (

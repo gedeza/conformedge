@@ -60,6 +60,18 @@ export async function getCapa(id: string) {
           assignedTo: { select: { id: true, firstName: true, lastName: true } },
         },
       },
+      linkedItems: {
+        include: {
+          checklist: {
+            select: {
+              id: true,
+              title: true,
+              standard: { select: { code: true, name: true } },
+            },
+          },
+          standardClause: { select: { clauseNumber: true, title: true } },
+        },
+      },
     },
   })
 }

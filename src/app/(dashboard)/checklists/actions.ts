@@ -46,6 +46,7 @@ export async function getChecklist(id: string) {
         orderBy: { sortOrder: "asc" },
         include: {
           standardClause: { select: { clauseNumber: true, title: true } },
+          capa: { select: { id: true, title: true, status: true, priority: true } },
         },
       },
     },
@@ -308,6 +309,69 @@ export async function addChecklistItem(
     return { success: true }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to add item" }
+  }
+}
+
+export async function raiseCapaFromItem(
+  itemId: string,
+  checklistId: string
+): Promise<ActionResult<{ capaId: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    const checklist = await db.complianceChecklist.findFirst({
+      where: { id: checklistId, organizationId: dbOrgId },
+      include: {
+        standard: { select: { code: true, name: true } },
+        project: { select: { id: true } },
+      },
+    })
+    if (!checklist) return { success: false, error: "Checklist not found" }
+
+    const item = await db.checklistItem.findFirst({
+      where: { id: itemId, checklistId },
+      include: { standardClause: { select: { clauseNumber: true, title: true } } },
+    })
+    if (!item) return { success: false, error: "Item not found" }
+    if (item.isCompliant !== false) return { success: false, error: "Item is not non-compliant" }
+    if (item.capaId) return { success: false, error: "Item already has a linked CAPA" }
+
+    const clauseRef = item.standardClause
+      ? ` (${checklist.standard.code} §${item.standardClause.clauseNumber})`
+      : ""
+
+    const capa = await db.capa.create({
+      data: {
+        title: `Non-compliance: ${item.description}`.slice(0, 200),
+        description: `Raised from checklist "${checklist.title}"${clauseRef}.\n\nFinding: ${item.description}${item.evidence ? `\n\nEvidence: ${item.evidence}` : ""}`,
+        type: "CORRECTIVE",
+        priority: "MEDIUM",
+        projectId: checklist.projectId,
+        raisedById: dbUserId,
+        organizationId: dbOrgId,
+      },
+    })
+
+    await db.checklistItem.update({
+      where: { id: itemId },
+      data: { capaId: capa.id },
+    })
+
+    logAuditEvent({
+      action: "RAISE_CAPA",
+      entityType: "Checklist",
+      entityId: checklistId,
+      metadata: { itemId, capaId: capa.id, itemDescription: item.description },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/checklists/${checklistId}`)
+    revalidatePath("/capas")
+    return { success: true, data: { capaId: capa.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to raise CAPA" }
   }
 }
 
