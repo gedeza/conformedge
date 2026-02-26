@@ -69,6 +69,18 @@ export function getColumns(actions: ColumnActions): ColumnDef<ChecklistRow>[] {
       },
     },
     {
+      id: "assignedTo",
+      header: "Assigned To",
+      cell: ({ row }) => {
+        const a = row.original.assignedTo
+        return a ? (
+          <span className="text-sm">{a.firstName} {a.lastName}</span>
+        ) : (
+          <span className="text-sm text-muted-foreground">Unassigned</span>
+        )
+      },
+    },
+    {
       id: "items",
       header: "Items",
       cell: ({ row }) => <span className="text-sm">{row.original._count.items}</span>,

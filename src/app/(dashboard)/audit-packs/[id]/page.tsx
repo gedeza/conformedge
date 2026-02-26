@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getAuditPack } from "../actions"
 import { CompileButton } from "./compile-button"
+import { EmailButton } from "./email-button"
 
 export default async function AuditPackDetailPage({
   params,
@@ -44,11 +45,14 @@ export default async function AuditPackDetailPage({
           <StatusBadge type="auditPack" value={pack.status} />
           {pack.status === "DRAFT" && <CompileButton auditPackId={pack.id} />}
           {(pack.status === "READY" || pack.status === "SUBMITTED" || pack.status === "ACCEPTED") && (
-            <Button asChild>
-              <a href={`/api/audit-packs/${pack.id}/pdf`} download>
-                <Download className="mr-2 h-4 w-4" /> Download PDF
-              </a>
-            </Button>
+            <>
+              <EmailButton auditPackId={pack.id} packTitle={pack.title} />
+              <Button asChild>
+                <a href={`/api/audit-packs/${pack.id}/pdf`} download>
+                  <Download className="mr-2 h-4 w-4" /> Download PDF
+                </a>
+              </Button>
+            </>
           )}
         </div>
       </PageHeader>
