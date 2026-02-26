@@ -43,7 +43,7 @@ export default async function AuditPackDetailPage({
         <div className="flex items-center gap-2">
           <StatusBadge type="auditPack" value={pack.status} />
           {pack.status === "DRAFT" && <CompileButton auditPackId={pack.id} />}
-          {pack.status === "READY" && (
+          {(pack.status === "READY" || pack.status === "SUBMITTED" || pack.status === "ACCEPTED") && (
             <Button asChild>
               <a href={`/api/audit-packs/${pack.id}/pdf`} download>
                 <Download className="mr-2 h-4 w-4" /> Download PDF
