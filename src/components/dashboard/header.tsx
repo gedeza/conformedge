@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { User } from "lucide-react"
+import { NotificationBell } from "@/components/dashboard/notification-bell"
 
 const ClerkUserButton = dynamic(
   () => import("@clerk/nextjs").then((mod) => mod.UserButton),
@@ -54,7 +55,10 @@ export function DashboardHeader() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <ClerkUserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "h-8 w-8" } }} />
+      <div className="flex items-center gap-2">
+        <NotificationBell />
+        <ClerkUserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "h-8 w-8" } }} />
+      </div>
     </header>
   )
 }

@@ -15,6 +15,7 @@ import {
   Settings,
   ScrollText,
   ShieldCheck,
+  Bell,
 } from "lucide-react"
 
 import {
@@ -44,6 +45,7 @@ const navItems = [
 ]
 
 const footerItems = [
+  { title: "Notifications", href: "/notifications", icon: Bell },
   { title: "Settings", href: "/settings", icon: Settings },
 ]
 
