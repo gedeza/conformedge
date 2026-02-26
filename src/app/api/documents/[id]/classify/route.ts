@@ -136,12 +136,19 @@ export async function POST(
       summary: result.summary,
     })
   } catch (error) {
-    console.error("AI classification error:", error)
+    console.error("AI classification error:", error instanceof Error ? error.stack : error)
 
     if (error instanceof Error && error.message.includes("429")) {
       return NextResponse.json(
         { error: "AI service is busy. Please try again in a moment." },
         { status: 429 }
+      )
+    }
+
+    if (error instanceof Error && error.message.includes("credit balance")) {
+      return NextResponse.json(
+        { error: "AI service billing issue. Please check your Anthropic API plan." },
+        { status: 402 }
       )
     }
 

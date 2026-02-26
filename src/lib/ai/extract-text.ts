@@ -17,10 +17,9 @@ export async function extractText(fileUrl: string, fileType: string): Promise<st
   const buffer = await readFile(filePath)
 
   if (fileType === "application/pdf") {
-    const { PDFParse } = await import("pdf-parse")
-    const pdf = new PDFParse({ data: new Uint8Array(buffer) })
-    const result = await pdf.getText()
-    await pdf.destroy()
+    // Import from lib/pdf-parse directly to bypass index.js test-file loading bug
+    const pdfParse = (await import("pdf-parse/lib/pdf-parse")).default
+    const result = await pdfParse(buffer)
     return result.text
   }
 
