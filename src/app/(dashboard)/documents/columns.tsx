@@ -19,6 +19,7 @@ export type DocumentRow = {
   id: string
   title: string
   status: string
+  version: number
   fileType: string | null
   fileSize: number | null
   expiresAt: Date | null
@@ -51,9 +52,14 @@ export function getColumns(actions: ColumnActions): ColumnDef<DocumentRow>[] {
         </Button>
       ),
       cell: ({ row }) => (
-        <Link href={`/documents/${row.original.id}`} className="font-medium hover:underline">
-          {row.getValue("title")}
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href={`/documents/${row.original.id}`} className="font-medium hover:underline">
+            {row.getValue("title")}
+          </Link>
+          {row.original.version > 1 && (
+            <Badge variant="outline" className="text-xs">v{row.original.version}</Badge>
+          )}
+        </div>
       ),
     },
     {

@@ -1,16 +1,18 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, Download, X } from "lucide-react"
+import { ArrowLeft, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getDocument, getStandardsWithClauses } from "../actions"
+import { getDocument, getStandardsWithClauses, getDocumentVersions, getDocumentAuditHistory } from "../actions"
+import { getAuthContext } from "@/lib/auth"
 import { ClauseTagForm } from "../clause-tag-form"
 import { RemoveTagButton } from "./remove-tag-button"
+import { VersionHistory } from "./version-history"
 
 export default async function DocumentDetailPage({
   params,
@@ -20,9 +22,19 @@ export default async function DocumentDetailPage({
   const { id } = await params
   let doc: Awaited<ReturnType<typeof getDocument>>
   let standards: Awaited<ReturnType<typeof getStandardsWithClauses>> = []
+  let versions: Awaited<ReturnType<typeof getDocumentVersions>> = []
+  let auditEvents: Awaited<ReturnType<typeof getDocumentAuditHistory>> = []
+  let role = "VIEWER"
 
   try {
-    ;[doc, standards] = await Promise.all([getDocument(id), getStandardsWithClauses()])
+    const ctx = await getAuthContext()
+    role = ctx.role
+    ;[doc, standards, versions, auditEvents] = await Promise.all([
+      getDocument(id),
+      getStandardsWithClauses(),
+      getDocumentVersions(id),
+      getDocumentAuditHistory(id),
+    ])
   } catch {
     notFound()
   }
@@ -42,6 +54,7 @@ export default async function DocumentDetailPage({
 
       <PageHeader heading={doc.title} description={doc.description ?? undefined}>
         <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-xs">v{doc.version}</Badge>
           <StatusBadge type="document" value={doc.status} />
           {doc.fileUrl && (
             <Button variant="outline" size="sm" asChild>
@@ -57,7 +70,7 @@ export default async function DocumentDetailPage({
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="classifications">Classifications ({doc.classifications.length})</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="history">History ({versions.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
@@ -70,6 +83,10 @@ export default async function DocumentDetailPage({
                 <div>
                   <span className="text-muted-foreground">Status</span>
                   <div className="mt-1"><StatusBadge type="document" value={doc.status} /></div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Version</span>
+                  <p className="mt-1 font-medium">v{doc.version}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Uploaded By</span>
@@ -105,6 +122,16 @@ export default async function DocumentDetailPage({
                   <span className="text-muted-foreground">Created</span>
                   <p className="mt-1 font-medium">{format(doc.createdAt, "PPP")}</p>
                 </div>
+                {doc.parentDocument && (
+                  <div>
+                    <span className="text-muted-foreground">Previous Version</span>
+                    <p className="mt-1 font-medium">
+                      <Link href={`/documents/${doc.parentDocument.id}`} className="hover:underline">
+                        v{doc.parentDocument.version} — {doc.parentDocument.title}
+                      </Link>
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -150,9 +177,13 @@ export default async function DocumentDetailPage({
               <CardTitle>Document History</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Audit trail for this document will be populated from the audit log.
-              </p>
+              <VersionHistory
+                documentId={doc.id}
+                currentVersion={doc.version}
+                versions={versions}
+                auditEvents={auditEvents}
+                role={role}
+              />
             </CardContent>
           </Card>
         </TabsContent>

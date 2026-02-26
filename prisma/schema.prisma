@@ -232,24 +232,28 @@ model StandardClause {
 }
 
 model Document {
-  id             String         @id @default(uuid())
-  title          String
-  description    String?
-  fileUrl        String?        @map("file_url")
-  fileType       String?        @map("file_type")
-  fileSize       Int?           @map("file_size")
-  status         DocumentStatus @default(DRAFT)
-  expiresAt      DateTime?      @map("expires_at")
-  organizationId String         @map("organization_id")
-  projectId      String?        @map("project_id")
-  uploadedById   String         @map("uploaded_by_id")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  id               String         @id @default(uuid())
+  title            String
+  description      String?
+  fileUrl          String?        @map("file_url")
+  fileType         String?        @map("file_type")
+  fileSize         Int?           @map("file_size")
+  status           DocumentStatus @default(DRAFT)
+  version          Int            @default(1)
+  parentDocumentId String?        @map("parent_document_id")
+  expiresAt        DateTime?      @map("expires_at")
+  organizationId   String         @map("organization_id")
+  projectId        String?        @map("project_id")
+  uploadedById     String         @map("uploaded_by_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
 
   // Relations
   organization    Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   project         Project?                 @relation(fields: [projectId], references: [id], onDelete: SetNull)
   uploadedBy      User                     @relation("DocumentUploader", fields: [uploadedById], references: [id])
+  parentDocument  Document?                @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
+  childVersions   Document[]               @relation("DocumentVersions")
   classifications DocumentClassification[]
 
   @@map("documents")

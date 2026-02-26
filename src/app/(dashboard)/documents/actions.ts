@@ -49,6 +49,7 @@ export async function getDocument(id: string) {
     include: {
       project: { select: { id: true, name: true } },
       uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+      parentDocument: { select: { id: true, title: true, version: true } },
       classifications: {
         include: {
           standardClause: {
@@ -58,6 +59,181 @@ export async function getDocument(id: string) {
         },
       },
     },
+  })
+}
+
+export async function getDocumentVersions(id: string) {
+  const { dbOrgId } = await getAuthContext()
+
+  const doc = await db.document.findFirst({
+    where: { id, organizationId: dbOrgId },
+    select: { id: true, parentDocumentId: true },
+  })
+  if (!doc) return []
+
+  // Find the root document (top of the version chain)
+  let rootId = doc.id
+  if (doc.parentDocumentId) {
+    let current = doc
+    while (current.parentDocumentId) {
+      const parent = await db.document.findFirst({
+        where: { id: current.parentDocumentId, organizationId: dbOrgId },
+        select: { id: true, parentDocumentId: true },
+      })
+      if (!parent) break
+      rootId = parent.id
+      current = parent
+    }
+  }
+
+  // Get all versions in the chain (root + all descendants)
+  const allVersions = await db.document.findMany({
+    where: {
+      organizationId: dbOrgId,
+      OR: [
+        { id: rootId },
+        { parentDocumentId: rootId },
+      ],
+    },
+    select: {
+      id: true,
+      title: true,
+      version: true,
+      status: true,
+      fileUrl: true,
+      fileType: true,
+      fileSize: true,
+      createdAt: true,
+      uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+      parentDocumentId: true,
+    },
+    orderBy: { version: "desc" },
+  })
+
+  // If deeper chains exist, also fetch them
+  if (allVersions.length > 0) {
+    const ids = allVersions.map((v) => v.id)
+    const deeper = await db.document.findMany({
+      where: {
+        organizationId: dbOrgId,
+        parentDocumentId: { in: ids },
+        id: { notIn: ids },
+      },
+      select: {
+        id: true,
+        title: true,
+        version: true,
+        status: true,
+        fileUrl: true,
+        fileType: true,
+        fileSize: true,
+        createdAt: true,
+        uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+        parentDocumentId: true,
+      },
+      orderBy: { version: "desc" },
+    })
+    allVersions.push(...deeper)
+    // Re-sort
+    allVersions.sort((a, b) => b.version - a.version)
+  }
+
+  return allVersions
+}
+
+export async function uploadNewVersion(
+  parentId: string,
+  values: Pick<DocumentFormValues, "fileUrl" | "fileType" | "fileSize"> & { title?: string; description?: string }
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const parent = await db.document.findFirst({
+      where: { id: parentId, organizationId: dbOrgId },
+      include: {
+        classifications: true,
+      },
+    })
+    if (!parent) return { success: false, error: "Document not found" }
+
+    // Archive the current version
+    await db.document.update({
+      where: { id: parentId },
+      data: { status: "ARCHIVED" },
+    })
+
+    // Create new version
+    const newDoc = await db.document.create({
+      data: {
+        title: values.title || parent.title,
+        description: values.description || parent.description,
+        status: "DRAFT",
+        fileUrl: values.fileUrl,
+        fileType: values.fileType,
+        fileSize: values.fileSize,
+        projectId: parent.projectId,
+        expiresAt: parent.expiresAt,
+        uploadedById: dbUserId,
+        organizationId: dbOrgId,
+        version: parent.version + 1,
+        parentDocumentId: parentId,
+      },
+    })
+
+    // Copy clause classifications to new version
+    if (parent.classifications.length > 0) {
+      await db.documentClassification.createMany({
+        data: parent.classifications.map((c) => ({
+          documentId: newDoc.id,
+          standardClauseId: c.standardClauseId,
+          confidence: c.confidence,
+          isVerified: c.isVerified,
+          verifiedById: c.verifiedById,
+          verifiedAt: c.verifiedAt,
+        })),
+      })
+    }
+
+    logAuditEvent({
+      action: "NEW_VERSION",
+      entityType: "Document",
+      entityId: newDoc.id,
+      metadata: {
+        title: newDoc.title,
+        version: newDoc.version,
+        parentId: parentId,
+        parentVersion: parent.version,
+      },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/documents")
+    revalidatePath(`/documents/${parentId}`)
+    revalidatePath(`/documents/${newDoc.id}`)
+    return { success: true, data: { id: newDoc.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to upload new version" }
+  }
+}
+
+export async function getDocumentAuditHistory(documentId: string) {
+  const { dbOrgId } = await getAuthContext()
+
+  return db.auditTrailEvent.findMany({
+    where: {
+      organizationId: dbOrgId,
+      entityType: "Document",
+      entityId: documentId,
+    },
+    include: {
+      user: {
+        select: { id: true, firstName: true, lastName: true, imageUrl: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50,
   })
 }
 
