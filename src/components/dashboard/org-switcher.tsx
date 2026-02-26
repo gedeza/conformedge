@@ -1,6 +1,15 @@
 "use client"
 
-import { OrganizationSwitcher } from "@clerk/nextjs"
+import dynamic from "next/dynamic"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const OrganizationSwitcher = dynamic(
+  () => import("@clerk/nextjs").then((m) => m.OrganizationSwitcher),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-9 w-full rounded-md" />,
+  }
+)
 
 export function OrgSwitcher() {
   return (

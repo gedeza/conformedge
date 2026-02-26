@@ -30,19 +30,38 @@ const capaActionSchema = z.object({
 
 export type CapaActionFormValues = z.infer<typeof capaActionSchema>
 
-export async function getCapas() {
+const PAGE_SIZE = 50
+
+export async function getCapas(page = 1) {
   const { dbOrgId } = await getAuthContext()
 
-  return db.capa.findMany({
-    where: { organizationId: dbOrgId },
-    include: {
-      project: { select: { id: true, name: true } },
-      raisedBy: { select: { id: true, firstName: true, lastName: true } },
-      assignedTo: { select: { id: true, firstName: true, lastName: true } },
-      _count: { select: { capaActions: true } },
+  const where = { organizationId: dbOrgId }
+
+  const [capas, total] = await Promise.all([
+    db.capa.findMany({
+      where,
+      include: {
+        project: { select: { id: true, name: true } },
+        raisedBy: { select: { id: true, firstName: true, lastName: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        _count: { select: { capaActions: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    db.capa.count({ where }),
+  ])
+
+  return {
+    capas,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
     },
-    orderBy: { createdAt: "desc" },
-  })
+  }
 }
 
 export async function getCapa(id: string) {

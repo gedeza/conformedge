@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
+import { Pagination } from "@/components/shared/pagination"
 import { FileText } from "lucide-react"
 import { getDocuments, getProjectOptions } from "./actions"
 import { DocumentTable } from "./document-table"
@@ -8,8 +9,16 @@ import { BulkUploadButton } from "./bulk-upload-button"
 import { getAuthContext } from "@/lib/auth"
 import { canCreate } from "@/lib/permissions"
 
-export default async function DocumentsPage() {
-  let documents: Awaited<ReturnType<typeof getDocuments>> = []
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function DocumentsPage({ searchParams }: Props) {
+  const params = await searchParams
+  const page = Math.max(1, Number(params.page) || 1)
+
+  let documents: Awaited<ReturnType<typeof getDocuments>>["documents"] = []
+  let pagination = { page: 1, pageSize: 50, total: 0, totalPages: 0 }
   let projects: Awaited<ReturnType<typeof getProjectOptions>> = []
   let role = "VIEWER"
   let authError = false
@@ -17,7 +26,10 @@ export default async function DocumentsPage() {
   try {
     const ctx = await getAuthContext()
     role = ctx.role
-    ;[documents, projects] = await Promise.all([getDocuments(), getProjectOptions()])
+    const [result, projectList] = await Promise.all([getDocuments(page), getProjectOptions()])
+    documents = result.documents
+    pagination = result.pagination
+    projects = projectList
   } catch {
     authError = true
   }
@@ -43,7 +55,7 @@ export default async function DocumentsPage() {
           <DocumentFormTrigger projects={projects} role={role} />
         </div>
       </PageHeader>
-      {documents.length === 0 ? (
+      {documents.length === 0 && pagination.total === 0 ? (
         <EmptyState
           icon={FileText}
           title="No documents yet"
@@ -52,7 +64,10 @@ export default async function DocumentsPage() {
           <DocumentFormTrigger projects={projects} role={role} />
         </EmptyState>
       ) : (
-        <DocumentTable data={documents} projects={projects} role={role} />
+        <>
+          <DocumentTable data={documents} projects={projects} role={role} />
+          <Pagination {...pagination} basePath="/documents" />
+        </>
       )}
     </div>
   )

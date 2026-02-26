@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
+import { Pagination } from "@/components/shared/pagination"
 import { CheckSquare } from "lucide-react"
 import { getChecklists, getStandards, getProjectOptions, getMembers, getTemplates } from "./actions"
 import { ChecklistTable } from "./checklist-table"
@@ -8,8 +9,16 @@ import { TemplatePicker } from "./template-picker"
 import { getAuthContext } from "@/lib/auth"
 import { canCreate } from "@/lib/permissions"
 
-export default async function ChecklistsPage() {
-  let checklists: Awaited<ReturnType<typeof getChecklists>> = []
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function ChecklistsPage({ searchParams }: Props) {
+  const params = await searchParams
+  const page = Math.max(1, Number(params.page) || 1)
+
+  let checklists: Awaited<ReturnType<typeof getChecklists>>["checklists"] = []
+  let pagination = { page: 1, pageSize: 50, total: 0, totalPages: 0 }
   let standards: Awaited<ReturnType<typeof getStandards>> = []
   let projects: Awaited<ReturnType<typeof getProjectOptions>> = []
   let members: Awaited<ReturnType<typeof getMembers>> = []
@@ -20,9 +29,15 @@ export default async function ChecklistsPage() {
   try {
     const ctx = await getAuthContext()
     role = ctx.role
-    ;[checklists, standards, projects, members, templates] = await Promise.all([
-      getChecklists(), getStandards(), getProjectOptions(), getMembers(), getTemplates(),
+    const [result, stdList, projList, memberList, templateList] = await Promise.all([
+      getChecklists(page), getStandards(), getProjectOptions(), getMembers(), getTemplates(),
     ])
+    checklists = result.checklists
+    pagination = result.pagination
+    standards = stdList
+    projects = projList
+    members = memberList
+    templates = templateList
   } catch {
     authError = true
   }
@@ -44,12 +59,15 @@ export default async function ChecklistsPage() {
           <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />
         </div>
       </PageHeader>
-      {checklists.length === 0 ? (
+      {checklists.length === 0 && pagination.total === 0 ? (
         <EmptyState icon={CheckSquare} title="No checklists yet" description="Create standard-specific checklists to track compliance items.">
           <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />
         </EmptyState>
       ) : (
-        <ChecklistTable data={checklists} standards={standards} projects={projects} members={members} role={role} />
+        <>
+          <ChecklistTable data={checklists} standards={standards} projects={projects} members={members} role={role} />
+          <Pagination {...pagination} basePath="/checklists" />
+        </>
       )}
     </div>
   )

@@ -1,12 +1,13 @@
 "use server"
 
+import { cache } from "react"
 import { revalidatePath } from "next/cache"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import type { ActionResult } from "@/types"
 
-export async function getDashboardMetrics() {
+export const getDashboardMetrics = cache(async function getDashboardMetrics() {
   const { dbOrgId } = await getAuthContext()
 
   const [
@@ -62,7 +63,7 @@ export async function getDashboardMetrics() {
     recentActivity,
     avgComplianceScore: avgComplianceScore._avg.overallScore ?? null,
   }
-}
+})
 
 export interface OnboardingStep {
   id: string

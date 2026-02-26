@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { renderToBuffer } from "@react-pdf/renderer"
+import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer"
 import React from "react"
 import { getReportData } from "@/app/(dashboard)/reports/actions"
 import { parseDateRange } from "@/app/(dashboard)/reports/date-utils"
@@ -40,18 +40,19 @@ export async function GET(request: NextRequest) {
       dateRangeLabel = labels[rangeParam] ?? dateRangeLabel
     }
 
+    const element = React.createElement(ReportsPDF, {
+      organizationName: org?.name ?? "Organization",
+      dateRangeLabel,
+      generatedDate: format(new Date(), "dd MMMM yyyy"),
+      data,
+    })
     const buffer = await renderToBuffer(
-      React.createElement(ReportsPDF, {
-        organizationName: org?.name ?? "Organization",
-        dateRangeLabel,
-        generatedDate: format(new Date(), "dd MMMM yyyy"),
-        data,
-      })
+      element as unknown as React.ReactElement<DocumentProps>
     )
 
     const date = new Date().toISOString().split("T")[0]
 
-    return new NextResponse(buffer, {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="conformedge-report-${date}.pdf"`,

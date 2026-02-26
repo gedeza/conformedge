@@ -18,19 +18,38 @@ const checklistSchema = z.object({
 
 export type ChecklistFormValues = z.infer<typeof checklistSchema>
 
-export async function getChecklists() {
+const PAGE_SIZE = 50
+
+export async function getChecklists(page = 1) {
   const { dbOrgId } = await getAuthContext()
 
-  return db.complianceChecklist.findMany({
-    where: { organizationId: dbOrgId },
-    include: {
-      standard: { select: { id: true, code: true, name: true } },
-      project: { select: { id: true, name: true } },
-      assignedTo: { select: { id: true, firstName: true, lastName: true } },
-      _count: { select: { items: true } },
+  const where = { organizationId: dbOrgId }
+
+  const [checklists, total] = await Promise.all([
+    db.complianceChecklist.findMany({
+      where,
+      include: {
+        standard: { select: { id: true, code: true, name: true } },
+        project: { select: { id: true, name: true } },
+        assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        _count: { select: { items: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    db.complianceChecklist.count({ where }),
+  ])
+
+  return {
+    checklists,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
     },
-    orderBy: { createdAt: "desc" },
-  })
+  }
 }
 
 export async function getChecklist(id: string) {

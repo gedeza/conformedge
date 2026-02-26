@@ -21,24 +21,43 @@ const documentSchema = z.object({
 
 export type DocumentFormValues = z.infer<typeof documentSchema>
 
-export async function getDocuments() {
+const PAGE_SIZE = 50
+
+export async function getDocuments(page = 1) {
   const { dbOrgId } = await getAuthContext()
 
-  return db.document.findMany({
-    where: { organizationId: dbOrgId },
-    include: {
-      project: { select: { id: true, name: true } },
-      uploadedBy: { select: { id: true, firstName: true, lastName: true } },
-      classifications: {
-        include: {
-          standardClause: {
-            include: { standard: { select: { code: true, name: true } } },
+  const where = { organizationId: dbOrgId }
+
+  const [documents, total] = await Promise.all([
+    db.document.findMany({
+      where,
+      include: {
+        project: { select: { id: true, name: true } },
+        uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+        classifications: {
+          include: {
+            standardClause: {
+              include: { standard: { select: { code: true, name: true } } },
+            },
           },
         },
       },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    db.document.count({ where }),
+  ])
+
+  return {
+    documents,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
     },
-    orderBy: { createdAt: "desc" },
-  })
+  }
 }
 
 export async function getDocument(id: string) {
@@ -65,80 +84,57 @@ export async function getDocument(id: string) {
 export async function getDocumentVersions(id: string) {
   const { dbOrgId } = await getAuthContext()
 
-  const doc = await db.document.findFirst({
-    where: { id, organizationId: dbOrgId },
-    select: { id: true, parentDocumentId: true },
-  })
-  if (!doc) return []
+  const versionSelect = {
+    id: true,
+    title: true,
+    version: true,
+    status: true,
+    fileUrl: true,
+    fileType: true,
+    fileSize: true,
+    createdAt: true,
+    uploadedBy: { select: { id: true, firstName: true, lastName: true } },
+    parentDocumentId: true,
+  } as const
 
-  // Find the root document (top of the version chain)
-  let rootId = doc.id
-  if (doc.parentDocumentId) {
-    let current = doc
-    while (current.parentDocumentId) {
-      const parent = await db.document.findFirst({
-        where: { id: current.parentDocumentId, organizationId: dbOrgId },
-        select: { id: true, parentDocumentId: true },
-      })
-      if (!parent) break
-      rootId = parent.id
-      current = parent
+  // Fetch all documents in the org that have a parentDocumentId or are parents
+  // This is a single query — we walk the tree in memory to find the chain
+  const allOrgDocs = await db.document.findMany({
+    where: { organizationId: dbOrgId },
+    select: versionSelect,
+  })
+
+  // Build parent/child lookup maps
+  const byId = new Map(allOrgDocs.map((d) => [d.id, d]))
+  const target = byId.get(id)
+  if (!target) return []
+
+  // Walk up to find root
+  let rootId = target.id
+  let current = target
+  while (current.parentDocumentId) {
+    const parent = byId.get(current.parentDocumentId)
+    if (!parent) break
+    rootId = parent.id
+    current = parent
+  }
+
+  // Collect all descendants from root
+  const chain = new Set<string>([rootId])
+  let added = true
+  while (added) {
+    added = false
+    for (const doc of allOrgDocs) {
+      if (doc.parentDocumentId && chain.has(doc.parentDocumentId) && !chain.has(doc.id)) {
+        chain.add(doc.id)
+        added = true
+      }
     }
   }
 
-  // Get all versions in the chain (root + all descendants)
-  const allVersions = await db.document.findMany({
-    where: {
-      organizationId: dbOrgId,
-      OR: [
-        { id: rootId },
-        { parentDocumentId: rootId },
-      ],
-    },
-    select: {
-      id: true,
-      title: true,
-      version: true,
-      status: true,
-      fileUrl: true,
-      fileType: true,
-      fileSize: true,
-      createdAt: true,
-      uploadedBy: { select: { id: true, firstName: true, lastName: true } },
-      parentDocumentId: true,
-    },
-    orderBy: { version: "desc" },
-  })
-
-  // If deeper chains exist, also fetch them
-  if (allVersions.length > 0) {
-    const ids = allVersions.map((v) => v.id)
-    const deeper = await db.document.findMany({
-      where: {
-        organizationId: dbOrgId,
-        parentDocumentId: { in: ids },
-        id: { notIn: ids },
-      },
-      select: {
-        id: true,
-        title: true,
-        version: true,
-        status: true,
-        fileUrl: true,
-        fileType: true,
-        fileSize: true,
-        createdAt: true,
-        uploadedBy: { select: { id: true, firstName: true, lastName: true } },
-        parentDocumentId: true,
-      },
-      orderBy: { version: "desc" },
-    })
-    allVersions.push(...deeper)
-    // Re-sort
-    allVersions.sort((a, b) => b.version - a.version)
-  }
-
-  return allVersions
+  return allOrgDocs
+    .filter((d) => chain.has(d.id))
+    .sort((a, b) => b.version - a.version)
 }
 
 export async function uploadNewVersion(

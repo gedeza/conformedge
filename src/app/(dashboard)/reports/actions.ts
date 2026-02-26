@@ -1,5 +1,6 @@
 "use server"
 
+import { cache } from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { subMonths, startOfMonth, format, addMonths } from "date-fns"
@@ -16,7 +17,7 @@ function dateFilter(dateRange: DateRangeParams, field = "createdAt") {
 
 // ── Main report data fetcher ────────────────────
 
-export async function getReportData(dateRange: DateRangeParams = {}) {
+export const getReportData = cache(async function getReportData(dateRange: DateRangeParams = {}) {
   const { dbOrgId } = await getAuthContext()
 
   const dateWhere = dateFilter(dateRange)
@@ -312,6 +313,6 @@ export async function getReportData(dateRange: DateRangeParams = {}) {
       scoredSubcontractors: scoredSubcontractors.slice(0, 10),
     },
   }
-}
+})
 
 export type ReportData = Awaited<ReturnType<typeof getReportData>>

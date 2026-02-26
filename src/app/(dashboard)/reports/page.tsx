@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
 import { getReportData } from "./actions"
 import { parseDateRange } from "./date-utils"
-import { ReportCharts } from "./report-charts"
+import { ReportChartsLazy as ReportCharts } from "./report-charts-lazy"
 import { DateRangeFilter } from "./date-range-filter"
 import { ReportExportButtons } from "./report-export-buttons"
 

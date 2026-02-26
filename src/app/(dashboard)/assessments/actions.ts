@@ -18,19 +18,38 @@ const assessmentSchema = z.object({
 
 export type AssessmentFormValues = z.infer<typeof assessmentSchema>
 
-export async function getAssessments() {
+const PAGE_SIZE = 50
+
+export async function getAssessments(page = 1) {
   const { dbOrgId } = await getAuthContext()
 
-  return db.assessment.findMany({
-    where: { organizationId: dbOrgId },
-    include: {
-      standard: { select: { id: true, code: true, name: true } },
-      project: { select: { id: true, name: true } },
-      assessor: { select: { id: true, firstName: true, lastName: true } },
-      _count: { select: { questions: true } },
+  const where = { organizationId: dbOrgId }
+
+  const [assessments, total] = await Promise.all([
+    db.assessment.findMany({
+      where,
+      include: {
+        standard: { select: { id: true, code: true, name: true } },
+        project: { select: { id: true, name: true } },
+        assessor: { select: { id: true, firstName: true, lastName: true } },
+        _count: { select: { questions: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    db.assessment.count({ where }),
+  ])
+
+  return {
+    assessments,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
     },
-    orderBy: { createdAt: "desc" },
-  })
+  }
 }
 
 export async function getAssessment(id: string) {
