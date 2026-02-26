@@ -10,14 +10,16 @@ import { deleteAuditPack } from "./actions"
 
 interface AuditPackTableProps {
   data: AuditPackRow[]
+  role: string
 }
 
-export function AuditPackTable({ data }: AuditPackTableProps) {
+export function AuditPackTable({ data, role }: AuditPackTableProps) {
   const [deleteTarget, setDeleteTarget] = useState<AuditPackRow | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   const columns = getColumns({
     onDelete: (pack) => setDeleteTarget(pack),
+    role,
   })
 
   async function handleDelete() {

@@ -1,16 +1,19 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
-import { Button } from "@/components/ui/button"
-import { FolderKanban, Plus } from "lucide-react"
+import { FolderKanban } from "lucide-react"
 import { getProjects } from "./actions"
 import { ProjectTable } from "./project-table"
 import { ProjectFormTrigger } from "./project-form-trigger"
+import { getAuthContext } from "@/lib/auth"
 
 export default async function ProjectsPage() {
   let projects: Awaited<ReturnType<typeof getProjects>> = []
+  let role = "VIEWER"
   let authError = false
 
   try {
+    const ctx = await getAuthContext()
+    role = ctx.role
     projects = await getProjects()
   } catch {
     authError = true
@@ -32,7 +35,7 @@ export default async function ProjectsPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Projects" description="Manage your compliance projects">
-        <ProjectFormTrigger />
+        <ProjectFormTrigger role={role} />
       </PageHeader>
       {projects.length === 0 ? (
         <EmptyState
@@ -40,10 +43,10 @@ export default async function ProjectsPage() {
           title="No projects yet"
           description="Create your first project to start tracking compliance."
         >
-          <ProjectFormTrigger />
+          <ProjectFormTrigger role={role} />
         </EmptyState>
       ) : (
-        <ProjectTable data={projects} />
+        <ProjectTable data={projects} role={role} />
       )}
     </div>
   )

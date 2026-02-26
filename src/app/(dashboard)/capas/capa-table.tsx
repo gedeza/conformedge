@@ -13,9 +13,10 @@ interface CapaTableProps {
   data: CapaRow[]
   projects: { id: string; name: string }[]
   members: { id: string; name: string }[]
+  role: string
 }
 
-export function CapaTable({ data, projects, members }: CapaTableProps) {
+export function CapaTable({ data, projects, members, role }: CapaTableProps) {
   const [editItem, setEditItem] = useState<CapaRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<CapaRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -23,6 +24,7 @@ export function CapaTable({ data, projects, members }: CapaTableProps) {
   const columns = getColumns({
     onEdit: (c) => setEditItem(c),
     onDelete: (c) => setDeleteTarget(c),
+    role,
   })
 
   async function handleDelete() {

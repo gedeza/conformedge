@@ -14,9 +14,10 @@ interface ChecklistTableProps {
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
   members: { id: string; name: string }[]
+  role: string
 }
 
-export function ChecklistTable({ data, standards, projects, members }: ChecklistTableProps) {
+export function ChecklistTable({ data, standards, projects, members, role }: ChecklistTableProps) {
   const [editItem, setEditItem] = useState<ChecklistRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ChecklistRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -24,6 +25,7 @@ export function ChecklistTable({ data, standards, projects, members }: Checklist
   const columns = getColumns({
     onEdit: (c) => setEditItem(c),
     onDelete: (c) => setDeleteTarget(c),
+    role,
   })
 
   async function handleDelete() {

@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete, canConduct } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const assessmentSchema = z.object({
@@ -57,7 +58,8 @@ export async function getAssessment(id: string) {
 
 export async function createAssessment(values: AssessmentFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = assessmentSchema.parse(values)
 
     const assessment = await db.assessment.create({
@@ -90,7 +92,8 @@ export async function createAssessment(values: AssessmentFormValues): Promise<Ac
 
 export async function updateAssessment(id: string, values: AssessmentFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = assessmentSchema.parse(values)
 
     const existing = await db.assessment.findFirst({ where: { id, organizationId: dbOrgId } })
@@ -126,7 +129,8 @@ export async function updateAssessment(id: string, values: AssessmentFormValues)
 
 export async function deleteAssessment(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.assessment.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "Assessment not found" }
@@ -151,7 +155,8 @@ export async function deleteAssessment(id: string): Promise<ActionResult> {
 
 export async function generateQuestionsFromStandard(assessmentId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const assessment = await db.assessment.findFirst({
       where: { id: assessmentId, organizationId: dbOrgId },
@@ -195,7 +200,8 @@ export async function saveAnswer(
   data: { answer?: string; score?: number; evidence?: string; notes?: string }
 ): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
 
     const question = await db.assessmentQuestion.findUnique({
       where: { id: questionId },
@@ -242,7 +248,8 @@ export async function saveAnswer(
 
 export async function calculateScore(assessmentId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
 
     const assessment = await db.assessment.findFirst({
       where: { id: assessmentId, organizationId: dbOrgId },

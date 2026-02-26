@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const auditPackSchema = z.object({
@@ -49,7 +50,8 @@ export async function getAuditPack(id: string) {
 
 export async function createAuditPack(values: AuditPackFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = auditPackSchema.parse(values)
 
     const pack = await db.auditPack.create({
@@ -80,7 +82,8 @@ export async function createAuditPack(values: AuditPackFormValues): Promise<Acti
 
 export async function deleteAuditPack(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.auditPack.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "Audit pack not found" }
@@ -105,7 +108,8 @@ export async function deleteAuditPack(id: string): Promise<ActionResult> {
 
 export async function compileAuditPack(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const pack = await db.auditPack.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!pack) return { success: false, error: "Audit pack not found" }

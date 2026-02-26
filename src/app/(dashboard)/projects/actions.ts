@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const projectSchema = z.object({
@@ -62,7 +63,8 @@ export async function getProject(id: string) {
 
 export async function createProject(values: ProjectFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = projectSchema.parse(values)
 
     const project = await db.project.create({
@@ -90,7 +92,8 @@ export async function createProject(values: ProjectFormValues): Promise<ActionRe
 
 export async function updateProject(id: string, values: ProjectFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = projectSchema.parse(values)
 
     const existing = await db.project.findFirst({
@@ -125,7 +128,8 @@ export async function updateProject(id: string, values: ProjectFormValues): Prom
 
 export async function deleteProject(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.project.findFirst({
       where: { id, organizationId: dbOrgId },

@@ -4,15 +4,19 @@ import { CheckSquare } from "lucide-react"
 import { getChecklists, getStandards, getProjectOptions, getMembers } from "./actions"
 import { ChecklistTable } from "./checklist-table"
 import { ChecklistFormTrigger } from "./checklist-form-trigger"
+import { getAuthContext } from "@/lib/auth"
 
 export default async function ChecklistsPage() {
   let checklists: Awaited<ReturnType<typeof getChecklists>> = []
   let standards: Awaited<ReturnType<typeof getStandards>> = []
   let projects: Awaited<ReturnType<typeof getProjectOptions>> = []
   let members: Awaited<ReturnType<typeof getMembers>> = []
+  let role = "VIEWER"
   let authError = false
 
   try {
+    const ctx = await getAuthContext()
+    role = ctx.role
     ;[checklists, standards, projects, members] = await Promise.all([
       getChecklists(), getStandards(), getProjectOptions(), getMembers(),
     ])
@@ -32,14 +36,14 @@ export default async function ChecklistsPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Checklists" description="Manage compliance checklists per standard">
-        <ChecklistFormTrigger standards={standards} projects={projects} members={members} />
+        <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />
       </PageHeader>
       {checklists.length === 0 ? (
         <EmptyState icon={CheckSquare} title="No checklists yet" description="Create standard-specific checklists to track compliance items.">
-          <ChecklistFormTrigger standards={standards} projects={projects} members={members} />
+          <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />
         </EmptyState>
       ) : (
-        <ChecklistTable data={checklists} standards={standards} projects={projects} members={members} />
+        <ChecklistTable data={checklists} standards={standards} projects={projects} members={members} role={role} />
       )}
     </div>
   )

@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const documentSchema = z.object({
@@ -62,7 +63,8 @@ export async function getDocument(id: string) {
 
 export async function createDocument(values: DocumentFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = documentSchema.parse(values)
 
     const doc = await db.document.create({
@@ -98,7 +100,8 @@ export async function createDocument(values: DocumentFormValues): Promise<Action
 
 export async function updateDocument(id: string, values: DocumentFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = documentSchema.parse(values)
 
     const existing = await db.document.findFirst({
@@ -139,7 +142,8 @@ export async function updateDocument(id: string, values: DocumentFormValues): Pr
 
 export async function updateDocumentStatus(id: string, status: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.document.findFirst({
       where: { id, organizationId: dbOrgId },
@@ -170,7 +174,8 @@ export async function updateDocumentStatus(id: string, status: string): Promise<
 
 export async function deleteDocument(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.document.findFirst({
       where: { id, organizationId: dbOrgId },
@@ -197,7 +202,8 @@ export async function deleteDocument(id: string): Promise<ActionResult> {
 
 export async function addClauseTag(documentId: string, standardClauseId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const doc = await db.document.findFirst({
       where: { id: documentId, organizationId: dbOrgId },
@@ -238,7 +244,8 @@ export async function addClauseTag(documentId: string, standardClauseId: string)
 
 export async function removeClauseTag(documentId: string, classificationId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const doc = await db.document.findFirst({
       where: { id: documentId, organizationId: dbOrgId },

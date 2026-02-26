@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete, canConduct } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const checklistSchema = z.object({
@@ -53,7 +54,8 @@ export async function getChecklist(id: string) {
 
 export async function createChecklist(values: ChecklistFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = checklistSchema.parse(values)
 
     const checklist = await db.complianceChecklist.create({
@@ -85,7 +87,8 @@ export async function createChecklist(values: ChecklistFormValues): Promise<Acti
 
 export async function updateChecklist(id: string, values: ChecklistFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = checklistSchema.parse(values)
 
     const existing = await db.complianceChecklist.findFirst({ where: { id, organizationId: dbOrgId } })
@@ -121,7 +124,8 @@ export async function updateChecklist(id: string, values: ChecklistFormValues): 
 
 export async function deleteChecklist(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.complianceChecklist.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "Checklist not found" }
@@ -146,7 +150,8 @@ export async function deleteChecklist(id: string): Promise<ActionResult> {
 
 export async function generateItemsFromStandard(checklistId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const checklist = await db.complianceChecklist.findFirst({
       where: { id: checklistId, organizationId: dbOrgId },
@@ -190,7 +195,8 @@ export async function toggleItemCompliance(
   isCompliant: boolean | null
 ): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
 
     const checklist = await db.complianceChecklist.findFirst({ where: { id: checklistId, organizationId: dbOrgId } })
     if (!checklist) return { success: false, error: "Checklist not found" }
@@ -224,7 +230,8 @@ export async function updateItemEvidence(
   evidence: string
 ): Promise<ActionResult> {
   try {
-    const { dbOrgId } = await getAuthContext()
+    const { dbOrgId, role } = await getAuthContext()
+    if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
 
     const checklist = await db.complianceChecklist.findFirst({ where: { id: checklistId, organizationId: dbOrgId } })
     if (!checklist) return { success: false, error: "Checklist not found" }
@@ -266,7 +273,8 @@ export async function addChecklistItem(
   standardClauseId?: string
 ): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const checklist = await db.complianceChecklist.findFirst({
       where: { id: checklistId, organizationId: dbOrgId },

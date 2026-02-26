@@ -4,9 +4,16 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { SubcontractorForm } from "./subcontractor-form"
+import { canCreate } from "@/lib/permissions"
 
-export function SubcontractorFormTrigger() {
+interface SubcontractorFormTriggerProps {
+  role: string
+}
+
+export function SubcontractorFormTrigger({ role }: SubcontractorFormTriggerProps) {
   const [open, setOpen] = useState(false)
+
+  if (!canCreate(role)) return null
 
   return (
     <>

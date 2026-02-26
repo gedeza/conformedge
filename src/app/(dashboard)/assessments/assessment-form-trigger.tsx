@@ -4,14 +4,18 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { AssessmentForm } from "./assessment-form"
+import { canCreate } from "@/lib/permissions"
 
 interface AssessmentFormTriggerProps {
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
+  role: string
 }
 
-export function AssessmentFormTrigger({ standards, projects }: AssessmentFormTriggerProps) {
+export function AssessmentFormTrigger({ standards, projects, role }: AssessmentFormTriggerProps) {
   const [open, setOpen] = useState(false)
+
+  if (!canCreate(role)) return null
 
   return (
     <>

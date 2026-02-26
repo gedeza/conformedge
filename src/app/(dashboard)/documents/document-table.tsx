@@ -12,9 +12,10 @@ import { deleteDocument } from "./actions"
 interface DocumentTableProps {
   data: DocumentRow[]
   projects: { id: string; name: string }[]
+  role: string
 }
 
-export function DocumentTable({ data, projects }: DocumentTableProps) {
+export function DocumentTable({ data, projects, role }: DocumentTableProps) {
   const [editDoc, setEditDoc] = useState<DocumentRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<DocumentRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -22,6 +23,7 @@ export function DocumentTable({ data, projects }: DocumentTableProps) {
   const columns = getColumns({
     onEdit: (doc) => setEditDoc(doc),
     onDelete: (doc) => setDeleteTarget(doc),
+    role,
   })
 
   async function handleDelete() {

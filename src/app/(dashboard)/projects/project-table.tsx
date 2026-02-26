@@ -11,9 +11,10 @@ import { deleteProject } from "./actions"
 
 interface ProjectTableProps {
   data: ProjectRow[]
+  role: string
 }
 
-export function ProjectTable({ data }: ProjectTableProps) {
+export function ProjectTable({ data, role }: ProjectTableProps) {
   const [editProject, setEditProject] = useState<ProjectRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<ProjectRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -21,6 +22,7 @@ export function ProjectTable({ data }: ProjectTableProps) {
   const columns = getColumns({
     onEdit: (project) => setEditProject(project),
     onDelete: (project) => setDeleteTarget(project),
+    role,
   })
 
   async function handleDelete() {

@@ -11,9 +11,10 @@ import { deleteSubcontractor } from "./actions"
 
 interface SubcontractorTableProps {
   data: SubcontractorRow[]
+  role: string
 }
 
-export function SubcontractorTable({ data }: SubcontractorTableProps) {
+export function SubcontractorTable({ data, role }: SubcontractorTableProps) {
   const [editSub, setEditSub] = useState<SubcontractorRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<SubcontractorRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -21,6 +22,7 @@ export function SubcontractorTable({ data }: SubcontractorTableProps) {
   const columns = getColumns({
     onEdit: (sub) => setEditSub(sub),
     onDelete: (sub) => setDeleteTarget(sub),
+    role,
   })
 
   async function handleDelete() {

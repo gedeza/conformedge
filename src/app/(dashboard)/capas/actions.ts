@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const capaSchema = z.object({
@@ -65,7 +66,8 @@ export async function getCapa(id: string) {
 
 export async function createCapa(values: CapaFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = capaSchema.parse(values)
 
     const capa = await db.capa.create({
@@ -102,7 +104,8 @@ export async function createCapa(values: CapaFormValues): Promise<ActionResult<{
 
 export async function updateCapa(id: string, values: CapaFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = capaSchema.parse(values)
 
     const existing = await db.capa.findFirst({ where: { id, organizationId: dbOrgId } })
@@ -145,7 +148,8 @@ export async function updateCapa(id: string, values: CapaFormValues): Promise<Ac
 
 export async function deleteCapa(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.capa.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "CAPA not found" }
@@ -170,7 +174,8 @@ export async function deleteCapa(id: string): Promise<ActionResult> {
 
 export async function addCapaAction(capaId: string, values: CapaActionFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = capaActionSchema.parse(values)
 
     const capa = await db.capa.findFirst({ where: { id: capaId, organizationId: dbOrgId } })
@@ -203,7 +208,8 @@ export async function addCapaAction(capaId: string, values: CapaActionFormValues
 
 export async function toggleCapaActionComplete(actionId: string, capaId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
     const capa = await db.capa.findFirst({ where: { id: capaId, organizationId: dbOrgId } })
     if (!capa) return { success: false, error: "CAPA not found" }

@@ -13,9 +13,10 @@ interface AssessmentTableProps {
   data: AssessmentRow[]
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
+  role: string
 }
 
-export function AssessmentTable({ data, standards, projects }: AssessmentTableProps) {
+export function AssessmentTable({ data, standards, projects, role }: AssessmentTableProps) {
   const [editItem, setEditItem] = useState<AssessmentRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AssessmentRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -23,6 +24,7 @@ export function AssessmentTable({ data, standards, projects }: AssessmentTablePr
   const columns = getColumns({
     onEdit: (a) => setEditItem(a),
     onDelete: (a) => setDeleteTarget(a),
+    role,
   })
 
   async function handleDelete() {

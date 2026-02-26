@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const subcontractorSchema = z.object({
@@ -53,7 +54,8 @@ export async function getSubcontractor(id: string) {
 
 export async function createSubcontractor(values: SubcontractorFormValues): Promise<ActionResult<{ id: string }>> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = subcontractorSchema.parse(values)
 
     const sub = await db.subcontractor.create({
@@ -82,7 +84,8 @@ export async function createSubcontractor(values: SubcontractorFormValues): Prom
 
 export async function updateSubcontractor(id: string, values: SubcontractorFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = subcontractorSchema.parse(values)
 
     const existing = await db.subcontractor.findFirst({ where: { id, organizationId: dbOrgId } })
@@ -115,7 +118,8 @@ export async function updateSubcontractor(id: string, values: SubcontractorFormV
 
 export async function deleteSubcontractor(id: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const existing = await db.subcontractor.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "Subcontractor not found" }
@@ -140,7 +144,8 @@ export async function deleteSubcontractor(id: string): Promise<ActionResult> {
 
 export async function addCertification(subcontractorId: string, values: CertificationFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = certificationSchema.parse(values)
 
     const sub = await db.subcontractor.findFirst({ where: { id: subcontractorId, organizationId: dbOrgId } })
@@ -168,7 +173,8 @@ export async function addCertification(subcontractorId: string, values: Certific
 
 export async function updateCertification(id: string, subcontractorId: string, values: CertificationFormValues): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = certificationSchema.parse(values)
 
     const sub = await db.subcontractor.findFirst({ where: { id: subcontractorId, organizationId: dbOrgId } })
@@ -197,7 +203,8 @@ export async function updateCertification(id: string, subcontractorId: string, v
 
 export async function deleteCertification(id: string, subcontractorId: string): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
 
     const sub = await db.subcontractor.findFirst({ where: { id: subcontractorId, organizationId: dbOrgId } })
     if (!sub) return { success: false, error: "Subcontractor not found" }

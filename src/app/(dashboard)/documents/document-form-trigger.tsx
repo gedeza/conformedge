@@ -4,13 +4,17 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload } from "lucide-react"
 import { DocumentForm } from "./document-form"
+import { canCreate } from "@/lib/permissions"
 
 interface DocumentFormTriggerProps {
   projects: { id: string; name: string }[]
+  role: string
 }
 
-export function DocumentFormTrigger({ projects }: DocumentFormTriggerProps) {
+export function DocumentFormTrigger({ projects, role }: DocumentFormTriggerProps) {
   const [open, setOpen] = useState(false)
+
+  if (!canCreate(role)) return null
 
   return (
     <>

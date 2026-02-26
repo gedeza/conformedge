@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { Badge } from "@/components/ui/badge"
+import { canEdit, canDelete } from "@/lib/permissions"
 
 export type DocumentRow = {
   id: string
@@ -36,6 +37,7 @@ export type DocumentRow = {
 interface ColumnActions {
   onEdit: (doc: DocumentRow) => void
   onDelete: (doc: DocumentRow) => void
+  role: string
 }
 
 export function getColumns(actions: ColumnActions): ColumnDef<DocumentRow>[] {
@@ -100,23 +102,30 @@ export function getColumns(actions: ColumnActions): ColumnDef<DocumentRow>[] {
     },
     {
       id: "actions",
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => actions.onEdit(row.original)}>
-              <Pencil className="mr-2 h-4 w-4" /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => actions.onDelete(row.original)} className="text-destructive">
-              <Trash2 className="mr-2 h-4 w-4" /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
+      cell: ({ row }) => {
+        if (!canEdit(actions.role) && !canDelete(actions.role)) return null
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {canEdit(actions.role) && (
+                <DropdownMenuItem onClick={() => actions.onEdit(row.original)}>
+                  <Pencil className="mr-2 h-4 w-4" /> Edit
+                </DropdownMenuItem>
+              )}
+              {canDelete(actions.role) && (
+                <DropdownMenuItem onClick={() => actions.onDelete(row.original)} className="text-destructive">
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
     },
   ]
 }
