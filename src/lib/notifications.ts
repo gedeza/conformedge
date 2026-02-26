@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { sendNotificationEmail, sendNotificationEmailBulk } from "@/lib/email"
 import type { NotificationType } from "@/types"
 
 interface NotificationInput {
@@ -21,6 +22,14 @@ export function createNotification(input: NotificationInput) {
         organizationId: input.organizationId,
       },
     })
+    .then(() => {
+      sendNotificationEmail({
+        userId: input.userId,
+        title: input.title,
+        message: input.message,
+        type: input.type,
+      })
+    })
     .catch((err) => {
       console.error("Failed to create notification:", err)
     })
@@ -42,15 +51,24 @@ export function notifyOrgMembers(
 
       if (targets.length === 0) return
 
-      return db.notification.createMany({
-        data: targets.map((m) => ({
-          title: input.title,
-          message: input.message,
-          type: input.type,
-          userId: m.userId,
-          organizationId: input.organizationId,
-        })),
-      })
+      return db.notification
+        .createMany({
+          data: targets.map((m) => ({
+            title: input.title,
+            message: input.message,
+            type: input.type,
+            userId: m.userId,
+            organizationId: input.organizationId,
+          })),
+        })
+        .then(() => {
+          sendNotificationEmailBulk({
+            userIds: targets.map((m) => m.userId),
+            title: input.title,
+            message: input.message,
+            type: input.type,
+          })
+        })
     })
     .catch((err) => {
       console.error("Failed to notify org members:", err)

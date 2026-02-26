@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { addDays, isBefore } from "date-fns"
 import { db } from "@/lib/db"
+import { sendNotificationEmail } from "@/lib/email"
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -80,6 +81,12 @@ export async function GET(request: NextRequest) {
           organizationId: doc.organizationId,
         },
       })
+      sendNotificationEmail({
+        userId: doc.uploadedById,
+        title: `Document ${urgency}`,
+        message: `"${doc.title}" ${urgency}. Please review and update.`,
+        type: "DOCUMENT_EXPIRY",
+      })
       created++
     }
 
@@ -145,6 +152,12 @@ export async function GET(request: NextRequest) {
                 organizationId: capa.organizationId,
               },
             })
+            sendNotificationEmail({
+              userId: mgr.userId,
+              title: "CAPA escalated",
+              message: `"${capa.title}" auto-escalated from ${capa.priority} to ${newPriority} (${daysOverdue} days overdue).`,
+              type: "CAPA_DUE",
+            })
             created++
           }
           escalated++
@@ -178,6 +191,12 @@ export async function GET(request: NextRequest) {
           userId: targetUserId,
           organizationId: capa.organizationId,
         },
+      })
+      sendNotificationEmail({
+        userId: targetUserId,
+        title: "CAPA overdue",
+        message: `"${capa.title}" is past its due date. Please take action.`,
+        type: "CAPA_DUE",
       })
       created++
     }
@@ -218,6 +237,12 @@ export async function GET(request: NextRequest) {
           userId: targetUserId,
           organizationId: capa.organizationId,
         },
+      })
+      sendNotificationEmail({
+        userId: targetUserId,
+        title: "CAPA due soon",
+        message: `"${capa.title}" is due within 7 days.`,
+        type: "CAPA_DUE",
       })
       created++
     }
@@ -276,6 +301,12 @@ export async function GET(request: NextRequest) {
           userId: targetUser.userId,
           organizationId: cert.subcontractor.organizationId,
         },
+      })
+      sendNotificationEmail({
+        userId: targetUser.userId,
+        title: `Certification ${urgency}`,
+        message: `${cert.subcontractor.name}'s "${cert.name}" certification ${urgency}.`,
+        type: "CERT_EXPIRY",
       })
       created++
     }
