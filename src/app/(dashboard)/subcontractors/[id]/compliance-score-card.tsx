@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { recalculateComplianceScore, type ComplianceScore } from "../actions"
+import { recalculateComplianceScore } from "../actions"
+import type { ComplianceScore } from "../compliance-score"
 
 interface ComplianceScoreCardProps {
   subcontractorId: string

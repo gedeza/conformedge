@@ -487,6 +487,46 @@ export async function removeClauseTag(documentId: string, classificationId: stri
   }
 }
 
+export async function verifyClassification(documentId: string, classificationId: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const doc = await db.document.findFirst({
+      where: { id: documentId, organizationId: dbOrgId },
+    })
+    if (!doc) return { success: false, error: "Document not found" }
+
+    const classification = await db.documentClassification.findFirst({
+      where: { id: classificationId, documentId },
+    })
+    if (!classification) return { success: false, error: "Classification not found" }
+
+    await db.documentClassification.update({
+      where: { id: classificationId },
+      data: {
+        isVerified: true,
+        verifiedById: dbUserId,
+        verifiedAt: new Date(),
+      },
+    })
+
+    logAuditEvent({
+      action: "VERIFY_CLASSIFICATION",
+      entityType: "Document",
+      entityId: documentId,
+      metadata: { classificationId },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/documents/${documentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to verify classification" }
+  }
+}
+
 export async function getStandardsWithClauses() {
   return db.standard.findMany({
     where: { isActive: true },

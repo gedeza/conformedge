@@ -10,8 +10,12 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getDocument, getStandardsWithClauses, getDocumentVersions, getDocumentAuditHistory } from "../actions"
 import { getAuthContext } from "@/lib/auth"
+import { canEdit } from "@/lib/permissions"
+import { isExtractable } from "@/lib/ai/extract-text"
 import { ClauseTagForm } from "../clause-tag-form"
 import { RemoveTagButton } from "./remove-tag-button"
+import { ClassifyButton } from "./classify-button"
+import { VerifyButton } from "./verify-button"
 import { VersionHistory } from "./version-history"
 
 export default async function DocumentDetailPage({
@@ -143,9 +147,16 @@ export default async function DocumentDetailPage({
               <CardTitle>ISO Clause Classifications</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {canEdit(role) && (
+                <ClassifyButton
+                  documentId={doc.id}
+                  fileType={doc.fileType}
+                  isExtractable={isExtractable(doc.fileType)}
+                />
+              )}
               <ClauseTagForm documentId={doc.id} standards={standards} />
               {doc.classifications.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No classifications yet. Add a clause tag above.</p>
+                <p className="text-sm text-muted-foreground">No classifications yet. Use AI analysis or add a clause tag above.</p>
               ) : (
                 <div className="space-y-2">
                   {doc.classifications.map((c) => (
@@ -155,14 +166,26 @@ export default async function DocumentDetailPage({
                         <span className="font-medium">
                           Clause {c.standardClause.clauseNumber}
                         </span>
-                        {c.isVerified && (
+                        {c.isVerified ? (
                           <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-blue-100 text-blue-800">AI</Badge>
                         )}
                         <span className="text-sm text-muted-foreground">
-                          Confidence: {(c.confidence * 100).toFixed(0)}%
+                          {(c.confidence * 100).toFixed(0)}%
                         </span>
+                        {c.isVerified && c.verifiedBy && (
+                          <span className="text-xs text-muted-foreground">
+                            by {c.verifiedBy.firstName} {c.verifiedBy.lastName}
+                          </span>
+                        )}
                       </div>
-                      <RemoveTagButton documentId={doc.id} classificationId={c.id} />
+                      <div className="flex items-center gap-1">
+                        {!c.isVerified && canEdit(role) && (
+                          <VerifyButton documentId={doc.id} classificationId={c.id} />
+                        )}
+                        <RemoveTagButton documentId={doc.id} classificationId={c.id} />
+                      </div>
                     </div>
                   ))}
                 </div>

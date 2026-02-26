@@ -126,6 +126,8 @@ export function VersionHistory({
     TAG_CLAUSE: "Clause tagged",
     UNTAG_CLAUSE: "Clause untagged",
     NEW_VERSION: "New version uploaded",
+    AI_CLASSIFY: "AI classification",
+    VERIFY_CLASSIFICATION: "Classification verified",
   }
 
   return (
