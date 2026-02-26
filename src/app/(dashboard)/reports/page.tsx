@@ -16,7 +16,23 @@ import { getReportData } from "./actions"
 import { ReportCharts } from "./report-charts"
 
 export default async function ReportsPage() {
-  const data = await getReportData()
+  let data: Awaited<ReturnType<typeof getReportData>>
+
+  try {
+    data = await getReportData()
+  } catch {
+    return (
+      <div className="space-y-6">
+        <PageHeader heading="Reports" description="Compliance analytics and insights" />
+        <Card>
+          <CardContent className="py-10 text-center text-muted-foreground">
+            Please select an organization to view reports.
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   const s = data.summary
 
   const metricCards = [
