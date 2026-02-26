@@ -13,13 +13,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
 import { getReportData } from "./actions"
+import { parseDateRange } from "./date-utils"
 import { ReportCharts } from "./report-charts"
+import { DateRangeFilter } from "./date-range-filter"
+import { ReportExportButtons } from "./report-export-buttons"
 
-export default async function ReportsPage() {
+interface Props {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function ReportsPage({ searchParams }: Props) {
+  const params = await searchParams
+  const dateRange = parseDateRange(
+    params.range as string | undefined,
+    params.from as string | undefined,
+    params.to as string | undefined
+  )
+
   let data: Awaited<ReturnType<typeof getReportData>>
 
   try {
-    data = await getReportData()
+    data = await getReportData(dateRange)
   } catch {
     return (
       <div className="space-y-6">
@@ -46,7 +60,12 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader heading="Reports" description="Compliance analytics and insights" />
+      <PageHeader heading="Reports" description="Compliance analytics and insights">
+        <ReportExportButtons />
+      </PageHeader>
+
+      {/* Date range filter */}
+      <DateRangeFilter />
 
       {/* Summary metrics */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
@@ -116,6 +135,8 @@ export default async function ReportsPage() {
         checklistsByStatus={data.checklistsByStatus}
         riskDistribution={data.riskDistribution}
         monthlyActivity={data.monthlyActivity}
+        complianceTrend={data.complianceTrend}
+        subcontractorMetrics={data.subcontractorMetrics}
       />
     </div>
   )

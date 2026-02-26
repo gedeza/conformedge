@@ -14,6 +14,8 @@ import {
   Legend,
   AreaChart,
   Area,
+  LineChart,
+  Line,
 } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
@@ -172,6 +174,66 @@ export function BarChartCard({ title, description, data, xKey, bars }: BarChartC
               <Bar key={bar.key} dataKey={bar.key} name={bar.label} fill={bar.color} radius={[4, 4, 0, 0]} />
             ))}
           </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ── Line Chart Card ──────────────────────────
+
+interface LineChartCardProps {
+  title: string
+  description?: string
+  data: Array<Record<string, string | number | null>>
+  xKey: string
+  lines: Array<{ key: string; color: string; label: string }>
+}
+
+export function LineChartCard({ title, description, data, xKey, lines }: LineChartCardProps) {
+  const hasData = data.some((d) => lines.some((l) => d[l.key] !== null && d[l.key] !== undefined))
+
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
+          No data available
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 10%, 90%)" />
+            <XAxis dataKey={xKey} fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis fontSize={11} tickLine={false} axisLine={false} domain={[0, 100]} />
+            <Tooltip />
+            <Legend fontSize={12} />
+            {lines.map((line) => (
+              <Line
+                key={line.key}
+                type="monotone"
+                dataKey={line.key}
+                name={line.label}
+                stroke={line.color}
+                strokeWidth={2}
+                dot={{ r: 3 }}
+                connectNulls
+              />
+            ))}
+          </LineChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
