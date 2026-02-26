@@ -348,6 +348,7 @@ model Capa {
   status         CAPAStatus   @default(OPEN)
   priority       CAPAPriority @default(MEDIUM)
   rootCause      String?      @map("root_cause")
+  rootCauseData  Json?        @map("root_cause_data")
   dueDate        DateTime?    @map("due_date")
   closedDate     DateTime?    @map("closed_date")
   organizationId String       @map("organization_id")

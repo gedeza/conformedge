@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, FileText, ClipboardCheck, AlertTriangle, CheckSquare, Package } from "lucide-react"
+import { ArrowLeft, FileText, ClipboardCheck, AlertTriangle, CheckSquare, Package, ShieldCheck, ListChecks, CircleAlert, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getProject } from "../actions"
+import { getProject, getProjectMetrics } from "../actions"
 
 export default async function ProjectDetailPage({
   params,
@@ -26,6 +28,14 @@ export default async function ProjectDetailPage({
   if (!project) notFound()
 
   const counts = project._count
+
+  // Fetch compliance metrics for the overview widgets
+  let metrics: Awaited<ReturnType<typeof getProjectMetrics>> | null = null
+  try {
+    metrics = await getProjectMetrics(id)
+  } catch {
+    // Metrics are non-critical; page still renders without them
+  }
 
   return (
     <div className="space-y-6">
@@ -99,6 +109,123 @@ export default async function ProjectDetailPage({
           <TabsTrigger value="checklists">Checklists</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
+          {/* Compliance Metric Widgets */}
+          {metrics && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Compliance Score */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
+                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  {metrics.complianceScore.total === 0 ? (
+                    <p className="text-sm text-muted-foreground">No data</p>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className={`text-3xl font-bold ${
+                        metrics.complianceScore.percentage > 80
+                          ? "text-green-600 dark:text-green-400"
+                          : metrics.complianceScore.percentage > 60
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-red-600 dark:text-red-400"
+                      }`}>
+                        {metrics.complianceScore.percentage}%
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {metrics.complianceScore.compliant} of {metrics.complianceScore.total} items compliant
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Checklist Progress */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Checklist Progress</CardTitle>
+                  <ListChecks className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  {metrics.checklistProgress.total === 0 ? (
+                    <p className="text-sm text-muted-foreground">No data</p>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-2xl font-bold">
+                        {metrics.checklistProgress.completed} of {metrics.checklistProgress.total}
+                      </div>
+                      <Progress value={metrics.checklistProgress.percentage} className="h-2" />
+                      <p className="text-xs text-muted-foreground">
+                        {metrics.checklistProgress.percentage}% completed
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Overdue CAPAs */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Overdue CAPAs</CardTitle>
+                  <CircleAlert className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl font-bold">{metrics.overdueCAPAs.count}</span>
+                      {metrics.overdueCAPAs.count > 0 ? (
+                        <Badge variant="destructive">Overdue</Badge>
+                      ) : (
+                        <Badge className="bg-green-600 text-white hover:bg-green-600/90">On Track</Badge>
+                      )}
+                    </div>
+                    {metrics.overdueCAPAs.count > 0 && (
+                      <Link
+                        href={`/capas?projectId=${id}`}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        View overdue CAPAs
+                      </Link>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Risk Distribution */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Risk Distribution</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  {metrics.riskDistribution.every((r) => r.count === 0) ? (
+                    <p className="text-sm text-muted-foreground">No data</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {metrics.riskDistribution.map((risk) => (
+                        <div key={risk.level} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <div className={`h-2.5 w-2.5 rounded-full ${
+                              risk.level === "CRITICAL"
+                                ? "bg-red-600"
+                                : risk.level === "HIGH"
+                                  ? "bg-orange-500"
+                                  : risk.level === "MEDIUM"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                            }`} />
+                            <span className="text-muted-foreground capitalize">{risk.level.toLowerCase()}</span>
+                          </div>
+                          <span className="font-medium">{risk.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Project Details</CardTitle>

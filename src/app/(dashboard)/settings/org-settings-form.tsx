@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
 import { updateOrgSettings } from "./actions"
 
 const formSchema = z.object({
@@ -54,7 +56,20 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
         <FormField control={form.control} name="industry" render={({ field }) => (
           <FormItem>
             <FormLabel>Industry</FormLabel>
-            <FormControl><Input placeholder="e.g. Construction, Infrastructure" {...field} /></FormControl>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your industry" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {SA_CONSTRUCTION_INDUSTRIES.map((industry) => (
+                  <SelectItem key={industry} value={industry}>
+                    {industry}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )} />

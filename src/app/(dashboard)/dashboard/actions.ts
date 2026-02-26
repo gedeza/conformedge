@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
 import type { ActionResult } from "@/types"
 
 export const getDashboardMetrics = cache(async function getDashboardMetrics() {
@@ -136,6 +137,36 @@ export async function getOnboardingStatus(): Promise<{
     completedCount,
     totalSteps: steps.length,
     isComplete: completedCount === steps.length || !!settings.onboardingDismissed,
+  }
+}
+
+export async function setOrgIndustry(industry: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId } = await getAuthContext()
+
+    if (!SA_CONSTRUCTION_INDUSTRIES.includes(industry as typeof SA_CONSTRUCTION_INDUSTRIES[number])) {
+      return { success: false, error: "Invalid industry selection" }
+    }
+
+    await db.organization.update({
+      where: { id: dbOrgId },
+      data: { industry },
+    })
+
+    logAuditEvent({
+      action: "SET_INDUSTRY",
+      entityType: "Organization",
+      entityId: dbOrgId,
+      metadata: { industry },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/dashboard")
+    revalidatePath("/settings")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to set industry" }
   }
 }
 

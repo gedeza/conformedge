@@ -6,7 +6,8 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
-import type { ActionResult } from "@/types"
+import type { Prisma } from "@/generated/prisma/client"
+import type { ActionResult, RootCauseData } from "@/types"
 
 const capaSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
@@ -15,10 +16,20 @@ const capaSchema = z.object({
   status: z.enum(["OPEN", "IN_PROGRESS", "VERIFICATION", "CLOSED"]).default("OPEN"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).default("MEDIUM"),
   rootCause: z.string().max(2000).optional(),
+  rootCauseData: z.any().optional(), // JSON — validated on client
   dueDate: z.coerce.date().optional(),
   projectId: z.string().optional(),
   assignedToId: z.string().optional(),
 })
+
+function flattenRootCauseData(data: RootCauseData): string {
+  if (data.method === 'simple') return data.rootCause;
+  const whysSummary = data.whys
+    .filter(w => w.answer)
+    .map((w, i) => `Why ${i + 1}: ${w.answer}`)
+    .join(' → ');
+  return `[5-Whys${data.category ? ` | ${data.category}` : ''}] ${whysSummary} → Root Cause: ${data.rootCause}`;
+}
 
 export type CapaFormValues = z.infer<typeof capaSchema>
 
@@ -101,6 +112,13 @@ export async function createCapa(values: CapaFormValues): Promise<ActionResult<{
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = capaSchema.parse(values)
 
+    // Flatten rootCauseData to plain text for backward compatibility
+    let rootCause = parsed.rootCause
+    const rootCauseData = parsed.rootCauseData as RootCauseData | undefined
+    if (rootCauseData?.rootCause) {
+      rootCause = flattenRootCauseData(rootCauseData)
+    }
+
     const capa = await db.capa.create({
       data: {
         title: parsed.title,
@@ -108,7 +126,8 @@ export async function createCapa(values: CapaFormValues): Promise<ActionResult<{
         type: parsed.type,
         status: parsed.status,
         priority: parsed.priority,
-        rootCause: parsed.rootCause,
+        rootCause,
+        rootCauseData: rootCauseData ? (rootCauseData as unknown as Prisma.InputJsonValue) : undefined,
         dueDate: parsed.dueDate,
         projectId: parsed.projectId || null,
         assignedToId: parsed.assignedToId || null,
@@ -142,13 +161,21 @@ export async function updateCapa(id: string, values: CapaFormValues): Promise<Ac
     const existing = await db.capa.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "CAPA not found" }
 
+    // Flatten rootCauseData to plain text for backward compatibility
+    let rootCause = parsed.rootCause
+    const rootCauseData = parsed.rootCauseData as RootCauseData | undefined
+    if (rootCauseData?.rootCause) {
+      rootCause = flattenRootCauseData(rootCauseData)
+    }
+
     const data: Record<string, unknown> = {
       title: parsed.title,
       description: parsed.description,
       type: parsed.type,
       status: parsed.status,
       priority: parsed.priority,
-      rootCause: parsed.rootCause,
+      rootCause,
+      rootCauseData: rootCauseData ? (rootCauseData as unknown as Prisma.InputJsonValue) : undefined,
       dueDate: parsed.dueDate,
       projectId: parsed.projectId || null,
       assignedToId: parsed.assignedToId || null,

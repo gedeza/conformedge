@@ -10,6 +10,19 @@ export type SubcontractorTier = "PLATINUM" | "GOLD" | "SILVER" | "BRONZE" | "UNR
 export type AuditPackStatus = "DRAFT" | "COMPILING" | "READY" | "SUBMITTED" | "ACCEPTED"
 export type NotificationType = "DOCUMENT_EXPIRY" | "CAPA_DUE" | "ASSESSMENT_SCHEDULED" | "CERT_EXPIRY" | "SYSTEM"
 
+export interface RootCauseWhy {
+  question: string;  // "Why did X happen?"
+  answer: string;    // The answer
+}
+
+export interface RootCauseData {
+  method: 'simple' | '5-whys';
+  category?: 'human' | 'machine' | 'material' | 'method' | 'environment' | 'measurement';
+  whys: RootCauseWhy[];  // Up to 5 entries
+  rootCause: string;     // Final determined root cause
+  containmentAction?: string;  // Immediate containment action taken
+}
+
 export interface ActionResult<T = null> {
   success: boolean
   data?: T

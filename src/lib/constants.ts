@@ -83,6 +83,23 @@ export const NOTIFICATION_TYPES = {
   SYSTEM: { label: "System", color: "bg-gray-100 text-gray-800" },
 } as const
 
+export const SA_CONSTRUCTION_INDUSTRIES = [
+  "General Building",
+  "Civil Engineering",
+  "Electrical Engineering",
+  "Mechanical Engineering",
+  "Road Construction",
+  "Water & Sanitation",
+  "Mining & Resources",
+  "Energy & Power",
+  "Telecommunications",
+  "Environmental Services",
+  "Project Management",
+  "Consulting Engineering",
+  "Facilities Management",
+  "Other",
+] as const
+
 export const ALLOWED_FILE_TYPES = [
   "application/pdf",
   "application/msword",
