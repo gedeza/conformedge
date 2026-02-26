@@ -9,13 +9,15 @@ import {
   FolderKanban,
   CheckSquare,
 } from "lucide-react"
-import { getDashboardMetrics } from "./actions"
+import { getDashboardMetrics, getOnboardingStatus } from "./actions"
+import { OnboardingCard } from "./onboarding-card"
 
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
+  let onboarding: Awaited<ReturnType<typeof getOnboardingStatus>> | null = null
 
   try {
-    metrics = await getDashboardMetrics()
+    ;[metrics, onboarding] = await Promise.all([getDashboardMetrics(), getOnboardingStatus()])
   } catch {
     // Auth error — show empty state
   }
@@ -49,6 +51,14 @@ export default async function DashboardPage() {
         heading="Dashboard"
         description="Overview of your compliance status"
       />
+
+      {onboarding && !onboarding.isComplete && (
+        <OnboardingCard
+          steps={onboarding.steps}
+          completedCount={onboarding.completedCount}
+          totalSteps={onboarding.totalSteps}
+        />
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (

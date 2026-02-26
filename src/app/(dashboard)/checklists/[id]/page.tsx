@@ -10,6 +10,7 @@ import { getChecklist } from "../actions"
 import { ChecklistItemRow } from "./checklist-item-row"
 import { GenerateItemsButton } from "./generate-items-button"
 import { AddItemForm } from "./add-item-form"
+import { SaveAsTemplateButton } from "./save-as-template-button"
 
 export default async function ChecklistDetailPage({
   params,
@@ -41,7 +42,10 @@ export default async function ChecklistDetailPage({
       </div>
 
       <PageHeader heading={checklist.title} description={`${checklist.standard.code} — ${checklist.standard.name}`}>
-        <StatusBadge type="checklist" value={checklist.status} />
+        <div className="flex items-center gap-2">
+          {totalItems > 0 && <SaveAsTemplateButton checklistId={checklist.id} defaultName={checklist.title} />}
+          <StatusBadge type="checklist" value={checklist.status} />
+        </div>
       </PageHeader>
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">

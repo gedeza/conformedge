@@ -274,6 +274,47 @@ export async function createDocument(values: DocumentFormValues): Promise<Action
   }
 }
 
+export async function bulkCreateDocuments(
+  files: Array<{ title: string; fileUrl: string; fileType: string; fileSize: number; projectId?: string }>
+): Promise<ActionResult<{ count: number }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    const docs = await Promise.all(
+      files.map((f) =>
+        db.document.create({
+          data: {
+            title: f.title,
+            fileUrl: f.fileUrl,
+            fileType: f.fileType,
+            fileSize: f.fileSize,
+            projectId: f.projectId || null,
+            uploadedById: dbUserId,
+            organizationId: dbOrgId,
+          },
+        })
+      )
+    )
+
+    for (const doc of docs) {
+      logAuditEvent({
+        action: "CREATE",
+        entityType: "Document",
+        entityId: doc.id,
+        metadata: { title: doc.title, bulk: true },
+        userId: dbUserId,
+        organizationId: dbOrgId,
+      })
+    }
+
+    revalidatePath("/documents")
+    return { success: true, data: { count: docs.length } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Bulk upload failed" }
+  }
+}
+
 export async function updateDocument(id: string, values: DocumentFormValues): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()

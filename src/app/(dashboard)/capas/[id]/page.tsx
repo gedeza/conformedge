@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getCapa, getMembers } from "../actions"
 import { ActionItemList } from "./action-item-list"
+import { EscalateButton } from "./escalate-button"
 
 export default async function CapaDetailPage({
   params,
@@ -44,6 +45,7 @@ export default async function CapaDetailPage({
 
       <PageHeader heading={capa.title} description={capa.description ?? undefined}>
         <div className="flex items-center gap-2">
+          {capa.status !== "CLOSED" && <EscalateButton capaId={capa.id} currentPriority={capa.priority} />}
           <StatusBadge type="capa" value={displayStatus} />
           <StatusBadge type="priority" value={capa.priority} />
         </div>

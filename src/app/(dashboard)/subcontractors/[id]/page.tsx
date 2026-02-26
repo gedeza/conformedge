@@ -8,8 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getSubcontractor } from "../actions"
+import { getSubcontractor, calculateComplianceScore } from "../actions"
 import { CertificationActions } from "./certification-actions"
+import { ComplianceScoreCard } from "./compliance-score-card"
 
 function getExpiryBadge(expiresAt: Date | null) {
   if (!expiresAt) return <Badge variant="outline">No expiry</Badge>
@@ -38,6 +39,8 @@ export default async function SubcontractorDetailPage({
 
   if (!sub) notFound()
 
+  const complianceScore = calculateComplianceScore(sub)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -61,6 +64,7 @@ export default async function SubcontractorDetailPage({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
+          <ComplianceScoreCard subcontractorId={sub.id} initialScore={complianceScore} />
           <Card>
             <CardHeader>
               <CardTitle>Company Details</CardTitle>

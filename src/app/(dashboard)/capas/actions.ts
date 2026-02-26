@@ -253,6 +253,45 @@ export async function toggleCapaActionComplete(actionId: string, capaId: string)
   }
 }
 
+export async function escalateCapa(id: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const capa = await db.capa.findFirst({ where: { id, organizationId: dbOrgId } })
+    if (!capa) return { success: false, error: "CAPA not found" }
+    if (capa.status === "CLOSED") return { success: false, error: "Cannot escalate a closed CAPA" }
+
+    const escalation: Record<string, string> = {
+      LOW: "MEDIUM",
+      MEDIUM: "HIGH",
+      HIGH: "CRITICAL",
+    }
+    const newPriority = escalation[capa.priority]
+    if (!newPriority) return { success: false, error: "Already at maximum priority (CRITICAL)" }
+
+    await db.capa.update({
+      where: { id },
+      data: { priority: newPriority as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" },
+    })
+
+    logAuditEvent({
+      action: "ESCALATE",
+      entityType: "Capa",
+      entityId: id,
+      metadata: { from: capa.priority, to: newPriority, title: capa.title },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/capas")
+    revalidatePath(`/capas/${id}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to escalate CAPA" }
+  }
+}
+
 export async function getProjectOptions() {
   const { dbOrgId } = await getAuthContext()
   return db.project.findMany({

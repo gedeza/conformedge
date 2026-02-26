@@ -121,7 +121,8 @@ model Organization {
   subcontractors   Subcontractor[]
   auditPacks       AuditPack[]
   auditTrailEvents AuditTrailEvent[]
-  notifications    Notification[]
+  notifications          Notification[]
+  checklistTemplates     ChecklistTemplate[]
 
   @@map("organizations")
 }
@@ -150,6 +151,7 @@ model User {
   createdAuditPacks       AuditPack[]
   auditTrailEvents        AuditTrailEvent[]
   notifications           Notification[]
+  checklistTemplates      ChecklistTemplate[]
 
   @@map("users")
 }
@@ -207,6 +209,7 @@ model Standard {
   clauses     StandardClause[]
   assessments Assessment[]
   checklists  ComplianceChecklist[]
+  templates   ChecklistTemplate[]
 
   @@map("standards")
 }
@@ -518,4 +521,23 @@ model Notification {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model ChecklistTemplate {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  standardId     String   @map("standard_id")
+  items          Json     // Array of { description: string, clauseNumber?: string }
+  organizationId String   @map("organization_id")
+  createdById    String   @map("created_by_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  standard     Standard     @relation(fields: [standardId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation(fields: [createdById], references: [id])
+
+  @@map("checklist_templates")
 }

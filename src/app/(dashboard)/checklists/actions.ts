@@ -375,6 +375,160 @@ export async function raiseCapaFromItem(
   }
 }
 
+// ── Template Actions ──────────────────────────────
+
+export async function getTemplates() {
+  const { dbOrgId } = await getAuthContext()
+
+  return db.checklistTemplate.findMany({
+    where: { organizationId: dbOrgId },
+    include: {
+      standard: { select: { id: true, code: true, name: true } },
+      createdBy: { select: { id: true, firstName: true, lastName: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+}
+
+export async function saveChecklistAsTemplate(
+  checklistId: string,
+  name: string,
+  description?: string
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    const checklist = await db.complianceChecklist.findFirst({
+      where: { id: checklistId, organizationId: dbOrgId },
+      include: {
+        items: {
+          orderBy: { sortOrder: "asc" },
+          include: { standardClause: { select: { clauseNumber: true } } },
+        },
+      },
+    })
+    if (!checklist) return { success: false, error: "Checklist not found" }
+    if (checklist.items.length === 0) return { success: false, error: "Checklist has no items" }
+
+    const templateItems = checklist.items.map((item) => ({
+      description: item.description,
+      clauseNumber: item.standardClause?.clauseNumber ?? undefined,
+      standardClauseId: item.standardClauseId ?? undefined,
+    }))
+
+    const template = await db.checklistTemplate.create({
+      data: {
+        name,
+        description,
+        standardId: checklist.standardId,
+        items: templateItems,
+        organizationId: dbOrgId,
+        createdById: dbUserId,
+      },
+    })
+
+    logAuditEvent({
+      action: "CREATE_TEMPLATE",
+      entityType: "Checklist",
+      entityId: template.id,
+      metadata: { name, sourceChecklistId: checklistId, itemCount: templateItems.length },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true, data: { id: template.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to save template" }
+  }
+}
+
+export async function createChecklistFromTemplate(
+  templateId: string,
+  values: ChecklistFormValues
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    const template = await db.checklistTemplate.findFirst({
+      where: { id: templateId, organizationId: dbOrgId },
+    })
+    if (!template) return { success: false, error: "Template not found" }
+
+    const parsed = checklistSchema.parse(values)
+
+    const checklist = await db.complianceChecklist.create({
+      data: {
+        title: parsed.title,
+        description: parsed.description,
+        standardId: template.standardId,
+        projectId: parsed.projectId || null,
+        assignedToId: parsed.assignedToId || null,
+        organizationId: dbOrgId,
+      },
+    })
+
+    const templateItems = template.items as Array<{
+      description: string
+      clauseNumber?: string
+      standardClauseId?: string
+    }>
+
+    if (templateItems.length > 0) {
+      await db.checklistItem.createMany({
+        data: templateItems.map((item, index) => ({
+          description: item.description,
+          sortOrder: index + 1,
+          checklistId: checklist.id,
+          standardClauseId: item.standardClauseId || null,
+        })),
+      })
+    }
+
+    logAuditEvent({
+      action: "CREATE_FROM_TEMPLATE",
+      entityType: "Checklist",
+      entityId: checklist.id,
+      metadata: { title: checklist.title, templateId, templateName: template.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true, data: { id: checklist.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to create from template" }
+  }
+}
+
+export async function deleteTemplate(id: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
+
+    const template = await db.checklistTemplate.findFirst({ where: { id, organizationId: dbOrgId } })
+    if (!template) return { success: false, error: "Template not found" }
+
+    await db.checklistTemplate.delete({ where: { id } })
+
+    logAuditEvent({
+      action: "DELETE_TEMPLATE",
+      entityType: "Checklist",
+      entityId: id,
+      metadata: { name: template.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to delete template" }
+  }
+}
+
 export async function getStandards() {
   return db.standard.findMany({
     where: { isActive: true },
