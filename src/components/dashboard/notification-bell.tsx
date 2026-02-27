@@ -36,7 +36,7 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [open, setOpen] = useState(false)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
   const fetchData = useCallback(() => {
     startTransition(async () => {

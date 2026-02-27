@@ -2,7 +2,6 @@
 
 import { useTransition } from "react"
 import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
@@ -16,14 +15,6 @@ interface MembersListProps {
     email: string
     role: string
   }>
-}
-
-const roleBadgeColors: Record<string, string> = {
-  OWNER: "bg-purple-100 text-purple-800",
-  ADMIN: "bg-blue-100 text-blue-800",
-  MANAGER: "bg-green-100 text-green-800",
-  AUDITOR: "bg-yellow-100 text-yellow-800",
-  VIEWER: "bg-gray-100 text-gray-800",
 }
 
 export function MembersList({ members }: MembersListProps) {

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/shared/date-picker"
-import { createAssessment, updateAssessment, type AssessmentFormValues } from "./actions"
+import { createAssessment, updateAssessment } from "./actions"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),

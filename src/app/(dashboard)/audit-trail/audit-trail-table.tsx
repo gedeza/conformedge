@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
 import {
-  type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,

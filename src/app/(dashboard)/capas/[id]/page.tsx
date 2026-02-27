@@ -119,7 +119,6 @@ export default async function CapaDetailPage({
 
   const isOverdue = capa.dueDate && capa.status !== "CLOSED" && isBefore(new Date(capa.dueDate), new Date())
   const displayStatus = isOverdue ? "OVERDUE" : capa.status
-  const completedActions = capa.capaActions.filter((a) => a.isCompleted).length
   const totalActions = capa.capaActions.length
   const linkedFindings = capa.linkedItems ?? []
 

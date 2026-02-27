@@ -43,7 +43,6 @@ export function BulkUploadButton({ projects }: BulkUploadButtonProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const uploaded = files.filter((f) => f.status === "uploaded").length
-  const errored = files.filter((f) => f.status === "error").length
   const isUploading = files.some((f) => f.status === "uploading")
   const progress = files.length > 0 ? (uploaded / files.length) * 100 : 0
 

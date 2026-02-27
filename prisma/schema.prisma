@@ -259,6 +259,9 @@ model Document {
   childVersions   Document[]               @relation("DocumentVersions")
   classifications DocumentClassification[]
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_document_org_created")
+  @@index([organizationId, status], map: "idx_document_org_status")
+  @@index([projectId], map: "idx_document_project")
   @@map("documents")
 }
 
@@ -303,6 +306,8 @@ model Assessment {
   standard     Standard             @relation(fields: [standardId], references: [id])
   questions    AssessmentQuestion[]
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_assessment_org_created")
+  @@index([projectId], map: "idx_assessment_project")
   @@map("assessments")
 }
 
@@ -366,6 +371,9 @@ model Capa {
   capaActions  CapaAction[]
   linkedItems  ChecklistItem[]
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_capa_org_created")
+  @@index([organizationId, status], map: "idx_capa_org_status")
+  @@index([projectId], map: "idx_capa_project")
   @@map("capas")
 }
 
@@ -407,6 +415,8 @@ model ComplianceChecklist {
   assignedTo   User?           @relation(fields: [assignedToId], references: [id])
   items        ChecklistItem[]
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_checklist_org_created")
+  @@index([projectId], map: "idx_checklist_project")
   @@map("compliance_checklists")
 }
 
@@ -463,6 +473,7 @@ model SubcontractorCertification {
   // Relations
   subcontractor Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)
 
+  @@index([subcontractorId, expiresAt], map: "idx_cert_subcontractor_expires")
   @@map("subcontractor_certifications")
 }
 
@@ -502,6 +513,7 @@ model AuditTrailEvent {
   user         User?        @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_audit_trail_org_created")
   @@map("audit_trail_events")
 }
 
@@ -521,6 +533,8 @@ model Notification {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_notification_org_created")
+  @@index([userId, isRead], map: "idx_notification_user_read")
   @@map("notifications")
 }
 

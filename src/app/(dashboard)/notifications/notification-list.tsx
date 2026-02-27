@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Bell, Check, CheckCheck, Trash2, FileWarning, AlertTriangle, CalendarClock, ShieldAlert, Megaphone } from "lucide-react"
 import { toast } from "sonner"
@@ -19,7 +19,6 @@ import {
   markAllAsRead,
   deleteNotification,
 } from "./actions"
-import type { NotificationType } from "@/types"
 
 type Notification = Awaited<ReturnType<typeof getNotifications>>[number]
 
@@ -41,19 +40,6 @@ export function NotificationList({ initialNotifications, initialUnreadCount }: N
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount)
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [readFilter, setReadFilter] = useState<string>("all")
-  const [isPending, startTransition] = useTransition()
-
-  function refreshList() {
-    startTransition(async () => {
-      const opts: { type?: NotificationType; unreadOnly?: boolean } = {}
-      if (typeFilter !== "all") opts.type = typeFilter as NotificationType
-      if (readFilter === "unread") opts.unreadOnly = true
-
-      const items = await getNotifications(opts)
-      setNotifications(items)
-    })
-  }
-
   const displayed = notifications.filter((n) => {
     if (readFilter === "unread" && n.isRead) return false
     if (readFilter === "read" && !n.isRead) return false

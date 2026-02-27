@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Sparkles } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -29,7 +29,6 @@ export default async function ChecklistDetailPage({
   if (!checklist) notFound()
 
   const totalItems = checklist.items.length
-  const assessed = checklist.items.filter((i) => i.isCompliant !== null).length
   const compliant = checklist.items.filter((i) => i.isCompliant === true).length
   const nonCompliant = checklist.items.filter((i) => i.isCompliant === false).length
 

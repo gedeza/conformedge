@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Hero } from "@/components/landing/hero"
 import { Features } from "@/components/landing/features"
 import { CTA } from "@/components/landing/cta"
@@ -14,15 +15,15 @@ export default function LandingPage() {
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground">
               Features
             </a>
-            <a href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground">
+            <Link href="/sign-in" className="text-sm text-muted-foreground hover:text-foreground">
               Sign In
-            </a>
-            <a
+            </Link>
+            <Link
               href="/sign-up"
               className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
             >
               Get Started
-            </a>
+            </Link>
           </nav>
         </div>
       </header>

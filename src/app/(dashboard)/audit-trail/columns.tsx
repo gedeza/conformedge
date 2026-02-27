@@ -120,6 +120,7 @@ export function getColumns({ onViewDetail }: ColumnOptions): ColumnDef<AuditEven
         return (
           <div className="flex items-center gap-2">
             {user.imageUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={user.imageUrl}
                 alt=""

@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
+import { canManageOrg } from "@/lib/permissions"
 import type { ActionResult } from "@/types"
 
 const orgSettingsSchema = z.object({
@@ -25,7 +26,8 @@ export async function getOrgSettings() {
 
 export async function updateOrgSettings(values: z.infer<typeof orgSettingsSchema>): Promise<ActionResult> {
   try {
-    const { dbUserId, dbOrgId } = await getAuthContext()
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canManageOrg(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = orgSettingsSchema.parse(values)
 
     await db.organization.update({
@@ -61,7 +63,7 @@ export async function updateMemberRole(userId: string, role: string): Promise<Ac
   try {
     const { dbUserId, dbOrgId, role: callerRole } = await getAuthContext()
 
-    if (callerRole !== "OWNER" && callerRole !== "ADMIN") {
+    if (!canManageOrg(callerRole)) {
       return { success: false, error: "Insufficient permissions" }
     }
 
@@ -110,7 +112,7 @@ export async function toggleStandardActive(standardId: string, isActive: boolean
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
 
-    if (role !== "OWNER" && role !== "ADMIN") {
+    if (!canManageOrg(role)) {
       return { success: false, error: "Insufficient permissions" }
     }
 

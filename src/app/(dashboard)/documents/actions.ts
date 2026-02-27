@@ -353,10 +353,16 @@ export async function updateDocument(id: string, values: DocumentFormValues): Pr
   }
 }
 
+const VALID_DOCUMENT_STATUSES = ["DRAFT", "PENDING_REVIEW", "APPROVED", "EXPIRED", "ARCHIVED"] as const
+
 export async function updateDocumentStatus(id: string, status: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    if (!VALID_DOCUMENT_STATUSES.includes(status as typeof VALID_DOCUMENT_STATUSES[number])) {
+      return { success: false, error: "Invalid document status" }
+    }
 
     const existing = await db.document.findFirst({
       where: { id, organizationId: dbOrgId },
@@ -365,7 +371,7 @@ export async function updateDocumentStatus(id: string, status: string): Promise<
 
     await db.document.update({
       where: { id },
-      data: { status: status as "DRAFT" | "PENDING_REVIEW" | "APPROVED" | "EXPIRED" | "ARCHIVED" },
+      data: { status: status as typeof VALID_DOCUMENT_STATUSES[number] },
     })
 
     logAuditEvent({

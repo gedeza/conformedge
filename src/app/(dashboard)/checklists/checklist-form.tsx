@@ -17,7 +17,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { createChecklist, updateChecklist, type ChecklistFormValues } from "./actions"
+import { createChecklist, updateChecklist } from "./actions"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),

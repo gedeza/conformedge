@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/shared/date-picker"
-import { addCertification, updateCertification, type CertificationFormValues } from "./actions"
+import { addCertification, updateCertification } from "./actions"
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),

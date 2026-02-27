@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
 
 const isProtectedRoute = createRouteMatcher([
   "/dashboard(.*)",
@@ -24,7 +23,7 @@ export default hasClerkKey
         await auth.protect()
       }
     })
-  : function noopMiddleware(_req: NextRequest) {
+  : function noopMiddleware() {
       return NextResponse.next()
     }
 
