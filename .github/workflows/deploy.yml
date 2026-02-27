@@ -43,12 +43,8 @@ jobs:
             echo "==> Building application..."
             npm run build
 
-            echo "==> Copying static assets to standalone..."
-            cp -r public .next/standalone/public
-            cp -r .next/static .next/standalone/.next/static
-
             echo "==> Restarting PM2 process..."
-            pm2 restart conformedge --update-env || pm2 start ecosystem.config.cjs
+            pm2 restart conformedge || pm2 start ecosystem.config.cjs
 
             echo "==> Waiting for app to start..."
             sleep 3
