@@ -1,0 +1,57 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Hetzner
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script_stop: true
+          command_timeout: 10m
+          script: |
+            set -e
+
+            cd /var/www/conformedge
+
+            echo "==> Pulling latest code..."
+            git pull origin main
+
+            echo "==> Installing dependencies..."
+            npm ci --production=false
+
+            echo "==> Generating Prisma client..."
+            npx prisma generate
+
+            echo "==> Running database migrations..."
+            npx prisma migrate deploy
+
+            echo "==> Building application..."
+            npm run build
+
+            echo "==> Copying static assets to standalone..."
+            cp -r public .next/standalone/public
+            cp -r .next/static .next/standalone/.next/static
+
+            echo "==> Restarting PM2 process..."
+            pm2 restart conformedge --update-env || pm2 start ecosystem.config.cjs
+
+            echo "==> Waiting for app to start..."
+            sleep 3
+
+            echo "==> Health check..."
+            curl -sf http://127.0.0.1:3020 > /dev/null && echo "Deploy successful!" || echo "WARNING: Health check failed"
