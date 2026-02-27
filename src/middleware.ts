@@ -12,6 +12,7 @@ const isProtectedRoute = createRouteMatcher([
   "/audit-packs(.*)",
   "/audit-trail(.*)",
   "/reports(.*)",
+  "/gap-analysis(.*)",
   "/settings(.*)",
 ])
 

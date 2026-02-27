@@ -122,4 +122,5 @@ export const NAV_ITEMS = [
   { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
   { title: "Audit Trail", href: "/audit-trail", icon: "ScrollText" },
   { title: "Reports", href: "/reports", icon: "BarChart3" },
+  { title: "Gap Analysis", href: "/gap-analysis", icon: "SearchCheck" },
 ] as const

@@ -1,10 +1,16 @@
 import { z } from "zod/v4"
 import { anthropic } from "./client"
 
+interface ClauseInput {
+  clauseNumber: string
+  title: string
+  description?: string | null
+}
+
 interface StandardInput {
   code: string
   name: string
-  clauses: { clauseNumber: string; title: string }[]
+  clauses: ClauseInput[]
 }
 
 const classificationItemSchema = z.object({
@@ -21,15 +27,23 @@ const responseSchema = z.object({
 
 export type ClassificationResult = z.infer<typeof responseSchema>
 export type ClassificationItem = z.infer<typeof classificationItemSchema>
+export type { StandardInput }
 
 const MAX_TEXT_LENGTH = 30_000
 
 function buildSystemPrompt(standards: StandardInput[]): string {
   const clauseList = standards
     .flatMap((s) =>
-      s.clauses.map((c) => `- ${s.code} Clause ${c.clauseNumber}: ${c.title}`)
+      s.clauses.map((c) => {
+        const desc = c.description ? ` — ${c.description}` : ""
+        return `- ${s.code} §${c.clauseNumber}: ${c.title}${desc}`
+      })
     )
     .join("\n")
+
+  // Collect unique standard codes for the example
+  const codes = standards.map((s) => s.code)
+  const exampleCode = codes[0] || "ISO9001"
 
   return `You are an ISO compliance classification engine. Given a document's text, identify which ISO standard clauses it relates to.
 
@@ -40,8 +54,8 @@ Respond with a JSON object (no markdown fences) containing:
 {
   "classifications": [
     {
-      "standardCode": "<e.g. ISO 9001>",
-      "clauseNumber": "<e.g. 7.5>",
+      "standardCode": "<exact code from the list above, e.g. ${exampleCode}>",
+      "clauseNumber": "<exact clause number from the list above, e.g. 7.5>",
       "confidence": <0.0 to 1.0>,
       "reasoning": "<brief explanation>"
     }
@@ -50,6 +64,8 @@ Respond with a JSON object (no markdown fences) containing:
 }
 
 Rules:
+- standardCode must exactly match one of: ${codes.join(", ")}
+- clauseNumber must exactly match a clause number from the list above
 - Only return clauses with confidence >= 0.5
 - Maximum 10 classifications
 - Be precise — only classify clauses that the document genuinely addresses

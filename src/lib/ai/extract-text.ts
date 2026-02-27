@@ -1,10 +1,13 @@
 import { readFile } from "fs/promises"
 import path from "path"
+import { extractTextViaOCR } from "./ocr-extract"
 
 const EXTRACTABLE_TYPES = new Set([
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/msword",
+  "image/jpeg",
+  "image/png",
 ])
 
 export function isExtractable(fileType: string | null): boolean {
@@ -20,6 +23,12 @@ export async function extractText(fileUrl: string, fileType: string): Promise<st
     // Import from lib/pdf-parse directly to bypass index.js test-file loading bug
     const pdfParse = (await import("pdf-parse/lib/pdf-parse")).default
     const result = await pdfParse(buffer)
+
+    // Scanned PDF fallback: if pdf-parse returns very little text, try OCR
+    if (result.text.trim().length < 50) {
+      return extractTextViaOCR(buffer)
+    }
+
     return result.text
   }
 
@@ -30,6 +39,10 @@ export async function extractText(fileUrl: string, fileType: string): Promise<st
     const mammoth = await import("mammoth")
     const result = await mammoth.extractRawText({ buffer })
     return result.value
+  }
+
+  if (fileType === "image/jpeg" || fileType === "image/png") {
+    return extractTextViaOCR(buffer)
   }
 
   throw new Error(`Unsupported file type: ${fileType}`)

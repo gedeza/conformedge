@@ -1,19 +1,28 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useMemo } from "react"
 import { toast } from "sonner"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  SelectGroup, SelectLabel,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { addClauseTag } from "./actions"
 
+interface Clause {
+  id: string
+  clauseNumber: string
+  title: string
+  description: string | null
+  parentId: string | null
+}
+
 interface Standard {
   id: string
   code: string
   name: string
-  clauses: { id: string; clauseNumber: string; title: string }[]
+  clauses: Clause[]
 }
 
 interface ClauseTagFormProps {
@@ -27,6 +36,28 @@ export function ClauseTagForm({ documentId, standards }: ClauseTagFormProps) {
   const [isPending, startTransition] = useTransition()
 
   const currentStandard = standards.find((s) => s.id === selectedStandard)
+
+  // Group clauses: top-level parents (no parentId) each contain their children
+  const groupedClauses = useMemo(() => {
+    if (!currentStandard) return []
+
+    const clauses = currentStandard.clauses
+    const parents = clauses.filter((c) => !c.parentId)
+    const childMap = new Map<string, Clause[]>()
+
+    for (const clause of clauses) {
+      if (clause.parentId) {
+        const siblings = childMap.get(clause.parentId) ?? []
+        siblings.push(clause)
+        childMap.set(clause.parentId, siblings)
+      }
+    }
+
+    return parents.map((parent) => ({
+      parent,
+      children: childMap.get(parent.id) ?? [],
+    }))
+  }, [currentStandard])
 
   function handleAdd() {
     if (!selectedClause) return
@@ -68,14 +99,27 @@ export function ClauseTagForm({ documentId, standards }: ClauseTagFormProps) {
           onValueChange={setSelectedClause}
           disabled={!selectedStandard}
         >
-          <SelectTrigger className="w-[260px]">
+          <SelectTrigger className="w-[320px]">
             <SelectValue placeholder="Select clause" />
           </SelectTrigger>
           <SelectContent>
-            {currentStandard?.clauses.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.clauseNumber} — {c.title}
-              </SelectItem>
+            {groupedClauses.map(({ parent, children }) => (
+              <SelectGroup key={parent.id}>
+                <SelectLabel className="text-xs font-semibold text-muted-foreground">
+                  {parent.clauseNumber} — {parent.title}
+                </SelectLabel>
+                {children.length > 0 ? (
+                  children.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.clauseNumber} — {c.title}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value={parent.id}>
+                    {parent.clauseNumber} — {parent.title}
+                  </SelectItem>
+                )}
+              </SelectGroup>
             ))}
           </SelectContent>
         </Select>

@@ -237,6 +237,158 @@ export async function getProjectMetrics(projectId: string): Promise<ProjectMetri
   }
 }
 
+export interface ProjectChartData {
+  complianceTrend: Array<{ month: string; assessmentScore: number | null; checklistCompletion: number | null }>
+  documentsByStatus: Array<{ name: string; value: number }>
+  capasByPriority: Array<{ name: string; value: number }>
+  capasByStatus: Array<{ name: string; value: number }>
+  recentActivity: Array<{
+    id: string
+    action: string
+    entityType: string
+    entityId: string
+    metadata: Record<string, unknown> | null
+    createdAt: Date
+    user: { firstName: string | null; lastName: string | null } | null
+  }>
+}
+
+export async function getProjectChartData(projectId: string): Promise<ProjectChartData> {
+  const { dbOrgId } = await getAuthContext()
+
+  const project = await db.project.findFirst({
+    where: { id: projectId, organizationId: dbOrgId },
+    select: { id: true },
+  })
+  if (!project) throw new Error("Project not found")
+
+  // 1. Compliance trend — monthly assessment scores + checklist completion (last 12 months)
+  const now = new Date()
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1)
+
+  const [assessments, checklists, documents, capas, auditEvents] = await Promise.all([
+    db.assessment.findMany({
+      where: { projectId, organizationId: dbOrgId, createdAt: { gte: twelveMonthsAgo } },
+      select: { overallScore: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    }),
+    db.complianceChecklist.findMany({
+      where: { projectId, organizationId: dbOrgId, createdAt: { gte: twelveMonthsAgo } },
+      select: { completionPercentage: true, createdAt: true },
+      orderBy: { createdAt: "asc" },
+    }),
+    db.document.findMany({
+      where: { projectId, organizationId: dbOrgId },
+      select: { status: true },
+    }),
+    db.capa.findMany({
+      where: { projectId, organizationId: dbOrgId },
+      select: { status: true, priority: true },
+    }),
+    db.auditTrailEvent.findMany({
+      where: {
+        organizationId: dbOrgId,
+        entityType: { in: ["Project", "Document", "Checklist", "Assessment", "CAPA"] },
+      },
+      include: {
+        user: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+  ])
+
+  // Filter audit events: only those referencing this project or its entities
+  const projectEntityIds = new Set<string>([projectId])
+
+  // Get entity IDs belonging to this project
+  const [projectDocs, projectCapas, projectChecklists, projectAssessments] = await Promise.all([
+    db.document.findMany({ where: { projectId, organizationId: dbOrgId }, select: { id: true } }),
+    db.capa.findMany({ where: { projectId, organizationId: dbOrgId }, select: { id: true } }),
+    db.complianceChecklist.findMany({ where: { projectId, organizationId: dbOrgId }, select: { id: true } }),
+    db.assessment.findMany({ where: { projectId, organizationId: dbOrgId }, select: { id: true } }),
+  ])
+
+  for (const d of projectDocs) projectEntityIds.add(d.id)
+  for (const c of projectCapas) projectEntityIds.add(c.id)
+  for (const cl of projectChecklists) projectEntityIds.add(cl.id)
+  for (const a of projectAssessments) projectEntityIds.add(a.id)
+
+  const filteredActivity = auditEvents
+    .filter((e) => projectEntityIds.has(e.entityId))
+    .slice(0, 20)
+
+  // Build monthly trend data
+  const months: string[] = []
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`)
+  }
+
+  const complianceTrend = months.map((month) => {
+    const monthAssessments = assessments.filter((a) => {
+      const m = `${a.createdAt.getFullYear()}-${String(a.createdAt.getMonth() + 1).padStart(2, "0")}`
+      return m === month
+    })
+    const monthChecklists = checklists.filter((c) => {
+      const m = `${c.createdAt.getFullYear()}-${String(c.createdAt.getMonth() + 1).padStart(2, "0")}`
+      return m === month
+    })
+
+    const avgScore = monthAssessments.length > 0
+      ? Math.round(monthAssessments.reduce((sum, a) => sum + (a.overallScore ?? 0), 0) / monthAssessments.length)
+      : null
+    const avgCompletion = monthChecklists.length > 0
+      ? Math.round(monthChecklists.reduce((sum, c) => sum + c.completionPercentage, 0) / monthChecklists.length)
+      : null
+
+    return { month, assessmentScore: avgScore, checklistCompletion: avgCompletion }
+  })
+
+  // 2. Documents by status
+  const docStatusCounts: Record<string, number> = {}
+  for (const d of documents) {
+    docStatusCounts[d.status] = (docStatusCounts[d.status] || 0) + 1
+  }
+  const documentsByStatus = Object.entries(docStatusCounts).map(([name, value]) => ({ name, value }))
+
+  // 3. CAPAs by priority
+  const capaPriorityCounts: Record<string, number> = {}
+  for (const c of capas) {
+    capaPriorityCounts[c.priority] = (capaPriorityCounts[c.priority] || 0) + 1
+  }
+  const capasByPriority = ["LOW", "MEDIUM", "HIGH", "CRITICAL"].map((p) => ({
+    name: p,
+    value: capaPriorityCounts[p] || 0,
+  }))
+
+  // 4. CAPAs by status
+  const capaStatusCounts: Record<string, number> = {}
+  for (const c of capas) {
+    capaStatusCounts[c.status] = (capaStatusCounts[c.status] || 0) + 1
+  }
+  const capasByStatus = Object.entries(capaStatusCounts).map(([name, value]) => ({ name, value }))
+
+  // 5. Recent activity
+  const recentActivity = filteredActivity.map((e) => ({
+    id: e.id,
+    action: e.action,
+    entityType: e.entityType,
+    entityId: e.entityId,
+    metadata: e.metadata as Record<string, unknown> | null,
+    createdAt: e.createdAt,
+    user: e.user,
+  }))
+
+  return {
+    complianceTrend,
+    documentsByStatus,
+    capasByPriority,
+    capasByStatus,
+    recentActivity,
+  }
+}
+
 export async function deleteProject(id: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()

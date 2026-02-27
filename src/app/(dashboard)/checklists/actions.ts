@@ -64,7 +64,7 @@ export async function getChecklist(id: string) {
       items: {
         orderBy: { sortOrder: "asc" },
         include: {
-          standardClause: { select: { clauseNumber: true, title: true } },
+          standardClause: { select: { clauseNumber: true, title: true, description: true } },
           capa: { select: { id: true, title: true, status: true, priority: true } },
         },
       },

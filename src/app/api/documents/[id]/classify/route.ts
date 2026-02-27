@@ -5,6 +5,7 @@ import { canEdit } from "@/lib/permissions"
 import { logAuditEvent } from "@/lib/audit"
 import { extractText, isExtractable } from "@/lib/ai/extract-text"
 import { classifyDocument } from "@/lib/ai/classify-document"
+import type { StandardInput } from "@/lib/ai/classify-document"
 
 export async function POST(
   _request: Request,
@@ -46,30 +47,42 @@ export async function POST(
       )
     }
 
-    // Fetch standards with clauses
+    // Fetch standards with clauses (including description and parentId)
     const standards = await db.standard.findMany({
       where: { isActive: true },
       include: {
         clauses: {
           orderBy: { clauseNumber: "asc" },
-          select: { id: true, clauseNumber: true, title: true },
+          select: {
+            id: true,
+            clauseNumber: true,
+            title: true,
+            description: true,
+            parentId: true,
+          },
         },
       },
       orderBy: { code: "asc" },
     })
 
-    // Classify with AI
-    const result = await classifyDocument(
-      text,
-      standards.map((s) => ({
+    // Build AI input: prefer sub-clauses (more precise), fallback to top-level
+    const aiStandards: StandardInput[] = standards.map((s) => {
+      const subClauses = s.clauses.filter((c) => c.parentId !== null)
+      const clausesToSend = subClauses.length > 0 ? subClauses : s.clauses
+
+      return {
         code: s.code,
         name: s.name,
-        clauses: s.clauses.map((c) => ({
+        clauses: clausesToSend.map((c) => ({
           clauseNumber: c.clauseNumber,
           title: c.title,
+          description: c.description,
         })),
-      }))
-    )
+      }
+    })
+
+    // Classify with AI
+    const result = await classifyDocument(text, aiStandards)
 
     // Build a lookup: standardCode + clauseNumber → standardClauseId
     const clauseLookup = new Map<string, string>()
@@ -82,7 +95,9 @@ export async function POST(
     // Resolve AI results to standardClauseIds, dedup by clause (keep highest confidence)
     const resolvedMap = new Map<string, { standardClauseId: string; confidence: number }>()
     for (const item of result.classifications) {
-      const key = `${item.standardCode}|${item.clauseNumber}`
+      // Normalize: strip spaces from standardCode as safety net
+      const normalizedCode = item.standardCode.replace(/\s+/g, "")
+      const key = `${normalizedCode}|${item.clauseNumber}`
       const clauseId = clauseLookup.get(key)
       if (!clauseId) continue
 

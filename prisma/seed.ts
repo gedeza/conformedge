@@ -1,5 +1,11 @@
 import { PrismaClient } from "../src/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import { ISO14001_SUB_CLAUSES } from "./seed-data/iso14001-subclauses"
+import { ISO45001_SUB_CLAUSES } from "./seed-data/iso45001-subclauses"
+import { ISO22301_SUB_CLAUSES } from "./seed-data/iso22301-subclauses"
+import { ISO27001_SUB_CLAUSES } from "./seed-data/iso27001-subclauses"
+import { ISO37001_SUB_CLAUSES } from "./seed-data/iso37001-subclauses"
+import { ISO39001_SUB_CLAUSES } from "./seed-data/iso39001-subclauses"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -21,7 +27,7 @@ interface ClauseData {
   description: string
 }
 
-interface SubClauseData extends ClauseData {
+export interface SubClauseData extends ClauseData {
   parentClauseNumber: string // e.g. "4" for sub-clause "4.1"
 }
 
@@ -639,55 +645,70 @@ async function main() {
 
   console.log(`\n  ${clauseCount} total top-level clauses seeded.\n`)
 
-  // ── Pass 3: Seed ISO 9001 Sub-Clauses ──
-  console.log("Step 3: Seeding ISO 9001 sub-clauses...\n")
+  // ── Pass 3: Seed Sub-Clauses for All Standards ──
+  console.log("Step 3: Seeding sub-clauses for all standards...\n")
 
-  const iso9001Id = standardMap.get("ISO9001")
-  if (!iso9001Id) {
-    console.error("  ERROR: ISO 9001 standard not found. Cannot seed sub-clauses.")
-  } else {
-    // Build a map of parent clause numbers to their IDs for ISO 9001
-    const parentClauseMap = new Map<string, string>() // clauseNumber -> id
+  const SUB_CLAUSE_MAP: Record<string, SubClauseData[]> = {
+    ISO9001: ISO9001_SUB_CLAUSES,
+    ISO14001: ISO14001_SUB_CLAUSES,
+    ISO45001: ISO45001_SUB_CLAUSES,
+    ISO22301: ISO22301_SUB_CLAUSES,
+    ISO27001: ISO27001_SUB_CLAUSES,
+    ISO37001: ISO37001_SUB_CLAUSES,
+    ISO39001: ISO39001_SUB_CLAUSES,
+  }
+
+  let totalSubClauses = 0
+
+  for (const [code, subClauses] of Object.entries(SUB_CLAUSE_MAP)) {
+    const standardId = standardMap.get(code)
+    if (!standardId) {
+      console.warn(`  WARNING: Standard ${code} not found. Skipping sub-clauses.`)
+      continue
+    }
+
+    // Build a map of parent clause numbers to their IDs for this standard
+    const parentClauseMap = new Map<string, string>()
 
     for (const parentClauseNumber of ["4", "5", "6", "7", "8", "9", "10"]) {
       const parent = await prisma.standardClause.findFirst({
         where: {
           clauseNumber: parentClauseNumber,
-          standardId: iso9001Id,
+          standardId,
           parentId: null,
         },
       })
 
       if (parent) {
         parentClauseMap.set(parentClauseNumber, parent.id)
-      } else {
-        console.warn(`  WARNING: Parent clause ${parentClauseNumber} not found for ISO 9001`)
       }
     }
 
-    let subClauseCount = 0
+    let count = 0
 
-    for (const subClause of ISO9001_SUB_CLAUSES) {
+    for (const subClause of subClauses) {
       const parentId = parentClauseMap.get(subClause.parentClauseNumber)
 
       if (!parentId) {
-        console.warn(`  WARNING: Parent clause ${subClause.parentClauseNumber} not found, skipping ${subClause.clauseNumber}`)
+        console.warn(`  WARNING: Parent clause ${subClause.parentClauseNumber} not found for ${code}, skipping ${subClause.clauseNumber}`)
         continue
       }
 
       await upsertClause({
         clauseNumber: subClause.clauseNumber,
-        standardId: iso9001Id,
+        standardId,
         title: subClause.title,
         description: subClause.description,
         parentId,
       })
-      subClauseCount++
+      count++
     }
 
-    console.log(`  ISO 9001: ${subClauseCount} sub-clauses seeded`)
-    console.log(`\n  ${subClauseCount} total sub-clauses seeded.\n`)
+    console.log(`  ${code}: ${count} sub-clauses seeded`)
+    totalSubClauses += count
   }
+
+  console.log(`\n  ${totalSubClauses} total sub-clauses seeded.\n`)
 
   // ── Summary ──
   const totalClauses = await prisma.standardClause.count()
@@ -697,7 +718,7 @@ async function main() {
   console.log(`  Standards: ${totalStandards}`)
   console.log(`  Clauses (total): ${totalClauses}`)
   console.log(`  Top-level clauses: ${clauseCount}`)
-  console.log(`  ISO 9001 sub-clauses: ${ISO9001_SUB_CLAUSES.length}`)
+  console.log(`  Sub-clauses: ${totalSubClauses}`)
 }
 
 main()

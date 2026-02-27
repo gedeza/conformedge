@@ -535,7 +535,7 @@ export async function getStandardsWithClauses() {
     include: {
       clauses: {
         orderBy: { clauseNumber: "asc" },
-        select: { id: true, clauseNumber: true, title: true },
+        select: { id: true, clauseNumber: true, title: true, description: true, parentId: true },
       },
     },
     orderBy: { code: "asc" },

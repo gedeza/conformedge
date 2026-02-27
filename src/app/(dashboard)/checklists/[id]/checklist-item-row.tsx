@@ -17,7 +17,7 @@ interface ChecklistItemRowProps {
     isCompliant: boolean | null
     evidence: string | null
     notes: string | null
-    standardClause: { clauseNumber: string; title: string } | null
+    standardClause: { clauseNumber: string; title: string; description: string | null } | null
     capa: { id: string; title: string; status: string; priority: string } | null
   }
   checklistId: string
@@ -69,9 +69,16 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
         <div className="flex-1">
           <p className="text-sm font-medium">{item.description}</p>
           {item.standardClause && (
-            <p className="text-xs text-muted-foreground">
-              Clause {item.standardClause.clauseNumber}: {item.standardClause.title}
-            </p>
+            <div>
+              <p className="text-xs text-muted-foreground">
+                Clause {item.standardClause.clauseNumber}: {item.standardClause.title}
+              </p>
+              {item.standardClause.description && (
+                <p className="text-xs text-muted-foreground/70 line-clamp-1">
+                  {item.standardClause.description}
+                </p>
+              )}
+            </div>
           )}
           {item.capa && (
             <Link href={`/capas/${item.capa.id}`} className="inline-flex items-center gap-1 mt-1">

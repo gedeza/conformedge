@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, FileText, ClipboardCheck, AlertTriangle, CheckSquare, Package, ShieldCheck, ListChecks, CircleAlert, BarChart3 } from "lucide-react"
+import { ArrowLeft, FileText, ClipboardCheck, AlertTriangle, CheckSquare, Package, ShieldCheck, ListChecks, CircleAlert, BarChart3, SearchCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,7 +9,12 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getProject, getProjectMetrics } from "../actions"
+import { getProject, getProjectMetrics, getProjectChartData } from "../actions"
+import type { ProjectChartData } from "../actions"
+import { ProjectCharts } from "./project-charts"
+import { getGapAnalysis } from "../../gap-analysis/actions"
+import type { GapAnalysisSummary } from "../../gap-analysis/actions"
+import { ProjectGapTab } from "./project-gap-tab"
 
 export default async function ProjectDetailPage({
   params,
@@ -29,10 +34,16 @@ export default async function ProjectDetailPage({
 
   const counts = project._count
 
-  // Fetch compliance metrics for the overview widgets
+  // Fetch compliance metrics, chart data, and gap analysis for the overview widgets
   let metrics: Awaited<ReturnType<typeof getProjectMetrics>> | null = null
+  let chartData: ProjectChartData | null = null
+  let gapData: GapAnalysisSummary | null = null
   try {
-    metrics = await getProjectMetrics(id)
+    ;[metrics, chartData, gapData] = await Promise.all([
+      getProjectMetrics(id),
+      getProjectChartData(id),
+      getGapAnalysis(undefined, id),
+    ])
   } catch {
     // Metrics are non-critical; page still renders without them
   }
@@ -107,6 +118,7 @@ export default async function ProjectDetailPage({
           <TabsTrigger value="assessments">Assessments</TabsTrigger>
           <TabsTrigger value="capas">CAPAs</TabsTrigger>
           <TabsTrigger value="checklists">Checklists</TabsTrigger>
+          <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
           {/* Compliance Metric Widgets */}
@@ -225,6 +237,8 @@ export default async function ProjectDetailPage({
               </Card>
             </div>
           )}
+
+          {chartData && <ProjectCharts data={chartData} />}
 
           <Card>
             <CardHeader>
@@ -373,6 +387,17 @@ export default async function ProjectDetailPage({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="gap-analysis">
+          {gapData ? (
+            <ProjectGapTab data={gapData} />
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Gap analysis data unavailable.
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

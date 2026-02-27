@@ -161,26 +161,33 @@ export default async function DocumentDetailPage({
                 <div className="space-y-2">
                   {doc.classifications.map((c) => (
                     <div key={c.id} className="flex items-center justify-between rounded-md border p-3">
-                      <div className="flex items-center gap-2">
-                        <Badge>{c.standardClause.standard.code}</Badge>
-                        <span className="font-medium">
-                          Clause {c.standardClause.clauseNumber}
-                        </span>
-                        {c.isVerified ? (
-                          <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-blue-100 text-blue-800">AI</Badge>
-                        )}
-                        <span className="text-sm text-muted-foreground">
-                          {(c.confidence * 100).toFixed(0)}%
-                        </span>
-                        {c.isVerified && c.verifiedBy && (
-                          <span className="text-xs text-muted-foreground">
-                            by {c.verifiedBy.firstName} {c.verifiedBy.lastName}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge>{c.standardClause.standard.code}</Badge>
+                          <span className="font-medium">
+                            {c.standardClause.clauseNumber} — {c.standardClause.title}
                           </span>
+                          {c.isVerified ? (
+                            <Badge variant="outline" className="bg-green-100 text-green-800">Verified</Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-blue-100 text-blue-800">AI</Badge>
+                          )}
+                          <span className="text-sm text-muted-foreground">
+                            {(c.confidence * 100).toFixed(0)}%
+                          </span>
+                          {c.isVerified && c.verifiedBy && (
+                            <span className="text-xs text-muted-foreground">
+                              by {c.verifiedBy.firstName} {c.verifiedBy.lastName}
+                            </span>
+                          )}
+                        </div>
+                        {c.standardClause.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {c.standardClause.description}
+                          </p>
                         )}
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 ml-2 shrink-0">
                         {!c.isVerified && canEdit(role) && (
                           <VerifyButton documentId={doc.id} classificationId={c.id} />
                         )}
