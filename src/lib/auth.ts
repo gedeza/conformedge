@@ -1,3 +1,4 @@
+import { cache } from "react"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 
@@ -9,7 +10,7 @@ export interface AuthContext {
   role: string
 }
 
-export async function getAuthContext(): Promise<AuthContext> {
+export const getAuthContext = cache(async function getAuthContext(): Promise<AuthContext> {
   const { userId, orgId } = await auth()
 
   if (!userId) {
@@ -56,7 +57,7 @@ export async function getAuthContext(): Promise<AuthContext> {
     dbOrgId: org.id,
     role: membership.role,
   }
-}
+})
 
 export async function getOrgMembers(dbOrgId: string) {
   const members = await db.organizationUser.findMany({

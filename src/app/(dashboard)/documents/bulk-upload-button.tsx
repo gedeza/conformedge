@@ -128,7 +128,14 @@ export function BulkUploadButton({ projects, autoClassify = false }: BulkUploadB
             for (const { idx } of extractableIndices) {
               const docId = result.data!.ids[idx]
               if (docId) {
-                fetch(`/api/documents/${docId}/classify`, { method: "POST" }).catch(() => {})
+                fetch(`/api/documents/${docId}/classify`, { method: "POST" })
+                  .then(async (res) => {
+                    if (!res.ok) {
+                      const body = await res.json().catch(() => ({}))
+                      toast.error(body.error ?? "Auto-classification failed")
+                    }
+                  })
+                  .catch(() => toast.error("Auto-classification request failed"))
               }
             }
           }

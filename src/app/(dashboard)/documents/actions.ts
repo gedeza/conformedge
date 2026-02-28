@@ -530,6 +530,7 @@ export async function verifyClassification(documentId: string, classificationId:
 }
 
 export async function getStandardsWithClauses() {
+  await getAuthContext()
   return db.standard.findMany({
     where: { isActive: true },
     include: {

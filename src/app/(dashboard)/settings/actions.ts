@@ -113,6 +113,7 @@ export async function updateMemberRole(userId: string, role: string): Promise<Ac
 }
 
 export async function getStandardsList() {
+  await getAuthContext()
   return db.standard.findMany({
     select: { id: true, code: true, name: true, version: true, isActive: true },
     orderBy: { code: "asc" },

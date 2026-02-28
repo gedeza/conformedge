@@ -110,7 +110,14 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
         // Fire-and-forget auto-classify for new documents
         if (!isEditing && autoClassify && result.data?.id && isExtractableMime(values.fileType ?? null)) {
           toast.info("AI classification started...")
-          fetch(`/api/documents/${result.data.id}/classify`, { method: "POST" }).catch(() => {})
+          fetch(`/api/documents/${result.data.id}/classify`, { method: "POST" })
+            .then(async (res) => {
+              if (!res.ok) {
+                const body = await res.json().catch(() => ({}))
+                toast.error(body.error ?? "Auto-classification failed")
+              }
+            })
+            .catch(() => toast.error("Auto-classification request failed"))
         }
 
         onOpenChange(false)

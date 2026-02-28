@@ -55,11 +55,18 @@ export function DocumentTable({ data, projects, role }: DocumentTableProps) {
     setClassifying(true)
     toast.info(`Classifying ${extractable.length} document${extractable.length > 1 ? "s" : ""}...`)
 
-    const results = await Promise.allSettled(
-      extractable.map((d) =>
-        fetch(`/api/documents/${d.id}/classify`, { method: "POST" })
+    // Process in batches of 3 to avoid hitting API rate limits
+    const BATCH_SIZE = 3
+    const results: PromiseSettledResult<Response>[] = []
+    for (let i = 0; i < extractable.length; i += BATCH_SIZE) {
+      const batch = extractable.slice(i, i + BATCH_SIZE)
+      const batchResults = await Promise.allSettled(
+        batch.map((d) =>
+          fetch(`/api/documents/${d.id}/classify`, { method: "POST" })
+        )
       )
-    )
+      results.push(...batchResults)
+    }
 
     const succeeded = results.filter((r) => r.status === "fulfilled" && (r as PromiseFulfilledResult<Response>).value.ok).length
     const failed = extractable.length - succeeded
