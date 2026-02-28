@@ -112,26 +112,27 @@ export async function POST(
 
     const resolved = Array.from(resolvedMap.values())
 
-    // Delete existing unverified classifications (re-analysis replaces AI results)
-    await db.documentClassification.deleteMany({
-      where: {
-        documentId: id,
-        isVerified: false,
-      },
-    })
-
-    // Create new classifications
-    if (resolved.length > 0) {
-      await db.documentClassification.createMany({
-        data: resolved.map((r) => ({
+    // Atomically replace unverified classifications
+    await db.$transaction(async (tx) => {
+      await tx.documentClassification.deleteMany({
+        where: {
           documentId: id,
-          standardClauseId: r.standardClauseId,
-          confidence: r.confidence,
           isVerified: false,
-        })),
-        skipDuplicates: true,
+        },
       })
-    }
+
+      if (resolved.length > 0) {
+        await tx.documentClassification.createMany({
+          data: resolved.map((r) => ({
+            documentId: id,
+            standardClauseId: r.standardClauseId,
+            confidence: r.confidence,
+            isVerified: false,
+          })),
+          skipDuplicates: true,
+        })
+      }
+    })
 
     logAuditEvent({
       action: "AI_CLASSIFY",

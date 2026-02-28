@@ -6,7 +6,13 @@ import { isExtractableMime } from "./extractable-types"
 export { isExtractableMime as isExtractable }
 
 export async function extractText(fileUrl: string, fileType: string): Promise<string> {
-  const filePath = path.join(process.cwd(), "public", fileUrl)
+  const publicDir = path.resolve(process.cwd(), "public")
+  const filePath = path.resolve(publicDir, fileUrl)
+
+  if (!filePath.startsWith(publicDir + path.sep)) {
+    throw new Error("Invalid file path")
+  }
+
   const buffer = await readFile(filePath)
 
   if (fileType === "application/pdf") {
