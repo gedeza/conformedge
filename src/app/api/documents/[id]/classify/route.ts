@@ -8,6 +8,13 @@ import { classifyDocument } from "@/lib/ai/classify-document"
 import type { StandardInput } from "@/lib/ai/classify-document"
 import { getGapInsightsForDocument } from "@/lib/gap-detection"
 import { notifyOrgMembers } from "@/lib/notifications"
+import { createRateLimiter } from "@/lib/rate-limit"
+
+// Per-org: 10 classify requests per 60 seconds
+const classifyLimiter = createRateLimiter("classify", {
+  limit: 10,
+  windowMs: 60_000,
+})
 
 export async function POST(
   _request: Request,
@@ -21,6 +28,19 @@ export async function POST(
       return NextResponse.json(
         { error: "Insufficient permissions" },
         { status: 403 }
+      )
+    }
+
+    // Rate limit: per-org sliding window
+    const rateLimit = classifyLimiter.check(dbOrgId)
+    if (!rateLimit.allowed) {
+      const retryAfterSec = Math.ceil(rateLimit.retryAfterMs / 1000)
+      return NextResponse.json(
+        { error: `Rate limit exceeded. Try again in ${retryAfterSec}s.` },
+        {
+          status: 429,
+          headers: { "Retry-After": String(retryAfterSec) },
+        }
       )
     }
 
