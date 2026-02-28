@@ -7,6 +7,7 @@ export async function GET() {
     return NextResponse.json({
       status: "healthy",
       database: "connected",
+      version: process.env.SENTRY_RELEASE ?? "dev",
       timestamp: new Date().toISOString(),
     })
   } catch {
@@ -14,6 +15,7 @@ export async function GET() {
       {
         status: "unhealthy",
         database: "disconnected",
+        version: process.env.SENTRY_RELEASE ?? "dev",
         timestamp: new Date().toISOString(),
       },
       { status: 503 }

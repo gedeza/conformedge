@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
+import * as Sentry from "@sentry/nextjs"
 import { addDays, isBefore } from "date-fns"
 import { db } from "@/lib/db"
 import { sendNotificationEmail } from "@/lib/email"
 import { isNotificationEnabled, filterEnabledUsers } from "@/lib/notification-preferences"
+import { captureError } from "@/lib/error-tracking"
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -26,6 +28,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
   }
+
+  const checkInId = Sentry.captureCheckIn({
+    monitorSlug: "check-expiries",
+    status: "in_progress",
+  })
 
   const now = new Date()
   const in7Days = addDays(now, 7)
@@ -377,6 +384,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    Sentry.captureCheckIn({
+      checkInId,
+      monitorSlug: "check-expiries",
+      status: "ok",
+    })
+
     return NextResponse.json({
       success: true,
       notificationsCreated: created,
@@ -384,7 +397,12 @@ export async function GET(request: NextRequest) {
       timestamp: now.toISOString(),
     })
   } catch (error) {
-    console.error("Cron check-expiries error:", error)
+    Sentry.captureCheckIn({
+      checkInId,
+      monitorSlug: "check-expiries",
+      status: "error",
+    })
+    captureError(error, { source: "cron.checkExpiries" })
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -9,6 +9,7 @@ import type { StandardInput } from "@/lib/ai/classify-document"
 import { getGapInsightsForDocument } from "@/lib/gap-detection"
 import { notifyOrgMembers } from "@/lib/notifications"
 import { createRateLimiter } from "@/lib/rate-limit"
+import { captureError } from "@/lib/error-tracking"
 
 // Per-org: 10 classify requests per 60 seconds
 const classifyLimiter = createRateLimiter("classify", {
@@ -198,7 +199,7 @@ export async function POST(
         }
       }
     } catch (err) {
-      console.error("Gap insights computation failed (non-blocking):", err)
+      captureError(err, { source: "classify.gapInsights", orgId: dbOrgId })
     }
 
     return NextResponse.json({
@@ -208,7 +209,7 @@ export async function POST(
       gapInsights,
     })
   } catch (error) {
-    console.error("AI classification error:", error instanceof Error ? error.stack : error)
+    captureError(error, { source: "classify" })
 
     if (error instanceof Error && error.message.includes("429")) {
       return NextResponse.json(

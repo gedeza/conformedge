@@ -5,6 +5,7 @@ import React from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { AuditPackPDF } from "@/lib/pdf/audit-pack-pdf"
+import { captureError } from "@/lib/error-tracking"
 
 export async function GET(
   _request: NextRequest,
@@ -168,7 +169,7 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error("PDF generation error:", error)
+    captureError(error, { source: "auditPack.pdf" })
     return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 })
   }
 }

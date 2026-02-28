@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthContext } from "@/lib/auth"
 import { getPresignedDownloadUrl } from "@/lib/r2"
+import { captureError } from "@/lib/error-tracking"
 
 export async function GET(
   _request: NextRequest,
@@ -19,7 +20,7 @@ export async function GET(
     const url = await getPresignedDownloadUrl(key)
     return NextResponse.redirect(url, 302)
   } catch (error) {
-    console.error("Download error:", error)
+    captureError(error, { source: "download" })
     return NextResponse.json({ error: "Download failed" }, { status: 500 })
   }
 }

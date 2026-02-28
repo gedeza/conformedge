@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import * as Sentry from "@sentry/nextjs"
 import { useRouter } from "next/navigation"
 import { AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,7 @@ export function RouteError({ error, reset, entityName, backHref }: RouteErrorPro
   const router = useRouter()
 
   useEffect(() => {
-    console.error(error)
+    Sentry.captureException(error)
   }, [error])
 
   const isOrgError = error.message?.includes("No organization selected")

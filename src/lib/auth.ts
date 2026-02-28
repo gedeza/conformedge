@@ -1,4 +1,5 @@
 import { cache } from "react"
+import * as Sentry from "@sentry/nextjs"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 
@@ -49,6 +50,10 @@ export const getAuthContext = cache(async function getAuthContext(): Promise<Aut
   if (!membership || !membership.isActive) {
     throw new Error("Not a member of this organization")
   }
+
+  Sentry.setUser({ id: user.id })
+  Sentry.setTag("orgId", org.id)
+  Sentry.setTag("role", membership.role)
 
   return {
     userId,

@@ -3,6 +3,7 @@ import path from "path"
 import { getAuthContext } from "@/lib/auth"
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
 import { uploadToR2 } from "@/lib/r2"
+import { captureError } from "@/lib/error-tracking"
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       fileName: file.name,
     })
   } catch (error) {
-    console.error("Upload error:", error)
+    captureError(error, { source: "upload" })
     return NextResponse.json({ error: "Upload failed. Please try again or contact support." }, { status: 500 })
   }
 }

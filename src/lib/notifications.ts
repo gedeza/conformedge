@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { sendNotificationEmail, sendNotificationEmailBulk } from "@/lib/email"
 import { isNotificationEnabled, filterEnabledUsers } from "@/lib/notification-preferences"
+import { captureError } from "@/lib/error-tracking"
 import type { NotificationType } from "@/types"
 
 interface NotificationInput {
@@ -40,7 +41,7 @@ export function createNotification(input: NotificationInput) {
       }
     })
     .catch((err) => {
-      console.error("Failed to create notification:", err)
+      captureError(err, { source: "notifications.create", userId: input.userId, orgId: input.organizationId })
     })
 }
 
@@ -88,6 +89,6 @@ export function notifyOrgMembers(
       }
     })
     .catch((err) => {
-      console.error("Failed to notify org members:", err)
+      captureError(err, { source: "notifications.notifyOrg", orgId: input.organizationId })
     })
 }

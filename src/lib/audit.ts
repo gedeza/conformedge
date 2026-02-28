@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { captureError } from "@/lib/error-tracking"
 
 interface AuditEventInput {
   action: string
@@ -24,6 +25,6 @@ export function logAuditEvent(input: AuditEventInput) {
       },
     })
     .catch((err) => {
-      console.error("Failed to log audit event:", err)
+      captureError(err, { source: "audit.logEvent", orgId: input.organizationId, userId: input.userId })
     })
 }

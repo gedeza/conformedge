@@ -8,6 +8,7 @@ import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { sendAuditPackEmail } from "@/lib/email"
 import { AuditPackPDF } from "@/lib/pdf/audit-pack-pdf"
+import { captureError } from "@/lib/error-tracking"
 
 const emailSchema = z.object({
   to: z.union([z.string().email(), z.array(z.string().email()).min(1)]),
@@ -211,7 +212,7 @@ export async function POST(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Audit pack email error:", error)
+    captureError(error, { source: "auditPack.email" })
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 })
   }
 }

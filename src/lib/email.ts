@@ -2,6 +2,7 @@ import React from "react"
 import { resend } from "@/lib/resend"
 import { db } from "@/lib/db"
 import { NotificationEmail, AuditPackEmail } from "@/lib/email-templates"
+import { captureError } from "@/lib/error-tracking"
 import type { NotificationType } from "@/types"
 
 const FROM_ADDRESS = "ConformEdge <onboarding@resend.dev>"
@@ -48,11 +49,11 @@ export function sendNotificationEmail({
     })
     .then((result) => {
       if (result && "error" in result && result.error) {
-        console.error("Resend send error:", result.error)
+        captureError(new Error(result.error.message), { source: "email.send", userId })
       }
     })
     .catch((err) => {
-      console.error("sendNotificationEmail failed:", err)
+      captureError(err, { source: "email.send", userId })
     })
 }
 
@@ -115,14 +116,14 @@ export async function sendAuditPackEmail({
     })
 
     if (error) {
-      console.error("Audit pack email error:", error)
+      captureError(new Error(error.message), { source: "email.sendBulk" })
       return { success: false, error: error.message }
     }
 
     return { success: true }
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error"
-    console.error("sendAuditPackEmail failed:", err)
+    captureError(err, { source: "email.sendBulk" })
     return { success: false, error: message }
   }
 }
