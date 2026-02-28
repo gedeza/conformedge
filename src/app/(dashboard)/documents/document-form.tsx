@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/shared/date-picker"
 import { DOCUMENT_STATUSES } from "@/lib/constants"
+import { isExtractableMime } from "@/lib/ai/extractable-types"
 import { createDocument, updateDocument, type DocumentFormValues } from "./actions"
 
 const formSchema = z.object({
@@ -46,9 +47,10 @@ interface DocumentFormProps {
     fileUrl: string | null
   }
   projects: { id: string; name: string }[]
+  autoClassify?: boolean
 }
 
-export function DocumentForm({ open, onOpenChange, document, projects }: DocumentFormProps) {
+export function DocumentForm({ open, onOpenChange, document, projects, autoClassify = false }: DocumentFormProps) {
   const [isPending, startTransition] = useTransition()
   const [uploading, setUploading] = useState(false)
   const isEditing = !!document
@@ -104,6 +106,13 @@ export function DocumentForm({ open, onOpenChange, document, projects }: Documen
 
       if (result.success) {
         toast.success(isEditing ? "Document updated" : "Document created")
+
+        // Fire-and-forget auto-classify for new documents
+        if (!isEditing && autoClassify && result.data?.id && isExtractableMime(values.fileType ?? null)) {
+          toast.info("AI classification started...")
+          fetch(`/api/documents/${result.data.id}/classify`, { method: "POST" }).catch(() => {})
+        }
+
         onOpenChange(false)
         form.reset()
       } else {

@@ -170,6 +170,31 @@ export async function setOrgIndustry(industry: string): Promise<ActionResult> {
   }
 }
 
+export async function getClassificationStats() {
+  const { dbOrgId } = await getAuthContext()
+
+  const [totalDocuments, classifiedDocuments, avgConfidence, unverifiedCount] = await Promise.all([
+    db.document.count({ where: { organizationId: dbOrgId } }),
+    db.document.count({
+      where: { organizationId: dbOrgId, classifications: { some: {} } },
+    }),
+    db.documentClassification.aggregate({
+      where: { document: { organizationId: dbOrgId } },
+      _avg: { confidence: true },
+    }),
+    db.documentClassification.count({
+      where: { document: { organizationId: dbOrgId }, isVerified: false },
+    }),
+  ])
+
+  return {
+    totalDocuments,
+    classifiedDocuments,
+    avgConfidence: avgConfidence._avg.confidence ?? null,
+    unverifiedCount,
+  }
+}
+
 export async function dismissOnboarding(): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId } = await getAuthContext()

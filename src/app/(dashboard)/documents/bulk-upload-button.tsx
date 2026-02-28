@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { isExtractableMime } from "@/lib/ai/extractable-types"
 import { bulkCreateDocuments } from "./actions"
 
 interface FileEntry {
@@ -33,9 +34,10 @@ interface FileEntry {
 
 interface BulkUploadButtonProps {
   projects: Array<{ id: string; name: string }>
+  autoClassify?: boolean
 }
 
-export function BulkUploadButton({ projects }: BulkUploadButtonProps) {
+export function BulkUploadButton({ projects, autoClassify = false }: BulkUploadButtonProps) {
   const [open, setOpen] = useState(false)
   const [files, setFiles] = useState<FileEntry[]>([])
   const [projectId, setProjectId] = useState<string>("")
@@ -114,6 +116,24 @@ export function BulkUploadButton({ projects }: BulkUploadButtonProps) {
 
       if (result.success) {
         toast.success(`${result.data!.count} document${result.data!.count > 1 ? "s" : ""} created`)
+
+        // Fire-and-forget auto-classify for extractable files
+        if (autoClassify && result.data!.ids.length > 0) {
+          const extractableIndices = successful
+            .map((f, i) => ({ fileType: f.fileType, idx: i }))
+            .filter((f) => isExtractableMime(f.fileType ?? null))
+
+          if (extractableIndices.length > 0) {
+            toast.info(`AI classification started for ${extractableIndices.length} document${extractableIndices.length > 1 ? "s" : ""}...`)
+            for (const { idx } of extractableIndices) {
+              const docId = result.data!.ids[idx]
+              if (docId) {
+                fetch(`/api/documents/${docId}/classify`, { method: "POST" }).catch(() => {})
+              }
+            }
+          }
+        }
+
         setOpen(false)
         setFiles([])
         setProjectId("")

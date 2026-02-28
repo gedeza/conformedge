@@ -8,16 +8,22 @@ import {
   AlertTriangle,
   FolderKanban,
   CheckSquare,
+  Sparkles,
 } from "lucide-react"
-import { getDashboardMetrics, getOnboardingStatus } from "./actions"
+import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from "./actions"
 import { OnboardingCard } from "./onboarding-card"
 
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
   let onboarding: Awaited<ReturnType<typeof getOnboardingStatus>> | null = null
+  let classificationStats: Awaited<ReturnType<typeof getClassificationStats>> | null = null
 
   try {
-    ;[metrics, onboarding] = await Promise.all([getDashboardMetrics(), getOnboardingStatus()])
+    ;[metrics, onboarding, classificationStats] = await Promise.all([
+      getDashboardMetrics(),
+      getOnboardingStatus(),
+      getClassificationStats(),
+    ])
   } catch {
     // Auth error — show empty state
   }
@@ -102,6 +108,49 @@ export default async function DashboardPage() {
               <div className="flex items-center gap-2">
                 <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
                 <span>{metrics?.completedAssessments ?? 0} assessments done</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle>AI Classification</CardTitle>
+            <Sparkles className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span>Classified</span>
+                <span className="font-medium">
+                  {classificationStats
+                    ? `${classificationStats.classifiedDocuments} / ${classificationStats.totalDocuments}`
+                    : "No data"}
+                </span>
+              </div>
+              <Progress
+                value={
+                  classificationStats && classificationStats.totalDocuments > 0
+                    ? (classificationStats.classifiedDocuments / classificationStats.totalDocuments) * 100
+                    : 0
+                }
+                className="h-3"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="text-muted-foreground">Avg confidence</span>
+                <p className="font-medium">
+                  {classificationStats?.avgConfidence != null
+                    ? `${(classificationStats.avgConfidence * 100).toFixed(0)}%`
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <span className="text-muted-foreground">Pending review</span>
+                <p className="font-medium text-amber-600">
+                  {classificationStats?.unverifiedCount ?? 0}
+                </p>
               </div>
             </div>
           </CardContent>

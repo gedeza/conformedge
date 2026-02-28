@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
 import { updateOrgSettings } from "./actions"
@@ -17,14 +18,17 @@ import { updateOrgSettings } from "./actions"
 const formSchema = z.object({
   industry: z.string().max(100).optional(),
   country: z.string().max(2).default("ZA"),
+  autoClassifyOnUpload: z.boolean().default(true),
 })
 
 interface OrgSettingsFormProps {
-  org: { id: string; name: string; industry: string | null; country: string }
+  org: { id: string; name: string; industry: string | null; country: string; settings: unknown }
 }
 
 export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
+
+  const settingsJson = (org.settings as Record<string, unknown>) ?? {}
 
   const form = useForm<z.infer<typeof formSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,6 +36,7 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
     defaultValues: {
       industry: org.industry ?? "",
       country: org.country,
+      autoClassifyOnUpload: settingsJson.autoClassifyOnUpload !== false,
     },
   })
 
@@ -78,6 +83,19 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
             <FormLabel>Country Code</FormLabel>
             <FormControl><Input placeholder="ZA" maxLength={2} {...field} /></FormControl>
             <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="autoClassifyOnUpload" render={({ field }) => (
+          <FormItem className="flex items-center justify-between rounded-lg border p-3">
+            <div className="space-y-0.5">
+              <FormLabel>Auto-classify on upload</FormLabel>
+              <p className="text-sm text-muted-foreground">
+                Automatically run AI classification when documents are uploaded
+              </p>
+            </div>
+            <FormControl>
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            </FormControl>
           </FormItem>
         )} />
         <Button type="submit" disabled={isPending} size="sm">

@@ -1,19 +1,9 @@
 import { readFile } from "fs/promises"
 import path from "path"
 import { extractTextViaOCR } from "./ocr-extract"
+import { isExtractableMime } from "./extractable-types"
 
-const EXTRACTABLE_TYPES = new Set([
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/msword",
-  "image/jpeg",
-  "image/png",
-])
-
-export function isExtractable(fileType: string | null): boolean {
-  if (!fileType) return false
-  return EXTRACTABLE_TYPES.has(fileType)
-}
+export { isExtractableMime as isExtractable }
 
 export async function extractText(fileUrl: string, fileType: string): Promise<string> {
   const filePath = path.join(process.cwd(), "public", fileUrl)

@@ -6,11 +6,13 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canManageOrg } from "@/lib/permissions"
+import type { Prisma } from "@/generated/prisma/client"
 import type { ActionResult } from "@/types"
 
 const orgSettingsSchema = z.object({
   industry: z.string().max(100).optional(),
   country: z.string().max(2).default("ZA"),
+  autoClassifyOnUpload: z.boolean().optional(),
 })
 
 export async function getOrgSettings() {
@@ -18,7 +20,7 @@ export async function getOrgSettings() {
 
   const org = await db.organization.findUnique({
     where: { id: dbOrgId },
-    select: { id: true, name: true, industry: true, country: true },
+    select: { id: true, name: true, industry: true, country: true, settings: true },
   })
 
   return org
@@ -30,11 +32,20 @@ export async function updateOrgSettings(values: z.infer<typeof orgSettingsSchema
     if (!canManageOrg(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = orgSettingsSchema.parse(values)
 
+    // Merge autoClassifyOnUpload into the settings JSON column
+    const org = await db.organization.findUnique({ where: { id: dbOrgId }, select: { settings: true } })
+    const existingSettings = (org?.settings as Record<string, unknown>) ?? {}
+    const mergedSettings = { ...existingSettings }
+    if (parsed.autoClassifyOnUpload !== undefined) {
+      mergedSettings.autoClassifyOnUpload = parsed.autoClassifyOnUpload
+    }
+
     await db.organization.update({
       where: { id: dbOrgId },
       data: {
         industry: parsed.industry,
         country: parsed.country,
+        settings: mergedSettings as Prisma.InputJsonValue,
       },
     })
 

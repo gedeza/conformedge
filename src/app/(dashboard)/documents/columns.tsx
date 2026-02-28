@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import { canEdit, canDelete } from "@/lib/permissions"
 
 export type DocumentRow = {
@@ -39,10 +40,37 @@ interface ColumnActions {
   onEdit: (doc: DocumentRow) => void
   onDelete: (doc: DocumentRow) => void
   role: string
+  selectedIds?: Set<string>
+  onToggleSelect?: (id: string) => void
+  onToggleAll?: (ids: string[]) => void
 }
 
 export function getColumns(actions: ColumnActions): ColumnDef<DocumentRow>[] {
-  return [
+  const cols: ColumnDef<DocumentRow>[] = []
+
+  if (actions.selectedIds && actions.onToggleSelect && actions.onToggleAll) {
+    cols.push({
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getRowModel().rows.length > 0 && table.getRowModel().rows.every((r) => actions.selectedIds!.has(r.original.id))}
+          onCheckedChange={() => actions.onToggleAll!(table.getRowModel().rows.map((r) => r.original.id))}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={actions.selectedIds!.has(row.original.id)}
+          onCheckedChange={() => actions.onToggleSelect!(row.original.id)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    })
+  }
+
+  cols.push(
     {
       accessorKey: "title",
       header: ({ column }) => (
@@ -133,5 +161,7 @@ export function getColumns(actions: ColumnActions): ColumnDef<DocumentRow>[] {
         )
       },
     },
-  ]
+  )
+
+  return cols
 }

@@ -272,7 +272,7 @@ export async function createDocument(values: DocumentFormValues): Promise<Action
 
 export async function bulkCreateDocuments(
   files: Array<{ title: string; fileUrl: string; fileType: string; fileSize: number; projectId?: string }>
-): Promise<ActionResult<{ count: number }>> {
+): Promise<ActionResult<{ count: number; ids: string[] }>> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
@@ -305,7 +305,7 @@ export async function bulkCreateDocuments(
     }
 
     revalidatePath("/documents")
-    return { success: true, data: { count: docs.length } }
+    return { success: true, data: { count: docs.length, ids: docs.map((d) => d.id) } }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Bulk upload failed" }
   }

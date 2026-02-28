@@ -9,9 +9,10 @@ import { canCreate } from "@/lib/permissions"
 interface DocumentFormTriggerProps {
   projects: { id: string; name: string }[]
   role: string
+  autoClassify?: boolean
 }
 
-export function DocumentFormTrigger({ projects, role }: DocumentFormTriggerProps) {
+export function DocumentFormTrigger({ projects, role, autoClassify = false }: DocumentFormTriggerProps) {
   const [open, setOpen] = useState(false)
 
   if (!canCreate(role)) return null
@@ -22,7 +23,7 @@ export function DocumentFormTrigger({ projects, role }: DocumentFormTriggerProps
         <Upload className="mr-2 h-4 w-4" />
         Upload Document
       </Button>
-      <DocumentForm open={open} onOpenChange={setOpen} projects={projects} />
+      <DocumentForm open={open} onOpenChange={setOpen} projects={projects} autoClassify={autoClassify} />
     </>
   )
 }
