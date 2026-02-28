@@ -12,6 +12,7 @@ import { getDocument, getStandardsWithClauses, getDocumentVersions, getDocumentA
 import { getAuthContext } from "@/lib/auth"
 import { canEdit } from "@/lib/permissions"
 import { isExtractable } from "@/lib/ai/extract-text"
+import { getDownloadUrl } from "@/lib/r2-utils"
 import { ClauseTagForm } from "../clause-tag-form"
 import { RemoveTagButton } from "./remove-tag-button"
 import { ClassifyButton } from "./classify-button"
@@ -74,7 +75,7 @@ export default async function DocumentDetailPage({
           <StatusBadge type="document" value={doc.status} />
           {doc.fileUrl && (
             <Button variant="outline" size="sm" asChild>
-              <a href={doc.fileUrl} download>
+              <a href={getDownloadUrl(doc.fileUrl)!} download>
                 <Download className="mr-2 h-4 w-4" /> Download
               </a>
             </Button>

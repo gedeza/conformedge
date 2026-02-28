@@ -2,10 +2,19 @@ import { readFile } from "fs/promises"
 import path from "path"
 import { extractTextViaOCR } from "./ocr-extract"
 import { isExtractableMime } from "./extractable-types"
+import { isR2Key, getPresignedDownloadUrl } from "@/lib/r2"
 
 export { isExtractableMime as isExtractable }
 
-export async function extractText(fileUrl: string, fileType: string): Promise<string> {
+async function fetchBuffer(fileUrl: string): Promise<Buffer> {
+  if (isR2Key(fileUrl)) {
+    const url = await getPresignedDownloadUrl(fileUrl)
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`R2 fetch failed: ${res.status}`)
+    return Buffer.from(await res.arrayBuffer())
+  }
+
+  // Legacy local path
   const publicDir = path.resolve(process.cwd(), "public")
   const filePath = path.resolve(publicDir, fileUrl)
 
@@ -13,7 +22,11 @@ export async function extractText(fileUrl: string, fileType: string): Promise<st
     throw new Error("Invalid file path")
   }
 
-  const buffer = await readFile(filePath)
+  return readFile(filePath)
+}
+
+export async function extractText(fileUrl: string, fileType: string): Promise<string> {
+  const buffer = await fetchBuffer(fileUrl)
 
   if (fileType === "application/pdf") {
     // Import from lib/pdf-parse directly to bypass index.js test-file loading bug

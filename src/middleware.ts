@@ -14,6 +14,7 @@ const isProtectedRoute = createRouteMatcher([
   "/reports(.*)",
   "/gap-analysis(.*)",
   "/settings(.*)",
+  "/api/download(.*)",
 ])
 
 const hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY

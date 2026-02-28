@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
 import path from "path"
 import { getAuthContext } from "@/lib/auth"
 import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
+import { uploadToR2 } from "@/lib/r2"
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,19 +26,14 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", dbOrgId)
-    await mkdir(uploadDir, { recursive: true })
-
     const ext = path.extname(file.name)
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
-    const filePath = path.join(uploadDir, safeName)
+    const key = `${dbOrgId}/${safeName}`
 
-    await writeFile(filePath, buffer)
-
-    const fileUrl = `/uploads/${dbOrgId}/${safeName}`
+    await uploadToR2(key, buffer, file.type)
 
     return NextResponse.json({
-      fileUrl,
+      fileUrl: key,
       fileType: file.type,
       fileSize: file.size,
       fileName: file.name,

@@ -401,6 +401,18 @@ export async function deleteDocument(id: string): Promise<ActionResult> {
     })
     if (!existing) return { success: false, error: "Document not found" }
 
+    // Clean up R2 object if stored in cloud
+    if (existing.fileUrl) {
+      const { isR2Key, deleteFromR2 } = await import("@/lib/r2")
+      if (isR2Key(existing.fileUrl)) {
+        try {
+          await deleteFromR2(existing.fileUrl)
+        } catch (e) {
+          console.error("R2 delete failed (non-blocking):", e)
+        }
+      }
+    }
+
     await db.document.delete({ where: { id } })
 
     logAuditEvent({

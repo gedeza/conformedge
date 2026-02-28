@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { uploadNewVersion } from "../actions"
 import { canEdit } from "@/lib/permissions"
+import { getDownloadUrl } from "@/lib/r2-utils"
 
 interface Version {
   id: string
@@ -232,7 +233,7 @@ export function VersionHistory({
                   <div className="flex items-center gap-2">
                     {v.fileUrl && (
                       <Button variant="ghost" size="sm" asChild>
-                        <a href={v.fileUrl} download>
+                        <a href={getDownloadUrl(v.fileUrl)!} download>
                           <Download className="h-4 w-4" />
                         </a>
                       </Button>
