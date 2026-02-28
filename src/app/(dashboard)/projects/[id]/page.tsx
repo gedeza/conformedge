@@ -51,7 +51,7 @@ export default async function ProjectDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="outline" size="sm" asChild>
           <Link href="/projects">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back

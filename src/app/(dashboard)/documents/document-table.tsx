@@ -68,13 +68,21 @@ export function DocumentTable({ data, projects, role }: DocumentTableProps) {
       results.push(...batchResults)
     }
 
-    const succeeded = results.filter((r) => r.status === "fulfilled" && (r as PromiseFulfilledResult<Response>).value.ok).length
-    const failed = extractable.length - succeeded
+    const failedDocs: string[] = []
+    results.forEach((r, i) => {
+      if (r.status !== "fulfilled" || !(r as PromiseFulfilledResult<Response>).value.ok) {
+        failedDocs.push(extractable[i].title)
+      }
+    })
+    const succeeded = extractable.length - failedDocs.length
 
-    if (failed === 0) {
+    if (failedDocs.length === 0) {
       toast.success(`${succeeded} document${succeeded > 1 ? "s" : ""} classified`)
     } else {
-      toast.warning(`${succeeded} classified, ${failed} failed`)
+      toast.warning(
+        `${succeeded} classified, ${failedDocs.length} failed`,
+        { description: `Failed: ${failedDocs.join(", ")}`, duration: 8000 }
+      )
     }
 
     setSelectedIds(new Set())

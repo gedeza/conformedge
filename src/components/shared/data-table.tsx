@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -53,6 +53,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [searchValue, setSearchValue] = useState(
+    searchKey ? (columnFilters.find((f) => f.id === searchKey)?.value as string) ?? "" : ""
+  )
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   const table = useReactTable({
     data,
@@ -66,16 +70,25 @@ export function DataTable<TData, TValue>({
     state: { sorting, columnFilters },
   })
 
+  useEffect(() => {
+    if (!searchKey) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      table.getColumn(searchKey)?.setFilterValue(searchValue)
+    }, 300)
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [searchValue, searchKey, table])
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         {searchKey && (
           <Input
             placeholder={searchPlaceholder}
-            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-            onChange={(e) =>
-              table.getColumn(searchKey)?.setFilterValue(e.target.value)
-            }
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="max-w-sm"
           />
         )}

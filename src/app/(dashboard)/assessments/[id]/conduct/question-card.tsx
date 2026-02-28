@@ -22,6 +22,7 @@ interface QuestionCardProps {
     evidence: string | null
     notes: string | null
   }
+  onSaved?: () => void
 }
 
 const SCORE_OPTIONS = [
@@ -33,7 +34,7 @@ const SCORE_OPTIONS = [
   { value: "5", label: "5 — Excellent" },
 ]
 
-export function QuestionCard({ questionId, number, question, guidance, existingAnswer }: QuestionCardProps) {
+export function QuestionCard({ questionId, number, question, guidance, existingAnswer, onSaved }: QuestionCardProps) {
   const [isPending, startTransition] = useTransition()
   const [score, setScore] = useState<string>(existingAnswer?.score?.toString() ?? "")
   const [answer, setAnswer] = useState(existingAnswer?.answer ?? "")
@@ -53,6 +54,7 @@ export function QuestionCard({ questionId, number, question, guidance, existingA
       if (result.success) {
         toast.success(`Question ${number} saved`)
         setSaved(true)
+        onSaved?.()
       } else {
         toast.error(result.error)
       }
