@@ -563,3 +563,53 @@ export async function getProjectOptions() {
     orderBy: { name: "asc" },
   })
 }
+
+// ─── Cross-Standard Classification ─────────────────────
+
+export async function addCrossStandardClassification(
+  documentId: string,
+  clauseId: string,
+  sourceConfidence: number
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const doc = await db.document.findFirst({
+      where: { id: documentId, organizationId: dbOrgId },
+    })
+    if (!doc) return { success: false, error: "Document not found" }
+
+    // Apply 90% of source confidence, capped at 0.85
+    const confidence = Math.min(sourceConfidence * 0.9, 0.85)
+
+    // Check if classification already exists
+    const existing = await db.documentClassification.findFirst({
+      where: { documentId, standardClauseId: clauseId },
+    })
+    if (existing) return { success: false, error: "Classification already exists" }
+
+    await db.documentClassification.create({
+      data: {
+        documentId,
+        standardClauseId: clauseId,
+        confidence,
+        isVerified: false,
+      },
+    })
+
+    logAuditEvent({
+      action: "CROSS_STANDARD_CLASSIFY",
+      entityType: "Document",
+      entityId: documentId,
+      metadata: { clauseId, confidence, source: "cross-standard-suggestion" },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/documents/${documentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to add classification" }
+  }
+}

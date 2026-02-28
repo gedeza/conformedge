@@ -244,6 +244,7 @@ model StandardClause {
   checklistItems           ChecklistItem[]
   crossReferencesAsSource  ClauseCrossReference[]   @relation("CrossRefSource")
   crossReferencesAsTarget  ClauseCrossReference[]   @relation("CrossRefTarget")
+  capas                    CapaStandardClause[]
 
   @@map("standard_clauses")
 }
@@ -382,8 +383,9 @@ model Capa {
   project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
   raisedBy     User         @relation("CapaRaiser", fields: [raisedById], references: [id])
   assignedTo   User?        @relation("CapaAssignee", fields: [assignedToId], references: [id])
-  capaActions  CapaAction[]
-  linkedItems  ChecklistItem[]
+  capaActions      CapaAction[]
+  linkedItems      ChecklistItem[]
+  standardClauses  CapaStandardClause[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_capa_org_created")
   @@index([organizationId, status], map: "idx_capa_org_status")
@@ -583,6 +585,20 @@ model NotificationPreference {
 
   @@unique([userId, type, channel])
   @@map("notification_preferences")
+}
+
+model CapaStandardClause {
+  id               String         @id @default(uuid())
+  capaId           String         @map("capa_id")
+  standardClauseId String         @map("standard_clause_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  capa           Capa           @relation(fields: [capaId], references: [id], onDelete: Cascade)
+  standardClause StandardClause @relation(fields: [standardClauseId], references: [id], onDelete: Cascade)
+
+  @@unique([capaId, standardClauseId])
+  @@map("capa_standard_clauses")
 }
 
 model ClauseCrossReference {

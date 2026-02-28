@@ -351,3 +351,95 @@ export async function getMembers() {
   const { dbOrgId } = await getAuthContext()
   return getOrgMembers(dbOrgId)
 }
+
+// ─── Cross-Standard CAPA Integration ────────────────────
+
+export async function linkCapaToStandardClauses(
+  capaId: string,
+  clauseIds: string[]
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const capa = await db.capa.findFirst({ where: { id: capaId, organizationId: dbOrgId } })
+    if (!capa) return { success: false, error: "CAPA not found" }
+
+    // Upsert junction records (skip existing)
+    const data = clauseIds.map((clauseId) => ({
+      capaId,
+      standardClauseId: clauseId,
+    }))
+
+    await db.capaStandardClause.createMany({
+      data,
+      skipDuplicates: true,
+    })
+
+    logAuditEvent({
+      action: "LINK_CLAUSES",
+      entityType: "Capa",
+      entityId: capaId,
+      metadata: { clauseCount: clauseIds.length },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/capas/${capaId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to link clauses" }
+  }
+}
+
+export async function unlinkCapaFromStandardClause(
+  capaId: string,
+  clauseId: string
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const capa = await db.capa.findFirst({ where: { id: capaId, organizationId: dbOrgId } })
+    if (!capa) return { success: false, error: "CAPA not found" }
+
+    await db.capaStandardClause.deleteMany({
+      where: { capaId, standardClauseId: clauseId },
+    })
+
+    logAuditEvent({
+      action: "UNLINK_CLAUSE",
+      entityType: "Capa",
+      entityId: capaId,
+      metadata: { clauseId },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/capas/${capaId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to unlink clause" }
+  }
+}
+
+export async function getCapaLinkedClauses(capaId: string) {
+  const { dbOrgId } = await getAuthContext()
+
+  const capa = await db.capa.findFirst({ where: { id: capaId, organizationId: dbOrgId } })
+  if (!capa) return []
+
+  return db.capaStandardClause.findMany({
+    where: { capaId },
+    include: {
+      standardClause: {
+        select: {
+          id: true,
+          clauseNumber: true,
+          title: true,
+          standard: { select: { code: true, name: true } },
+        },
+      },
+    },
+  })
+}

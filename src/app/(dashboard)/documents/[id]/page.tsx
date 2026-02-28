@@ -19,7 +19,10 @@ import { ClassifyButton } from "./classify-button"
 import { VerifyButton } from "./verify-button"
 import { VersionHistory } from "./version-history"
 import { GapInsightsPanel } from "./gap-insights-panel"
+import { CrossStandardSuggestions } from "./cross-standard-suggestions"
 import { getGapInsightsForDocument } from "@/lib/gap-detection"
+import { getDocumentCrossStandardSuggestions } from "@/lib/ims/cross-standard-suggestions"
+import type { DocumentSuggestion } from "@/lib/ims/cross-standard-suggestions"
 
 export default async function DocumentDetailPage({
   params,
@@ -32,6 +35,7 @@ export default async function DocumentDetailPage({
   let versions: Awaited<ReturnType<typeof getDocumentVersions>> = []
   let auditEvents: Awaited<ReturnType<typeof getDocumentAuditHistory>> = []
   let gapInsights: Awaited<ReturnType<typeof getGapInsightsForDocument>> = []
+  let crossStandardSuggestions: DocumentSuggestion[] = []
   let role = "VIEWER"
 
   try {
@@ -44,12 +48,15 @@ export default async function DocumentDetailPage({
       getDocumentAuditHistory(id),
     ])
 
-    // Fetch gap insights if document has classifications
+    // Fetch gap insights and cross-standard suggestions if document has classifications
     if (doc && doc.classifications.length > 0) {
       try {
-        gapInsights = await getGapInsightsForDocument(id, ctx.dbOrgId)
+        ;[gapInsights, crossStandardSuggestions] = await Promise.all([
+          getGapInsightsForDocument(id, ctx.dbOrgId),
+          getDocumentCrossStandardSuggestions(id, ctx.dbOrgId),
+        ])
       } catch {
-        // Non-blocking — gap insights are supplementary
+        // Non-blocking — supplementary data
       }
     }
   } catch {
@@ -213,6 +220,10 @@ export default async function DocumentDetailPage({
             </CardContent>
           </Card>
           <GapInsightsPanel insights={gapInsights} />
+          <CrossStandardSuggestions
+            documentId={doc.id}
+            suggestions={crossStandardSuggestions}
+          />
         </TabsContent>
 
         <TabsContent value="history">

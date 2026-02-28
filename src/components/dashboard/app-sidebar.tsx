@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   SearchCheck,
   GitCompareArrows,
+  Layers,
   Bell,
 } from "lucide-react"
 
@@ -45,6 +46,7 @@ const coreItems = [
 ]
 
 const analysisItems = [
+  { title: "IMS Dashboard", href: "/ims", icon: Layers },
   { title: "Gap Analysis", href: "/gap-analysis", icon: SearchCheck },
   { title: "Cross-References", href: "/cross-references", icon: GitCompareArrows },
   { title: "Reports", href: "/reports", icon: BarChart3 },

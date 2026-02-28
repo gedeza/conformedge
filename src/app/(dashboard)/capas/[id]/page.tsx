@@ -8,9 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getCapa, getMembers } from "../actions"
+import { getAuthContext } from "@/lib/auth"
+import { getCapa, getMembers, getCapaLinkedClauses } from "../actions"
+import { getEquivalentGapsForClause } from "@/lib/ims/cross-standard-suggestions"
 import { ActionItemList } from "./action-item-list"
 import { EscalateButton } from "./escalate-button"
+import { CrossStandardGaps } from "../cross-standard-gaps"
 import type { RootCauseData } from "@/types"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -108,9 +111,38 @@ export default async function CapaDetailPage({
   const { id } = await params
   let capa: Awaited<ReturnType<typeof getCapa>>
   let members: Awaited<ReturnType<typeof getMembers>> = []
+  let linkedClauses: Awaited<ReturnType<typeof getCapaLinkedClauses>> = []
+  let equivalentGaps: Awaited<ReturnType<typeof getEquivalentGapsForClause>> = []
 
   try {
-    ;[capa, members] = await Promise.all([getCapa(id), getMembers()])
+    const ctx = await getAuthContext()
+    ;[capa, members, linkedClauses] = await Promise.all([
+      getCapa(id),
+      getMembers(),
+      getCapaLinkedClauses(id),
+    ])
+
+    if (!capa) notFound()
+
+    // Gather equivalent gaps from linked checklist clauses + linked standard clauses
+    const clauseIds = new Set<string>()
+    for (const item of capa.linkedItems ?? []) {
+      if (item.standardClause) clauseIds.add(item.standardClause.clauseNumber ? item.id : "")
+      // The checklistItem has standardClauseId via its standardClause relation
+    }
+    for (const lc of linkedClauses) {
+      clauseIds.add(lc.standardClause.id)
+    }
+
+    // Fetch equivalent gaps for first linked clause (if any)
+    const firstClauseId = linkedClauses[0]?.standardClause?.id
+    if (firstClauseId) {
+      try {
+        equivalentGaps = await getEquivalentGapsForClause(firstClauseId, ctx.dbOrgId)
+      } catch {
+        // Non-blocking
+      }
+    }
   } catch {
     notFound()
   }
@@ -143,6 +175,7 @@ export default async function CapaDetailPage({
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="actions">Actions ({totalActions})</TabsTrigger>
           <TabsTrigger value="findings">Findings ({linkedFindings.length})</TabsTrigger>
+          <TabsTrigger value="cross-standard">Cross-Standard ({linkedClauses.length})</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
@@ -256,6 +289,14 @@ export default async function CapaDetailPage({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="cross-standard" className="space-y-4">
+          <CrossStandardGaps
+            capaId={capa.id}
+            linkedClauses={linkedClauses}
+            equivalentGaps={equivalentGaps}
+          />
         </TabsContent>
 
         <TabsContent value="history">
