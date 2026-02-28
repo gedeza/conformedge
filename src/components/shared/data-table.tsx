@@ -100,7 +100,7 @@ export function DataTable<TData, TValue>({
           </Select>
         )}
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  No matching records found.
                 </TableCell>
               </TableRow>
             )}

@@ -6,11 +6,11 @@ export function CTA() {
     <section className="py-24">
       <div className="container mx-auto max-w-3xl px-4 text-center">
         <h2 className="text-3xl font-bold tracking-tight">
-          Ready to Simplify Your ISO Compliance?
+          Ready to Take Control of Your Compliance?
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Join South African construction and infrastructure companies already
-          using ConformEdge.
+          Join construction, engineering, and infrastructure companies across
+          South Africa already using ConformEdge to stay audit-ready.
         </p>
         <div className="mt-8">
           <Button asChild>

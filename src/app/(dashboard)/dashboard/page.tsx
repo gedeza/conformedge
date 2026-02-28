@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                 <span className="font-medium">
                   {metrics?.avgComplianceScore != null
                     ? `${metrics.avgComplianceScore.toFixed(1)}%`
-                    : "No data"}
+                    : "—"}
                 </span>
               </div>
               <Progress
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                 <span className="font-medium">
                   {classificationStats
                     ? `${classificationStats.classifiedDocuments} / ${classificationStats.totalDocuments}`
-                    : "No data"}
+                    : "—"}
                 </span>
               </div>
               <Progress
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-muted-foreground">Avg confidence</span>
+                <span className="text-muted-foreground">Avg accuracy</span>
                 <p className="font-medium">
                   {classificationStats?.avgConfidence != null
                     ? `${(classificationStats.avgConfidence * 100).toFixed(0)}%`

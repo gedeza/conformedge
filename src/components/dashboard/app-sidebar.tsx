@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/sidebar"
 import { OrgSwitcher } from "./org-switcher"
 
-const navItems = [
+const coreItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Projects", href: "/projects", icon: FolderKanban },
   { title: "Documents", href: "/documents", icon: FileText },
@@ -42,11 +42,14 @@ const navItems = [
   { title: "CAPAs", href: "/capas", icon: AlertTriangle },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
   { title: "Subcontractors", href: "/subcontractors", icon: HardHat },
-  { title: "Audit Packs", href: "/audit-packs", icon: Package },
-  { title: "Audit Trail", href: "/audit-trail", icon: ScrollText },
-  { title: "Reports", href: "/reports", icon: BarChart3 },
+]
+
+const analysisItems = [
   { title: "Gap Analysis", href: "/gap-analysis", icon: SearchCheck },
   { title: "Cross-References", href: "/cross-references", icon: GitCompareArrows },
+  { title: "Reports", href: "/reports", icon: BarChart3 },
+  { title: "Audit Packs", href: "/audit-packs", icon: Package },
+  { title: "Audit Trail", href: "/audit-trail", icon: ScrollText },
 ]
 
 const footerItems = [
@@ -82,10 +85,37 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Compliance</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => {
+              {coreItems.map((item) => {
+                const isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`)
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive}
+                      tooltip={item.title}
+                    >
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Analysis &amp; Reporting</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {analysisItems.map((item) => {
                 const isActive =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`)

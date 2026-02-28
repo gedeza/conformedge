@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!ALLOWED_FILE_TYPES.includes(file.type as typeof ALLOWED_FILE_TYPES[number])) {
-      return NextResponse.json({ error: "File type not allowed" }, { status: 400 })
+      return NextResponse.json({ error: "File type not supported. Please upload a PDF, Word, Excel, or image file." }, { status: 400 })
     }
 
     const bytes = await file.arrayBuffer()
@@ -40,6 +40,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Upload error:", error)
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    return NextResponse.json({ error: "Upload failed. Please try again or contact support." }, { status: 500 })
   }
 }

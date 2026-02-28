@@ -132,7 +132,7 @@ export default async function ProjectDetailPage({
                 </CardHeader>
                 <CardContent>
                   {metrics.complianceScore.total === 0 ? (
-                    <p className="text-sm text-muted-foreground">No data</p>
+                    <p className="text-sm text-muted-foreground">No data yet</p>
                   ) : (
                     <div className="space-y-2">
                       <div className={`text-3xl font-bold ${
@@ -160,7 +160,7 @@ export default async function ProjectDetailPage({
                 </CardHeader>
                 <CardContent>
                   {metrics.checklistProgress.total === 0 ? (
-                    <p className="text-sm text-muted-foreground">No data</p>
+                    <p className="text-sm text-muted-foreground">No data yet</p>
                   ) : (
                     <div className="space-y-2">
                       <div className="text-2xl font-bold">
@@ -211,7 +211,7 @@ export default async function ProjectDetailPage({
                 </CardHeader>
                 <CardContent>
                   {metrics.riskDistribution.every((r) => r.count === 0) ? (
-                    <p className="text-sm text-muted-foreground">No data</p>
+                    <p className="text-sm text-muted-foreground">No data yet</p>
                   ) : (
                     <div className="space-y-2">
                       {metrics.riskDistribution.map((risk) => (

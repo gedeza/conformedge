@@ -91,7 +91,7 @@ export function PieChartCard({ title, description, data }: PieChartCardProps) {
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[250px] text-sm text-muted-foreground">
-          No data available
+          Not enough data to display yet
         </CardContent>
       </Card>
     )
@@ -150,7 +150,7 @@ export function BarChartCard({ title, description, data, xKey, bars }: BarChartC
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
-          No data available
+          Not enough data to display yet
         </CardContent>
       </Card>
     )
@@ -201,7 +201,7 @@ export function LineChartCard({ title, description, data, xKey, lines }: LineCha
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
-          No data available
+          Not enough data to display yet
         </CardContent>
       </Card>
     )
@@ -260,7 +260,7 @@ export function AreaChartCard({ title, description, data, xKey, yKey, color = "h
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
-          No data available
+          Not enough data to display yet
         </CardContent>
       </Card>
     )

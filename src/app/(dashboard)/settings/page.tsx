@@ -59,7 +59,7 @@ export default async function SettingsPage() {
           </CardHeader>
           <CardContent>
             {standards.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No standards found. Run database seed.</p>
+              <p className="text-sm text-muted-foreground">No ISO standards available. Please contact support to set up your standards.</p>
             ) : (
               <StandardsList standards={standards} />
             )}

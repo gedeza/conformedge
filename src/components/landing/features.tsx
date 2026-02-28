@@ -17,37 +17,37 @@ const features = [
   {
     title: "Smart Document Classification",
     description:
-      "AI automatically classifies documents against ISO clause requirements with confidence scoring.",
+      "Upload a document and AI instantly matches it to the right ISO standards and clauses — with accuracy ratings you can verify.",
     icon: FileText,
   },
   {
     title: "Gap Assessments",
     description:
-      "Identify compliance gaps with intelligent assessments mapped to standard clauses.",
+      "Quickly identify what compliance items are missing or at risk across any ISO standard your organisation follows.",
     icon: ClipboardCheck,
   },
   {
-    title: "CAPA Management",
+    title: "Corrective & Preventive Actions",
     description:
-      "Track corrective and preventive actions from identification through verification.",
+      "Track issues from discovery to resolution with root cause analysis, action items, and automatic escalation for overdue items.",
     icon: AlertTriangle,
   },
   {
     title: "Compliance Checklists",
     description:
-      "Standard-specific checklists with evidence tracking and progress monitoring.",
+      "Ready-made checklists for each ISO standard. Track completion, attach evidence, and assign items to team members.",
     icon: CheckSquare,
   },
   {
     title: "Subcontractor Management",
     description:
-      "Monitor subcontractor certifications, safety ratings, and compliance status.",
+      "Monitor subcontractor certifications, BEE levels, safety ratings, and get alerts before certificates expire.",
     icon: HardHat,
   },
   {
     title: "Audit Pack Generation",
     description:
-      "One-click audit pack compilation with all required evidence and documentation.",
+      "Compile all required evidence and documentation into a professional PDF audit pack with one click.",
     icon: Package,
   },
 ] as const

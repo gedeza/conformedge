@@ -156,6 +156,9 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                     <span className="text-sm text-muted-foreground">File attached</span>
                   )}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  PDF, Word, Excel, or images (JPG, PNG). Max 10 MB.
+                </p>
               </div>
             )}
             <FormField
@@ -176,7 +179,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Description <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                   <FormControl>
                     <Textarea placeholder="Description..." rows={3} {...field} />
                   </FormControl>
@@ -212,7 +215,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                 name="projectId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project</FormLabel>
+                    <FormLabel>Project <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -235,7 +238,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
               name="expiresAt"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Expiry Date</FormLabel>
+                  <FormLabel>Expiry Date <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
                   <FormControl>
                     <DatePicker value={field.value} onChange={field.onChange} placeholder="Optional" />
                   </FormControl>
