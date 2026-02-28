@@ -16,6 +16,7 @@ export interface ClauseGapData {
   docCount: number
   checklistCompliantCount: number
   checklistTotalCount: number
+  crossRefCount: number
 }
 
 export interface TopLevelClauseGap {
@@ -72,8 +73,8 @@ export async function getGapAnalysis(
   }
   if (projectId) checklistWhere.projectId = projectId
 
-  // 3 parallel queries
-  const [standards, docClassifications, checklistItems] = await Promise.all([
+  // 4 parallel queries
+  const [standards, docClassifications, checklistItems, crossRefCounts] = await Promise.all([
     // 1. Standards with clauses (hierarchical)
     db.standard.findMany({
       where: standardWhere,
@@ -114,6 +115,14 @@ export async function getGapAnalysis(
         isCompliant: true,
       },
     }),
+
+    // 4. Cross-reference counts per clause (both directions)
+    db.clauseCrossReference.findMany({
+      select: {
+        sourceClauseId: true,
+        targetClauseId: true,
+      },
+    }),
   ])
 
   // Build lookup sets for fast access
@@ -136,6 +145,13 @@ export async function getGapAnalysis(
     checklistByClause.set(ci.standardClauseId, existing)
   }
 
+  // crossRefCounts: clauseId → count of cross-references
+  const crossRefByClause = new Map<string, number>()
+  for (const cr of crossRefCounts) {
+    crossRefByClause.set(cr.sourceClauseId, (crossRefByClause.get(cr.sourceClauseId) || 0) + 1)
+    crossRefByClause.set(cr.targetClauseId, (crossRefByClause.get(cr.targetClauseId) || 0) + 1)
+  }
+
   // Aggregate per standard
   let totalSubClauses = 0
   let totalCovered = 0
@@ -155,9 +171,11 @@ export async function getGapAnalysis(
       docCount: number
       compliant: number
       total: number
+      crossRefCount: number
     } {
       const docCount = docCountByClause.get(clauseId) || 0
       const checklist = checklistByClause.get(clauseId) || { compliant: 0, total: 0 }
+      const crossRefCount = crossRefByClause.get(clauseId) || 0
 
       const hasDoc = docCount > 0
       const hasCompliant = checklist.compliant > 0
@@ -171,7 +189,7 @@ export async function getGapAnalysis(
         status = "GAP"
       }
 
-      return { status, docCount, compliant: checklist.compliant, total: checklist.total }
+      return { status, docCount, compliant: checklist.compliant, total: checklist.total, crossRefCount }
     }
 
     // Build top-level clause groups
@@ -190,6 +208,7 @@ export async function getGapAnalysis(
                 docCount: info.docCount,
                 checklistCompliantCount: info.compliant,
                 checklistTotalCount: info.total,
+                crossRefCount: info.crossRefCount,
               }
             })
 
@@ -228,6 +247,7 @@ export async function getGapAnalysis(
               docCount: info.docCount,
               checklistCompliantCount: info.compliant,
               checklistTotalCount: info.total,
+              crossRefCount: info.crossRefCount,
             }],
           }
         })

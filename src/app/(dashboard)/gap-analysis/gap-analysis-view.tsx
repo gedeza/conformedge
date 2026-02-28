@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ChevronDown, ChevronRight, FileText, ListChecks } from "lucide-react"
+import { CrossRefPopover } from "./cross-ref-popover"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -47,6 +48,9 @@ function SubClauseRow({ clause }: { clause: ClauseGapData }) {
         <span>{clause.title}</span>
       </div>
       <div className="flex items-center gap-3 shrink-0">
+        {clause.crossRefCount > 0 && (
+          <CrossRefPopover clauseId={clause.clauseId} count={clause.crossRefCount} />
+        )}
         <div className="flex items-center gap-1 text-xs text-muted-foreground" title="Verified documents">
           <FileText className="h-3 w-3" />
           <span>{clause.docCount}</span>

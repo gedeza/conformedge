@@ -9,6 +9,8 @@ export type ChecklistStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
 export type SubcontractorTier = "PLATINUM" | "GOLD" | "SILVER" | "BRONZE" | "UNRATED"
 export type AuditPackStatus = "DRAFT" | "COMPILING" | "READY" | "SUBMITTED" | "ACCEPTED"
 export type NotificationType = "DOCUMENT_EXPIRY" | "CAPA_DUE" | "ASSESSMENT_SCHEDULED" | "CERT_EXPIRY" | "SYSTEM"
+export type NotificationChannel = "IN_APP" | "EMAIL"
+export type CrossReferenceType = "EQUIVALENT" | "RELATED" | "SUPPORTING"
 
 export interface RootCauseWhy {
   question: string;  // "Why did X happen?"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { addDays, isBefore } from "date-fns"
 import { db } from "@/lib/db"
 import { sendNotificationEmail } from "@/lib/email"
+import { isNotificationEnabled, filterEnabledUsers } from "@/lib/notification-preferences"
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -13,7 +14,7 @@ const CRON_SECRET = process.env.CRON_SECRET
  * 2. CAPAs past their due date (not closed)
  * 3. Subcontractor certifications expiring within 30 days or expired
  *
- * Creates notifications for relevant org members.
+ * Creates notifications for relevant org members (respecting preferences).
  * Intended to be called by a cron scheduler (e.g. Vercel Cron, external).
  * Secured by CRON_SECRET header.
  */
@@ -72,22 +73,35 @@ export async function GET(request: NextRequest) {
       })
       if (existing) continue
 
-      await db.notification.create({
-        data: {
-          title: `Document ${urgency}`,
-          message: `"${doc.title}" ${urgency}. Please review and update.`,
-          type: "DOCUMENT_EXPIRY",
+      const title = `Document ${urgency}`
+      const message = `"${doc.title}" ${urgency}. Please review and update.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(doc.uploadedById, "DOCUMENT_EXPIRY", "IN_APP"),
+        isNotificationEnabled(doc.uploadedById, "DOCUMENT_EXPIRY", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title,
+            message,
+            type: "DOCUMENT_EXPIRY",
+            userId: doc.uploadedById,
+            organizationId: doc.organizationId,
+          },
+        })
+        created++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
           userId: doc.uploadedById,
-          organizationId: doc.organizationId,
-        },
-      })
-      sendNotificationEmail({
-        userId: doc.uploadedById,
-        title: `Document ${urgency}`,
-        message: `"${doc.title}" ${urgency}. Please review and update.`,
-        type: "DOCUMENT_EXPIRY",
-      })
-      created++
+          title,
+          message,
+          type: "DOCUMENT_EXPIRY",
+        })
+      }
     }
 
     // ── 2. CAPA due date notifications + auto-escalation ──────
@@ -142,24 +156,37 @@ export async function GET(request: NextRequest) {
             select: { userId: true },
           })
 
-          for (const mgr of orgManagers) {
+          const mgrIds = orgManagers.map((m) => m.userId)
+          const [inAppIds, emailIds] = await Promise.all([
+            filterEnabledUsers(mgrIds, "CAPA_DUE", "IN_APP"),
+            filterEnabledUsers(mgrIds, "CAPA_DUE", "EMAIL"),
+          ])
+
+          const escalationTitle = "CAPA escalated"
+          const escalationMsg = `"${capa.title}" auto-escalated from ${capa.priority} to ${newPriority} (${daysOverdue} days overdue).`
+
+          for (const userId of inAppIds) {
             await db.notification.create({
               data: {
-                title: "CAPA escalated",
-                message: `"${capa.title}" auto-escalated from ${capa.priority} to ${newPriority} (${daysOverdue} days overdue).`,
+                title: escalationTitle,
+                message: escalationMsg,
                 type: "CAPA_DUE",
-                userId: mgr.userId,
+                userId,
                 organizationId: capa.organizationId,
               },
             })
-            sendNotificationEmail({
-              userId: mgr.userId,
-              title: "CAPA escalated",
-              message: `"${capa.title}" auto-escalated from ${capa.priority} to ${newPriority} (${daysOverdue} days overdue).`,
-              type: "CAPA_DUE",
-            })
             created++
           }
+
+          for (const userId of emailIds) {
+            sendNotificationEmail({
+              userId,
+              title: escalationTitle,
+              message: escalationMsg,
+              type: "CAPA_DUE",
+            })
+          }
+
           escalated++
           continue // Skip duplicate overdue notification
         }
@@ -183,22 +210,35 @@ export async function GET(request: NextRequest) {
       })
       if (existing) continue
 
-      await db.notification.create({
-        data: {
-          title: "CAPA overdue",
-          message: `"${capa.title}" is past its due date. Please take action.`,
-          type: "CAPA_DUE",
+      const overdueTitle = "CAPA overdue"
+      const overdueMsg = `"${capa.title}" is past its due date. Please take action.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(targetUserId, "CAPA_DUE", "IN_APP"),
+        isNotificationEnabled(targetUserId, "CAPA_DUE", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: overdueTitle,
+            message: overdueMsg,
+            type: "CAPA_DUE",
+            userId: targetUserId,
+            organizationId: capa.organizationId,
+          },
+        })
+        created++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
           userId: targetUserId,
-          organizationId: capa.organizationId,
-        },
-      })
-      sendNotificationEmail({
-        userId: targetUserId,
-        title: "CAPA overdue",
-        message: `"${capa.title}" is past its due date. Please take action.`,
-        type: "CAPA_DUE",
-      })
-      created++
+          title: overdueTitle,
+          message: overdueMsg,
+          type: "CAPA_DUE",
+        })
+      }
     }
 
     // Also notify for CAPAs due within 7 days
@@ -229,22 +269,35 @@ export async function GET(request: NextRequest) {
       })
       if (existing) continue
 
-      await db.notification.create({
-        data: {
-          title: "CAPA due soon",
-          message: `"${capa.title}" is due within 7 days.`,
-          type: "CAPA_DUE",
+      const soonTitle = "CAPA due soon"
+      const soonMsg = `"${capa.title}" is due within 7 days.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(targetUserId, "CAPA_DUE", "IN_APP"),
+        isNotificationEnabled(targetUserId, "CAPA_DUE", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: soonTitle,
+            message: soonMsg,
+            type: "CAPA_DUE",
+            userId: targetUserId,
+            organizationId: capa.organizationId,
+          },
+        })
+        created++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
           userId: targetUserId,
-          organizationId: capa.organizationId,
-        },
-      })
-      sendNotificationEmail({
-        userId: targetUserId,
-        title: "CAPA due soon",
-        message: `"${capa.title}" is due within 7 days.`,
-        type: "CAPA_DUE",
-      })
-      created++
+          title: soonTitle,
+          message: soonMsg,
+          type: "CAPA_DUE",
+        })
+      }
     }
 
     // ── 3. Subcontractor certification expiry ──────────────
@@ -293,22 +346,35 @@ export async function GET(request: NextRequest) {
       })
       if (existing) continue
 
-      await db.notification.create({
-        data: {
-          title: `Certification ${urgency}`,
-          message: `${cert.subcontractor.name}'s "${cert.name}" certification ${urgency}.`,
-          type: "CERT_EXPIRY",
+      const certTitle = `Certification ${urgency}`
+      const certMsg = `${cert.subcontractor.name}'s "${cert.name}" certification ${urgency}.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(targetUser.userId, "CERT_EXPIRY", "IN_APP"),
+        isNotificationEnabled(targetUser.userId, "CERT_EXPIRY", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: certTitle,
+            message: certMsg,
+            type: "CERT_EXPIRY",
+            userId: targetUser.userId,
+            organizationId: cert.subcontractor.organizationId,
+          },
+        })
+        created++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
           userId: targetUser.userId,
-          organizationId: cert.subcontractor.organizationId,
-        },
-      })
-      sendNotificationEmail({
-        userId: targetUser.userId,
-        title: `Certification ${urgency}`,
-        message: `${cert.subcontractor.name}'s "${cert.name}" certification ${urgency}.`,
-        type: "CERT_EXPIRY",
-      })
-      created++
+          title: certTitle,
+          message: certMsg,
+          type: "CERT_EXPIRY",
+        })
+      }
     }
 
     return NextResponse.json({

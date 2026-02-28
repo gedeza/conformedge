@@ -1,19 +1,22 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getOrgSettings, getMembers, getStandardsList } from "./actions"
+import { getNotificationPreferences, type NotificationPreferenceMap } from "./notification-actions"
 import { OrgSettingsForm } from "./org-settings-form"
 import { MembersList } from "./members-list"
 import { StandardsList } from "./standards-list"
+import { NotificationPreferences } from "./notification-preferences"
 
 export default async function SettingsPage() {
   let org: Awaited<ReturnType<typeof getOrgSettings>> = null
   let members: Awaited<ReturnType<typeof getMembers>> = []
   let standards: Awaited<ReturnType<typeof getStandardsList>> = []
+  let notifPrefs: NotificationPreferenceMap | null = null
   let authError = false
 
   try {
-    ;[org, members, standards] = await Promise.all([
-      getOrgSettings(), getMembers(), getStandardsList(),
+    ;[org, members, standards, notifPrefs] = await Promise.all([
+      getOrgSettings(), getMembers(), getStandardsList(), getNotificationPreferences(),
     ])
   } catch {
     authError = true
@@ -65,10 +68,14 @@ export default async function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
-            <CardDescription>Configure notification preferences</CardDescription>
+            <CardDescription>Configure notification preferences per channel</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Notification settings coming in Phase 2 with AI integration.</p>
+            {authError || !notifPrefs ? (
+              <p className="text-sm text-muted-foreground">Select an organization to manage notifications.</p>
+            ) : (
+              <NotificationPreferences initialPreferences={notifPrefs} />
+            )}
           </CardContent>
         </Card>
       </div>

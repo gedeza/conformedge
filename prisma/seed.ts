@@ -6,6 +6,7 @@ import { ISO22301_SUB_CLAUSES } from "./seed-data/iso22301-subclauses"
 import { ISO27001_SUB_CLAUSES } from "./seed-data/iso27001-subclauses"
 import { ISO37001_SUB_CLAUSES } from "./seed-data/iso37001-subclauses"
 import { ISO39001_SUB_CLAUSES } from "./seed-data/iso39001-subclauses"
+import { generateHLSCrossReferences, DOMAIN_CROSS_REFERENCES } from "./seed-data/cross-references"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -709,6 +710,90 @@ async function main() {
   }
 
   console.log(`\n  ${totalSubClauses} total sub-clauses seeded.\n`)
+
+  // ── Pass 4: Seed Cross-References ──
+  console.log("Step 4: Seeding clause cross-references...\n")
+
+  // Build a lookup: `${standardCode}:${clauseNumber}` → clauseId
+  const clauseLookup = new Map<string, string>()
+  for (const [code, standardId] of standardMap.entries()) {
+    const clauses = await prisma.standardClause.findMany({
+      where: { standardId },
+      select: { id: true, clauseNumber: true },
+    })
+    for (const c of clauses) {
+      clauseLookup.set(`${code}:${c.clauseNumber}`, c.id)
+    }
+  }
+
+  // Generate HLS EQUIVALENT references
+  const hlsRefs = generateHLSCrossReferences()
+  let crossRefCount = 0
+  let skipped = 0
+
+  for (const ref of hlsRefs) {
+    const sourceId = clauseLookup.get(`${ref.sourceStandard}:${ref.sourceClauseNumber}`)
+    const targetId = clauseLookup.get(`${ref.targetStandard}:${ref.targetClauseNumber}`)
+
+    if (!sourceId || !targetId) {
+      skipped++
+      continue
+    }
+
+    const existing = await prisma.clauseCrossReference.findUnique({
+      where: { sourceClauseId_targetClauseId: { sourceClauseId: sourceId, targetClauseId: targetId } },
+    })
+
+    if (!existing) {
+      await prisma.clauseCrossReference.create({
+        data: {
+          sourceClauseId: sourceId,
+          targetClauseId: targetId,
+          mappingType: ref.mappingType,
+        },
+      })
+    }
+    crossRefCount++
+  }
+
+  console.log(`  HLS EQUIVALENT: ${crossRefCount} cross-references (${skipped} skipped — clause not found)`)
+
+  // Domain-specific RELATED/SUPPORTING references
+  let domainCount = 0
+
+  for (const ref of DOMAIN_CROSS_REFERENCES) {
+    const sourceId = clauseLookup.get(`${ref.sourceStandard}:${ref.sourceClauseNumber}`)
+    const targetId = clauseLookup.get(`${ref.targetStandard}:${ref.targetClauseNumber}`)
+
+    if (!sourceId || !targetId) {
+      console.warn(`  WARNING: Could not resolve ${ref.sourceStandard}:${ref.sourceClauseNumber} → ${ref.targetStandard}:${ref.targetClauseNumber}`)
+      continue
+    }
+
+    const existing = await prisma.clauseCrossReference.findUnique({
+      where: { sourceClauseId_targetClauseId: { sourceClauseId: sourceId, targetClauseId: targetId } },
+    })
+
+    if (existing) {
+      await prisma.clauseCrossReference.update({
+        where: { id: existing.id },
+        data: { mappingType: ref.mappingType, notes: ref.notes },
+      })
+    } else {
+      await prisma.clauseCrossReference.create({
+        data: {
+          sourceClauseId: sourceId,
+          targetClauseId: targetId,
+          mappingType: ref.mappingType,
+          notes: ref.notes,
+        },
+      })
+    }
+    domainCount++
+  }
+
+  console.log(`  Domain-specific: ${domainCount} cross-references`)
+  console.log(`\n  Total cross-references: ${crossRefCount + domainCount}\n`)
 
   // ── Summary ──
   const totalClauses = await prisma.standardClause.count()
