@@ -17,6 +17,8 @@ import { RemoveTagButton } from "./remove-tag-button"
 import { ClassifyButton } from "./classify-button"
 import { VerifyButton } from "./verify-button"
 import { VersionHistory } from "./version-history"
+import { GapInsightsPanel } from "./gap-insights-panel"
+import { getGapInsightsForDocument } from "@/lib/gap-detection"
 
 export default async function DocumentDetailPage({
   params,
@@ -28,6 +30,7 @@ export default async function DocumentDetailPage({
   let standards: Awaited<ReturnType<typeof getStandardsWithClauses>> = []
   let versions: Awaited<ReturnType<typeof getDocumentVersions>> = []
   let auditEvents: Awaited<ReturnType<typeof getDocumentAuditHistory>> = []
+  let gapInsights: Awaited<ReturnType<typeof getGapInsightsForDocument>> = []
   let role = "VIEWER"
 
   try {
@@ -39,6 +42,15 @@ export default async function DocumentDetailPage({
       getDocumentVersions(id),
       getDocumentAuditHistory(id),
     ])
+
+    // Fetch gap insights if document has classifications
+    if (doc && doc.classifications.length > 0) {
+      try {
+        gapInsights = await getGapInsightsForDocument(id, ctx.dbOrgId)
+      } catch {
+        // Non-blocking — gap insights are supplementary
+      }
+    }
   } catch {
     notFound()
   }
@@ -199,6 +211,7 @@ export default async function DocumentDetailPage({
               )}
             </CardContent>
           </Card>
+          <GapInsightsPanel insights={gapInsights} />
         </TabsContent>
 
         <TabsContent value="history">

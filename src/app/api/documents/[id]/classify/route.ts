@@ -6,6 +6,8 @@ import { logAuditEvent } from "@/lib/audit"
 import { extractText, isExtractable } from "@/lib/ai/extract-text"
 import { classifyDocument } from "@/lib/ai/classify-document"
 import type { StandardInput } from "@/lib/ai/classify-document"
+import { getGapInsightsForDocument } from "@/lib/gap-detection"
+import { notifyOrgMembers } from "@/lib/notifications"
 
 export async function POST(
   _request: Request,
@@ -146,10 +148,44 @@ export async function POST(
       organizationId: dbOrgId,
     })
 
+    // Compute gap insights for the classified document
+    let gapInsights: Awaited<ReturnType<typeof getGapInsightsForDocument>> = []
+    try {
+      gapInsights = await getGapInsightsForDocument(id, dbOrgId)
+
+      // Fire-and-forget: notify if any standard has very low coverage
+      for (const insight of gapInsights) {
+        if (insight.coveragePercent < 25) {
+          const title = `Low coverage: ${insight.standardCode} at ${insight.coveragePercent}%`
+          // Dedup: check if same notification was already sent today
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          const existing = await db.notification.findFirst({
+            where: {
+              organizationId: dbOrgId,
+              title,
+              createdAt: { gte: today },
+            },
+          })
+          if (!existing) {
+            notifyOrgMembers({
+              type: "SYSTEM",
+              title,
+              message: `${insight.standardCode} (${insight.standardName}) has only ${insight.coveragePercent}% clause coverage. ${insight.gaps} clauses remain as gaps.`,
+              organizationId: dbOrgId,
+            })
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Gap insights computation failed (non-blocking):", err)
+    }
+
     return NextResponse.json({
       success: true,
       count: resolved.length,
       summary: result.summary,
+      gapInsights,
     })
   } catch (error) {
     console.error("AI classification error:", error instanceof Error ? error.stack : error)

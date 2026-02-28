@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from "./actions"
 import { OnboardingCard } from "./onboarding-card"
+import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
 
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
@@ -155,6 +156,8 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        <GapCoverageCard />
 
         <Card>
           <CardHeader>
