@@ -16,6 +16,7 @@ import {
   ScrollText,
   ShieldCheck,
   SearchCheck,
+  GitCompareArrows,
   Bell,
 } from "lucide-react"
 
@@ -45,6 +46,7 @@ const navItems = [
   { title: "Audit Trail", href: "/audit-trail", icon: ScrollText },
   { title: "Reports", href: "/reports", icon: BarChart3 },
   { title: "Gap Analysis", href: "/gap-analysis", icon: SearchCheck },
+  { title: "Cross-References", href: "/cross-references", icon: GitCompareArrows },
 ]
 
 const footerItems = [
