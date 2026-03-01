@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/shared/page-header"
 import { getIMSDashboardData } from "./actions"
 import { IMSDashboardView } from "./ims-dashboard-view"
+import { IMSHelpPanel } from "./ims-help-panel"
 
 export default async function IMSDashboardPage() {
   const data = await getIMSDashboardData()
@@ -12,7 +13,9 @@ export default async function IMSDashboardPage() {
       <PageHeader
         heading="Integrated Management System"
         description="Cross-standard intelligence — see how your compliance efforts connect across all ISO standards."
-      />
+      >
+        <IMSHelpPanel />
+      </PageHeader>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>

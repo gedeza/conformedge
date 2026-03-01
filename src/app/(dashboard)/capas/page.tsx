@@ -5,6 +5,7 @@ import { AlertTriangle } from "lucide-react"
 import { getCapas, getProjectOptions, getMembers } from "./actions"
 import { CapaTable } from "./capa-table"
 import { CapaFormTrigger } from "./capa-form-trigger"
+import { CapasHelpPanel } from "./capas-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 interface Props {
@@ -48,6 +49,7 @@ export default async function CAPAsPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <PageHeader heading="CAPAs" description="Track corrective and preventive actions">
+        <CapasHelpPanel />
         <CapaFormTrigger projects={projects} members={members} role={role} />
       </PageHeader>
       {capas.length === 0 && pagination.total === 0 ? (

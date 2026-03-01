@@ -4,6 +4,7 @@ import { Package } from "lucide-react"
 import { getAuditPacks, getProjectOptions } from "./actions"
 import { AuditPackTable } from "./audit-pack-table"
 import { AuditPackFormTrigger } from "./audit-pack-form-trigger"
+import { AuditPacksHelpPanel } from "./audit-packs-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 export default async function AuditPacksPage() {
@@ -32,6 +33,7 @@ export default async function AuditPacksPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Audit Packs" description="Generate and manage audit evidence packs">
+        <AuditPacksHelpPanel />
         <AuditPackFormTrigger projects={projects} role={role} />
       </PageHeader>
       {packs.length === 0 ? (

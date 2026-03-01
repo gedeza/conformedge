@@ -17,6 +17,7 @@ import { parseDateRange } from "./date-utils"
 import { ReportChartsLazy as ReportCharts } from "./report-charts-lazy"
 import { DateRangeFilter } from "./date-range-filter"
 import { ReportExportButtons } from "./report-export-buttons"
+import { ReportsHelpPanel } from "./reports-help-panel"
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -61,6 +62,7 @@ export default async function ReportsPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <PageHeader heading="Reports" description="Compliance analytics and insights">
+        <ReportsHelpPanel />
         <ReportExportButtons />
       </PageHeader>
 

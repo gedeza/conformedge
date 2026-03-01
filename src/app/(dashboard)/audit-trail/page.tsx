@@ -3,6 +3,7 @@ import { EmptyState } from "@/components/shared/empty-state"
 import { ScrollText } from "lucide-react"
 import { getAuditEvents, getAuditFilterOptions } from "./actions"
 import { AuditTrailTable } from "./audit-trail-table"
+import { AuditTrailHelpPanel } from "./audit-trail-help-panel"
 import type { AuditEventRow } from "./columns"
 
 export default async function AuditTrailPage() {
@@ -34,7 +35,9 @@ export default async function AuditTrailPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader heading="Audit Trail" description="Immutable log of all system actions" />
+      <PageHeader heading="Audit Trail" description="Immutable log of all system actions">
+        <AuditTrailHelpPanel />
+      </PageHeader>
       {events.length === 0 && pagination.total === 0 ? (
         <EmptyState
           icon={ScrollText}

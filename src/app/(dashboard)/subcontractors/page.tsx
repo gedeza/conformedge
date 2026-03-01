@@ -4,6 +4,7 @@ import { HardHat } from "lucide-react"
 import { getSubcontractors } from "./actions"
 import { SubcontractorTable } from "./subcontractor-table"
 import { SubcontractorFormTrigger } from "./subcontractor-form-trigger"
+import { SubcontractorsHelpPanel } from "./subcontractors-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 export default async function SubcontractorsPage() {
@@ -35,6 +36,7 @@ export default async function SubcontractorsPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Subcontractors" description="Monitor subcontractor compliance and certifications">
+        <SubcontractorsHelpPanel />
         <SubcontractorFormTrigger role={role} />
       </PageHeader>
       {subcontractors.length === 0 ? (

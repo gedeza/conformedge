@@ -10,6 +10,7 @@ import { StandardsList } from "./standards-list"
 import { NotificationPreferences } from "./notification-preferences"
 import { WorkflowTemplates } from "./workflow-templates"
 import { ShareLinks } from "./share-links"
+import { SettingsHelpPanel } from "./settings-help-panel"
 import { canManageOrg } from "@/lib/permissions"
 import { db } from "@/lib/db"
 
@@ -45,7 +46,9 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader heading="Settings" description="Manage your organization settings" />
+      <PageHeader heading="Settings" description="Manage your organization settings">
+        <SettingsHelpPanel />
+      </PageHeader>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>

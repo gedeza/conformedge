@@ -5,6 +5,7 @@ import { ClipboardCheck } from "lucide-react"
 import { getAssessments, getStandards, getProjectOptions } from "./actions"
 import { AssessmentTable } from "./assessment-table"
 import { AssessmentFormTrigger } from "./assessment-form-trigger"
+import { AssessmentsHelpPanel } from "./assessments-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 interface Props {
@@ -48,6 +49,7 @@ export default async function AssessmentsPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <PageHeader heading="Assessments" description="Conduct gap assessments against ISO standards">
+        <AssessmentsHelpPanel />
         <AssessmentFormTrigger standards={standards} projects={projects} role={role} />
       </PageHeader>
       {assessments.length === 0 && pagination.total === 0 ? (

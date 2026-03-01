@@ -6,6 +6,7 @@ import { getDocuments, getProjectOptions } from "./actions"
 import { DocumentTable } from "./document-table"
 import { DocumentFormTrigger } from "./document-form-trigger"
 import { BulkUploadButton } from "./bulk-upload-button"
+import { DocumentsHelpPanel } from "./documents-help-panel"
 import { getAuthContext } from "@/lib/auth"
 import { canCreate } from "@/lib/permissions"
 import { getOrgAutoClassify } from "@/lib/ai/auto-classify"
@@ -62,6 +63,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
     <div className="space-y-6">
       <PageHeader heading="Documents" description="Upload and classify compliance documents">
         <div className="flex items-center gap-2">
+          <DocumentsHelpPanel />
           {canCreate(role) && <BulkUploadButton projects={projects} autoClassify={autoClassify} />}
           <DocumentFormTrigger projects={projects} role={role} autoClassify={autoClassify} hasWorkflowTemplates={hasWorkflowTemplates} />
         </div>

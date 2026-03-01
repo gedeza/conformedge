@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
 import { getGapAnalysis, getStandardOptions, getProjectOptions } from "./actions"
 import { GapAnalysisView } from "./gap-analysis-view"
+import { GapAnalysisHelpPanel } from "./gap-analysis-help-panel"
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -26,7 +27,7 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
         heading="Gap Analysis"
         description="ISO clause coverage across your organization"
       >
-        <SearchCheck className="h-5 w-5 text-muted-foreground" />
+        <GapAnalysisHelpPanel />
       </PageHeader>
 
       {/* Summary cards */}

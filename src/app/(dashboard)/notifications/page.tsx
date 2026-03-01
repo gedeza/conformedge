@@ -1,6 +1,7 @@
 import { getNotifications, getUnreadCount } from "./actions"
 import { PageHeader } from "@/components/shared/page-header"
 import { NotificationList } from "./notification-list"
+import { NotificationsHelpPanel } from "./notifications-help-panel"
 
 export default async function NotificationsPage() {
   const [notifications, unreadCount] = await Promise.all([
@@ -13,7 +14,9 @@ export default async function NotificationsPage() {
       <PageHeader
         heading="Notifications"
         description={unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
-      />
+      >
+        <NotificationsHelpPanel />
+      </PageHeader>
       <NotificationList initialNotifications={notifications} initialUnreadCount={unreadCount} />
     </div>
   )

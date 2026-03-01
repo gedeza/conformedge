@@ -14,6 +14,7 @@ import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from
 import { OnboardingCard } from "./onboarding-card"
 import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
 import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-widget"
+import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
@@ -58,7 +59,9 @@ export default async function DashboardPage() {
       <PageHeader
         heading="Dashboard"
         description="Overview of your compliance status"
-      />
+      >
+        <DashboardHelpPanel />
+      </PageHeader>
 
       {onboarding && !onboarding.isComplete && (
         <OnboardingCard
