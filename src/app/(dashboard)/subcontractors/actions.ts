@@ -240,6 +240,47 @@ export async function updateCertification(id: string, subcontractorId: string, v
   }
 }
 
+export async function reviewCertification(
+  id: string,
+  subcontractorId: string,
+  status: "APPROVED" | "REJECTED",
+  notes?: string
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const sub = await db.subcontractor.findFirst({ where: { id: subcontractorId, organizationId: dbOrgId } })
+    if (!sub) return { success: false, error: "Subcontractor not found" }
+
+    const cert = await db.subcontractorCertification.findFirst({ where: { id, subcontractorId } })
+    if (!cert) return { success: false, error: "Certification not found" }
+
+    await db.subcontractorCertification.update({
+      where: { id },
+      data: {
+        status,
+        reviewedAt: new Date(),
+        reviewNotes: notes || null,
+      },
+    })
+
+    logAuditEvent({
+      action: `REVIEW_CERTIFICATION_${status}`,
+      entityType: "SubcontractorCertification",
+      entityId: id,
+      metadata: { subcontractorId, certName: cert.name, status, notes },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/subcontractors/${subcontractorId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to review certification" }
+  }
+}
+
 export async function deleteCertification(id: string, subcontractorId: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()

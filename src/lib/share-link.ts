@@ -29,7 +29,7 @@ interface ShareAccessInput {
   shareLinkId: string
   ipAddress?: string | null
   userAgent?: string | null
-  action: "VIEW" | "DOWNLOAD" | "DOWNLOAD_PDF"
+  action: "VIEW" | "DOWNLOAD" | "DOWNLOAD_PDF" | "UPLOAD"
   metadata?: Record<string, unknown>
 }
 

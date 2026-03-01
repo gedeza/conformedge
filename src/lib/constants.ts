@@ -82,6 +82,7 @@ export const NOTIFICATION_TYPES = {
   CERT_EXPIRY: { label: "Certificate Expiry", color: "bg-yellow-100 text-yellow-800" },
   SYSTEM: { label: "System", color: "bg-gray-100 text-gray-800" },
   APPROVAL_REQUEST: { label: "Approval Request", color: "bg-purple-100 text-purple-800" },
+  CERT_UPLOAD: { label: "Certificate Upload", color: "bg-amber-100 text-amber-800" },
 } as const
 
 export const APPROVAL_STEP_STATUSES = {
@@ -108,6 +109,13 @@ export const SHARE_LINK_TYPES = {
   DOCUMENT: { label: "Document", color: "bg-blue-100 text-blue-800" },
   AUDIT_PACK: { label: "Audit Pack", color: "bg-purple-100 text-purple-800" },
   PORTAL: { label: "Portal", color: "bg-emerald-100 text-emerald-800" },
+  SUBCONTRACTOR: { label: "Subcontractor", color: "bg-orange-100 text-orange-800" },
+} as const
+
+export const CERTIFICATION_STATUSES = {
+  PENDING_REVIEW: { label: "Pending Review", color: "bg-amber-100 text-amber-800" },
+  APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },
+  REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
 } as const
 
 export const SA_CONSTRUCTION_INDUSTRIES = [

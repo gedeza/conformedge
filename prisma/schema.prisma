@@ -94,6 +94,7 @@ enum NotificationType {
   CERT_EXPIRY
   SYSTEM
   APPROVAL_REQUEST
+  CERT_UPLOAD
 }
 
 enum ApprovalStepStatus {
@@ -125,6 +126,13 @@ enum ShareLinkType {
   DOCUMENT
   AUDIT_PACK
   PORTAL
+  SUBCONTRACTOR
+}
+
+enum CertificationStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
 }
 
 enum ShareLinkStatus {
@@ -511,15 +519,18 @@ model Subcontractor {
 }
 
 model SubcontractorCertification {
-  id               String    @id @default(uuid())
+  id               String               @id @default(uuid())
   name             String
-  issuedBy         String?   @map("issued_by")
-  issuedDate       DateTime? @map("issued_date")
-  expiresAt        DateTime? @map("expires_at")
-  fileUrl          String?   @map("file_url")
-  subcontractorId  String    @map("subcontractor_id")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
+  issuedBy         String?              @map("issued_by")
+  issuedDate       DateTime?            @map("issued_date")
+  expiresAt        DateTime?            @map("expires_at")
+  fileUrl          String?              @map("file_url")
+  status           CertificationStatus? @map("status")
+  reviewedAt       DateTime?            @map("reviewed_at")
+  reviewNotes      String?              @map("review_notes")
+  subcontractorId  String               @map("subcontractor_id")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
 
   // Relations
   subcontractor Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)

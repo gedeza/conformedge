@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useTransition } from "react"
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
-import { Bell, Check, CheckCheck, FileWarning, AlertTriangle, CalendarClock, ShieldAlert, Megaphone } from "lucide-react"
+import { Bell, Check, CheckCheck, FileWarning, AlertTriangle, CalendarClock, ShieldAlert, Megaphone, Upload } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +22,7 @@ const typeIcons: Record<string, typeof Bell> = {
   ASSESSMENT_SCHEDULED: CalendarClock,
   CERT_EXPIRY: ShieldAlert,
   SYSTEM: Megaphone,
+  CERT_UPLOAD: Upload,
 }
 
 const typeColors: Record<string, string> = {
@@ -30,6 +31,7 @@ const typeColors: Record<string, string> = {
   ASSESSMENT_SCHEDULED: "text-blue-500",
   CERT_EXPIRY: "text-yellow-600",
   SYSTEM: "text-gray-500",
+  CERT_UPLOAD: "text-amber-500",
 }
 
 export function NotificationBell() {

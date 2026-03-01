@@ -97,6 +97,17 @@ export async function getSharedAuditPack(shareLink: ShareLink) {
   })
 }
 
+export async function getSharedSubcontractorData(shareLink: ShareLink) {
+  if (shareLink.type !== "SUBCONTRACTOR" || !shareLink.entityId) return null
+
+  return db.subcontractor.findFirst({
+    where: { id: shareLink.entityId, organizationId: shareLink.organizationId },
+    include: {
+      certifications: { orderBy: { createdAt: "desc" } },
+    },
+  })
+}
+
 interface PortalConfig {
   documents?: boolean
   assessments?: boolean

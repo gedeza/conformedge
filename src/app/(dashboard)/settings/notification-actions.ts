@@ -19,6 +19,7 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   "CERT_EXPIRY",
   "SYSTEM",
   "APPROVAL_REQUEST",
+  "CERT_UPLOAD",
 ]
 
 /**

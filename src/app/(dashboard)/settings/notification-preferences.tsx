@@ -31,6 +31,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Approval Requests",
     description: "When you are assigned to review a document for approval",
   },
+  CERT_UPLOAD: {
+    label: "Certificate Uploads",
+    description: "When a subcontractor uploads a certificate via the portal",
+  },
 }
 
 const TYPES: NotificationType[] = [
@@ -40,6 +44,7 @@ const TYPES: NotificationType[] = [
   "CERT_EXPIRY",
   "SYSTEM",
   "APPROVAL_REQUEST",
+  "CERT_UPLOAD",
 ]
 
 interface Props {

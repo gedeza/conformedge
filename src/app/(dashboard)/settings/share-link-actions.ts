@@ -19,7 +19,7 @@ const portalConfigSchema = z.object({
 })
 
 const createShareLinkSchema = z.object({
-  type: z.enum(["DOCUMENT", "AUDIT_PACK", "PORTAL"]),
+  type: z.enum(["DOCUMENT", "AUDIT_PACK", "PORTAL", "SUBCONTRACTOR"]),
   entityId: z.string().optional(),
   label: z.string().min(1, "Label is required").max(200),
   recipientEmail: z.email().optional().or(z.literal("")),
@@ -63,6 +63,10 @@ export async function createShareLink(values: CreateShareLinkValues): Promise<Ac
       if (!parsed.entityId) return { success: false, error: "Audit Pack ID is required" }
       const pack = await db.auditPack.findFirst({ where: { id: parsed.entityId, organizationId: dbOrgId } })
       if (!pack) return { success: false, error: "Audit Pack not found" }
+    } else if (parsed.type === "SUBCONTRACTOR") {
+      if (!parsed.entityId) return { success: false, error: "Subcontractor ID is required" }
+      const sub = await db.subcontractor.findFirst({ where: { id: parsed.entityId, organizationId: dbOrgId } })
+      if (!sub) return { success: false, error: "Subcontractor not found" }
     }
 
     const rawToken = generateShareToken()

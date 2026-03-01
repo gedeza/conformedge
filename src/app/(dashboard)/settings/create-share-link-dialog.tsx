@@ -23,7 +23,8 @@ import { createShareLink } from "./share-link-actions"
 interface CreateShareLinkDialogProps {
   documents: { id: string; title: string }[]
   auditPacks: { id: string; title: string }[]
-  prefilledType?: "DOCUMENT" | "AUDIT_PACK" | "PORTAL"
+  subcontractors?: { id: string; name: string }[]
+  prefilledType?: "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR"
   prefilledEntityId?: string
   trigger?: React.ReactNode
 }
@@ -48,6 +49,7 @@ function getExpiryDate(preset: string): Date {
 export function CreateShareLinkDialog({
   documents,
   auditPacks,
+  subcontractors = [],
   prefilledType,
   prefilledEntityId,
   trigger,
@@ -58,7 +60,7 @@ export function CreateShareLinkDialog({
   const [copied, setCopied] = useState(false)
 
   // Form state
-  const [type, setType] = useState<"DOCUMENT" | "AUDIT_PACK" | "PORTAL">(prefilledType ?? "DOCUMENT")
+  const [type, setType] = useState<"DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR">(prefilledType ?? "DOCUMENT")
   const [entityId, setEntityId] = useState(prefilledEntityId ?? "")
   const [label, setLabel] = useState("")
   const [recipientEmail, setRecipientEmail] = useState("")
@@ -99,7 +101,7 @@ export function CreateShareLinkDialog({
     startTransition(async () => {
       const result = await createShareLink({
         type,
-        entityId: type !== "PORTAL" ? entityId : undefined,
+        entityId: type !== "PORTAL" ? entityId || undefined : undefined,
         label,
         recipientEmail: recipientEmail || undefined,
         recipientName: recipientName || undefined,
@@ -174,6 +176,7 @@ export function CreateShareLinkDialog({
                   <SelectItem value="DOCUMENT">Document</SelectItem>
                   <SelectItem value="AUDIT_PACK">Audit Pack</SelectItem>
                   <SelectItem value="PORTAL">Portal</SelectItem>
+                  <SelectItem value="SUBCONTRACTOR">Subcontractor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -200,6 +203,20 @@ export function CreateShareLinkDialog({
                   <SelectContent>
                     {auditPacks.map((p) => (
                       <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {type === "SUBCONTRACTOR" && (
+              <div className="space-y-2">
+                <Label>Subcontractor</Label>
+                <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
+                  <SelectTrigger><SelectValue placeholder="Select a subcontractor" /></SelectTrigger>
+                  <SelectContent>
+                    {subcontractors.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

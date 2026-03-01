@@ -22,6 +22,7 @@ export default async function SettingsPage() {
   let shareLinks: ShareLinkItem[] = []
   let shareDocs: { id: string; title: string }[] = []
   let shareAuditPacks: { id: string; title: string }[] = []
+  let shareSubcontractors: { id: string; name: string }[] = []
   let role = "VIEWER"
   let authError = false
 
@@ -33,9 +34,10 @@ export default async function SettingsPage() {
     const ctx = await getAuthContext()
     role = ctx.role
     // Fetch entity pickers for share link dialog
-    ;[shareDocs, shareAuditPacks] = await Promise.all([
+    ;[shareDocs, shareAuditPacks, shareSubcontractors] = await Promise.all([
       db.document.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
       db.auditPack.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
+      db.subcontractor.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, name: true }, orderBy: { name: "asc" }, take: 200 }),
     ])
   } catch {
     authError = true
@@ -119,7 +121,7 @@ export default async function SettingsPage() {
             {authError ? (
               <p className="text-sm text-muted-foreground">Select an organization to manage share links.</p>
             ) : (
-              <ShareLinks links={shareLinks} canManage={canManageOrg(role)} documents={shareDocs} auditPacks={shareAuditPacks} />
+              <ShareLinks links={shareLinks} canManage={canManageOrg(role)} documents={shareDocs} auditPacks={shareAuditPacks} subcontractors={shareSubcontractors} />
             )}
           </CardContent>
         </Card>

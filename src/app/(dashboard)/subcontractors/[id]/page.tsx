@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format, differenceInDays } from "date-fns"
-import { ArrowLeft, Shield } from "lucide-react"
+import { ArrowLeft, Shield, FileDown, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,7 +11,12 @@ import { PageHeader } from "@/components/shared/page-header"
 import { getSubcontractor } from "../actions"
 import { calculateComplianceScore } from "../compliance-score"
 import { CertificationActions } from "./certification-actions"
+import { CertReviewActions } from "./cert-review-actions"
 import { ComplianceScoreCard } from "./compliance-score-card"
+import { InviteToPortalButton } from "./invite-to-portal-button"
+import { isR2Key } from "@/lib/r2-utils"
+import { getAuthContext } from "@/lib/auth"
+import { canManageOrg } from "@/lib/permissions"
 
 function getExpiryBadge(expiresAt: Date | null) {
   if (!expiresAt) return <Badge variant="outline">No expiry</Badge>
@@ -42,6 +47,12 @@ export default async function SubcontractorDetailPage({
 
   const complianceScore = calculateComplianceScore(sub)
 
+  let isAdmin = false
+  try {
+    const ctx = await getAuthContext()
+    isAdmin = canManageOrg(ctx.role)
+  } catch {}
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -54,7 +65,10 @@ export default async function SubcontractorDetailPage({
       </div>
 
       <PageHeader heading={sub.name} description={sub.registrationNumber ?? undefined}>
-        <StatusBadge type="subcontractor" value={sub.tier} />
+        <div className="flex items-center gap-2">
+          <StatusBadge type="subcontractor" value={sub.tier} />
+          {isAdmin && <InviteToPortalButton subcontractorId={sub.id} subcontractorName={sub.name} />}
+        </div>
       </PageHeader>
 
       <Tabs defaultValue="overview">
@@ -113,24 +127,40 @@ export default async function SubcontractorDetailPage({
               ) : (
                 <div className="space-y-3">
                   {sub.certifications.map((cert) => (
-                    <div key={cert.id} className="flex items-center justify-between rounded-md border p-4">
+                    <div key={cert.id} className="flex items-start justify-between rounded-md border p-4">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <Shield className="h-4 w-4 text-muted-foreground" />
                           <span className="font-medium">{cert.name}</span>
                           {getExpiryBadge(cert.expiresAt)}
+                          {cert.status && <StatusBadge type="certificationStatus" value={cert.status} />}
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {cert.issuedBy && `Issued by ${cert.issuedBy}`}
                           {cert.issuedDate && ` on ${format(cert.issuedDate, "PPP")}`}
                           {cert.expiresAt && ` — Expires ${format(cert.expiresAt, "PPP")}`}
                         </p>
+                        {cert.reviewNotes && (
+                          <p className="text-xs text-muted-foreground">Review: {cert.reviewNotes}</p>
+                        )}
                       </div>
-                      <CertificationActions
-                        subcontractorId={sub.id}
-                        certification={cert}
-                        mode="edit"
-                      />
+                      <div className="flex items-center gap-1 shrink-0">
+                        {cert.fileUrl && isR2Key(cert.fileUrl) && (
+                          <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                            <a href={`/api/download/${cert.fileUrl}`} target="_blank" rel="noopener noreferrer">
+                              <FileDown className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
+                        {cert.status === "PENDING_REVIEW" && isAdmin && (
+                          <CertReviewActions certId={cert.id} subcontractorId={sub.id} certName={cert.name} />
+                        )}
+                        <CertificationActions
+                          subcontractorId={sub.id}
+                          certification={cert}
+                          mode="edit"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

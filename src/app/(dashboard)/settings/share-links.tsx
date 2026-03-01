@@ -19,9 +19,10 @@ interface ShareLinksProps {
   canManage: boolean
   documents: { id: string; title: string }[]
   auditPacks: { id: string; title: string }[]
+  subcontractors?: { id: string; name: string }[]
 }
 
-export function ShareLinks({ links, canManage, documents, auditPacks }: ShareLinksProps) {
+export function ShareLinks({ links, canManage, documents, auditPacks, subcontractors = [] }: ShareLinksProps) {
   const [accessLogLinkId, setAccessLogLinkId] = useState<string | null>(null)
 
   async function handleRevoke(id: string) {
@@ -46,7 +47,7 @@ export function ShareLinks({ links, canManage, documents, auditPacks }: ShareLin
     <div className="space-y-4">
       {canManage && (
         <div className="flex justify-end">
-          <CreateShareLinkDialog documents={documents} auditPacks={auditPacks} />
+          <CreateShareLinkDialog documents={documents} auditPacks={auditPacks} subcontractors={subcontractors} />
         </div>
       )}
 
