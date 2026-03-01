@@ -10,9 +10,10 @@ interface DocumentFormTriggerProps {
   projects: { id: string; name: string }[]
   role: string
   autoClassify?: boolean
+  hasWorkflowTemplates?: boolean
 }
 
-export function DocumentFormTrigger({ projects, role, autoClassify = false }: DocumentFormTriggerProps) {
+export function DocumentFormTrigger({ projects, role, autoClassify = false, hasWorkflowTemplates = false }: DocumentFormTriggerProps) {
   const [open, setOpen] = useState(false)
 
   if (!canCreate(role)) return null
@@ -23,7 +24,7 @@ export function DocumentFormTrigger({ projects, role, autoClassify = false }: Do
         <Upload className="mr-2 h-4 w-4" />
         Upload Document
       </Button>
-      <DocumentForm open={open} onOpenChange={setOpen} projects={projects} autoClassify={autoClassify} />
+      <DocumentForm open={open} onOpenChange={setOpen} projects={projects} autoClassify={autoClassify} hasWorkflowTemplates={hasWorkflowTemplates} />
     </>
   )
 }

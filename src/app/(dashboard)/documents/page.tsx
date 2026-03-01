@@ -9,6 +9,7 @@ import { BulkUploadButton } from "./bulk-upload-button"
 import { getAuthContext } from "@/lib/auth"
 import { canCreate } from "@/lib/permissions"
 import { getOrgAutoClassify } from "@/lib/ai/auto-classify"
+import { db } from "@/lib/db"
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -23,20 +24,23 @@ export default async function DocumentsPage({ searchParams }: Props) {
   let projects: Awaited<ReturnType<typeof getProjectOptions>> = []
   let role = "VIEWER"
   let autoClassify = false
+  let hasWorkflowTemplates = false
   let authError = false
 
   try {
     const ctx = await getAuthContext()
     role = ctx.role
-    const [result, projectList, autoClassifySetting] = await Promise.all([
+    const [result, projectList, autoClassifySetting, templateCount] = await Promise.all([
       getDocuments(page),
       getProjectOptions(),
       getOrgAutoClassify(ctx.dbOrgId),
+      db.approvalWorkflowTemplate.count({ where: { organizationId: ctx.dbOrgId } }),
     ])
     documents = result.documents
     pagination = result.pagination
     projects = projectList
     autoClassify = autoClassifySetting
+    hasWorkflowTemplates = templateCount > 0
   } catch {
     authError = true
   }
@@ -59,7 +63,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
       <PageHeader heading="Documents" description="Upload and classify compliance documents">
         <div className="flex items-center gap-2">
           {canCreate(role) && <BulkUploadButton projects={projects} autoClassify={autoClassify} />}
-          <DocumentFormTrigger projects={projects} role={role} autoClassify={autoClassify} />
+          <DocumentFormTrigger projects={projects} role={role} autoClassify={autoClassify} hasWorkflowTemplates={hasWorkflowTemplates} />
         </div>
       </PageHeader>
       {documents.length === 0 && pagination.total === 0 ? (
@@ -68,7 +72,7 @@ export default async function DocumentsPage({ searchParams }: Props) {
           title="No documents yet"
           description="Upload documents for AI-powered classification against ISO standards."
         >
-          <DocumentFormTrigger projects={projects} role={role} autoClassify={autoClassify} />
+          <DocumentFormTrigger projects={projects} role={role} autoClassify={autoClassify} hasWorkflowTemplates={hasWorkflowTemplates} />
         </EmptyState>
       ) : (
         <>

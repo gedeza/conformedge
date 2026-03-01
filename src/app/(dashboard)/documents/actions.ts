@@ -369,6 +369,19 @@ export async function updateDocumentStatus(id: string, status: string): Promise<
     })
     if (!existing) return { success: false, error: "Document not found" }
 
+    // Block direct APPROVED transition when org has workflow templates
+    if (status === "APPROVED") {
+      const templateCount = await db.approvalWorkflowTemplate.count({
+        where: { organizationId: dbOrgId },
+      })
+      if (templateCount > 0) {
+        return {
+          success: false,
+          error: "Documents require an approval workflow to be marked as Approved. Use the Approvals tab to submit for review.",
+        }
+      }
+    }
+
     await db.document.update({
       where: { id },
       data: { status: status as typeof VALID_DOCUMENT_STATUSES[number] },

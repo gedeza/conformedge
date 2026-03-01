@@ -9,6 +9,8 @@ import {
   AUDIT_PACK_STATUSES,
   RISK_LEVELS,
   CAPA_PRIORITIES,
+  APPROVAL_STEP_STATUSES,
+  APPROVAL_REQUEST_STATUSES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -22,6 +24,8 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   auditPack: AUDIT_PACK_STATUSES,
   risk: RISK_LEVELS,
   priority: CAPA_PRIORITIES,
+  approvalStep: APPROVAL_STEP_STATUSES,
+  approvalRequest: APPROVAL_REQUEST_STATUSES,
 }
 
 interface StatusBadgeProps {

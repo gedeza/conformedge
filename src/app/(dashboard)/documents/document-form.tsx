@@ -48,9 +48,10 @@ interface DocumentFormProps {
   }
   projects: { id: string; name: string }[]
   autoClassify?: boolean
+  hasWorkflowTemplates?: boolean
 }
 
-export function DocumentForm({ open, onOpenChange, document, projects, autoClassify = false }: DocumentFormProps) {
+export function DocumentForm({ open, onOpenChange, document, projects, autoClassify = false, hasWorkflowTemplates = false }: DocumentFormProps) {
   const [isPending, startTransition] = useTransition()
   const [uploading, setUploading] = useState(false)
   const isEditing = !!document
@@ -201,9 +202,11 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Object.entries(DOCUMENT_STATUSES).map(([v, c]) => (
-                          <SelectItem key={v} value={v}>{c.label}</SelectItem>
-                        ))}
+                        {Object.entries(DOCUMENT_STATUSES)
+                          .filter(([v]) => !(hasWorkflowTemplates && v === "APPROVED"))
+                          .map(([v, c]) => (
+                            <SelectItem key={v} value={v}>{c.label}</SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

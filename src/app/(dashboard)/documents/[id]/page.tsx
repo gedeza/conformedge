@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getDocument, getStandardsWithClauses, getDocumentVersions, getDocumentAuditHistory } from "../actions"
-import { getAuthContext } from "@/lib/auth"
+import { getDocumentApprovalHistory } from "../approval-actions"
+import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { canEdit } from "@/lib/permissions"
 import { isExtractable } from "@/lib/ai/extract-text"
 import { getDownloadUrl } from "@/lib/r2-utils"
@@ -20,9 +21,11 @@ import { VerifyButton } from "./verify-button"
 import { VersionHistory } from "./version-history"
 import { GapInsightsPanel } from "./gap-insights-panel"
 import { CrossStandardSuggestions } from "./cross-standard-suggestions"
+import { ApprovalPanel } from "./approval-panel"
 import { getGapInsightsForDocument } from "@/lib/gap-detection"
 import { getDocumentCrossStandardSuggestions } from "@/lib/ims/cross-standard-suggestions"
 import type { DocumentSuggestion } from "@/lib/ims/cross-standard-suggestions"
+import { db } from "@/lib/db"
 
 export default async function DocumentDetailPage({
   params,
@@ -36,16 +39,28 @@ export default async function DocumentDetailPage({
   let auditEvents: Awaited<ReturnType<typeof getDocumentAuditHistory>> = []
   let gapInsights: Awaited<ReturnType<typeof getGapInsightsForDocument>> = []
   let crossStandardSuggestions: DocumentSuggestion[] = []
+  let approvalHistory: Awaited<ReturnType<typeof getDocumentApprovalHistory>> = []
+  let workflowTemplates: { id: string; name: string; steps: unknown; isDefault: boolean }[] = []
+  let orgMembers: { id: string; name: string; role: string }[] = []
   let role = "VIEWER"
+  let currentUserId = ""
 
   try {
     const ctx = await getAuthContext()
     role = ctx.role
-    ;[doc, standards, versions, auditEvents] = await Promise.all([
+    currentUserId = ctx.dbUserId
+    ;[doc, standards, versions, auditEvents, approvalHistory, workflowTemplates, orgMembers] = await Promise.all([
       getDocument(id),
       getStandardsWithClauses(),
       getDocumentVersions(id),
       getDocumentAuditHistory(id),
+      getDocumentApprovalHistory(id),
+      db.approvalWorkflowTemplate.findMany({
+        where: { organizationId: ctx.dbOrgId },
+        select: { id: true, name: true, steps: true, isDefault: true },
+        orderBy: [{ isDefault: "desc" }, { createdAt: "desc" }],
+      }),
+      getOrgMembers(ctx.dbOrgId),
     ])
 
     // Fetch gap insights and cross-standard suggestions if document has classifications
@@ -94,6 +109,12 @@ export default async function DocumentDetailPage({
         <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="classifications">Classifications ({doc.classifications.length})</TabsTrigger>
+          <TabsTrigger value="approvals">
+            Approvals
+            {approvalHistory.some((r) => r.status === "IN_PROGRESS") && (
+              <Badge variant="default" className="ml-1.5 h-5 px-1.5 text-xs">Active</Badge>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="history">History ({versions.length})</TabsTrigger>
         </TabsList>
 
@@ -224,6 +245,26 @@ export default async function DocumentDetailPage({
             documentId={doc.id}
             suggestions={crossStandardSuggestions}
           />
+        </TabsContent>
+
+        <TabsContent value="approvals">
+          <Card>
+            <CardHeader>
+              <CardTitle>Approval Workflow</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ApprovalPanel
+                documentId={doc.id}
+                documentTitle={doc.title}
+                documentStatus={doc.status}
+                approvalHistory={approvalHistory}
+                currentUserId={currentUserId}
+                role={role}
+                templates={workflowTemplates}
+                members={orgMembers}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="history">

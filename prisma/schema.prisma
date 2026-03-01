@@ -93,6 +93,21 @@ enum NotificationType {
   ASSESSMENT_SCHEDULED
   CERT_EXPIRY
   SYSTEM
+  APPROVAL_REQUEST
+}
+
+enum ApprovalStepStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SKIPPED
+}
+
+enum ApprovalRequestStatus {
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  CANCELLED
 }
 
 enum NotificationChannel {
@@ -132,8 +147,10 @@ model Organization {
   subcontractors   Subcontractor[]
   auditPacks       AuditPack[]
   auditTrailEvents AuditTrailEvent[]
-  notifications          Notification[]
-  checklistTemplates     ChecklistTemplate[]
+  notifications              Notification[]
+  checklistTemplates         ChecklistTemplate[]
+  approvalWorkflowTemplates  ApprovalWorkflowTemplate[]
+  approvalRequests           ApprovalRequest[]
 
   @@map("organizations")
 }
@@ -164,6 +181,9 @@ model User {
   notifications              Notification[]
   notificationPreferences    NotificationPreference[]
   checklistTemplates         ChecklistTemplate[]
+  submittedApprovalRequests  ApprovalRequest[]          @relation("ApprovalSubmitter")
+  assignedApprovalSteps      ApprovalStep[]             @relation("ApprovalStepAssignee")
+  createdWorkflowTemplates   ApprovalWorkflowTemplate[] @relation("WorkflowTemplateCreator")
 
   @@map("users")
 }
@@ -271,8 +291,9 @@ model Document {
   project         Project?                 @relation(fields: [projectId], references: [id], onDelete: SetNull)
   uploadedBy      User                     @relation("DocumentUploader", fields: [uploadedById], references: [id])
   parentDocument  Document?                @relation("DocumentVersions", fields: [parentDocumentId], references: [id], onDelete: SetNull)
-  childVersions   Document[]               @relation("DocumentVersions")
-  classifications DocumentClassification[]
+  childVersions    Document[]               @relation("DocumentVersions")
+  classifications  DocumentClassification[]
+  approvalRequests ApprovalRequest[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_document_org_created")
   @@index([organizationId, status], map: "idx_document_org_status")
@@ -615,4 +636,72 @@ model ClauseCrossReference {
 
   @@unique([sourceClauseId, targetClauseId])
   @@map("clause_cross_references")
+}
+
+// ─────────────────────────────────────────────
+// APPROVAL WORKFLOWS
+// ─────────────────────────────────────────────
+
+model ApprovalWorkflowTemplate {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  steps          Json     // Array of { stepOrder: number, role: string, label: string }
+  isDefault      Boolean  @default(false) @map("is_default")
+  organizationId String   @map("organization_id")
+  createdById    String   @map("created_by_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy        User              @relation("WorkflowTemplateCreator", fields: [createdById], references: [id])
+  approvalRequests ApprovalRequest[]
+
+  @@map("approval_workflow_templates")
+}
+
+model ApprovalRequest {
+  id             String                @id @default(uuid())
+  status         ApprovalRequestStatus @default(IN_PROGRESS)
+  documentId     String                @map("document_id")
+  templateId     String?               @map("template_id")
+  submittedById  String                @map("submitted_by_id")
+  organizationId String                @map("organization_id")
+  completedAt    DateTime?             @map("completed_at")
+  createdAt      DateTime              @default(now()) @map("created_at")
+  updatedAt      DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  document     Document                  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  template     ApprovalWorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  submittedBy  User                      @relation("ApprovalSubmitter", fields: [submittedById], references: [id])
+  organization Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  steps        ApprovalStep[]
+
+  @@index([documentId, createdAt(sort: Desc)], map: "idx_approval_request_doc")
+  @@index([organizationId, status], map: "idx_approval_request_org_status")
+  @@map("approval_requests")
+}
+
+model ApprovalStep {
+  id                String             @id @default(uuid())
+  stepOrder         Int                @map("step_order")
+  label             String
+  requiredRole      String             @map("required_role")
+  status            ApprovalStepStatus @default(PENDING)
+  comment           String?
+  approvalRequestId String             @map("approval_request_id")
+  assignedToId      String             @map("assigned_to_id")
+  decidedAt         DateTime?          @map("decided_at")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  approvalRequest ApprovalRequest @relation(fields: [approvalRequestId], references: [id], onDelete: Cascade)
+  assignedTo      User            @relation("ApprovalStepAssignee", fields: [assignedToId], references: [id])
+
+  @@index([approvalRequestId, stepOrder], map: "idx_approval_step_request_order")
+  @@index([assignedToId, status], map: "idx_approval_step_assignee_status")
+  @@map("approval_steps")
 }

@@ -13,6 +13,7 @@ import {
 import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from "./actions"
 import { OnboardingCard } from "./onboarding-card"
 import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
+import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-widget"
 
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
@@ -158,6 +159,8 @@ export default async function DashboardPage() {
         </Card>
 
         <GapCoverageCard />
+
+        <PendingReviewsWidget />
 
         <Card>
           <CardHeader>

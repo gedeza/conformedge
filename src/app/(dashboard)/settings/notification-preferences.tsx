@@ -27,6 +27,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "System",
     description: "General system notifications and announcements",
   },
+  APPROVAL_REQUEST: {
+    label: "Approval Requests",
+    description: "When you are assigned to review a document for approval",
+  },
 }
 
 const TYPES: NotificationType[] = [
@@ -35,6 +39,7 @@ const TYPES: NotificationType[] = [
   "ASSESSMENT_SCHEDULED",
   "CERT_EXPIRY",
   "SYSTEM",
+  "APPROVAL_REQUEST",
 ]
 
 interface Props {

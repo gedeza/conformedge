@@ -30,6 +30,11 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "System",
     hint: "",
   },
+  APPROVAL_REQUEST: {
+    color: "#7c3aed",
+    label: "Approval Request",
+    hint: "Please review the document and approve or reject.",
+  },
 }
 
 function EmailLayout({ children }: { children: React.ReactNode }) {

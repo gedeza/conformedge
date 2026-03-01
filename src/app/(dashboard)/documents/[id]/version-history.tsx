@@ -129,6 +129,11 @@ export function VersionHistory({
     NEW_VERSION: "New version uploaded",
     AI_CLASSIFY: "AI classification",
     VERIFY_CLASSIFICATION: "Classification verified",
+    SUBMIT_FOR_APPROVAL: "Submitted for approval",
+    APPROVAL_STEP_APPROVED: "Approval step approved",
+    APPROVAL_STEP_REJECTED: "Approval step rejected",
+    APPROVAL_CANCELLED: "Approval cancelled",
+    APPROVAL_STEP_SKIPPED: "Approval step skipped",
   }
 
   return (

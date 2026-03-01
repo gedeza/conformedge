@@ -18,6 +18,7 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   "ASSESSMENT_SCHEDULED",
   "CERT_EXPIRY",
   "SYSTEM",
+  "APPROVAL_REQUEST",
 ]
 
 /**
