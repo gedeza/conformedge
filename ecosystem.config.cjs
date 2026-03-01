@@ -26,7 +26,7 @@ module.exports = {
     // Restart policy
     max_restarts: 10,
     min_uptime: '10s',
-    restart_delay: 5000,
+    exp_backoff_restart_delay: 1000,
 
     // Graceful shutdown - prevents port conflicts
     kill_timeout: 10000,
@@ -39,6 +39,6 @@ module.exports = {
     merge_logs: true,
 
     // Memory management
-    max_memory_restart: '400M'
+    max_memory_restart: '768M'
   }]
 };
