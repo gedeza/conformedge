@@ -4,6 +4,7 @@ import { FolderKanban } from "lucide-react"
 import { getProjects } from "./actions"
 import { ProjectTable } from "./project-table"
 import { ProjectFormTrigger } from "./project-form-trigger"
+import { ProjectsHelpPanel } from "./projects-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 export default async function ProjectsPage() {
@@ -35,6 +36,7 @@ export default async function ProjectsPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Projects" description="Manage your compliance projects">
+        <ProjectsHelpPanel />
         <ProjectFormTrigger role={role} />
       </PageHeader>
       {projects.length === 0 ? (
