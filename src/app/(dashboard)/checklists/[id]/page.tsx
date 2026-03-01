@@ -31,8 +31,11 @@ export default async function ChecklistDetailPage({
   if (!checklist) notFound()
 
   const totalItems = checklist.items.length
-  const compliant = checklist.items.filter((i) => i.isCompliant === true).length
-  const nonCompliant = checklist.items.filter((i) => i.isCompliant === false).length
+  const complianceItems = checklist.items.filter((i) => !i.fieldType || i.fieldType === "COMPLIANCE")
+  const customItems = checklist.items.filter((i) => i.fieldType && i.fieldType !== "COMPLIANCE")
+  const compliant = complianceItems.filter((i) => i.isCompliant === true).length
+  const nonCompliant = complianceItems.filter((i) => i.isCompliant === false).length
+  const responded = customItems.filter((i) => i.response !== null).length
 
   return (
     <div className="space-y-6">
@@ -58,7 +61,7 @@ export default async function ChecklistDetailPage({
         </Alert>
       )}
 
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className={`grid gap-4 grid-cols-2 ${customItems.length > 0 ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Completion</CardTitle>
@@ -86,6 +89,16 @@ export default async function ChecklistDetailPage({
           </CardHeader>
           <CardContent><div className="text-2xl font-bold text-red-700">{nonCompliant}</div></CardContent>
         </Card>
+        {customItems.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-blue-700">Responded</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-700">{responded}/{customItems.length}</div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <Card>
@@ -106,7 +119,12 @@ export default async function ChecklistDetailPage({
               {checklist.items.map((item) => (
                 <ChecklistItemRow
                   key={item.id}
-                  item={item}
+                  item={{
+                    ...item,
+                    fieldType: item.fieldType ?? null,
+                    fieldConfig: item.fieldConfig as Record<string, unknown> | null,
+                    response: item.response as Record<string, unknown> | null,
+                  }}
                   checklistId={checklist.id}
                 />
               ))}

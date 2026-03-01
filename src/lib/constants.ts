@@ -178,6 +178,14 @@ export const NAV_ITEMS = [
   { title: "Cross-References", href: "/cross-references", icon: "GitCompareArrows" },
 ] as const
 
+export const FIELD_TYPES = {
+  COMPLIANCE: { label: "Compliance", icon: "CheckSquare" },
+  BOOLEAN: { label: "Yes / No", icon: "ToggleLeft" },
+  NUMBER: { label: "Number", icon: "Hash" },
+  RATING: { label: "Rating", icon: "Star" },
+  SELECT: { label: "Dropdown", icon: "ChevronDown" },
+} as const
+
 export const MAPPING_TYPE_COLORS = {
   EQUIVALENT: {
     dot: "bg-blue-500",

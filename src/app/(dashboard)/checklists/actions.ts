@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete, canConduct } from "@/lib/permissions"
+import type { Prisma } from "@/generated/prisma/client"
 import type { ActionResult } from "@/types"
 
 const checklistSchema = z.object({
@@ -275,7 +276,11 @@ async function recalculateCompletion(checklistId: string) {
   const total = items.length
   if (total === 0) return
 
-  const assessed = items.filter((i) => i.isCompliant !== null).length
+  const assessed = items.filter((i) => {
+    const ft = i.fieldType
+    if (!ft || ft === "COMPLIANCE") return i.isCompliant !== null
+    return i.response !== null
+  }).length
   const completionPercentage = (assessed / total) * 100
 
   let status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
@@ -292,7 +297,9 @@ async function recalculateCompletion(checklistId: string) {
 export async function addChecklistItem(
   checklistId: string,
   description: string,
-  standardClauseId?: string
+  standardClauseId?: string,
+  fieldType?: string | null,
+  fieldConfig?: Record<string, unknown> | null,
 ): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
@@ -312,6 +319,8 @@ export async function addChecklistItem(
         sortOrder: nextOrder,
         checklistId,
         standardClauseId: standardClauseId || null,
+        fieldType: fieldType || null,
+        fieldConfig: fieldConfig ? (fieldConfig as unknown as Prisma.InputJsonValue) : undefined,
       },
     })
 
@@ -439,6 +448,8 @@ export async function saveChecklistAsTemplate(
       description: item.description,
       clauseNumber: item.standardClause?.clauseNumber ?? undefined,
       standardClauseId: item.standardClauseId ?? undefined,
+      fieldType: item.fieldType ?? undefined,
+      fieldConfig: item.fieldConfig ?? undefined,
     }))
 
     const template = await db.checklistTemplate.create({
@@ -499,6 +510,8 @@ export async function createChecklistFromTemplate(
       description: string
       clauseNumber?: string
       standardClauseId?: string
+      fieldType?: string
+      fieldConfig?: Record<string, unknown>
     }>
 
     if (templateItems.length > 0) {
@@ -508,6 +521,8 @@ export async function createChecklistFromTemplate(
           sortOrder: index + 1,
           checklistId: checklist.id,
           standardClauseId: item.standardClauseId || null,
+          fieldType: item.fieldType || null,
+          fieldConfig: item.fieldConfig ? (item.fieldConfig as unknown as Prisma.InputJsonValue) : undefined,
         })),
       })
     }
@@ -671,6 +686,105 @@ export async function getRecurringSchedules() {
     },
     orderBy: { nextDueDate: "asc" },
   })
+}
+
+export async function updateItemResponse(
+  itemId: string,
+  checklistId: string,
+  fieldType: string,
+  response: Record<string, unknown>,
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
+
+    const checklist = await db.complianceChecklist.findFirst({ where: { id: checklistId, organizationId: dbOrgId } })
+    if (!checklist) return { success: false, error: "Checklist not found" }
+
+    const item = await db.checklistItem.findFirst({ where: { id: itemId, checklistId } })
+    if (!item) return { success: false, error: "Item not found" }
+
+    // Validate response shape matches fieldType
+    const val = response.value
+    switch (fieldType) {
+      case "BOOLEAN":
+        if (typeof val !== "boolean") return { success: false, error: "Boolean value required" }
+        break
+      case "NUMBER":
+        if (typeof val !== "number") return { success: false, error: "Numeric value required" }
+        if (item.fieldConfig) {
+          const cfg = item.fieldConfig as { min?: number; max?: number }
+          if (cfg.min !== undefined && val < cfg.min) return { success: false, error: `Value must be at least ${cfg.min}` }
+          if (cfg.max !== undefined && val > cfg.max) return { success: false, error: `Value must be at most ${cfg.max}` }
+        }
+        break
+      case "RATING":
+        if (typeof val !== "number" || val < 1 || val > 5) return { success: false, error: "Rating must be 1-5" }
+        break
+      case "SELECT":
+        if (typeof val !== "string") return { success: false, error: "Selection required" }
+        if (item.fieldConfig) {
+          const cfg = item.fieldConfig as { options?: string[] }
+          if (cfg.options && !cfg.options.includes(val)) return { success: false, error: "Invalid selection" }
+        }
+        break
+      default:
+        return { success: false, error: "Invalid field type" }
+    }
+
+    await db.checklistItem.update({
+      where: { id: itemId },
+      data: { response: response as unknown as Prisma.InputJsonValue },
+    })
+
+    await recalculateCompletion(checklistId)
+
+    logAuditEvent({
+      action: "UPDATE_RESPONSE",
+      entityType: "Checklist",
+      entityId: checklistId,
+      metadata: { itemId, fieldType, response },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/checklists/${checklistId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update response" }
+  }
+}
+
+export async function updateTemplateItems(
+  templateId: string,
+  items: Array<{ description: string; clauseNumber?: string; standardClauseId?: string; fieldType?: string; fieldConfig?: Record<string, unknown> }>,
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const template = await db.checklistTemplate.findFirst({ where: { id: templateId, organizationId: dbOrgId } })
+    if (!template) return { success: false, error: "Template not found" }
+
+    await db.checklistTemplate.update({
+      where: { id: templateId },
+      data: { items: items as unknown as Prisma.InputJsonValue },
+    })
+
+    logAuditEvent({
+      action: "UPDATE_TEMPLATE_ITEMS",
+      entityType: "ChecklistTemplate",
+      entityId: templateId,
+      metadata: { name: template.name, itemCount: items.length },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update template items" }
+  }
 }
 
 export async function getStandards() {

@@ -499,6 +499,9 @@ model ChecklistItem {
   evidence         String?
   notes            String?
   sortOrder        Int      @map("sort_order")
+  fieldType        String?  @map("field_type")
+  fieldConfig      Json?    @map("field_config")
+  response         Json?
   checklistId      String   @map("checklist_id")
   standardClauseId String?  @map("standard_clause_id")
   capaId           String?  @map("capa_id")

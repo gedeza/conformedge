@@ -18,6 +18,31 @@ export type ShareLinkType = "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTO
 export type CertificationStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED"
 export type ShareLinkStatus = "ACTIVE" | "EXPIRED" | "REVOKED"
 
+export type FieldType = "COMPLIANCE" | "BOOLEAN" | "NUMBER" | "RATING" | "SELECT"
+
+export interface NumberFieldConfig {
+  min?: number
+  max?: number
+  unit?: string
+}
+
+export interface RatingFieldConfig {
+  max: number
+}
+
+export interface SelectFieldConfig {
+  options: string[]
+}
+
+export type FieldConfig = NumberFieldConfig | RatingFieldConfig | SelectFieldConfig
+
+export interface BooleanResponse { value: boolean }
+export interface NumberResponse { value: number }
+export interface RatingResponse { value: number }
+export interface SelectResponse { value: string }
+
+export type FieldResponse = BooleanResponse | NumberResponse | RatingResponse | SelectResponse
+
 export interface RootCauseWhy {
   question: string;  // "Why did X happen?"
   answer: string;    // The answer

@@ -25,7 +25,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { RECURRENCE_FREQUENCIES } from "@/lib/constants"
 import { createChecklistFromTemplate, deleteTemplate } from "./actions"
 import { ConfigureRecurrenceDialog } from "./configure-recurrence-dialog"
+import { EditTemplateItemsDialog } from "./edit-template-items-dialog"
 import { canCreate, canDelete, canEdit } from "@/lib/permissions"
+import { FIELD_TYPES } from "@/lib/constants"
 import type { RecurrenceFrequency } from "@/types"
 
 interface Template {
@@ -110,6 +112,20 @@ export function TemplatePicker({ templates, projects, members, role }: TemplateP
     return Array.isArray(items) ? items.length : 0
   }
 
+  const fieldTypeSummary = (template: Template) => {
+    const items = template.items as Array<{ fieldType?: string }>
+    if (!Array.isArray(items)) return ""
+    const counts: Record<string, number> = {}
+    for (const item of items) {
+      if (item.fieldType && item.fieldType !== "COMPLIANCE") {
+        const label = FIELD_TYPES[item.fieldType as keyof typeof FIELD_TYPES]?.label ?? item.fieldType
+        counts[label] = (counts[label] ?? 0) + 1
+      }
+    }
+    const parts = Object.entries(counts).map(([label, n]) => `${n} ${label.toLowerCase()}`)
+    return parts.length > 0 ? ` (${parts.join(", ")})` : ""
+  }
+
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setSelectedTemplate(null); setTitle("") } }}>
       <DialogTrigger asChild>
@@ -145,10 +161,15 @@ export function TemplatePicker({ templates, projects, members, role }: TemplateP
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {itemCount(t)} items &middot; by {t.createdBy.firstName} {t.createdBy.lastName}
+                      {itemCount(t)} items{fieldTypeSummary(t)} &middot; by {t.createdBy.firstName} {t.createdBy.lastName}
                     </p>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    {canEdit(role) && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <EditTemplateItemsDialog templateId={t.id} templateName={t.name} items={t.items} />
+                      </div>
+                    )}
                     {canEdit(role) && (
                       <div onClick={(e) => e.stopPropagation()}>
                         <ConfigureRecurrenceDialog

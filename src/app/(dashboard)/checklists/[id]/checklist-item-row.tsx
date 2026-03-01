@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { FIELD_TYPES } from "@/lib/constants"
 import { toggleItemCompliance, updateItemEvidence, raiseCapaFromItem } from "../actions"
+import { FieldRenderer } from "./field-renderer"
 
 interface ChecklistItemRowProps {
   item: {
@@ -17,6 +19,9 @@ interface ChecklistItemRowProps {
     isCompliant: boolean | null
     evidence: string | null
     notes: string | null
+    fieldType: string | null
+    fieldConfig: Record<string, unknown> | null
+    response: Record<string, unknown> | null
     standardClause: { clauseNumber: string; title: string; description: string | null } | null
     capa: { id: string; title: string; status: string; priority: string } | null
   }
@@ -27,6 +32,9 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
   const [isPending, startTransition] = useTransition()
   const [showEvidence, setShowEvidence] = useState(false)
   const [evidence, setEvidence] = useState(item.evidence ?? "")
+
+  const isCustomField = item.fieldType && item.fieldType !== "COMPLIANCE"
+  const fieldLabel = item.fieldType ? FIELD_TYPES[item.fieldType as keyof typeof FIELD_TYPES]?.label : null
 
   function handleToggle(value: boolean | null) {
     startTransition(async () => {
@@ -67,7 +75,12 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
     <div className="rounded-md border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium">{item.description}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium">{item.description}</p>
+            {isCustomField && fieldLabel && (
+              <Badge variant="secondary" className="text-[10px]">{fieldLabel}</Badge>
+            )}
+          </div>
           {item.standardClause && (
             <div>
               <p className="text-xs text-muted-foreground">
@@ -91,42 +104,54 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
           )}
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isPending}
-            onClick={() => handleToggle(true)}
-            className={cn(
-              "h-8 w-8 p-0",
-              item.isCompliant === true && "bg-green-100 text-green-800 hover:bg-green-200"
-            )}
-          >
-            <Check className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isPending}
-            onClick={() => handleToggle(false)}
-            className={cn(
-              "h-8 w-8 p-0",
-              item.isCompliant === false && "bg-red-100 text-red-800 hover:bg-red-200"
-            )}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={isPending}
-            onClick={() => handleToggle(null)}
-            className={cn(
-              "h-8 w-8 p-0",
-              item.isCompliant === null && "bg-gray-100 text-gray-800 hover:bg-gray-200"
-            )}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
+          {isCustomField ? (
+            <FieldRenderer
+              itemId={item.id}
+              checklistId={checklistId}
+              fieldType={item.fieldType!}
+              fieldConfig={item.fieldConfig}
+              response={item.response}
+            />
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isPending}
+                onClick={() => handleToggle(true)}
+                className={cn(
+                  "h-8 w-8 p-0",
+                  item.isCompliant === true && "bg-green-100 text-green-800 hover:bg-green-200"
+                )}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isPending}
+                onClick={() => handleToggle(false)}
+                className={cn(
+                  "h-8 w-8 p-0",
+                  item.isCompliant === false && "bg-red-100 text-red-800 hover:bg-red-200"
+                )}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isPending}
+                onClick={() => handleToggle(null)}
+                className={cn(
+                  "h-8 w-8 p-0",
+                  item.isCompliant === null && "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                )}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+            </>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -135,7 +160,7 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
           >
             Evidence
           </Button>
-          {item.isCompliant === false && !item.capa && (
+          {!isCustomField && item.isCompliant === false && !item.capa && (
             <Button
               variant="destructive"
               size="sm"
