@@ -3,16 +3,17 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { AssessmentForm } from "./assessment-form"
+import { AssessmentForm, type OrgMember } from "./assessment-form"
 import { canCreate } from "@/lib/permissions"
 
 interface AssessmentFormTriggerProps {
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
+  members?: OrgMember[]
   role: string
 }
 
-export function AssessmentFormTrigger({ standards, projects, role }: AssessmentFormTriggerProps) {
+export function AssessmentFormTrigger({ standards, projects, members, role }: AssessmentFormTriggerProps) {
   const [open, setOpen] = useState(false)
 
   if (!canCreate(role)) return null
@@ -23,7 +24,7 @@ export function AssessmentFormTrigger({ standards, projects, role }: AssessmentF
         <Plus className="mr-2 h-4 w-4" />
         New Assessment
       </Button>
-      <AssessmentForm open={open} onOpenChange={setOpen} standards={standards} projects={projects} />
+      <AssessmentForm open={open} onOpenChange={setOpen} standards={standards} projects={projects} members={members} />
     </>
   )
 }

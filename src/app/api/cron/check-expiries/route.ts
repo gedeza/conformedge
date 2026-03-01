@@ -384,7 +384,186 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 4. Auto-expire share links ──────────────────────
+    // ── 4. Assessment upcoming reminders + overdue notifications ──
+    let assessmentsNotified = 0
+
+    // 4a. Upcoming: scheduled within next 7 days, not completed
+    const upcomingAssessments = await db.assessment.findMany({
+      where: {
+        scheduledDate: { gt: now, lte: in7Days },
+        completedDate: null,
+      },
+      select: {
+        id: true,
+        title: true,
+        scheduledDate: true,
+        assessorId: true,
+        organizationId: true,
+      },
+    })
+
+    for (const assessment of upcomingAssessments) {
+      if (!assessment.scheduledDate) continue
+
+      const daysUntil = Math.ceil(
+        (new Date(assessment.scheduledDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      )
+      // Only notify at 7 days and 1 day before
+      if (daysUntil !== 7 && daysUntil !== 1) continue
+
+      const existing = await db.notification.findFirst({
+        where: {
+          userId: assessment.assessorId,
+          organizationId: assessment.organizationId,
+          type: "ASSESSMENT_SCHEDULED",
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+      if (existing) continue
+
+      const reminderTitle = `Assessment in ${daysUntil} day${daysUntil > 1 ? "s" : ""}`
+      const reminderMsg = `"${assessment.title}" is scheduled for ${new Date(assessment.scheduledDate).toLocaleDateString()}.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(assessment.assessorId, "ASSESSMENT_SCHEDULED", "IN_APP"),
+        isNotificationEnabled(assessment.assessorId, "ASSESSMENT_SCHEDULED", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: reminderTitle,
+            message: reminderMsg,
+            type: "ASSESSMENT_SCHEDULED",
+            userId: assessment.assessorId,
+            organizationId: assessment.organizationId,
+          },
+        })
+        created++
+        assessmentsNotified++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: assessment.assessorId,
+          title: reminderTitle,
+          message: reminderMsg,
+          type: "ASSESSMENT_SCHEDULED",
+        })
+      }
+    }
+
+    // 4b. Overdue: scheduled in the past, not completed
+    const overdueAssessments = await db.assessment.findMany({
+      where: {
+        scheduledDate: { lt: now },
+        completedDate: null,
+      },
+      select: {
+        id: true,
+        title: true,
+        scheduledDate: true,
+        assessorId: true,
+        organizationId: true,
+      },
+    })
+
+    for (const assessment of overdueAssessments) {
+      // Notify the assessor
+      const assessorExisting = await db.notification.findFirst({
+        where: {
+          userId: assessment.assessorId,
+          organizationId: assessment.organizationId,
+          type: "ASSESSMENT_SCHEDULED",
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+
+      if (!assessorExisting) {
+        const overdueTitle = "Assessment overdue"
+        const overdueMsg = `"${assessment.title}" was scheduled for ${assessment.scheduledDate ? new Date(assessment.scheduledDate).toLocaleDateString() : "a past date"} and has not been completed.`
+
+        const [inAppEnabled, emailEnabled] = await Promise.all([
+          isNotificationEnabled(assessment.assessorId, "ASSESSMENT_SCHEDULED", "IN_APP"),
+          isNotificationEnabled(assessment.assessorId, "ASSESSMENT_SCHEDULED", "EMAIL"),
+        ])
+
+        if (inAppEnabled) {
+          await db.notification.create({
+            data: {
+              title: overdueTitle,
+              message: overdueMsg,
+              type: "ASSESSMENT_SCHEDULED",
+              userId: assessment.assessorId,
+              organizationId: assessment.organizationId,
+            },
+          })
+          created++
+          assessmentsNotified++
+        }
+
+        if (emailEnabled) {
+          sendNotificationEmail({
+            userId: assessment.assessorId,
+            title: overdueTitle,
+            message: overdueMsg,
+            type: "ASSESSMENT_SCHEDULED",
+          })
+        }
+      }
+
+      // Also notify org OWNER/ADMIN/MANAGER
+      const orgManagers = await db.organizationUser.findMany({
+        where: {
+          organizationId: assessment.organizationId,
+          isActive: true,
+          role: { in: ["OWNER", "ADMIN", "MANAGER"] },
+          userId: { not: assessment.assessorId }, // Don't double-notify assessor
+        },
+        select: { userId: true },
+      })
+
+      const mgrIds = orgManagers.map((m) => m.userId)
+      const [inAppIds, emailIds] = await Promise.all([
+        filterEnabledUsers(mgrIds, "ASSESSMENT_SCHEDULED", "IN_APP"),
+        filterEnabledUsers(mgrIds, "ASSESSMENT_SCHEDULED", "EMAIL"),
+      ])
+
+      for (const userId of inAppIds) {
+        const mgrExisting = await db.notification.findFirst({
+          where: {
+            userId,
+            organizationId: assessment.organizationId,
+            type: "ASSESSMENT_SCHEDULED",
+            createdAt: { gte: addDays(now, -1) },
+          },
+        })
+        if (mgrExisting) continue
+
+        await db.notification.create({
+          data: {
+            title: "Assessment overdue",
+            message: `"${assessment.title}" is overdue and has not been completed.`,
+            type: "ASSESSMENT_SCHEDULED",
+            userId,
+            organizationId: assessment.organizationId,
+          },
+        })
+        created++
+        assessmentsNotified++
+      }
+
+      for (const userId of emailIds) {
+        sendNotificationEmail({
+          userId,
+          title: "Assessment overdue",
+          message: `"${assessment.title}" is overdue and has not been completed.`,
+          type: "ASSESSMENT_SCHEDULED",
+        })
+      }
+    }
+
+    // ── 5. Auto-expire share links ──────────────────────
     const expiredLinks = await db.shareLink.updateMany({
       where: {
         status: "ACTIVE",
@@ -403,6 +582,7 @@ export async function GET(request: NextRequest) {
       success: true,
       notificationsCreated: created,
       capasEscalated: escalated,
+      assessmentsNotified,
       shareLinksExpired: expiredLinks.count,
       timestamp: now.toISOString(),
     })

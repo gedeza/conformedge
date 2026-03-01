@@ -14,6 +14,7 @@ import {
   SHARE_LINK_STATUSES,
   SHARE_LINK_TYPES,
   CERTIFICATION_STATUSES,
+  ASSESSMENT_STATUSES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -32,6 +33,7 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   shareLink: SHARE_LINK_STATUSES,
   shareLinkType: SHARE_LINK_TYPES,
   certificationStatus: CERTIFICATION_STATUSES,
+  assessment: ASSESSMENT_STATUSES,
 }
 
 interface StatusBadgeProps {

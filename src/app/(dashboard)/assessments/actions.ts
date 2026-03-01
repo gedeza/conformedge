@@ -6,6 +6,8 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete, canConduct } from "@/lib/permissions"
+import { isNotificationEnabled } from "@/lib/notification-preferences"
+import { sendNotificationEmail } from "@/lib/email"
 import type { ActionResult } from "@/types"
 
 const assessmentSchema = z.object({
@@ -14,6 +16,7 @@ const assessmentSchema = z.object({
   standardId: z.string().min(1, "Standard is required"),
   projectId: z.string().optional(),
   scheduledDate: z.coerce.date().optional(),
+  assessorId: z.string().optional(),
 })
 
 export type AssessmentFormValues = z.infer<typeof assessmentSchema>
@@ -81,6 +84,8 @@ export async function createAssessment(values: AssessmentFormValues): Promise<Ac
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
     const parsed = assessmentSchema.parse(values)
 
+    const assignedAssessorId = parsed.assessorId || dbUserId
+
     const assessment = await db.assessment.create({
       data: {
         title: parsed.title,
@@ -88,7 +93,7 @@ export async function createAssessment(values: AssessmentFormValues): Promise<Ac
         standardId: parsed.standardId,
         projectId: parsed.projectId || null,
         scheduledDate: parsed.scheduledDate,
-        assessorId: dbUserId,
+        assessorId: assignedAssessorId,
         organizationId: dbOrgId,
       },
     })
@@ -102,7 +107,40 @@ export async function createAssessment(values: AssessmentFormValues): Promise<Ac
       organizationId: dbOrgId,
     })
 
+    // Notify assessor if assigned to someone else
+    if (assignedAssessorId !== dbUserId) {
+      const notifTitle = "Assessment assigned to you"
+      const notifMsg = `You have been assigned to conduct "${parsed.title}".${parsed.scheduledDate ? ` Scheduled for ${parsed.scheduledDate.toLocaleDateString()}.` : ""}`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(assignedAssessorId, "ASSESSMENT_SCHEDULED", "IN_APP"),
+        isNotificationEnabled(assignedAssessorId, "ASSESSMENT_SCHEDULED", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: notifTitle,
+            message: notifMsg,
+            type: "ASSESSMENT_SCHEDULED",
+            userId: assignedAssessorId,
+            organizationId: dbOrgId,
+          },
+        })
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: assignedAssessorId,
+          title: notifTitle,
+          message: notifMsg,
+          type: "ASSESSMENT_SCHEDULED",
+        })
+      }
+    }
+
     revalidatePath("/assessments")
+    revalidatePath("/calendar")
     return { success: true, data: { id: assessment.id } }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to create assessment" }
@@ -118,6 +156,8 @@ export async function updateAssessment(id: string, values: AssessmentFormValues)
     const existing = await db.assessment.findFirst({ where: { id, organizationId: dbOrgId } })
     if (!existing) return { success: false, error: "Assessment not found" }
 
+    const newAssessorId = parsed.assessorId || existing.assessorId
+
     await db.assessment.update({
       where: { id },
       data: {
@@ -126,6 +166,7 @@ export async function updateAssessment(id: string, values: AssessmentFormValues)
         standardId: parsed.standardId,
         projectId: parsed.projectId || null,
         scheduledDate: parsed.scheduledDate,
+        assessorId: newAssessorId,
       },
     })
 
@@ -138,7 +179,40 @@ export async function updateAssessment(id: string, values: AssessmentFormValues)
       organizationId: dbOrgId,
     })
 
+    // Notify new assessor if changed
+    if (newAssessorId !== existing.assessorId && newAssessorId !== dbUserId) {
+      const notifTitle = "Assessment reassigned to you"
+      const notifMsg = `You have been assigned to conduct "${parsed.title}".`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(newAssessorId, "ASSESSMENT_SCHEDULED", "IN_APP"),
+        isNotificationEnabled(newAssessorId, "ASSESSMENT_SCHEDULED", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: notifTitle,
+            message: notifMsg,
+            type: "ASSESSMENT_SCHEDULED",
+            userId: newAssessorId,
+            organizationId: dbOrgId,
+          },
+        })
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: newAssessorId,
+          title: notifTitle,
+          message: notifMsg,
+          type: "ASSESSMENT_SCHEDULED",
+        })
+      }
+    }
+
     revalidatePath("/assessments")
+    revalidatePath("/calendar")
     revalidatePath(`/assessments/${id}`)
     return { success: true }
   } catch (error) {
@@ -342,4 +416,52 @@ export async function getProjectOptions() {
 export async function getMembers() {
   const { dbOrgId } = await getAuthContext()
   return getOrgMembers(dbOrgId)
+}
+
+export async function getUpcomingAssessments(limit = 5) {
+  const { dbOrgId } = await getAuthContext()
+  const now = new Date()
+
+  return db.assessment.findMany({
+    where: {
+      organizationId: dbOrgId,
+      scheduledDate: { gte: now },
+      completedDate: null,
+    },
+    include: {
+      standard: { select: { id: true, code: true, name: true } },
+      assessor: { select: { id: true, firstName: true, lastName: true } },
+    },
+    orderBy: { scheduledDate: "asc" },
+    take: limit,
+  })
+}
+
+export async function getCalendarAssessments(year: number, month: number) {
+  const { dbOrgId } = await getAuthContext()
+
+  // month is 1-indexed (Jan=1)
+  const startOfMonth = new Date(year, month - 1, 1)
+  const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999)
+
+  return db.assessment.findMany({
+    where: {
+      organizationId: dbOrgId,
+      OR: [
+        { scheduledDate: { gte: startOfMonth, lte: endOfMonth } },
+        { completedDate: { gte: startOfMonth, lte: endOfMonth } },
+      ],
+    },
+    include: {
+      standard: { select: { id: true, code: true, name: true } },
+      assessor: { select: { id: true, firstName: true, lastName: true } },
+      questions: {
+        select: {
+          id: true,
+          answers: { select: { id: true }, take: 1 },
+        },
+      },
+    },
+    orderBy: { scheduledDate: "asc" },
+  })
 }

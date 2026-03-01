@@ -6,17 +6,18 @@ import { DataTable } from "@/components/shared/data-table"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 import { RISK_LEVELS } from "@/lib/constants"
 import { getColumns, type AssessmentRow } from "./columns"
-import { AssessmentForm } from "./assessment-form"
+import { AssessmentForm, type OrgMember } from "./assessment-form"
 import { deleteAssessment } from "./actions"
 
 interface AssessmentTableProps {
   data: AssessmentRow[]
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
+  members?: OrgMember[]
   role: string
 }
 
-export function AssessmentTable({ data, standards, projects, role }: AssessmentTableProps) {
+export function AssessmentTable({ data, standards, projects, members, role }: AssessmentTableProps) {
   const [editItem, setEditItem] = useState<AssessmentRow | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AssessmentRow | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -63,12 +64,14 @@ export function AssessmentTable({ data, standards, projects, role }: AssessmentT
           id: editItem.id,
           title: editItem.title,
           description: null,
-          standardId: "",
+          standardId: editItem.standard?.id ?? "",
           projectId: editItem.project?.id ?? null,
           scheduledDate: editItem.scheduledDate,
+          assessorId: editItem.assessor?.id ?? null,
         } : undefined}
         standards={standards}
         projects={projects}
+        members={members}
       />
       <ConfirmDialog
         open={!!deleteTarget}

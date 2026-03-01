@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { canEdit, canDelete, canConduct } from "@/lib/permissions"
+import { getAssessmentStatus } from "@/lib/assessment-status"
 
 export type AssessmentRow = {
   id: string
@@ -19,9 +20,9 @@ export type AssessmentRow = {
   scheduledDate: Date | null
   completedDate: Date | null
   createdAt: Date
-  standard: { code: string; name: string }
+  standard: { id: string; code: string; name: string }
   project: { id: string; name: string } | null
-  assessor: { firstName: string; lastName: string }
+  assessor: { id: string; firstName: string; lastName: string }
   _count: { questions: number }
 }
 
@@ -48,9 +49,30 @@ export function getColumns(actions: ColumnActions): ColumnDef<AssessmentRow>[] {
       ),
     },
     {
+      id: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = getAssessmentStatus({
+          completedDate: row.original.completedDate,
+          scheduledDate: row.original.scheduledDate,
+          answerCount: row.original._count.questions, // approximation: questions exist = in progress if no completedDate
+        })
+        return <StatusBadge type="assessment" value={status} />
+      },
+    },
+    {
       id: "standard",
       header: "Standard",
       cell: ({ row }) => <span className="text-sm">{row.original.standard.code}</span>,
+    },
+    {
+      id: "assessor",
+      header: "Assessor",
+      cell: ({ row }) => (
+        <span className="text-sm">
+          {row.original.assessor.firstName} {row.original.assessor.lastName}
+        </span>
+      ),
     },
     {
       accessorKey: "overallScore",
@@ -69,14 +91,12 @@ export function getColumns(actions: ColumnActions): ColumnDef<AssessmentRow>[] {
       },
     },
     {
-      id: "questions",
-      header: "Questions",
-      cell: ({ row }) => <span className="text-sm">{row.original._count.questions}</span>,
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => format(row.getValue("createdAt") as Date, "MMM d, yyyy"),
+      accessorKey: "scheduledDate",
+      header: "Scheduled",
+      cell: ({ row }) => {
+        const date = row.getValue("scheduledDate") as Date | null
+        return date ? format(date, "MMM d, yyyy") : "—"
+      },
     },
     {
       id: "actions",

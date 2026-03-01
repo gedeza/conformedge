@@ -14,6 +14,7 @@ import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from
 import { OnboardingCard } from "./onboarding-card"
 import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
 import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-widget"
+import { UpcomingAssessmentsWidget } from "@/components/dashboard/upcoming-assessments-widget"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 export default async function DashboardPage() {
@@ -164,6 +165,8 @@ export default async function DashboardPage() {
         <GapCoverageCard />
 
         <PendingReviewsWidget />
+
+        <UpcomingAssessmentsWidget />
 
         <Card>
           <CardHeader>

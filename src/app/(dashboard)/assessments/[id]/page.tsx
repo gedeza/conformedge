@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, Play } from "lucide-react"
+import { ArrowLeft, Play, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/shared/page-header"
 import { Progress } from "@/components/ui/progress"
 import { getAssessment } from "../actions"
 import { GenerateQuestionsButton } from "./generate-questions-button"
+import { getAssessmentStatus } from "@/lib/assessment-status"
 
 export default async function AssessmentDetailPage({
   params,
@@ -31,6 +32,13 @@ export default async function AssessmentDetailPage({
     (q) => q.answers.length > 0 && q.answers[0].score !== null
   ).length
   const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0
+  const totalAnswers = assessment.questions.filter((q) => q.answers.length > 0).length
+
+  const derivedStatus = getAssessmentStatus({
+    completedDate: assessment.completedDate,
+    scheduledDate: assessment.scheduledDate,
+    answerCount: totalAnswers,
+  })
 
   return (
     <div className="space-y-6">
@@ -45,6 +53,7 @@ export default async function AssessmentDetailPage({
 
       <PageHeader heading={assessment.title} description={assessment.description ?? undefined}>
         <div className="flex items-center gap-2">
+          <StatusBadge type="assessment" value={derivedStatus} />
           {assessment.riskLevel && <StatusBadge type="risk" value={assessment.riskLevel} />}
           {totalQuestions > 0 && (
             <Button asChild>
@@ -56,6 +65,16 @@ export default async function AssessmentDetailPage({
           )}
         </div>
       </PageHeader>
+
+      {derivedStatus === "OVERDUE" && (
+        <div className="flex items-center gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span>
+            This assessment was scheduled for{" "}
+            <strong>{format(assessment.scheduledDate!, "PPP")}</strong> and is overdue.
+          </span>
+        </div>
+      )}
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>

@@ -112,6 +112,14 @@ export const SHARE_LINK_TYPES = {
   SUBCONTRACTOR: { label: "Subcontractor", color: "bg-orange-100 text-orange-800" },
 } as const
 
+export const ASSESSMENT_STATUSES = {
+  DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },
+  SCHEDULED: { label: "Scheduled", color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { label: "In Progress", color: "bg-yellow-100 text-yellow-800" },
+  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800" },
+  OVERDUE: { label: "Overdue", color: "bg-red-100 text-red-800" },
+} as const
+
 export const CERTIFICATION_STATUSES = {
   PENDING_REVIEW: { label: "Pending Review", color: "bg-amber-100 text-amber-800" },
   APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },

@@ -26,7 +26,15 @@ const formSchema = z.object({
   standardId: z.string().min(1, "Standard is required"),
   projectId: z.string().optional(),
   scheduledDate: z.coerce.date().optional(),
+  assessorId: z.string().optional(),
 })
+
+export interface OrgMember {
+  id: string
+  name: string
+  email: string
+  role: string
+}
 
 interface AssessmentFormProps {
   open: boolean
@@ -38,12 +46,14 @@ interface AssessmentFormProps {
     standardId: string
     projectId: string | null
     scheduledDate: Date | null
+    assessorId: string | null
   }
   standards: { id: string; code: string; name: string }[]
   projects: { id: string; name: string }[]
+  members?: OrgMember[]
 }
 
-export function AssessmentForm({ open, onOpenChange, assessment, standards, projects }: AssessmentFormProps) {
+export function AssessmentForm({ open, onOpenChange, assessment, standards, projects, members }: AssessmentFormProps) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!assessment
 
@@ -56,6 +66,7 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
       standardId: assessment?.standardId ?? "",
       projectId: assessment?.projectId ?? undefined,
       scheduledDate: assessment?.scheduledDate ?? undefined,
+      assessorId: assessment?.assessorId ?? undefined,
     },
   })
 
@@ -135,6 +146,44 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
             />
             <FormField
               control={form.control}
+              name="scheduledDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Scheduled Date</FormLabel>
+                  <FormControl>
+                    <DatePicker value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <p className="text-xs text-muted-foreground">When this assessment should be conducted</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {members && members.length > 0 && (
+              <FormField
+                control={form.control}
+                name="assessorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assessor</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Myself (default)" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {members.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            <FormField
+              control={form.control}
               name="projectId"
               render={({ field }) => (
                 <FormItem>
@@ -151,19 +200,6 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="scheduledDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Scheduled Date</FormLabel>
-                  <FormControl>
-                    <DatePicker value={field.value} onChange={field.onChange} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
