@@ -563,7 +563,133 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 5. Auto-expire share links ──────────────────────
+    // ── 5. Recurring checklist generation ──────────────────
+    let checklistsGenerated = 0
+
+    const dueTemplates = await db.checklistTemplate.findMany({
+      where: {
+        isRecurring: true,
+        isPaused: false,
+        nextDueDate: { lte: now },
+      },
+      include: {
+        standard: { select: { code: true } },
+        organization: { select: { id: true } },
+      },
+    })
+
+    for (const template of dueTemplates) {
+      try {
+        const templateItems = template.items as Array<{
+          description: string
+          clauseNumber?: string
+          standardClauseId?: string
+        }>
+
+        const dateLabel = now.toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" })
+        const checklistTitle = `${template.standard.code} — ${template.name} (${dateLabel})`
+
+        const { computeNextDueDate } = await import("@/lib/recurrence")
+        const newNextDue = computeNextDueDate(
+          template.nextDueDate!,
+          template.recurrenceFrequency!,
+          template.customIntervalDays
+        )
+
+        await db.$transaction(async (tx) => {
+          const checklist = await tx.complianceChecklist.create({
+            data: {
+              title: checklistTitle,
+              standardId: template.standardId,
+              organizationId: template.organizationId,
+              assignedToId: template.defaultAssigneeId,
+              projectId: template.defaultProjectId,
+              templateId: template.id,
+            },
+          })
+
+          if (templateItems.length > 0) {
+            await tx.checklistItem.createMany({
+              data: templateItems.map((item, index) => ({
+                description: item.description,
+                sortOrder: index + 1,
+                checklistId: checklist.id,
+                standardClauseId: item.standardClauseId || null,
+              })),
+            })
+          }
+
+          await tx.checklistTemplate.update({
+            where: { id: template.id },
+            data: { nextDueDate: newNextDue, lastGeneratedAt: now },
+          })
+
+          await tx.auditTrailEvent.create({
+            data: {
+              action: "AUTO_GENERATE",
+              entityType: "Checklist",
+              entityId: checklist.id,
+              metadata: {
+                templateId: template.id,
+                templateName: template.name,
+                title: checklistTitle,
+              },
+              organizationId: template.organizationId,
+            },
+          })
+        })
+
+        checklistsGenerated++
+
+        // Notify default assignee
+        if (template.defaultAssigneeId) {
+          const existing = await db.notification.findFirst({
+            where: {
+              userId: template.defaultAssigneeId,
+              organizationId: template.organizationId,
+              type: "CHECKLIST_DUE",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+
+          if (!existing) {
+            const notifTitle = "Checklist due"
+            const notifMsg = `"${checklistTitle}" has been auto-generated and is ready for completion.`
+
+            const [inAppEnabled, emailEnabled] = await Promise.all([
+              isNotificationEnabled(template.defaultAssigneeId, "CHECKLIST_DUE", "IN_APP"),
+              isNotificationEnabled(template.defaultAssigneeId, "CHECKLIST_DUE", "EMAIL"),
+            ])
+
+            if (inAppEnabled) {
+              await db.notification.create({
+                data: {
+                  title: notifTitle,
+                  message: notifMsg,
+                  type: "CHECKLIST_DUE",
+                  userId: template.defaultAssigneeId,
+                  organizationId: template.organizationId,
+                },
+              })
+              created++
+            }
+
+            if (emailEnabled) {
+              sendNotificationEmail({
+                userId: template.defaultAssigneeId,
+                title: notifTitle,
+                message: notifMsg,
+                type: "CHECKLIST_DUE",
+              })
+            }
+          }
+        }
+      } catch (err) {
+        captureError(err, { source: "cron.recurringChecklist", metadata: { templateId: template.id } })
+      }
+    }
+
+    // ── 6. Auto-expire share links ──────────────────────
     const expiredLinks = await db.shareLink.updateMany({
       where: {
         status: "ACTIVE",
@@ -583,6 +709,7 @@ export async function GET(request: NextRequest) {
       notificationsCreated: created,
       capasEscalated: escalated,
       assessmentsNotified,
+      checklistsGenerated,
       shareLinksExpired: expiredLinks.count,
       timestamp: now.toISOString(),
     })

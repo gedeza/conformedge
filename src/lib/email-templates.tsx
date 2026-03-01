@@ -40,6 +40,11 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Certificate Upload",
     hint: "Review the uploaded certificate and approve or reject it.",
   },
+  CHECKLIST_DUE: {
+    color: "#059669",
+    label: "Checklist Due",
+    hint: "Complete the checklist before the next cycle.",
+  },
 }
 
 function EmailLayout({ children }: { children: React.ReactNode }) {

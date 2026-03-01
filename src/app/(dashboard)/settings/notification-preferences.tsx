@@ -35,6 +35,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Certificate Uploads",
     description: "When a subcontractor uploads a certificate via the portal",
   },
+  CHECKLIST_DUE: {
+    label: "Checklist Due",
+    description: "When a recurring checklist is auto-generated and ready for completion",
+  },
 }
 
 const TYPES: NotificationType[] = [
@@ -45,6 +49,7 @@ const TYPES: NotificationType[] = [
   "SYSTEM",
   "APPROVAL_REQUEST",
   "CERT_UPLOAD",
+  "CHECKLIST_DUE",
 ]
 
 interface Props {

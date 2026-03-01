@@ -20,6 +20,7 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   "SYSTEM",
   "APPROVAL_REQUEST",
   "CERT_UPLOAD",
+  "CHECKLIST_DUE",
 ]
 
 /**

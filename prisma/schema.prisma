@@ -95,6 +95,7 @@ enum NotificationType {
   SYSTEM
   APPROVAL_REQUEST
   CERT_UPLOAD
+  CHECKLIST_DUE
 }
 
 enum ApprovalStepStatus {
@@ -133,6 +134,14 @@ enum CertificationStatus {
   PENDING_REVIEW
   APPROVED
   REJECTED
+}
+
+enum RecurrenceFrequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+  CUSTOM
 }
 
 enum ShareLinkStatus {
@@ -206,6 +215,7 @@ model User {
   assignedApprovalSteps      ApprovalStep[]             @relation("ApprovalStepAssignee")
   createdWorkflowTemplates   ApprovalWorkflowTemplate[] @relation("WorkflowTemplateCreator")
   createdShareLinks          ShareLink[]                @relation("ShareLinkCreator")
+  defaultAssigneeTemplates   ChecklistTemplate[]        @relation("TemplateDefaultAssignee")
 
   @@map("users")
 }
@@ -239,12 +249,13 @@ model Project {
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
   // Relations
-  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  documents    Document[]
-  assessments  Assessment[]
-  capas        Capa[]
-  checklists   ComplianceChecklist[]
-  auditPacks   AuditPack[]
+  organization       Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  documents          Document[]
+  assessments        Assessment[]
+  capas              Capa[]
+  checklists         ComplianceChecklist[]
+  auditPacks         AuditPack[]
+  checklistTemplates ChecklistTemplate[]   @relation("TemplateDefaultProject")
 
   @@map("projects")
 }
@@ -464,14 +475,16 @@ model ComplianceChecklist {
   projectId            String?         @map("project_id")
   standardId           String          @map("standard_id")
   assignedToId         String?         @map("assigned_to_id")
+  templateId           String?         @map("template_id")
   createdAt            DateTime        @default(now()) @map("created_at")
   updatedAt            DateTime        @updatedAt @map("updated_at")
 
   // Relations
-  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  project      Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  standard     Standard        @relation(fields: [standardId], references: [id])
-  assignedTo   User?           @relation(fields: [assignedToId], references: [id])
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  standard     Standard          @relation(fields: [standardId], references: [id])
+  assignedTo   User?             @relation(fields: [assignedToId], references: [id])
+  template     ChecklistTemplate? @relation("TemplateChecklists", fields: [templateId], references: [id], onDelete: SetNull)
   items        ChecklistItem[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_checklist_org_created")
@@ -601,21 +614,33 @@ model Notification {
 }
 
 model ChecklistTemplate {
-  id             String   @id @default(uuid())
-  name           String
-  description    String?
-  standardId     String   @map("standard_id")
-  items          Json     // Array of { description: string, clauseNumber?: string }
-  organizationId String   @map("organization_id")
-  createdById    String   @map("created_by_id")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id                  String                @id @default(uuid())
+  name                String
+  description         String?
+  standardId          String                @map("standard_id")
+  items               Json                  // Array of { description: string, clauseNumber?: string }
+  organizationId      String                @map("organization_id")
+  createdById         String                @map("created_by_id")
+  isRecurring         Boolean               @default(false) @map("is_recurring")
+  recurrenceFrequency RecurrenceFrequency?  @map("recurrence_frequency")
+  customIntervalDays  Int?                  @map("custom_interval_days")
+  nextDueDate         DateTime?             @map("next_due_date")
+  isPaused            Boolean               @default(false) @map("is_paused")
+  defaultAssigneeId   String?               @map("default_assignee_id")
+  defaultProjectId    String?               @map("default_project_id")
+  lastGeneratedAt     DateTime?             @map("last_generated_at")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
 
   // Relations
-  standard     Standard     @relation(fields: [standardId], references: [id])
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  createdBy    User         @relation(fields: [createdById], references: [id])
+  standard           Standard              @relation(fields: [standardId], references: [id])
+  organization       Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy          User                  @relation(fields: [createdById], references: [id])
+  defaultAssignee    User?                 @relation("TemplateDefaultAssignee", fields: [defaultAssigneeId], references: [id])
+  defaultProject     Project?              @relation("TemplateDefaultProject", fields: [defaultProjectId], references: [id])
+  generatedChecklists ComplianceChecklist[] @relation("TemplateChecklists")
 
+  @@index([isRecurring, isPaused, nextDueDate], map: "idx_template_recurring")
   @@map("checklist_templates")
 }
 

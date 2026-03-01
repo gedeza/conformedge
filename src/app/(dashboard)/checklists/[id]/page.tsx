@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -11,6 +11,8 @@ import { ChecklistItemRow } from "./checklist-item-row"
 import { GenerateItemsButton } from "./generate-items-button"
 import { AddItemForm } from "./add-item-form"
 import { SaveAsTemplateButton } from "./save-as-template-button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { RECURRENCE_FREQUENCIES } from "@/lib/constants"
 
 export default async function ChecklistDetailPage({
   params,
@@ -46,6 +48,15 @@ export default async function ChecklistDetailPage({
           <StatusBadge type="checklist" value={checklist.status} />
         </div>
       </PageHeader>
+
+      {checklist.template?.isRecurring && (
+        <Alert className="border-emerald-200 bg-emerald-50">
+          <RefreshCw className="h-4 w-4 text-emerald-600" />
+          <AlertDescription className="text-emerald-800">
+            This checklist is part of a recurring series: <strong>{checklist.template.name}</strong> ({checklist.template.recurrenceFrequency ? RECURRENCE_FREQUENCIES[checklist.template.recurrenceFrequency as keyof typeof RECURRENCE_FREQUENCIES]?.label : "Recurring"})
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
         <Card>

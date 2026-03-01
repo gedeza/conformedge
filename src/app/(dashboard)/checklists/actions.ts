@@ -32,6 +32,7 @@ export async function getChecklists(page = 1) {
         standard: { select: { id: true, code: true, name: true } },
         project: { select: { id: true, name: true } },
         assignedTo: { select: { id: true, firstName: true, lastName: true } },
+        template: { select: { id: true, name: true, isRecurring: true, recurrenceFrequency: true } },
         _count: { select: { items: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -61,6 +62,7 @@ export async function getChecklist(id: string) {
       standard: { select: { id: true, code: true, name: true } },
       project: { select: { id: true, name: true } },
       assignedTo: { select: { id: true, firstName: true, lastName: true } },
+      template: { select: { id: true, name: true, isRecurring: true, recurrenceFrequency: true } },
       items: {
         orderBy: { sortOrder: "asc" },
         include: {
@@ -404,6 +406,9 @@ export async function getTemplates() {
     include: {
       standard: { select: { id: true, code: true, name: true } },
       createdBy: { select: { id: true, firstName: true, lastName: true } },
+      defaultAssignee: { select: { id: true, firstName: true, lastName: true } },
+      defaultProject: { select: { id: true, name: true } },
+      _count: { select: { generatedChecklists: true } },
     },
     orderBy: { createdAt: "desc" },
   })
@@ -486,6 +491,7 @@ export async function createChecklistFromTemplate(
         projectId: parsed.projectId || null,
         assignedToId: parsed.assignedToId || null,
         organizationId: dbOrgId,
+        templateId: template.id,
       },
     })
 
@@ -546,6 +552,125 @@ export async function deleteTemplate(id: string): Promise<ActionResult> {
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to delete template" }
   }
+}
+
+// ── Recurrence Actions ──────────────────────────────
+
+const recurrenceSchema = z.object({
+  isRecurring: z.boolean(),
+  recurrenceFrequency: z.enum(["WEEKLY", "MONTHLY", "QUARTERLY", "ANNUALLY", "CUSTOM"]).optional(),
+  customIntervalDays: z.number().int().min(1).max(365).optional(),
+  startDate: z.string().min(1).optional(),
+  defaultAssigneeId: z.string().optional(),
+  defaultProjectId: z.string().optional(),
+})
+
+export async function configureRecurrence(
+  templateId: string,
+  config: z.infer<typeof recurrenceSchema>
+): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const template = await db.checklistTemplate.findFirst({
+      where: { id: templateId, organizationId: dbOrgId },
+    })
+    if (!template) return { success: false, error: "Template not found" }
+
+    const parsed = recurrenceSchema.parse(config)
+
+    let nextDueDate: Date | null = null
+    if (parsed.isRecurring && parsed.recurrenceFrequency && parsed.startDate) {
+      nextDueDate = new Date(parsed.startDate)
+    }
+
+    await db.checklistTemplate.update({
+      where: { id: templateId },
+      data: {
+        isRecurring: parsed.isRecurring,
+        recurrenceFrequency: parsed.isRecurring ? parsed.recurrenceFrequency : null,
+        customIntervalDays: parsed.recurrenceFrequency === "CUSTOM" ? parsed.customIntervalDays : null,
+        nextDueDate,
+        isPaused: false,
+        defaultAssigneeId: parsed.defaultAssigneeId || null,
+        defaultProjectId: parsed.defaultProjectId || null,
+      },
+    })
+
+    logAuditEvent({
+      action: parsed.isRecurring ? "CONFIGURE_RECURRENCE" : "DISABLE_RECURRENCE",
+      entityType: "ChecklistTemplate",
+      entityId: templateId,
+      metadata: {
+        name: template.name,
+        frequency: parsed.recurrenceFrequency,
+        nextDueDate: nextDueDate?.toISOString(),
+      },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to configure recurrence" }
+  }
+}
+
+export async function toggleRecurrencePause(templateId: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const template = await db.checklistTemplate.findFirst({
+      where: { id: templateId, organizationId: dbOrgId, isRecurring: true },
+    })
+    if (!template) return { success: false, error: "Recurring template not found" }
+
+    const newPaused = !template.isPaused
+    let nextDueDate = template.nextDueDate
+
+    // If resuming, recalculate nextDueDate from now
+    if (!newPaused && template.recurrenceFrequency) {
+      const { computeNextDueDate } = await import("@/lib/recurrence")
+      nextDueDate = computeNextDueDate(new Date(), template.recurrenceFrequency, template.customIntervalDays)
+    }
+
+    await db.checklistTemplate.update({
+      where: { id: templateId },
+      data: { isPaused: newPaused, nextDueDate },
+    })
+
+    logAuditEvent({
+      action: newPaused ? "PAUSE_RECURRENCE" : "RESUME_RECURRENCE",
+      entityType: "ChecklistTemplate",
+      entityId: templateId,
+      metadata: { name: template.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/checklists")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to toggle pause" }
+  }
+}
+
+export async function getRecurringSchedules() {
+  const { dbOrgId } = await getAuthContext()
+
+  return db.checklistTemplate.findMany({
+    where: { organizationId: dbOrgId, isRecurring: true },
+    include: {
+      standard: { select: { id: true, code: true, name: true } },
+      defaultAssignee: { select: { id: true, firstName: true, lastName: true } },
+      defaultProject: { select: { id: true, name: true } },
+      _count: { select: { generatedChecklists: true } },
+    },
+    orderBy: { nextDueDate: "asc" },
+  })
 }
 
 export async function getStandards() {

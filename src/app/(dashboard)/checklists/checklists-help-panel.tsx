@@ -1,6 +1,6 @@
 "use client"
 
-import { CheckSquare, ListChecks, BookTemplate, BarChart3 } from "lucide-react"
+import { CheckSquare, ListChecks, BookTemplate, BarChart3, RefreshCw } from "lucide-react"
 import { HelpPanel } from "@/components/shared/help-panel"
 
 export function ChecklistsHelpPanel() {
@@ -13,6 +13,7 @@ export function ChecklistsHelpPanel() {
         { icon: ListChecks, label: "Clause Items", description: "Each checklist auto-populates with clauses from your chosen standard" },
         { icon: BookTemplate, label: "Templates", description: "Use pre-built templates for common audit types to save time" },
         { icon: BarChart3, label: "Progress", description: "Track completion % — feeds into project and dashboard metrics" },
+        { icon: RefreshCw, label: "Recurring Schedules", description: "Set templates to auto-generate checklists on a weekly, monthly, quarterly, or custom schedule" },
       ]}
       expandLabel="Workflow & tips"
       tips={[
@@ -21,6 +22,8 @@ export function ChecklistsHelpPanel() {
         "Assign a checklist to a <strong>team member</strong> for accountability",
         "Completion status: <strong>Not Started → In Progress → Completed</strong>",
         "Checklist results directly impact your project's <strong>compliance score</strong> on the dashboard",
+        "Click the <strong>gear icon</strong> on a template to set up a recurring schedule (weekly, monthly, quarterly, annually, or custom)",
+        "You can <strong>pause/resume</strong> any recurring schedule without losing the configuration",
       ]}
     />
   )

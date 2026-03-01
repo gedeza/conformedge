@@ -6,6 +6,7 @@ import { getChecklists, getStandards, getProjectOptions, getMembers, getTemplate
 import { ChecklistTable } from "./checklist-table"
 import { ChecklistFormTrigger } from "./checklist-form-trigger"
 import { TemplatePicker } from "./template-picker"
+import { RecurringSchedulesCard } from "./recurring-schedules-card"
 import { ChecklistsHelpPanel } from "./checklists-help-panel"
 import { getAuthContext } from "@/lib/auth"
 import { canCreate } from "@/lib/permissions"
@@ -61,6 +62,8 @@ export default async function ChecklistsPage({ searchParams }: Props) {
           <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />
         </div>
       </PageHeader>
+      <RecurringSchedulesCard />
+
       {checklists.length === 0 && pagination.total === 0 ? (
         <EmptyState icon={CheckSquare} title="No checklists yet" description="Create standard-specific checklists to track compliance items.">
           <ChecklistFormTrigger standards={standards} projects={projects} members={members} role={role} />

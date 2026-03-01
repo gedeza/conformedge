@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
-import { BookTemplate, Trash2 } from "lucide-react"
+import { BookTemplate, Trash2, RefreshCw, Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,16 +22,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { RECURRENCE_FREQUENCIES } from "@/lib/constants"
 import { createChecklistFromTemplate, deleteTemplate } from "./actions"
-import { canCreate, canDelete } from "@/lib/permissions"
+import { ConfigureRecurrenceDialog } from "./configure-recurrence-dialog"
+import { canCreate, canDelete, canEdit } from "@/lib/permissions"
+import type { RecurrenceFrequency } from "@/types"
 
 interface Template {
   id: string
   name: string
   description: string | null
   items: unknown
+  isRecurring: boolean
+  isPaused: boolean
+  recurrenceFrequency: RecurrenceFrequency | null
+  customIntervalDays: number | null
+  nextDueDate: Date | string | null
+  defaultAssigneeId: string | null
+  defaultProjectId: string | null
   standard: { id: string; code: string; name: string }
   createdBy: { id: string; firstName: string; lastName: string }
+  _count: { generatedChecklists: number }
 }
 
 interface TemplatePickerProps {
@@ -126,21 +137,38 @@ export function TemplatePicker({ templates, projects, members, role }: TemplateP
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm truncate">{t.name}</span>
                       <Badge variant="secondary" className="text-xs shrink-0">{t.standard.code}</Badge>
+                      {t.isRecurring && (
+                        <Badge variant="outline" className="text-[10px] shrink-0 gap-1">
+                          <RefreshCw className="h-2.5 w-2.5" />
+                          {t.recurrenceFrequency ? RECURRENCE_FREQUENCIES[t.recurrenceFrequency]?.label : "Recurring"}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {itemCount(t)} items &middot; by {t.createdBy.firstName} {t.createdBy.lastName}
                     </p>
                   </div>
-                  {canDelete(role) && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 shrink-0"
-                      onClick={(e) => { e.stopPropagation(); handleDelete(t.id) }}
-                    >
-                      <Trash2 className="h-3 w-3 text-muted-foreground" />
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-1 shrink-0">
+                    {canEdit(role) && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <ConfigureRecurrenceDialog
+                          template={t}
+                          members={members}
+                          projects={projects}
+                        />
+                      </div>
+                    )}
+                    {canDelete(role) && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={(e) => { e.stopPropagation(); handleDelete(t.id) }}
+                      >
+                        <Trash2 className="h-3 w-3 text-muted-foreground" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

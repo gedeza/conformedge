@@ -2,7 +2,7 @@
 
 import { type ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
-import { MoreHorizontal, Pencil, Trash2, ArrowUpDown } from "lucide-react"
+import { MoreHorizontal, Pencil, Trash2, ArrowUpDown, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -20,6 +20,7 @@ export type ChecklistRow = {
   standard: { code: string; name: string }
   project: { id: string; name: string } | null
   assignedTo: { firstName: string; lastName: string } | null
+  template: { id: string; name: string; isRecurring: boolean; recurrenceFrequency: string | null } | null
   _count: { items: number }
 }
 
@@ -40,7 +41,8 @@ export function getColumns(actions: ColumnActions): ColumnDef<ChecklistRow>[] {
         </Button>
       ),
       cell: ({ row }) => (
-        <Link href={`/checklists/${row.original.id}`} className="font-medium hover:underline">
+        <Link href={`/checklists/${row.original.id}`} className="font-medium hover:underline inline-flex items-center gap-1.5">
+          {row.original.template?.isRecurring && <RefreshCw className="h-3 w-3 text-emerald-500 shrink-0" />}
           {row.getValue("title")}
         </Link>
       ),

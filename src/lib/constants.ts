@@ -83,6 +83,15 @@ export const NOTIFICATION_TYPES = {
   SYSTEM: { label: "System", color: "bg-gray-100 text-gray-800" },
   APPROVAL_REQUEST: { label: "Approval Request", color: "bg-purple-100 text-purple-800" },
   CERT_UPLOAD: { label: "Certificate Upload", color: "bg-amber-100 text-amber-800" },
+  CHECKLIST_DUE: { label: "Checklist Due", color: "bg-emerald-100 text-emerald-800" },
+} as const
+
+export const RECURRENCE_FREQUENCIES = {
+  WEEKLY: { label: "Weekly" },
+  MONTHLY: { label: "Monthly" },
+  QUARTERLY: { label: "Quarterly" },
+  ANNUALLY: { label: "Annually" },
+  CUSTOM: { label: "Custom" },
 } as const
 
 export const APPROVAL_STEP_STATUSES = {

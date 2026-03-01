@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { formatDistanceToNow } from "date-fns"
-import { Bell, Check, CheckCheck, Trash2, FileWarning, AlertTriangle, CalendarClock, ShieldAlert, Megaphone, Upload } from "lucide-react"
+import { Bell, Check, CheckCheck, Trash2, FileWarning, AlertTriangle, CalendarClock, ShieldAlert, Megaphone, Upload, ClipboardCheck } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -29,6 +29,7 @@ const typeConfig: Record<string, { label: string; icon: typeof Bell; color: stri
   CERT_EXPIRY: { label: "Certificate Expiry", icon: ShieldAlert, color: "text-yellow-600" },
   SYSTEM: { label: "System", icon: Megaphone, color: "text-gray-500" },
   CERT_UPLOAD: { label: "Certificate Upload", icon: Upload, color: "text-amber-500" },
+  CHECKLIST_DUE: { label: "Checklist Due", icon: ClipboardCheck, color: "text-emerald-500" },
 }
 
 interface NotificationListProps {

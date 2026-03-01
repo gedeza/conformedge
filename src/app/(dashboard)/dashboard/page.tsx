@@ -15,6 +15,7 @@ import { OnboardingCard } from "./onboarding-card"
 import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
 import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-widget"
 import { UpcomingAssessmentsWidget } from "@/components/dashboard/upcoming-assessments-widget"
+import { UpcomingChecklistsWidget } from "@/components/dashboard/upcoming-checklists-widget"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 export default async function DashboardPage() {
@@ -167,6 +168,8 @@ export default async function DashboardPage() {
         <PendingReviewsWidget />
 
         <UpcomingAssessmentsWidget />
+
+        <UpcomingChecklistsWidget />
 
         <Card>
           <CardHeader>
