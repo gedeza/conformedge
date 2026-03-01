@@ -121,6 +121,18 @@ enum CrossReferenceType {
   SUPPORTING
 }
 
+enum ShareLinkType {
+  DOCUMENT
+  AUDIT_PACK
+  PORTAL
+}
+
+enum ShareLinkStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
 // ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
@@ -151,6 +163,7 @@ model Organization {
   checklistTemplates         ChecklistTemplate[]
   approvalWorkflowTemplates  ApprovalWorkflowTemplate[]
   approvalRequests           ApprovalRequest[]
+  shareLinks                 ShareLink[]
 
   @@map("organizations")
 }
@@ -184,6 +197,7 @@ model User {
   submittedApprovalRequests  ApprovalRequest[]          @relation("ApprovalSubmitter")
   assignedApprovalSteps      ApprovalStep[]             @relation("ApprovalStepAssignee")
   createdWorkflowTemplates   ApprovalWorkflowTemplate[] @relation("WorkflowTemplateCreator")
+  createdShareLinks          ShareLink[]                @relation("ShareLinkCreator")
 
   @@map("users")
 }
@@ -704,4 +718,56 @@ model ApprovalStep {
   @@index([approvalRequestId, stepOrder], map: "idx_approval_step_request_order")
   @@index([assignedToId, status], map: "idx_approval_step_assignee_status")
   @@map("approval_steps")
+}
+
+// ─────────────────────────────────────────────
+// EXTERNAL SHARING (CLIENT PORTAL)
+// ─────────────────────────────────────────────
+
+model ShareLink {
+  id              String          @id @default(uuid())
+  tokenHash       String          @unique @map("token_hash")
+  type            ShareLinkType
+  status          ShareLinkStatus @default(ACTIVE)
+  label           String
+  recipientEmail  String?         @map("recipient_email")
+  recipientName   String?         @map("recipient_name")
+  entityId        String?         @map("entity_id")
+  portalConfig    Json?           @map("portal_config")
+  expiresAt       DateTime        @map("expires_at")
+  maxViews        Int?            @map("max_views")
+  viewCount       Int             @default(0) @map("view_count")
+  allowDownload   Boolean         @default(true) @map("allow_download")
+  lastAccessedAt  DateTime?       @map("last_accessed_at")
+  revokedAt       DateTime?       @map("revoked_at")
+  organizationId  String          @map("organization_id")
+  createdById     String          @map("created_by_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User              @relation("ShareLinkCreator", fields: [createdById], references: [id])
+  accessLogs   ShareLinkAccess[]
+
+  @@index([tokenHash], map: "idx_share_link_token")
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_share_link_org_created")
+  @@index([expiresAt], map: "idx_share_link_expires")
+  @@map("share_links")
+}
+
+model ShareLinkAccess {
+  id          String   @id @default(uuid())
+  shareLinkId String   @map("share_link_id")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  action      String   // VIEW, DOWNLOAD, DOWNLOAD_PDF
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  shareLink ShareLink @relation(fields: [shareLinkId], references: [id], onDelete: Cascade)
+
+  @@index([shareLinkId, createdAt(sort: Desc)], map: "idx_share_link_access_link_created")
+  @@map("share_link_access_logs")
 }

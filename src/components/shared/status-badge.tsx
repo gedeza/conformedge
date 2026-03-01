@@ -11,6 +11,8 @@ import {
   CAPA_PRIORITIES,
   APPROVAL_STEP_STATUSES,
   APPROVAL_REQUEST_STATUSES,
+  SHARE_LINK_STATUSES,
+  SHARE_LINK_TYPES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -26,6 +28,8 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   priority: CAPA_PRIORITIES,
   approvalStep: APPROVAL_STEP_STATUSES,
   approvalRequest: APPROVAL_REQUEST_STATUSES,
+  shareLink: SHARE_LINK_STATUSES,
+  shareLinkType: SHARE_LINK_TYPES,
 }
 
 interface StatusBadgeProps {

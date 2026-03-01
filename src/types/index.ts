@@ -13,6 +13,8 @@ export type ApprovalStepStatus = "PENDING" | "APPROVED" | "REJECTED" | "SKIPPED"
 export type ApprovalRequestStatus = "IN_PROGRESS" | "APPROVED" | "REJECTED" | "CANCELLED"
 export type NotificationChannel = "IN_APP" | "EMAIL"
 export type CrossReferenceType = "EQUIVALENT" | "RELATED" | "SUPPORTING"
+export type ShareLinkType = "DOCUMENT" | "AUDIT_PACK" | "PORTAL"
+export type ShareLinkStatus = "ACTIVE" | "EXPIRED" | "REVOKED"
 
 export interface RootCauseWhy {
   question: string;  // "Why did X happen?"

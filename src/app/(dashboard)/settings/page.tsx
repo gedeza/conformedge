@@ -3,12 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getOrgSettings, getMembers, getStandardsList } from "./actions"
 import { getNotificationPreferences, type NotificationPreferenceMap } from "./notification-actions"
 import { getWorkflowTemplates, type WorkflowTemplate } from "./workflow-template-actions"
+import { getShareLinks, type ShareLinkItem } from "./share-link-actions"
 import { OrgSettingsForm } from "./org-settings-form"
 import { MembersList } from "./members-list"
 import { StandardsList } from "./standards-list"
 import { NotificationPreferences } from "./notification-preferences"
 import { WorkflowTemplates } from "./workflow-templates"
+import { ShareLinks } from "./share-links"
 import { canManageOrg } from "@/lib/permissions"
+import { db } from "@/lib/db"
 
 export default async function SettingsPage() {
   let org: Awaited<ReturnType<typeof getOrgSettings>> = null
@@ -16,16 +19,24 @@ export default async function SettingsPage() {
   let standards: Awaited<ReturnType<typeof getStandardsList>> = []
   let notifPrefs: NotificationPreferenceMap | null = null
   let workflowTemplates: WorkflowTemplate[] = []
+  let shareLinks: ShareLinkItem[] = []
+  let shareDocs: { id: string; title: string }[] = []
+  let shareAuditPacks: { id: string; title: string }[] = []
   let role = "VIEWER"
   let authError = false
 
   try {
-    ;[org, members, standards, notifPrefs, workflowTemplates] = await Promise.all([
-      getOrgSettings(), getMembers(), getStandardsList(), getNotificationPreferences(), getWorkflowTemplates(),
+    ;[org, members, standards, notifPrefs, workflowTemplates, shareLinks] = await Promise.all([
+      getOrgSettings(), getMembers(), getStandardsList(), getNotificationPreferences(), getWorkflowTemplates(), getShareLinks(),
     ])
     const { getAuthContext } = await import("@/lib/auth")
     const ctx = await getAuthContext()
     role = ctx.role
+    // Fetch entity pickers for share link dialog
+    ;[shareDocs, shareAuditPacks] = await Promise.all([
+      db.document.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
+      db.auditPack.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
+    ])
   } catch {
     authError = true
   }
@@ -96,6 +107,19 @@ export default async function SettingsPage() {
               <p className="text-sm text-muted-foreground">Select an organization to manage workflows.</p>
             ) : (
               <WorkflowTemplates templates={workflowTemplates} canManage={canManageOrg(role)} />
+            )}
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>External Sharing</CardTitle>
+            <CardDescription>Share documents, audit packs, or compliance portals with external stakeholders</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {authError ? (
+              <p className="text-sm text-muted-foreground">Select an organization to manage share links.</p>
+            ) : (
+              <ShareLinks links={shareLinks} canManage={canManageOrg(role)} documents={shareDocs} auditPacks={shareAuditPacks} />
             )}
           </CardContent>
         </Card>

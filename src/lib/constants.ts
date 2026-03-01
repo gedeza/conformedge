@@ -98,6 +98,18 @@ export const APPROVAL_REQUEST_STATUSES = {
   CANCELLED: { label: "Cancelled", color: "bg-gray-100 text-gray-600" },
 } as const
 
+export const SHARE_LINK_STATUSES = {
+  ACTIVE: { label: "Active", color: "bg-green-100 text-green-800" },
+  EXPIRED: { label: "Expired", color: "bg-red-100 text-red-800" },
+  REVOKED: { label: "Revoked", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const SHARE_LINK_TYPES = {
+  DOCUMENT: { label: "Document", color: "bg-blue-100 text-blue-800" },
+  AUDIT_PACK: { label: "Audit Pack", color: "bg-purple-100 text-purple-800" },
+  PORTAL: { label: "Portal", color: "bg-emerald-100 text-emerald-800" },
+} as const
+
 export const SA_CONSTRUCTION_INDUSTRIES = [
   "General Building",
   "Civil Engineering",

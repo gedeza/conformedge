@@ -7,8 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getAuditPack } from "../actions"
+import { getAuthContext } from "@/lib/auth"
+import { canManageOrg } from "@/lib/permissions"
 import { CompileButton } from "./compile-button"
 import { EmailButton } from "./email-button"
+import { ShareButton } from "../../documents/[id]/share-button"
 
 export default async function AuditPackDetailPage({
   params,
@@ -17,8 +20,11 @@ export default async function AuditPackDetailPage({
 }) {
   const { id } = await params
   let pack: Awaited<ReturnType<typeof getAuditPack>>
+  let role = "VIEWER"
 
   try {
+    const ctx = await getAuthContext()
+    role = ctx.role
     pack = await getAuditPack(id)
   } catch {
     notFound()
@@ -43,6 +49,9 @@ export default async function AuditPackDetailPage({
       <PageHeader heading={pack.title} description={pack.description ?? undefined}>
         <div className="flex items-center gap-2">
           <StatusBadge type="auditPack" value={pack.status} />
+          {canManageOrg(role) && (
+            <ShareButton entityId={pack.id} entityTitle={pack.title} type="AUDIT_PACK" />
+          )}
           {pack.status === "DRAFT" && <CompileButton auditPackId={pack.id} />}
           {(pack.status === "READY" || pack.status === "SUBMITTED" || pack.status === "ACCEPTED") && (
             <>

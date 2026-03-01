@@ -384,6 +384,15 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // ── 4. Auto-expire share links ──────────────────────
+    const expiredLinks = await db.shareLink.updateMany({
+      where: {
+        status: "ACTIVE",
+        expiresAt: { lt: now },
+      },
+      data: { status: "EXPIRED" },
+    })
+
     Sentry.captureCheckIn({
       checkInId,
       monitorSlug: "check-expiries",
@@ -394,6 +403,7 @@ export async function GET(request: NextRequest) {
       success: true,
       notificationsCreated: created,
       capasEscalated: escalated,
+      shareLinksExpired: expiredLinks.count,
       timestamp: now.toISOString(),
     })
   } catch (error) {

@@ -11,7 +11,7 @@ import { PageHeader } from "@/components/shared/page-header"
 import { getDocument, getStandardsWithClauses, getDocumentVersions, getDocumentAuditHistory } from "../actions"
 import { getDocumentApprovalHistory } from "../approval-actions"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
-import { canEdit } from "@/lib/permissions"
+import { canEdit, canManageOrg } from "@/lib/permissions"
 import { isExtractable } from "@/lib/ai/extract-text"
 import { getDownloadUrl } from "@/lib/r2-utils"
 import { ClauseTagForm } from "../clause-tag-form"
@@ -26,6 +26,7 @@ import { getGapInsightsForDocument } from "@/lib/gap-detection"
 import { getDocumentCrossStandardSuggestions } from "@/lib/ims/cross-standard-suggestions"
 import type { DocumentSuggestion } from "@/lib/ims/cross-standard-suggestions"
 import { db } from "@/lib/db"
+import { ShareButton } from "./share-button"
 
 export default async function DocumentDetailPage({
   params,
@@ -95,6 +96,9 @@ export default async function DocumentDetailPage({
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs">v{doc.version}</Badge>
           <StatusBadge type="document" value={doc.status} />
+          {canManageOrg(role) && (
+            <ShareButton entityId={doc.id} entityTitle={doc.title} type="DOCUMENT" />
+          )}
           {doc.fileUrl && (
             <Button variant="outline" size="sm" asChild>
               <a href={getDownloadUrl(doc.fileUrl)!} download>
