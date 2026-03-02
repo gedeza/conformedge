@@ -40,6 +40,20 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
+# Local upload directory (production uses R2)
+public/uploads/
+
+# Ad-hoc screenshots
+conformedge-live.png
+dashboard.png
+github-login.png
+landing-page.png
+reports-page.png
+sidebar-check.png
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
