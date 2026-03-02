@@ -151,11 +151,22 @@ export const METRICS = [
   { value: 24, suffix: "/7", label: "Compliance Monitoring", prefix: "" },
 ] as const
 
-export const PRICING_TIERS = [
+// Billing constants
+export const ANNUAL_DISCOUNT_MONTHS = 10 // pay 10 months for 12 = ~17% off
+
+export type PricingTier = {
+  name: string
+  monthlyPrice: number | null // null = Enterprise "Custom"
+  description: string
+  features: string[]
+  cta: string
+  highlighted: boolean
+}
+
+export const PRICING_TIERS: PricingTier[] = [
   {
     name: "Starter",
-    price: "R699",
-    period: "/month",
+    monthlyPrice: 699,
     description: "For small contractors getting started with ISO compliance.",
     features: [
       "Up to 5 users",
@@ -170,8 +181,7 @@ export const PRICING_TIERS = [
   },
   {
     name: "Professional",
-    price: "R1,999",
-    period: "/month",
+    monthlyPrice: 1999,
     description: "For growing companies managing multiple standards.",
     features: [
       "Up to 15 users",
@@ -188,8 +198,7 @@ export const PRICING_TIERS = [
   },
   {
     name: "Business",
-    price: "R4,499",
-    period: "/month",
+    monthlyPrice: 4499,
     description: "For multi-site firms with advanced compliance needs.",
     features: [
       "Up to 50 users",
@@ -206,8 +215,7 @@ export const PRICING_TIERS = [
   },
   {
     name: "Enterprise",
-    price: "Custom",
-    period: "",
+    monthlyPrice: null,
     description: "For large organisations needing full control and scale.",
     features: [
       "Unlimited users",
@@ -221,7 +229,20 @@ export const PRICING_TIERS = [
     cta: "Contact Sales",
     highlighted: false,
   },
-] as const
+]
+
+export type AiCreditPack = {
+  credits: number
+  price: number
+  perCredit: number
+  popular?: boolean
+}
+
+export const AI_CREDIT_PACKS: AiCreditPack[] = [
+  { credits: 100, price: 15, perCredit: 0.15 },
+  { credits: 500, price: 65, perCredit: 0.13, popular: true },
+  { credits: 1000, price: 120, perCredit: 0.12 },
+]
 
 export const FOOTER_LINKS = {
   product: [
