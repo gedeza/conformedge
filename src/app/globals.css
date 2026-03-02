@@ -45,10 +45,21 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-landing-navy: var(--landing-navy);
+  --color-landing-navy-light: var(--landing-navy-light);
+  --color-landing-accent: var(--landing-accent);
+  --color-landing-cta: var(--landing-cta);
+  --color-landing-light-bg: var(--landing-light-bg);
 }
 
 :root {
   --radius: 0.625rem;
+  /* Landing page tokens */
+  --landing-navy: oklch(0.15 0.02 255);
+  --landing-navy-light: oklch(0.22 0.02 255);
+  --landing-accent: oklch(0.58 0.11 180);
+  --landing-cta: oklch(0.69 0.17 163);
+  --landing-light-bg: oklch(0.98 0.005 250);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -83,6 +94,11 @@
 }
 
 .dark {
+  --landing-navy: oklch(0.12 0.02 255);
+  --landing-navy-light: oklch(0.18 0.02 255);
+  --landing-accent: oklch(0.62 0.12 180);
+  --landing-cta: oklch(0.72 0.17 163);
+  --landing-light-bg: oklch(0.18 0.005 250);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -123,4 +139,23 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Landing page animations */
+@keyframes counter-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-counter-up {
+  animation: counter-up 0.6s ease-out forwards;
+}
+
+.animate-subtle-float {
+  animation: subtle-float 6s ease-in-out infinite;
 }
