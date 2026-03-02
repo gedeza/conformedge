@@ -21,7 +21,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {PRICING_TIERS.map((tier) => (
             <Card
               key={tier.name}
