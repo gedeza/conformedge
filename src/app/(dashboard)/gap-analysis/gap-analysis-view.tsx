@@ -164,12 +164,12 @@ export function GapAnalysisView({ data, standards, projects, currentStandard, cu
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Select
           value={currentStandard || "all"}
           onValueChange={(v) => updateFilter("standard", v === "all" ? undefined : v)}
         >
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger className="w-full sm:w-[220px]" aria-label="Filter by ISO standard">
             <SelectValue placeholder="All standards" />
           </SelectTrigger>
           <SelectContent>
@@ -186,7 +186,7 @@ export function GapAnalysisView({ data, standards, projects, currentStandard, cu
           value={currentProject || "all"}
           onValueChange={(v) => updateFilter("project", v === "all" ? undefined : v)}
         >
-          <SelectTrigger className="w-[220px]">
+          <SelectTrigger className="w-full sm:w-[220px]" aria-label="Filter by project">
             <SelectValue placeholder="All projects" />
           </SelectTrigger>
           <SelectContent>

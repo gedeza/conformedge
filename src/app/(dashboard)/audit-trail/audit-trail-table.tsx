@@ -132,7 +132,7 @@ export function AuditTrailTable({
             value={filters.action ?? ""}
             onValueChange={(v) => updateFilter("action", v === "all" ? "" : v)}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px]" aria-label="Filter by action">
               <SelectValue placeholder="All actions" />
             </SelectTrigger>
             <SelectContent>
@@ -151,7 +151,7 @@ export function AuditTrailTable({
               updateFilter("entityType", v === "all" ? "" : v)
             }
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[160px]" aria-label="Filter by entity type">
               <SelectValue placeholder="All entities" />
             </SelectTrigger>
             <SelectContent>
@@ -168,7 +168,7 @@ export function AuditTrailTable({
             value={filters.userId ?? ""}
             onValueChange={(v) => updateFilter("userId", v === "all" ? "" : v)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Filter by user">
               <SelectValue placeholder="All users" />
             </SelectTrigger>
             <SelectContent>
@@ -184,6 +184,7 @@ export function AuditTrailTable({
           <Input
             type="date"
             placeholder="From"
+            aria-label="From date"
             value={filters.dateFrom ?? ""}
             onChange={(e) => updateFilter("dateFrom", e.target.value)}
             className="w-[150px]"
@@ -192,6 +193,7 @@ export function AuditTrailTable({
           <Input
             type="date"
             placeholder="To"
+            aria-label="To date"
             value={filters.dateTo ?? ""}
             onChange={(e) => updateFilter("dateTo", e.target.value)}
             className="w-[150px]"

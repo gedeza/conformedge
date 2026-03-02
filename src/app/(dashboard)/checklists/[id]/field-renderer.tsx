@@ -52,11 +52,12 @@ function BooleanField({ value, onSubmit, isPending }: { value?: boolean; onSubmi
   return (
     <div className="flex items-center gap-2">
       <Switch
+        id="boolean-field"
         checked={value ?? false}
         onCheckedChange={(checked) => onSubmit(checked)}
         disabled={isPending}
       />
-      <Label className="text-sm text-muted-foreground">{value === true ? "Yes" : value === false ? "No" : "Not set"}</Label>
+      <Label htmlFor="boolean-field" className="text-sm text-muted-foreground">{value === true ? "Yes" : value === false ? "No" : "Not set"}</Label>
     </div>
   )
 }
@@ -97,7 +98,7 @@ function RatingField({ value, onSubmit, isPending }: { value?: number; onSubmit:
   const current = value ?? 0
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" role="group" aria-label="Rating">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
@@ -107,6 +108,7 @@ function RatingField({ value, onSubmit, isPending }: { value?: number; onSubmit:
           onMouseLeave={() => setHover(0)}
           onClick={() => onSubmit(star)}
           className="p-0.5 disabled:opacity-50"
+          aria-label={`${star} star${star !== 1 ? "s" : ""}`}
         >
           <Star
             className={cn(
@@ -128,7 +130,7 @@ function SelectField({ value, config, onSubmit, isPending }: { value?: string; c
 
   return (
     <Select value={value ?? ""} onValueChange={(v) => onSubmit(v)} disabled={isPending}>
-      <SelectTrigger className="w-40 h-8">
+      <SelectTrigger className="w-40 h-8" aria-label="Select option">
         <SelectValue placeholder="Select..." />
       </SelectTrigger>
       <SelectContent>

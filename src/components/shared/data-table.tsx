@@ -87,6 +87,7 @@ export function DataTable<TData, TValue>({
         {searchKey && (
           <Input
             placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             className="max-w-sm"
@@ -99,7 +100,7 @@ export function DataTable<TData, TValue>({
               table.getColumn(filterKey)?.setFilterValue(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label={filterPlaceholder}>
               <SelectValue placeholder={filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>

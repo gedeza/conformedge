@@ -68,7 +68,6 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>(
     templates.find((t) => t.isDefault)?.id
   )
-  const [steps, setSteps] = useState<StepFormRow[]>(() => initSteps())
 
   function initSteps(): StepFormRow[] {
     const defaultTemplate = templates.find((t) => t.isDefault) ?? templates[0]
@@ -83,6 +82,8 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
     }
     return [{ stepOrder: 1, label: "Manager Review", requiredRole: "MANAGER", assignedToId: "" }]
   }
+
+  const [steps, setSteps] = useState<StepFormRow[]>(() => initSteps())
 
   function handleTemplateChange(templateId: string) {
     setSelectedTemplateId(templateId)
@@ -207,6 +208,7 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
                         value={step.label}
                         onChange={(e) => updateStep(i, "label", e.target.value)}
                         placeholder="Step label"
+                        aria-label={`Step ${i + 1} label`}
                         className="flex-1"
                       />
                       <Select
@@ -216,7 +218,7 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
                           updateStep(i, "assignedToId", "")
                         }}
                       >
-                        <SelectTrigger className="w-[130px]">
+                        <SelectTrigger className="w-[130px]" aria-label={`Step ${i + 1} required role`}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -241,7 +243,7 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
                         value={step.assignedToId}
                         onValueChange={(v) => updateStep(i, "assignedToId", v)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger aria-label={`Step ${i + 1} reviewer`}>
                           <SelectValue placeholder="Select reviewer" />
                         </SelectTrigger>
                         <SelectContent>

@@ -75,14 +75,14 @@ export function ClauseTagForm({ documentId, standards }: ClauseTagFormProps) {
   }
 
   return (
-    <div className="flex items-end gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
       <div className="space-y-1">
         <label className="text-sm font-medium">Standard</label>
         <Select
           value={selectedStandard}
           onValueChange={(v) => { setSelectedStandard(v); setSelectedClause("") }}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Select standard" />
           </SelectTrigger>
           <SelectContent>
@@ -92,14 +92,14 @@ export function ClauseTagForm({ documentId, standards }: ClauseTagFormProps) {
           </SelectContent>
         </Select>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1 flex-1">
         <label className="text-sm font-medium">Clause</label>
         <Select
           value={selectedClause}
           onValueChange={setSelectedClause}
           disabled={!selectedStandard}
         >
-          <SelectTrigger className="w-[320px]">
+          <SelectTrigger className="w-full sm:w-[320px]">
             <SelectValue placeholder="Select clause" />
           </SelectTrigger>
           <SelectContent>

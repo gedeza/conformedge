@@ -107,13 +107,13 @@ export function CalendarView({ assessments, year, month }: CalendarViewProps) {
         {/* Navigation */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="outline" size="icon" onClick={() => navigate(-1)} aria-label="Previous month">
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <h2 className="text-lg font-semibold min-w-[180px] text-center">
               {getMonthName(month)} {year}
             </h2>
-            <Button variant="outline" size="icon" onClick={() => navigate(1)}>
+            <Button variant="outline" size="icon" onClick={() => navigate(1)} aria-label="Next month">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

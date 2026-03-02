@@ -243,16 +243,18 @@ export function WorkflowTemplates({ templates, canManage }: Props) {
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label>Name</Label>
+              <Label htmlFor="wf-name">Name</Label>
               <Input
+                id="wf-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Standard Approval"
               />
             </div>
             <div className="space-y-2">
-              <Label>Description <span className="text-muted-foreground font-normal">(optional)</span></Label>
+              <Label htmlFor="wf-description">Description <span className="text-muted-foreground font-normal">(optional)</span></Label>
               <Textarea
+                id="wf-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe when to use this template..."
@@ -274,13 +276,14 @@ export function WorkflowTemplates({ templates, canManage }: Props) {
                       value={step.label}
                       onChange={(e) => updateStep(i, "label", e.target.value)}
                       placeholder="Step label"
+                      aria-label={`Step ${i + 1} label`}
                       className="flex-1"
                     />
                     <Select
                       value={step.role}
                       onValueChange={(v) => updateStep(i, "role", v)}
                     >
-                      <SelectTrigger className="w-[130px]">
+                      <SelectTrigger className="w-[130px]" aria-label={`Step ${i + 1} role`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -308,8 +311,8 @@ export function WorkflowTemplates({ templates, canManage }: Props) {
             </div>
 
             <div className="flex items-center gap-2">
-              <Switch checked={isDefault} onCheckedChange={setIsDefault} />
-              <Label className="font-normal">Set as default template</Label>
+              <Switch id="wf-is-default" checked={isDefault} onCheckedChange={setIsDefault} />
+              <Label htmlFor="wf-is-default" className="font-normal">Set as default template</Label>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">

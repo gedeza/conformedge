@@ -248,7 +248,7 @@ export function CreateShareLinkDialog({
               <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. SABS audit 2026" />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Recipient Name (optional)</Label>
                 <Input value={recipientName} onChange={(e) => setRecipientName(e.target.value)} placeholder="John Smith" />
@@ -259,7 +259,7 @@ export function CreateShareLinkDialog({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Expires In</Label>
                 <Select value={expiryPreset} onValueChange={setExpiryPreset}>

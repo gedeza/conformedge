@@ -86,7 +86,7 @@ export function NotificationList({ initialNotifications, initialUnreadCount }: N
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Filter by notification type">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent>
@@ -98,7 +98,7 @@ export function NotificationList({ initialNotifications, initialUnreadCount }: N
           </Select>
 
           <Select value={readFilter} onValueChange={setReadFilter}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px]" aria-label="Filter by read status">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>

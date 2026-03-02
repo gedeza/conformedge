@@ -118,9 +118,9 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
           {isRecurring && (
             <>
               <div className="space-y-2">
-                <Label>Frequency</Label>
+                <Label htmlFor="recurrence-freq">Frequency</Label>
                 <Select value={frequency} onValueChange={(v) => setFrequency(v as RecurrenceFrequency)}>
-                  <SelectTrigger><SelectValue placeholder="Select frequency" /></SelectTrigger>
+                  <SelectTrigger id="recurrence-freq"><SelectValue placeholder="Select frequency" /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(RECURRENCE_FREQUENCIES).map(([key, cfg]) => (
                       <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
@@ -131,8 +131,9 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
 
               {frequency === "CUSTOM" && (
                 <div className="space-y-2">
-                  <Label>Custom interval (days)</Label>
+                  <Label htmlFor="custom-interval">Custom interval (days)</Label>
                   <Input
+                    id="custom-interval"
                     type="number"
                     min={1}
                     max={365}
@@ -143,15 +144,15 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
               )}
 
               <div className="space-y-2">
-                <Label>Start date (first due date)</Label>
-                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                <Label htmlFor="recurrence-start">Start date (first due date)</Label>
+                <Input id="recurrence-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Default Assignee</Label>
+                  <Label htmlFor="default-assignee">Default Assignee</Label>
                   <Select value={assigneeId} onValueChange={setAssigneeId}>
-                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                    <SelectTrigger id="default-assignee"><SelectValue placeholder="None" /></SelectTrigger>
                     <SelectContent>
                       {members.map((m) => (
                         <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
@@ -160,9 +161,9 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>Default Project</Label>
+                  <Label htmlFor="default-project">Default Project</Label>
                   <Select value={projectId} onValueChange={setProjectId}>
-                    <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                    <SelectTrigger id="default-project"><SelectValue placeholder="None" /></SelectTrigger>
                     <SelectContent>
                       {projects.map((p) => (
                         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>

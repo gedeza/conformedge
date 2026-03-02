@@ -119,6 +119,7 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
                 size="sm"
                 disabled={isPending}
                 onClick={() => handleToggle(true)}
+                aria-label="Mark compliant"
                 className={cn(
                   "h-8 w-8 p-0",
                   item.isCompliant === true && "bg-green-100 text-green-800 hover:bg-green-200"
@@ -131,6 +132,7 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
                 size="sm"
                 disabled={isPending}
                 onClick={() => handleToggle(false)}
+                aria-label="Mark non-compliant"
                 className={cn(
                   "h-8 w-8 p-0",
                   item.isCompliant === false && "bg-red-100 text-red-800 hover:bg-red-200"
@@ -143,6 +145,7 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
                 size="sm"
                 disabled={isPending}
                 onClick={() => handleToggle(null)}
+                aria-label="Mark not assessed"
                 className={cn(
                   "h-8 w-8 p-0",
                   item.isCompliant === null && "bg-gray-100 text-gray-800 hover:bg-gray-200"
@@ -180,6 +183,7 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
             value={evidence}
             onChange={(e) => setEvidence(e.target.value)}
             placeholder="Add evidence or references..."
+            aria-label="Evidence"
             rows={2}
             className="flex-1"
           />

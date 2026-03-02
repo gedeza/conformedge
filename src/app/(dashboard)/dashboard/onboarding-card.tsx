@@ -175,7 +175,7 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss} disabled={isPending}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleDismiss} disabled={isPending} aria-label="Dismiss onboarding">
           <X className="h-4 w-4" />
         </Button>
       </CardHeader>

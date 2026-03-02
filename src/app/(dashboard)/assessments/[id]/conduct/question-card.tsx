@@ -74,8 +74,8 @@ export function QuestionCard({ questionId, number, question, guidance, existingA
         {guidance && <p className="text-sm text-muted-foreground">{guidance}</p>}
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Score (0-5)</Label>
+        <fieldset className="space-y-2 border-0 p-0 m-0">
+          <legend className="text-sm font-medium">Score (0-5)</legend>
           <RadioGroup value={score} onValueChange={setScore} className="flex flex-wrap gap-2">
             {SCORE_OPTIONS.map((opt) => (
               <div key={opt.value} className="flex items-center space-x-1">
@@ -86,7 +86,7 @@ export function QuestionCard({ questionId, number, question, guidance, existingA
               </div>
             ))}
           </RadioGroup>
-        </div>
+        </fieldset>
         <div className="space-y-2">
           <Label className="text-sm font-medium">Answer</Label>
           <Textarea
@@ -96,7 +96,7 @@ export function QuestionCard({ questionId, number, question, guidance, existingA
             rows={2}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-sm font-medium">Evidence</Label>
             <Textarea

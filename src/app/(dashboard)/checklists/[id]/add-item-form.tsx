@@ -96,11 +96,12 @@ export function AddItemForm({ checklistId }: { checklistId: string }) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Item description"
+          aria-label="Item description"
           className="flex-1"
           onKeyDown={(e) => e.key === "Enter" && fieldType === "COMPLIANCE" && handleAdd()}
         />
         <Select value={fieldType} onValueChange={setFieldType}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36" aria-label="Field type">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -114,16 +115,16 @@ export function AddItemForm({ checklistId }: { checklistId: string }) {
       {fieldType === "NUMBER" && (
         <div className="flex gap-2 items-end">
           <div className="space-y-1">
-            <Label className="text-xs">Min</Label>
-            <Input type="number" value={min} onChange={(e) => setMin(e.target.value)} className="w-20 h-8" placeholder="0" />
+            <Label htmlFor="num-min" className="text-xs">Min</Label>
+            <Input id="num-min" type="number" value={min} onChange={(e) => setMin(e.target.value)} className="w-20 h-8" placeholder="0" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Max</Label>
-            <Input type="number" value={max} onChange={(e) => setMax(e.target.value)} className="w-20 h-8" placeholder="100" />
+            <Label htmlFor="num-max" className="text-xs">Max</Label>
+            <Input id="num-max" type="number" value={max} onChange={(e) => setMax(e.target.value)} className="w-20 h-8" placeholder="100" />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">Unit</Label>
-            <Input value={unit} onChange={(e) => setUnit(e.target.value)} className="w-20 h-8" placeholder="mm" />
+            <Label htmlFor="num-unit" className="text-xs">Unit</Label>
+            <Input id="num-unit" value={unit} onChange={(e) => setUnit(e.target.value)} className="w-20 h-8" placeholder="mm" />
           </div>
         </div>
       )}
