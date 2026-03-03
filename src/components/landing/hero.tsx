@@ -14,7 +14,7 @@ export function Hero() {
           <div className="lg:col-span-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-landing-accent/30 bg-landing-accent/10 px-4 py-1.5 text-xs font-medium text-landing-accent">
               <span className="size-1.5 rounded-full bg-landing-accent animate-pulse" />
-              AI-Powered Compliance for SA Construction
+              AI-Powered ISO Compliance Management
             </span>
 
             <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">

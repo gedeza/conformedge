@@ -16,7 +16,7 @@ export function ProblemSection() {
             Compliance Shouldn&apos;t Be This Hard
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            South African construction companies lose time and money to manual compliance processes every day.
+            South African businesses lose time and money to manual compliance processes every day.
           </p>
         </div>
 

@@ -14,7 +14,7 @@ export function Testimonials() {
             Join the Early Access Programme
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            We&apos;re onboarding a select group of SA construction and engineering companies.
+            We&apos;re onboarding a select group of South African businesses.
             Be among the first to transform your compliance workflow.
           </p>
 

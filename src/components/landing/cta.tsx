@@ -11,8 +11,8 @@ export function CTA() {
             Ready to Take Control of Your Compliance?
           </h2>
           <p className="mt-4 text-lg text-white/60">
-            Join construction, engineering, and infrastructure companies across
-            South Africa already using ConformEdge to stay audit-ready.
+            Join businesses across South Africa already using ConformEdge
+            to stay audit-ready.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button

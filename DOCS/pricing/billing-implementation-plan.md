@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-03
 **Author:** Nhlanhla Mnyandu / ISU Technologies
-**Status:** Planning
+**Status:** Approved — Ready for Implementation
 
 ---
 
@@ -141,6 +141,13 @@ QUOTA_WARNING (at 80%)
 ---
 
 ## 5. Feature-to-Tier Gate Map
+
+### Tier Limits — FINALIZED (2026-03-03)
+User limits **5 / 15 / 50 / Unlimited** are confirmed and locked. Analysis showed:
+- Reducing to 3/10/30 makes every gap worse (pushes viable customers to higher tiers too early)
+- Current numbers align with SA CIDB grading segments (Grade 3-5 → Starter, Grade 6-7 → Professional, Grade 7-8 → Business)
+- ConformEdge offers 2x the users per tier vs competitors (Qualio)
+- **Future monitor:** If after 6 months, 20-35% of Business customers use <25 seats, consider a "Growth" tier at R2,999/mo with 30 users
 
 ### Soft Limits (Count-Based)
 
@@ -384,6 +391,23 @@ Plan selector UI will show warnings when downgrading would exceed new limits.
 | 100 credits | R15 | R0.15 |
 | 500 credits | R65 | R0.13 |
 | 1,000 credits | R120 | R0.12 |
+
+### Onboarding Credits (FINALIZED 2026-03-03)
+Every new organization receives **100 onboarding AI credits** on creation:
+- Granted automatically when Clerk webhook fires `organization.created`
+- Stored as a `CreditTransaction` with type `ADJUSTMENT` and description "Onboarding bonus"
+- **Expire when trial ends** — any unused onboarding credits are zeroed via cron
+- Separate from purchased credits (purchased credits never expire)
+- Cost per trial account: ~R4.14 at internal rates — negligible vs R9,598 LTV
+- Implementation: In Phase 2 (Subscription Provisioning), add to the Clerk webhook bootstrap
+
+### Trial Invite Rules (FINALIZED 2026-03-03)
+During the 14-day trial period, **user invite limits are not enforced**:
+- TRIALING status → `checkUserLimit()` always returns `allowed: true`
+- Once subscription transitions to ACTIVE (payment confirmed), user limits apply
+- If trial org has more users than the chosen plan allows, existing users remain active but no new invites are permitted until under the limit
+- This prevents friction during onboarding — teams should experience the full product before paying
+- Implementation: In `src/lib/billing/limit-checks.ts`, add early return when `subscription.status === 'TRIALING'`
 
 ### Transaction Audit Trail
 Every credit movement (purchase, usage, adjustment, refund) is logged in `CreditTransaction` with:

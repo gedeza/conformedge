@@ -36,13 +36,13 @@ export const PAIN_POINTS = [
   },
   {
     title: "Audit Surprises",
-    description: "You only discover gaps when the auditor is already on site. By then it's too late to fix anything.",
+    description: "You only discover gaps when the auditor arrives. By then it's too late to fix anything.",
     stat: "3x",
     statLabel: "more non-conformances without proactive tracking",
   },
   {
     title: "Expired Certifications",
-    description: "Subcontractor certs slip through the cracks. One expired certificate can halt an entire project.",
+    description: "Vendor and subcontractor certs slip through the cracks. One expired certificate can halt an entire project.",
     stat: "R2M+",
     statLabel: "average cost of project delays from compliance failures",
   },
@@ -167,7 +167,7 @@ export const PRICING_TIERS: PricingTier[] = [
   {
     name: "Starter",
     monthlyPrice: 699,
-    description: "For small contractors getting started with ISO compliance.",
+    description: "For small businesses getting started with ISO compliance.",
     features: [
       "Up to 5 users",
       "2 ISO standards",

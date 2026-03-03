@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Final Polish + Billing Preparation
+**Phase:** Final Polish Complete — Ready for Billing Implementation
 
 ---
 
@@ -36,26 +36,28 @@
 
 - [!] **T14** Configure custom Resend sender domain (`noreply@conformedge.co.za`) — **MANUAL: Requires Resend dashboard + DNS verification**
 - [x] **T15** Verify `.env` never committed — **VERIFIED CLEAN**
-- [x] **T16** Verify GitHub repo is private — **WARNING: REPO IS PUBLIC. Make private via GitHub Settings → Danger Zone**
-- [x] **T17** Add trade-specific entries to industry list (Plumbing, Electrical, Manufacturing, IT, Healthcare, Logistics)
+- [x] **T16** Verify GitHub repo is private — **Confirmed private by owner**
+- [x] **T17** Add trade-specific entries to industry list (7 new sectors added)
 - [x] **T18** Rename `SA_CONSTRUCTION_INDUSTRIES` → `INDUSTRIES` in constants + 3 import refs
-- [x] **T19** Replace `HardHat` icon → `Building2` across all 7 files (sidebar, landing, reports, subcontractors, help panel, shared portal)
+- [x] **T19** Replace `HardHat` icon → `Building2` across all 7 files
 - [x] **T20** Replace `app.conformedge.co.za` → `conformedge.co.za` in feature-details mock UI
 - [x] **T21** Replace `console.error("R2 delete failed")` with `captureError()` in documents actions
 - [x] **T22** Replace raw error forwarding in email.ts with generic message
 
-## P3 — Before Billing Implementation
+## P3 — Before Billing Implementation — ALL COMPLETE
 
-- [ ] **T23** Finalize user tier limits decision (recommended: keep 5/15/50/Unlimited)
-- [ ] **T24** Design onboarding AI credit allowance (100 credits during trial)
-- [ ] **T25** Plan trial-period unlimited user invites (enforce on conversion only)
+- [x] **T23** Finalize user tier limits at 5/15/50/Unlimited — **CONFIRMED, documented in billing plan**
+- [x] **T24** Design onboarding AI credit allowance — **100 credits, expire with trial, documented in billing plan**
+- [x] **T25** Plan trial-period unlimited user invites — **Enforce on conversion only, documented in billing plan**
 
-## P4 — Future Consideration
+## P4 — Future Consideration — ACTIONABLE ITEMS COMPLETE
 
-- [ ] **T26** Monitor 15→50 user gap post-launch for potential "Growth" tier
+- [x] **T29** Generalize Subcontractor help panel — removed CIDB/BEE references
+- [x] **T31** Generalize landing page copy — hero, footer, CTA, testimonials, problem section, pricing tier descriptions
+- [x] **T32** Generalize pain point descriptions in data.ts — "on site" → "arrives", added "vendor"
+- [ ] **T26** Monitor 15→50 user gap post-launch for potential "Growth" tier — **Trigger: 20-35% of Business customers using <25 seats after 6 months**
 - [ ] **T27** Evaluate mining sector entry (highest-value adjacent market)
 - [ ] **T28** Consider configurable vendor scoring weights per organization
-- [ ] **T29** Generalize Subcontractor help panel — remove CIDB references
 - [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes)
 
 ---
@@ -79,13 +81,19 @@
 | T13 | Replaced "Claude analyses" → "Our AI analyses" in documents help panel | 2026-03-03 |
 | T14 | Resend sender domain — flagged for manual DNS setup | 2026-03-03 |
 | T15 | Verified .env never committed to git — clean | 2026-03-03 |
-| T16 | Repo is PUBLIC — flagged for manual change to private | 2026-03-03 |
+| T16 | Repo confirmed private by owner | 2026-03-03 |
 | T17 | Expanded industry list with 7 new sectors + renamed constant | 2026-03-03 |
 | T18 | Renamed SA_CONSTRUCTION_INDUSTRIES → INDUSTRIES in 4 files | 2026-03-03 |
 | T19 | Replaced HardHat → Building2 icon across 7 files | 2026-03-03 |
 | T20 | Replaced app.conformedge.co.za → conformedge.co.za in mock UI | 2026-03-03 |
 | T21 | Replaced console.error("R2 delete") with captureError() | 2026-03-03 |
 | T22 | Replaced raw Resend error forwarding with generic message | 2026-03-03 |
+| T23 | User tier limits finalized at 5/15/50/Unlimited — documented in billing plan | 2026-03-03 |
+| T24 | Onboarding AI credits designed (100 credits, expire with trial) | 2026-03-03 |
+| T25 | Trial invite rules designed (unlimited during trial, enforce on conversion) | 2026-03-03 |
+| T29 | Generalized Subcontractor help panel — removed CIDB/BEE references | 2026-03-03 |
+| T31 | Generalized all landing page copy (hero, footer, CTA, testimonials, problem section) | 2026-03-03 |
+| T32 | Generalized pain point descriptions (auditor, vendor references) | 2026-03-03 |
 
 ---
 
@@ -94,7 +102,6 @@
 | Item | Action | Owner |
 |------|--------|-------|
 | **T14** | Go to Resend dashboard → Domains → Add `conformedge.co.za` → Add DNS records → Verify → Update `FROM_ADDRESS` in `src/lib/email.ts` | Nhlanhla |
-| **T16** | Go to GitHub repo → Settings → Danger Zone → Change visibility to Private | Nhlanhla |
 
 ---
 
