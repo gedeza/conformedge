@@ -5,7 +5,7 @@ import { NotificationEmail, AuditPackEmail } from "@/lib/email-templates"
 import { captureError } from "@/lib/error-tracking"
 import type { NotificationType } from "@/types"
 
-const FROM_ADDRESS = "ConformEdge <onboarding@resend.dev>"
+const FROM_ADDRESS = "ConformEdge <noreply@isutech.co.za>"
 
 async function renderHtml(element: React.ReactElement): Promise<string> {
   const { renderToStaticMarkup } = await import("react-dom/server")

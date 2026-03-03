@@ -34,7 +34,7 @@
 
 ## P2 — This Sprint (Hardening) — ALL COMPLETE
 
-- [!] **T14** Configure custom Resend sender domain (`noreply@conformedge.co.za`) — **MANUAL: Requires Resend dashboard + DNS verification**
+- [x] **T14** Configure Resend sender address (`noreply@isutech.co.za`) — using verified isutech.co.za domain
 - [x] **T15** Verify `.env` never committed — **VERIFIED CLEAN**
 - [x] **T16** Verify GitHub repo is private — **Confirmed private by owner**
 - [x] **T17** Add trade-specific entries to industry list (7 new sectors added)
@@ -83,7 +83,7 @@
 - [x] **T52** Modify Clerk webhook to bootstrap Subscription + CreditBalance + UsageRecord on `organization.created`
 - [x] **T53** Write `prisma/scripts/backfill-subscriptions.ts` for existing orgs (TRIALING, 14-day trial)
 - [x] **T54** Run backfill against local DB and verify — 3 orgs bootstrapped, idempotent re-run confirmed
-- [!] **T55** Deploy and run backfill against production — **After commit/push**
+- [x] **T55** Deploy and run backfill against production — 2 orgs bootstrapped (TRIALING, 14d trial, 100 credits)
 
 ## B3 — Billing Phase 3: Enforcement Points — ALL COMPLETE
 
@@ -142,7 +142,7 @@
   - Invoice table has PDF download column
   - PaymentCallbackHandler verifies `?ref=` on return from Paystack
   - Buttons disabled when `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` not set
-- [ ] **T87** Handle payment failures: grace period → dunning → cancellation
+- [x] **T87** Handle payment failures: grace period → dunning → cancellation (ecb554a)
 
 ## Hotfixes — Post-Billing Deploy — ALL COMPLETE
 
@@ -229,6 +229,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T80–T84 | Paystack payment integration — checkout, webhook, invoice PDF, UI wiring | 2026-03-03 |
 | T85 | Fixed billing gate crash on IMS/Gap Analysis/Cross-References (return null + UpgradePrompt) | 2026-03-03 |
 | T86 | Removed unused `react-paystack` (React 19 peer dep conflict broke deploys) | 2026-03-03 |
+| T87 | Payment failure dunning flow — grace period UI, cron reminders (day 3 + day 1), email hint | 2026-03-03 |
 
 ---
 
@@ -236,8 +237,8 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 
 | Item | Action | Owner |
 |------|--------|-------|
-| **T14** | Go to Resend dashboard → Domains → Add `conformedge.co.za` → Add DNS records → Verify → Update `FROM_ADDRESS` in `src/lib/email.ts` | Nhlanhla |
-| **T55** | SSH to VPS, run `npx tsx prisma/scripts/backfill-subscriptions.ts` to bootstrap billing for existing orgs | Nhlanhla |
+| ~~T14~~ | ~~Resend sender configured — `noreply@isutech.co.za`~~ | Done |
+| ~~T55~~ | ~~Backfill completed — 2 orgs bootstrapped on production~~ | Done |
 
 ---
 
