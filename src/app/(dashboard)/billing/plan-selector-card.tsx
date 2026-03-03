@@ -1,21 +1,44 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { Check, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PLAN_DEFINITIONS, formatZar } from "@/lib/billing/plans"
 import { cn } from "@/lib/utils"
+import { initiatePlanCheckout } from "./actions"
 import type { BillingContext, PlanTier } from "@/types"
 
 interface PlanSelectorCardProps {
   billing: BillingContext
+  paystackEnabled: boolean
 }
 
 const TIER_ORDER: PlanTier[] = ["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"]
 
-export function PlanSelectorCard({ billing }: PlanSelectorCardProps) {
+export function PlanSelectorCard({ billing, paystackEnabled }: PlanSelectorCardProps) {
   const currentTier = billing.subscription.plan
+  const router = useRouter()
+  const [loadingTier, setLoadingTier] = useState<PlanTier | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  function handleUpgrade(tier: PlanTier) {
+    setLoadingTier(tier)
+    startTransition(async () => {
+      try {
+        const result = await initiatePlanCheckout(tier, billing.subscription.billingCycle)
+        if ("authorizationUrl" in result) {
+          router.push(result.authorizationUrl)
+        } else {
+          alert(result.error)
+        }
+      } finally {
+        setLoadingTier(null)
+      }
+    })
+  }
 
   return (
     <Card>
@@ -29,6 +52,7 @@ export function PlanSelectorCard({ billing }: PlanSelectorCardProps) {
             const plan = PLAN_DEFINITIONS[tier]
             const isCurrent = tier === currentTier
             const isHigher = TIER_ORDER.indexOf(tier) > TIER_ORDER.indexOf(currentTier)
+            const isLoading = loadingTier === tier && isPending
 
             return (
               <div
@@ -89,15 +113,28 @@ export function PlanSelectorCard({ billing }: PlanSelectorCardProps) {
                       Current Plan
                     </Button>
                   ) : tier === "ENTERPRISE" ? (
-                    <Button variant="outline" size="sm" className="w-full" disabled>
-                      Contact Sales
+                    <Button variant="outline" size="sm" className="w-full" asChild>
+                      <a href="mailto:sales@conformedge.co.za">Contact Sales</a>
                     </Button>
                   ) : isHigher ? (
-                    <Button size="sm" className="w-full" disabled>
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      disabled={!paystackEnabled || isLoading}
+                      onClick={() => handleUpgrade(tier)}
+                    >
+                      {isLoading ? <Loader2 className="mr-1 size-3 animate-spin" /> : null}
                       Upgrade
                     </Button>
                   ) : (
-                    <Button variant="outline" size="sm" className="w-full" disabled>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      disabled={!paystackEnabled || isLoading}
+                      onClick={() => handleUpgrade(tier)}
+                    >
+                      {isLoading ? <Loader2 className="mr-1 size-3 animate-spin" /> : null}
                       Downgrade
                     </Button>
                   )}
@@ -106,9 +143,11 @@ export function PlanSelectorCard({ billing }: PlanSelectorCardProps) {
             )
           })}
         </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          Plan changes will be available once payment integration is live.
-        </p>
+        {!paystackEnabled && (
+          <p className="mt-4 text-center text-xs text-muted-foreground">
+            Plan changes will be available once payment integration is configured.
+          </p>
+        )}
       </CardContent>
     </Card>
   )

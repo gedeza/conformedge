@@ -6,9 +6,12 @@ import { PlanSelectorCard } from "./plan-selector-card"
 import { CreditPacksCard } from "./credit-packs-card"
 import { InvoiceHistoryCard } from "./invoice-history-card"
 import { BillingHelpPanel } from "./billing-help-panel"
+import { PaymentCallbackHandler } from "./payment-callback-handler"
 
 export default async function BillingPage() {
-  const { billing, creditTransactions, invoices } = await getBillingPageData()
+  const { billing, paystackPublicKey, creditTransactions, invoices } = await getBillingPageData()
+
+  const paystackEnabled = !!paystackPublicKey
 
   return (
     <div className="space-y-6">
@@ -19,10 +22,12 @@ export default async function BillingPage() {
         <BillingHelpPanel />
       </PageHeader>
 
+      <PaymentCallbackHandler />
+
       <CurrentPlanCard billing={billing} />
       <UsageCard billing={billing} />
-      <PlanSelectorCard billing={billing} />
-      <CreditPacksCard billing={billing} transactions={creditTransactions} />
+      <PlanSelectorCard billing={billing} paystackEnabled={paystackEnabled} />
+      <CreditPacksCard billing={billing} paystackEnabled={paystackEnabled} transactions={creditTransactions} />
       <InvoiceHistoryCard invoices={invoices} />
     </div>
   )

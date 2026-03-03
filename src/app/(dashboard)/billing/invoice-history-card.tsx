@@ -1,6 +1,8 @@
 "use client"
 
+import { Download } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { INVOICE_STATUSES } from "@/lib/constants"
 import { formatZar } from "@/lib/billing/plans"
@@ -35,7 +37,7 @@ export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
       <CardContent>
         {invoices.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            No invoices yet. Invoices will appear here once payment integration is live.
+            No invoices yet. Invoices will appear here after your first payment.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -46,6 +48,7 @@ export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
                   <th className="pb-2 font-medium">Amount</th>
                   <th className="pb-2 font-medium">Status</th>
                   <th className="pb-2 font-medium">Paid</th>
+                  <th className="pb-2 font-medium">PDF</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -66,6 +69,22 @@ export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
                       </td>
                       <td className="py-2.5 text-muted-foreground">
                         {inv.paidAt ? formatDate(inv.paidAt) : "—"}
+                      </td>
+                      <td className="py-2.5">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-7"
+                          asChild
+                        >
+                          <a
+                            href={`/api/invoices/${inv.id}/pdf`}
+                            download
+                            title="Download invoice PDF"
+                          >
+                            <Download className="size-3.5" />
+                          </a>
+                        </Button>
                       </td>
                     </tr>
                   )

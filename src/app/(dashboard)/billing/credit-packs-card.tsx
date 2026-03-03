@@ -1,15 +1,19 @@
 "use client"
 
-import { Coins, History } from "lucide-react"
+import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { Coins, History, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CREDIT_PACKS, formatZar } from "@/lib/billing/plans"
 import { CREDIT_TRANSACTION_TYPES } from "@/lib/constants"
+import { initiateCreditPurchase } from "./actions"
 import type { BillingContext } from "@/types"
 
 interface CreditPacksCardProps {
   billing: BillingContext
+  paystackEnabled: boolean
   transactions: Array<{
     id: string
     type: string
@@ -20,7 +24,27 @@ interface CreditPacksCardProps {
   }>
 }
 
-export function CreditPacksCard({ billing, transactions }: CreditPacksCardProps) {
+export function CreditPacksCard({ billing, paystackEnabled, transactions }: CreditPacksCardProps) {
+  const router = useRouter()
+  const [loadingPack, setLoadingPack] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+
+  function handleBuy(packId: string) {
+    setLoadingPack(packId)
+    startTransition(async () => {
+      try {
+        const result = await initiateCreditPurchase(packId)
+        if ("authorizationUrl" in result) {
+          router.push(result.authorizationUrl)
+        } else {
+          alert(result.error)
+        }
+      } finally {
+        setLoadingPack(null)
+      }
+    })
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -39,22 +63,32 @@ export function CreditPacksCard({ billing, transactions }: CreditPacksCardProps)
       <CardContent className="space-y-6">
         {/* Credit Packs */}
         <div className="grid gap-3 sm:grid-cols-3">
-          {CREDIT_PACKS.map((pack) => (
-            <div
-              key={pack.id}
-              className="flex flex-col items-center rounded-lg border p-4 text-center"
-            >
-              <span className="text-2xl font-bold">{pack.credits}</span>
-              <span className="text-xs text-muted-foreground">credits</span>
-              <span className="mt-2 text-lg font-semibold">{formatZar(pack.priceZar)}</span>
-              <span className="text-xs text-muted-foreground">
-                {formatZar(pack.perCreditZar)}/credit
-              </span>
-              <Button size="sm" className="mt-3 w-full" disabled>
-                Buy
-              </Button>
-            </div>
-          ))}
+          {CREDIT_PACKS.map((pack) => {
+            const isLoading = loadingPack === pack.id && isPending
+
+            return (
+              <div
+                key={pack.id}
+                className="flex flex-col items-center rounded-lg border p-4 text-center"
+              >
+                <span className="text-2xl font-bold">{pack.credits}</span>
+                <span className="text-xs text-muted-foreground">credits</span>
+                <span className="mt-2 text-lg font-semibold">{formatZar(pack.priceZar)}</span>
+                <span className="text-xs text-muted-foreground">
+                  {formatZar(pack.perCreditZar)}/credit
+                </span>
+                <Button
+                  size="sm"
+                  className="mt-3 w-full"
+                  disabled={!paystackEnabled || isLoading}
+                  onClick={() => handleBuy(pack.id)}
+                >
+                  {isLoading ? <Loader2 className="mr-1 size-3 animate-spin" /> : null}
+                  Buy
+                </Button>
+              </div>
+            )
+          })}
         </div>
 
         {/* Transaction History */}
@@ -102,9 +136,11 @@ export function CreditPacksCard({ billing, transactions }: CreditPacksCardProps)
           </div>
         )}
 
-        <p className="text-center text-xs text-muted-foreground">
-          Credit purchases will be available once payment integration is live.
-        </p>
+        {!paystackEnabled && (
+          <p className="text-center text-xs text-muted-foreground">
+            Credit purchases will be available once payment integration is configured.
+          </p>
+        )}
       </CardContent>
     </Card>
   )

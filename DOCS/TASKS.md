@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Billing Implementation — Phase 5 (Lifecycle Automation) Complete
+**Phase:** Billing Implementation — Phase 6 (Payment Integration) Complete — ALL BILLING PHASES DONE
 
 ---
 
@@ -125,11 +125,23 @@
 - [x] **T78** All 5 billing notification types wired: SUBSCRIPTION_TRIAL_ENDING, SUBSCRIPTION_CANCELLED, QUOTA_WARNING, QUOTA_LIMIT_REACHED, SUBSCRIPTION_PAYMENT_FAILED (stub)
 - [x] **T79** Create payment webhook stub `/api/webhooks/payment/route.ts` (Paystack HMAC-SHA512 verification, event logging, TODO comments for Phase 6)
 
-## B6 — Billing Phase 6: Payment Integration (Paystack) — PENDING
+## B6 — Billing Phase 6: Payment Integration (Paystack) — COMPLETE
 
-- [ ] **T80** Install `react-paystack`, implement checkout flow
-- [ ] **T81** Wire payment webhook to process Paystack events
-- [ ] **T82** Generate VAT-compliant invoices via `@react-pdf/renderer`
+- [x] **T80** Install `react-paystack`, create `src/lib/paystack.ts` server helpers (initializeTransaction, verifyTransaction, createPlan, createSubscription, createOrFetchCustomer)
+- [x] **T81** Billing checkout actions: `initiatePlanCheckout` (plan upgrade via Paystack redirect), `initiateCreditPurchase` (one-time credit pack), `verifyPaymentCallback` (return URL verification)
+- [x] **T82** Wire payment webhook to process Paystack events:
+  - `charge.success` → activate subscription or grant credits + create invoice
+  - `charge.failed` → set PAST_DUE + 7-day grace period + notify admins
+  - `subscription.disable` → cancel subscription + notify
+- [x] **T83** Generate VAT-compliant invoice PDF via `@react-pdf/renderer`:
+  - `src/lib/pdf/invoice-pdf.tsx` (branded A4, line items, VAT breakdown, totals)
+  - `/api/invoices/[id]/pdf` download endpoint (auth-gated, org-scoped)
+- [x] **T84** Update billing UI with live actions:
+  - Plan upgrade/downgrade buttons redirect to Paystack checkout
+  - Credit pack buy buttons redirect to Paystack one-time charge
+  - Invoice table has PDF download column
+  - PaymentCallbackHandler verifies `?ref=` on return from Paystack
+  - Buttons disabled when `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` not set
 - [ ] **T83** Handle payment failures: grace period → dunning → cancellation
 
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
