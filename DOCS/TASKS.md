@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Billing Implementation — Phase 6 (Payment Integration) Complete — ALL BILLING PHASES DONE
+**Phase:** All Billing Phases Complete + Post-Deploy Hotfixes Applied
 
 ---
 
@@ -127,7 +127,7 @@
 
 ## B6 — Billing Phase 6: Payment Integration (Paystack) — COMPLETE
 
-- [x] **T80** Install `react-paystack`, create `src/lib/paystack.ts` server helpers (initializeTransaction, verifyTransaction, createPlan, createSubscription, createOrFetchCustomer)
+- [x] **T80** Create `src/lib/paystack.ts` server helpers (initializeTransaction, verifyTransaction, createPlan, createSubscription, createOrFetchCustomer)
 - [x] **T81** Billing checkout actions: `initiatePlanCheckout` (plan upgrade via Paystack redirect), `initiateCreditPurchase` (one-time credit pack), `verifyPaymentCallback` (return URL verification)
 - [x] **T82** Wire payment webhook to process Paystack events:
   - `charge.success` → activate subscription or grant credits + create invoice
@@ -142,7 +142,12 @@
   - Invoice table has PDF download column
   - PaymentCallbackHandler verifies `?ref=` on return from Paystack
   - Buttons disabled when `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` not set
-- [ ] **T83** Handle payment failures: grace period → dunning → cancellation
+- [ ] **T87** Handle payment failures: grace period → dunning → cancellation
+
+## Hotfixes — Post-Billing Deploy — ALL COMPLETE
+
+- [x] **T85** Fix billing gate crash on IMS, Gap Analysis, and Cross-References pages — return null instead of throwing, show UpgradePrompt (6f578d5)
+- [x] **T86** Remove unused `react-paystack` package — peer dep conflict with React 19 broke deploys (275b74c)
 
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
 
@@ -219,6 +224,11 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T67 | Approval Workflows gate in workflow-template + approval actions | 2026-03-03 |
 | T68 | TypeScript type check — zero errors | 2026-03-03 |
 | T69 | Production build — successful | 2026-03-03 |
+| T70–T76c | Billing UI — page, components, sidebar, trial banner, help panel, middleware routes | 2026-03-03 |
+| T77–T79 | Billing lifecycle automation — cron checks, notifications, payment webhook stub | 2026-03-03 |
+| T80–T84 | Paystack payment integration — checkout, webhook, invoice PDF, UI wiring | 2026-03-03 |
+| T85 | Fixed billing gate crash on IMS/Gap Analysis/Cross-References (return null + UpgradePrompt) | 2026-03-03 |
+| T86 | Removed unused `react-paystack` (React 19 peer dep conflict broke deploys) | 2026-03-03 |
 
 ---
 
@@ -227,6 +237,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | Item | Action | Owner |
 |------|--------|-------|
 | **T14** | Go to Resend dashboard → Domains → Add `conformedge.co.za` → Add DNS records → Verify → Update `FROM_ADDRESS` in `src/lib/email.ts` | Nhlanhla |
+| **T55** | SSH to VPS, run `npx tsx prisma/scripts/backfill-subscriptions.ts` to bootstrap billing for existing orgs | Nhlanhla |
 
 ---
 
