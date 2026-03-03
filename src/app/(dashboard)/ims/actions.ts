@@ -7,13 +7,13 @@ import { computeIMSSummary } from "@/lib/ims/ims-engine"
 import type { IMSSummary } from "@/lib/ims/types"
 
 export const getIMSDashboardData = cache(
-  async (projectId?: string): Promise<IMSSummary> => {
+  async (projectId?: string): Promise<IMSSummary | null> => {
     const { dbOrgId } = await getAuthContext()
 
     // Billing: IMS requires Professional+
     const billing = await getBillingContext(dbOrgId)
     const gate = checkFeatureAccess(billing, "ims")
-    if (!gate.allowed) throw new Error(gate.reason)
+    if (!gate.allowed) return null
 
     return computeIMSSummary(dbOrgId, projectId)
   }

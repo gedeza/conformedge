@@ -25,7 +25,7 @@ export async function getGapAnalysis(
   // Billing: gap analysis requires Professional+
   const billing = await getBillingContext(dbOrgId)
   const gate = checkFeatureAccess(billing, "gapAnalysis")
-  if (!gate.allowed) throw new Error(gate.reason)
+  if (!gate.allowed) return null
 
   return getGapAnalysisInternal(dbOrgId, standardCode, projectId)
 }

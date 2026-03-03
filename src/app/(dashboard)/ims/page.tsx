@@ -1,12 +1,30 @@
 import { Layers, TrendingUp, ShieldCheck, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/shared/page-header"
+import { UpgradePrompt } from "@/components/billing/upgrade-prompt"
 import { getIMSDashboardData } from "./actions"
 import { IMSDashboardView } from "./ims-dashboard-view"
 import { IMSHelpPanel } from "./ims-help-panel"
 
 export default async function IMSDashboardPage() {
   const data = await getIMSDashboardData()
+
+  if (!data) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          heading="Integrated Management System"
+          description="Cross-standard intelligence — see how your compliance efforts connect across all ISO standards."
+        >
+          <IMSHelpPanel />
+        </PageHeader>
+        <UpgradePrompt
+          feature="Integrated Management System"
+          message="IMS cross-standard intelligence is available on Professional and Enterprise plans. Upgrade to see how your compliance efforts connect across all ISO standards."
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

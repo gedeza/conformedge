@@ -46,13 +46,13 @@ export interface StandardOverlapData {
   details: Record<string, MatrixCrossRef[]>
 }
 
-export const getCrossReferenceMatrix = cache(async (): Promise<CrossReferenceMatrixData> => {
+export const getCrossReferenceMatrix = cache(async (): Promise<CrossReferenceMatrixData | null> => {
   const { dbOrgId } = await getAuthContext()
 
   // Billing: cross-references (IMS feature) requires Professional+
   const billing = await getBillingContext(dbOrgId)
   const gate = checkFeatureAccess(billing, "ims")
-  if (!gate.allowed) throw new Error(gate.reason)
+  if (!gate.allowed) return null
 
   const standards = await db.standard.findMany({
     where: { isActive: true },

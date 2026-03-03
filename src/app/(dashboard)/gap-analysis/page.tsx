@@ -2,6 +2,7 @@ import { SearchCheck, ShieldAlert, ShieldCheck, AlertTriangle } from "lucide-rea
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
+import { UpgradePrompt } from "@/components/billing/upgrade-prompt"
 import { getGapAnalysis, getStandardOptions, getProjectOptions } from "./actions"
 import { GapAnalysisView } from "./gap-analysis-view"
 import { GapAnalysisHelpPanel } from "./gap-analysis-help-panel"
@@ -20,6 +21,23 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
     getStandardOptions(),
     getProjectOptions(),
   ])
+
+  if (!data) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          heading="Gap Analysis"
+          description="ISO clause coverage across your organization"
+        >
+          <GapAnalysisHelpPanel />
+        </PageHeader>
+        <UpgradePrompt
+          feature="Gap Analysis"
+          message="Gap analysis is available on Professional and Enterprise plans. Upgrade to identify ISO clause coverage gaps across your organization."
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
