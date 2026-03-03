@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Final Polish Complete — Ready for Billing Implementation
+**Phase:** Billing Implementation — Phase 2 (Subscription Provisioning) Complete
 
 ---
 
@@ -61,6 +61,30 @@
 - [ ] **T28** Consider configurable vendor scoring weights per organization
 - [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes)
 
+## B1 — Billing Phase 1: Data Layer — ALL COMPLETE
+
+- [x] **T38** Add 5 billing enums + 5 billing models to `prisma/schema.prisma`
+- [x] **T39** Extend `NotificationType` with 5 billing types
+- [x] **T40** Remove `Organization.subscriptionTier` (superseded by `Subscription.plan`)
+- [x] **T41** Run migration `billing-subscription-system` — applied successfully
+- [x] **T42** Create `src/lib/billing/plans.ts` — plan definitions, credit packs, constants, helpers
+- [x] **T43** Create `src/lib/billing/get-billing-context.ts` — cached context fetcher (React `cache()`)
+- [x] **T44** Create `src/lib/billing/limit-checks.ts` — user, doc, standards, AI, feature checks
+- [x] **T45** Create `src/lib/billing/usage.ts` — recording, credits, snapshots
+- [x] **T46** Create `src/lib/billing/index.ts` — barrel export
+- [x] **T47** Add billing types to `src/types/index.ts` — BillingContext, LimitCheckResult, etc.
+- [x] **T48** Add billing display constants to `src/lib/constants.ts` — statuses, tiers, cycles
+- [x] **T49** Update `notification-preferences.tsx` + `email-templates.tsx` with billing notification types
+- [x] **T50** Verify: `npx tsc --noEmit` — zero errors
+- [x] **T51** Verify: `npm run build` — build successful
+
+## B2 — Billing Phase 2: Subscription Provisioning — ALL COMPLETE
+
+- [x] **T52** Modify Clerk webhook to bootstrap Subscription + CreditBalance + UsageRecord on `organization.created`
+- [x] **T53** Write `prisma/scripts/backfill-subscriptions.ts` for existing orgs (TRIALING, 14-day trial)
+- [x] **T54** Run backfill against local DB and verify — 3 orgs bootstrapped, idempotent re-run confirmed
+- [!] **T55** Deploy and run backfill against production — **After commit/push**
+
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
 
 Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are selling points.
@@ -105,6 +129,23 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T29 | Generalized Subcontractor help panel — removed CIDB/BEE references | 2026-03-03 |
 | T31 | Generalized all landing page copy (hero, footer, CTA, testimonials, problem section) | 2026-03-03 |
 | T32 | Generalized pain point descriptions (auditor, vendor references) | 2026-03-03 |
+| T38 | Added 5 billing enums + 5 models to Prisma schema | 2026-03-03 |
+| T39 | Extended NotificationType with 5 billing types | 2026-03-03 |
+| T40 | Removed Organization.subscriptionTier | 2026-03-03 |
+| T41 | Migration `billing-subscription-system` applied | 2026-03-03 |
+| T42 | Created `src/lib/billing/plans.ts` | 2026-03-03 |
+| T43 | Created `src/lib/billing/get-billing-context.ts` | 2026-03-03 |
+| T44 | Created `src/lib/billing/limit-checks.ts` | 2026-03-03 |
+| T45 | Created `src/lib/billing/usage.ts` | 2026-03-03 |
+| T46 | Created `src/lib/billing/index.ts` (barrel export) | 2026-03-03 |
+| T47 | Added billing types to `src/types/index.ts` | 2026-03-03 |
+| T48 | Added billing display constants to `src/lib/constants.ts` | 2026-03-03 |
+| T49 | Updated notification preferences + email templates with billing types | 2026-03-03 |
+| T50 | TypeScript type check — zero errors | 2026-03-03 |
+| T51 | Production build — successful | 2026-03-03 |
+| T52 | Modified Clerk webhook with billing bootstrap on org.created | 2026-03-03 |
+| T53 | Created backfill script `prisma/scripts/backfill-subscriptions.ts` | 2026-03-03 |
+| T54 | Ran backfill on local DB — 3 orgs bootstrapped, idempotent confirmed | 2026-03-03 |
 
 ---
 

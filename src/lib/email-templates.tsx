@@ -45,6 +45,31 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Checklist Due",
     hint: "Complete the checklist before the next cycle.",
   },
+  SUBSCRIPTION_TRIAL_ENDING: {
+    color: "#2563eb",
+    label: "Trial Ending Soon",
+    hint: "Upgrade to keep using ConformEdge after your trial ends.",
+  },
+  SUBSCRIPTION_PAYMENT_FAILED: {
+    color: "#dc2626",
+    label: "Payment Failed",
+    hint: "Please update your payment method to avoid service interruption.",
+  },
+  SUBSCRIPTION_CANCELLED: {
+    color: "#6b7280",
+    label: "Subscription Cancelled",
+    hint: "Your subscription has been cancelled.",
+  },
+  QUOTA_LIMIT_REACHED: {
+    color: "#ea580c",
+    label: "Quota Reached",
+    hint: "Upgrade your plan or purchase credit packs to continue.",
+  },
+  QUOTA_WARNING: {
+    color: "#ca8a04",
+    label: "Approaching Limit",
+    hint: "You're nearing your plan limit. Consider upgrading.",
+  },
 }
 
 function EmailLayout({ children }: { children: React.ReactNode }) {

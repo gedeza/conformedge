@@ -84,6 +84,11 @@ export const NOTIFICATION_TYPES = {
   APPROVAL_REQUEST: { label: "Approval Request", color: "bg-purple-100 text-purple-800" },
   CERT_UPLOAD: { label: "Certificate Upload", color: "bg-amber-100 text-amber-800" },
   CHECKLIST_DUE: { label: "Checklist Due", color: "bg-emerald-100 text-emerald-800" },
+  SUBSCRIPTION_TRIAL_ENDING: { label: "Trial Ending", color: "bg-blue-100 text-blue-800" },
+  SUBSCRIPTION_PAYMENT_FAILED: { label: "Payment Failed", color: "bg-red-100 text-red-800" },
+  SUBSCRIPTION_CANCELLED: { label: "Subscription Cancelled", color: "bg-gray-100 text-gray-600" },
+  QUOTA_LIMIT_REACHED: { label: "Quota Reached", color: "bg-orange-100 text-orange-800" },
+  QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
 } as const
 
 export const RECURRENCE_FREQUENCIES = {
@@ -190,6 +195,45 @@ export const FIELD_TYPES = {
   NUMBER: { label: "Number", icon: "Hash" },
   RATING: { label: "Rating", icon: "Star" },
   SELECT: { label: "Dropdown", icon: "ChevronDown" },
+} as const
+
+// ─────────────────────────────────────────────
+// BILLING DISPLAY CONSTANTS
+// ─────────────────────────────────────────────
+
+export const SUBSCRIPTION_STATUSES = {
+  TRIALING: { label: "Trial", color: "bg-blue-100 text-blue-800" },
+  ACTIVE: { label: "Active", color: "bg-green-100 text-green-800" },
+  PAST_DUE: { label: "Past Due", color: "bg-red-100 text-red-800" },
+  CANCELLED: { label: "Cancelled", color: "bg-gray-100 text-gray-600" },
+  PAUSED: { label: "Paused", color: "bg-yellow-100 text-yellow-800" },
+} as const
+
+export const PLAN_TIERS = {
+  STARTER: { label: "Starter", color: "bg-gray-100 text-gray-800" },
+  PROFESSIONAL: { label: "Professional", color: "bg-blue-100 text-blue-800" },
+  BUSINESS: { label: "Business", color: "bg-purple-100 text-purple-800" },
+  ENTERPRISE: { label: "Enterprise", color: "bg-amber-100 text-amber-800" },
+} as const
+
+export const BILLING_CYCLES = {
+  MONTHLY: { label: "Monthly" },
+  ANNUAL: { label: "Annual" },
+} as const
+
+export const INVOICE_STATUSES = {
+  DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },
+  OPEN: { label: "Open", color: "bg-blue-100 text-blue-800" },
+  PAID: { label: "Paid", color: "bg-green-100 text-green-800" },
+  VOID: { label: "Void", color: "bg-gray-100 text-gray-600" },
+  UNCOLLECTIBLE: { label: "Uncollectible", color: "bg-red-100 text-red-800" },
+} as const
+
+export const CREDIT_TRANSACTION_TYPES = {
+  PURCHASE: { label: "Purchase", color: "bg-green-100 text-green-800" },
+  USAGE: { label: "Usage", color: "bg-blue-100 text-blue-800" },
+  ADJUSTMENT: { label: "Adjustment", color: "bg-yellow-100 text-yellow-800" },
+  REFUND: { label: "Refund", color: "bg-purple-100 text-purple-800" },
 } as const
 
 export const MAPPING_TYPE_COLORS = {

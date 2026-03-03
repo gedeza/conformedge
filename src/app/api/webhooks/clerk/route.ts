@@ -2,6 +2,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { Webhook } from "svix"
 import { db } from "@/lib/db"
+import { TRIAL_DURATION_DAYS, ONBOARDING_CREDITS } from "@/lib/billing/plans"
 
 type WebhookEvent = {
   type: string
@@ -96,7 +97,7 @@ export async function POST(req: Request) {
       slug: string
     }
 
-    await db.organization.upsert({
+    const org = await db.organization.upsert({
       where: { clerkOrgId: id },
       update: { name, slug },
       create: {
@@ -105,6 +106,76 @@ export async function POST(req: Request) {
         slug,
       },
     })
+
+    // Bootstrap billing on org creation (not update)
+    if (eventType === "organization.created") {
+      const now = new Date()
+      const trialEnd = new Date(now)
+      trialEnd.setDate(trialEnd.getDate() + TRIAL_DURATION_DAYS)
+
+      // Period = trial duration for new orgs
+      const periodStart = now
+      const periodEnd = trialEnd
+
+      await db.$transaction(async (tx) => {
+        // 1. Create subscription (TRIALING)
+        await tx.subscription.upsert({
+          where: { organizationId: org.id },
+          update: {},
+          create: {
+            organizationId: org.id,
+            plan: "STARTER",
+            status: "TRIALING",
+            billingCycle: "MONTHLY",
+            currentPeriodStart: periodStart,
+            currentPeriodEnd: periodEnd,
+            trialEndsAt: trialEnd,
+          },
+        })
+
+        // 2. Create credit balance
+        const creditBalance = await tx.creditBalance.upsert({
+          where: { organizationId: org.id },
+          update: {},
+          create: {
+            organizationId: org.id,
+            balance: ONBOARDING_CREDITS,
+            lifetimeEarned: ONBOARDING_CREDITS,
+          },
+        })
+
+        // 3. Log onboarding credit grant
+        await tx.creditTransaction.create({
+          data: {
+            type: "ADJUSTMENT",
+            amount: ONBOARDING_CREDITS,
+            balanceAfter: creditBalance.balance,
+            description: "Onboarding bonus — expires with trial",
+            organizationId: org.id,
+          },
+        })
+
+        // 4. Create initial usage record
+        await tx.usageRecord.upsert({
+          where: {
+            organizationId_periodStart: {
+              organizationId: org.id,
+              periodStart,
+            },
+          },
+          update: {},
+          create: {
+            organizationId: org.id,
+            periodStart,
+            periodEnd,
+            aiClassificationsUsed: 0,
+            documentsCount: 0,
+            usersCount: 0,
+            standardsCount: 0,
+          },
+        })
+      })
+    }
   }
 
   if (eventType === "organizationMembership.created") {

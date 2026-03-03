@@ -8,7 +8,7 @@ export type CAPAPriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
 export type ChecklistStatus = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
 export type SubcontractorTier = "PLATINUM" | "GOLD" | "SILVER" | "BRONZE" | "UNRATED"
 export type AuditPackStatus = "DRAFT" | "COMPILING" | "READY" | "SUBMITTED" | "ACCEPTED"
-export type NotificationType = "DOCUMENT_EXPIRY" | "CAPA_DUE" | "ASSESSMENT_SCHEDULED" | "CERT_EXPIRY" | "SYSTEM" | "APPROVAL_REQUEST" | "CERT_UPLOAD" | "CHECKLIST_DUE"
+export type NotificationType = "DOCUMENT_EXPIRY" | "CAPA_DUE" | "ASSESSMENT_SCHEDULED" | "CERT_EXPIRY" | "SYSTEM" | "APPROVAL_REQUEST" | "CERT_UPLOAD" | "CHECKLIST_DUE" | "SUBSCRIPTION_TRIAL_ENDING" | "SUBSCRIPTION_PAYMENT_FAILED" | "SUBSCRIPTION_CANCELLED" | "QUOTA_LIMIT_REACHED" | "QUOTA_WARNING"
 export type RecurrenceFrequency = "WEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUALLY" | "CUSTOM"
 export type ApprovalStepStatus = "PENDING" | "APPROVED" | "REJECTED" | "SKIPPED"
 export type ApprovalRequestStatus = "IN_PROGRESS" | "APPROVED" | "REJECTED" | "CANCELLED"
@@ -17,6 +17,40 @@ export type CrossReferenceType = "EQUIVALENT" | "RELATED" | "SUPPORTING"
 export type ShareLinkType = "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR"
 export type CertificationStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED"
 export type ShareLinkStatus = "ACTIVE" | "EXPIRED" | "REVOKED"
+
+// Billing types
+export type PlanTier = "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE"
+export type SubscriptionStatus = "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "PAUSED"
+export type BillingCycle = "MONTHLY" | "ANNUAL"
+export type CreditTransactionType = "PURCHASE" | "USAGE" | "ADJUSTMENT" | "REFUND"
+export type InvoiceStatus = "DRAFT" | "OPEN" | "PAID" | "VOID" | "UNCOLLECTIBLE"
+
+export interface BillingContext {
+  subscription: {
+    plan: PlanTier
+    status: SubscriptionStatus
+    billingCycle: BillingCycle
+    currentPeriodStart: Date
+    currentPeriodEnd: Date
+    trialEndsAt: Date | null
+    cancelAtPeriodEnd: boolean
+  }
+  creditBalance: number
+  usage: {
+    aiClassificationsUsed: number
+    documentsCount: number
+    usersCount: number
+    standardsCount: number
+  }
+}
+
+export interface LimitCheckResult {
+  allowed: boolean
+  reason?: string
+  upgradeRequired?: PlanTier
+  current?: number
+  limit?: number | null
+}
 
 export type FieldType = "COMPLIANCE" | "BOOLEAN" | "NUMBER" | "RATING" | "SELECT"
 

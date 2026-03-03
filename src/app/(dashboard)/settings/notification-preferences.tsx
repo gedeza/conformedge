@@ -39,6 +39,26 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Checklist Due",
     description: "When a recurring checklist is auto-generated and ready for completion",
   },
+  SUBSCRIPTION_TRIAL_ENDING: {
+    label: "Trial Ending",
+    description: "When your free trial is about to expire",
+  },
+  SUBSCRIPTION_PAYMENT_FAILED: {
+    label: "Payment Failed",
+    description: "When a subscription payment fails",
+  },
+  SUBSCRIPTION_CANCELLED: {
+    label: "Subscription Cancelled",
+    description: "When your subscription is cancelled",
+  },
+  QUOTA_LIMIT_REACHED: {
+    label: "Quota Reached",
+    description: "When you've reached a plan limit (AI credits, documents, etc.)",
+  },
+  QUOTA_WARNING: {
+    label: "Quota Warning",
+    description: "When you're approaching a plan limit (80%)",
+  },
 }
 
 const TYPES: NotificationType[] = [

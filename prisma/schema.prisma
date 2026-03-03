@@ -96,6 +96,11 @@ enum NotificationType {
   APPROVAL_REQUEST
   CERT_UPLOAD
   CHECKLIST_DUE
+  SUBSCRIPTION_TRIAL_ENDING
+  SUBSCRIPTION_PAYMENT_FAILED
+  SUBSCRIPTION_CANCELLED
+  QUOTA_LIMIT_REACHED
+  QUOTA_WARNING
 }
 
 enum ApprovalStepStatus {
@@ -151,6 +156,45 @@ enum ShareLinkStatus {
 }
 
 // ─────────────────────────────────────────────
+// BILLING ENUMS
+// ─────────────────────────────────────────────
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  PAUSED
+}
+
+enum BillingCycle {
+  MONTHLY
+  ANNUAL
+}
+
+enum PlanTier {
+  STARTER
+  PROFESSIONAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  USAGE
+  ADJUSTMENT
+  REFUND
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+// ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
 
@@ -162,7 +206,6 @@ model Organization {
   industry         String?
   country          String   @default("ZA")
   settings         Json?
-  subscriptionTier String?  @map("subscription_tier")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
@@ -181,6 +224,13 @@ model Organization {
   approvalWorkflowTemplates  ApprovalWorkflowTemplate[]
   approvalRequests           ApprovalRequest[]
   shareLinks                 ShareLink[]
+
+  // Billing
+  subscription       Subscription?
+  creditBalance      CreditBalance?
+  invoices           Invoice[]
+  creditTransactions CreditTransaction[]
+  usageRecords       UsageRecord[]
 
   @@map("organizations")
 }
@@ -809,4 +859,113 @@ model ShareLinkAccess {
 
   @@index([shareLinkId, createdAt(sort: Desc)], map: "idx_share_link_access_link_created")
   @@map("share_link_access_logs")
+}
+
+// ─────────────────────────────────────────────
+// BILLING & SUBSCRIPTIONS
+// ─────────────────────────────────────────────
+
+model Subscription {
+  id                  String             @id @default(uuid())
+  plan                PlanTier           @default(STARTER)
+  status              SubscriptionStatus @default(TRIALING)
+  billingCycle        BillingCycle       @default(MONTHLY) @map("billing_cycle")
+  currentPeriodStart  DateTime           @map("current_period_start")
+  currentPeriodEnd    DateTime           @map("current_period_end")
+  trialEndsAt         DateTime?          @map("trial_ends_at")
+  cancelAtPeriodEnd   Boolean            @default(false) @map("cancel_at_period_end")
+  gracePeriodEndsAt   DateTime?          @map("grace_period_ends_at")
+  externalSubId       String?            @map("external_sub_id")
+  organizationId      String             @unique @map("organization_id")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([status], map: "idx_subscription_status")
+  @@index([trialEndsAt], map: "idx_subscription_trial_ends")
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id                String        @id @default(uuid())
+  amountCents       Int           @map("amount_cents")
+  vatCents          Int           @map("vat_cents")
+  totalCents        Int           @map("total_cents")
+  status            InvoiceStatus @default(DRAFT)
+  billingCycle      BillingCycle  @map("billing_cycle")
+  periodStart       DateTime      @map("period_start")
+  periodEnd         DateTime      @map("period_end")
+  dueAt             DateTime      @map("due_at")
+  paidAt            DateTime?     @map("paid_at")
+  lineItems         Json          @map("line_items")
+  externalPaymentId String?       @map("external_payment_id")
+  organizationId    String        @map("organization_id")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creditTransactions CreditTransaction[]
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_invoice_org_created")
+  @@index([status], map: "idx_invoice_status")
+  @@map("invoices")
+}
+
+model CreditBalance {
+  id             String   @id @default(uuid())
+  balance        Int      @default(0)
+  lifetimeEarned Int      @default(0) @map("lifetime_earned")
+  lifetimeUsed   Int      @default(0) @map("lifetime_used")
+  organizationId String   @unique @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("credit_balances")
+}
+
+model CreditTransaction {
+  id             String                @id @default(uuid())
+  type           CreditTransactionType
+  amount         Int                   // Positive = credit added, negative = credit used
+  balanceAfter   Int                   @map("balance_after")
+  description    String
+  documentId     String?               @map("document_id")
+  invoiceId      String?               @map("invoice_id")
+  performedById  String?               @map("performed_by_id")
+  organizationId String                @map("organization_id")
+  createdAt      DateTime              @default(now()) @map("created_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice      Invoice?     @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_credit_tx_org_created")
+  @@index([type], map: "idx_credit_tx_type")
+  @@map("credit_transactions")
+}
+
+model UsageRecord {
+  id                      String   @id @default(uuid())
+  periodStart             DateTime @map("period_start")
+  periodEnd               DateTime @map("period_end")
+  aiClassificationsUsed   Int      @default(0) @map("ai_classifications_used")
+  documentsCount          Int      @default(0) @map("documents_count")
+  usersCount              Int      @default(0) @map("users_count")
+  standardsCount          Int      @default(0) @map("standards_count")
+  organizationId          String   @map("organization_id")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, periodStart])
+  @@index([organizationId, periodStart(sort: Desc)], map: "idx_usage_record_org_period")
+  @@map("usage_records")
 }
