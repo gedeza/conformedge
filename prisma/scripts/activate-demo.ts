@@ -5,11 +5,14 @@
  *   npx tsx prisma/scripts/activate-demo.ts
  */
 
+import "dotenv/config"
 import { PrismaClient } from "../../src/generated/prisma/client"
-
-const prisma = new PrismaClient()
+import { PrismaPg } from "@prisma/adapter-pg"
 
 const TARGET_ORG_NAME = "iSu Technologies"
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   const org = await prisma.organization.findFirst({
@@ -26,7 +29,7 @@ async function main() {
   const periodEnd = new Date(now)
   periodEnd.setFullYear(periodEnd.getFullYear() + 1) // 1 year period
 
-  const subscription = await prisma.subscription.update({
+  await prisma.subscription.update({
     where: { organizationId: org.id },
     data: {
       plan: "BUSINESS",
