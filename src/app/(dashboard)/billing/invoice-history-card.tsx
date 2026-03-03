@@ -1,0 +1,80 @@
+"use client"
+
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { INVOICE_STATUSES } from "@/lib/constants"
+import { formatZar } from "@/lib/billing/plans"
+
+interface InvoiceHistoryCardProps {
+  invoices: Array<{
+    id: string
+    totalCents: number
+    status: string
+    periodStart: Date
+    periodEnd: Date
+    paidAt: Date | null
+    createdAt: Date
+  }>
+}
+
+function formatDate(date: Date): string {
+  return new Date(date).toLocaleDateString("en-ZA", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
+}
+
+export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Invoice History</CardTitle>
+        <CardDescription>Your billing history and invoices</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {invoices.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            No invoices yet. Invoices will appear here once payment integration is live.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left text-muted-foreground">
+                  <th className="pb-2 font-medium">Period</th>
+                  <th className="pb-2 font-medium">Amount</th>
+                  <th className="pb-2 font-medium">Status</th>
+                  <th className="pb-2 font-medium">Paid</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {invoices.map((inv) => {
+                  const statusInfo =
+                    INVOICE_STATUSES[inv.status as keyof typeof INVOICE_STATUSES]
+
+                  return (
+                    <tr key={inv.id}>
+                      <td className="py-2.5">
+                        {formatDate(inv.periodStart)} — {formatDate(inv.periodEnd)}
+                      </td>
+                      <td className="py-2.5 font-medium">{formatZar(inv.totalCents)}</td>
+                      <td className="py-2.5">
+                        <Badge variant="outline" className={statusInfo?.color ?? ""}>
+                          {statusInfo?.label ?? inv.status}
+                        </Badge>
+                      </td>
+                      <td className="py-2.5 text-muted-foreground">
+                        {inv.paidAt ? formatDate(inv.paidAt) : "—"}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}

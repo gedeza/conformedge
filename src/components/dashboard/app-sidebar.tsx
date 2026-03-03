@@ -20,6 +20,7 @@ import {
   GitCompareArrows,
   Layers,
   Bell,
+  CreditCard,
 } from "lucide-react"
 
 import {
@@ -58,6 +59,7 @@ const analysisItems = [
 
 const footerItems = [
   { title: "Notifications", href: "/notifications", icon: Bell },
+  { title: "Billing", href: "/billing", icon: CreditCard },
   { title: "Settings", href: "/settings", icon: Settings },
 ]
 

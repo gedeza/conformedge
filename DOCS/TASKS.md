@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Billing Implementation — Phase 3 (Enforcement Points) Complete
+**Phase:** Billing Implementation — Phase 4 (Billing UI) Complete
 
 ---
 
@@ -102,15 +102,17 @@
 - [x] **T68** Verify: `npx tsc --noEmit` — zero errors
 - [x] **T69** Verify: `npm run build` — build successful
 
-## B4 — Billing Phase 4: Billing UI — PENDING
+## B4 — Billing Phase 4: Billing UI — COMPLETE
 
-- [ ] **T70** Create `src/components/billing/upgrade-prompt.tsx` — alert shown at limits
-- [ ] **T71** Create `src/components/billing/trial-banner.tsx` — top-of-layout during trial
-- [ ] **T72** Create `src/components/billing/usage-bar.tsx` — reusable progress bar
-- [ ] **T73** Create `src/app/(dashboard)/billing/page.tsx` — billing settings page
-- [ ] **T74** Create billing server actions + card components
-- [ ] **T75** Add Billing link to sidebar + middleware
-- [ ] **T76** Wire upgrade prompts into feature-gated pages
+- [x] **T70** Create `src/components/billing/upgrade-prompt.tsx` — alert shown at limits
+- [x] **T71** Create `src/components/billing/trial-banner.tsx` — top-of-layout during trial
+- [x] **T72** Create `src/components/billing/usage-bar.tsx` — reusable progress bar
+- [x] **T73** Create `src/app/(dashboard)/billing/page.tsx` — billing settings page (Server Component)
+- [x] **T74** Create billing server actions + card components (current-plan, usage, plan-selector, credit-packs, invoice-history)
+- [x] **T75** Add Billing link to sidebar footer + `/billing(.*)` to middleware protected routes
+- [x] **T76** Add TrialBannerWrapper to dashboard layout (Suspense-wrapped, conditional on TRIALING status)
+- [x] **T76b** Create billing-help-panel.tsx for the billing page
+- [x] **T76c** Add missing routes to middleware: `/notifications(.*)`, `/calendar(.*)`, `/ims(.*)`, `/cross-references(.*)`
 
 ## B5 — Billing Phase 5: Lifecycle Automation — PENDING
 
