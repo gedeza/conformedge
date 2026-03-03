@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Image from "next/image"
 import {
   LayoutDashboard,
   FolderKanban,
@@ -15,7 +16,6 @@ import {
   BarChart3,
   Settings,
   ScrollText,
-  ShieldCheck,
   SearchCheck,
   GitCompareArrows,
   Layers,
@@ -73,9 +73,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <ShieldCheck className="size-4" />
-                </div>
+                <Image src="/images/logo-icon.png" alt="ConformEdge" width={32} height={32} className="rounded-lg" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">ConformEdge</span>
                   <span className="truncate text-xs text-muted-foreground">

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ShieldCheck } from "lucide-react"
+import Image from "next/image"
 import { FOOTER_LINKS } from "./data"
 
 export function Footer() {
@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
-              <ShieldCheck className="size-7 text-landing-cta" />
+              <Image src="/images/logo-icon.png" alt="ConformEdge" width={28} height={28} />
               <span className="text-lg font-bold tracking-tight">ConformEdge</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
