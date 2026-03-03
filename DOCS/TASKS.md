@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Billing Implementation — Phase 4 (Billing UI) Complete
+**Phase:** Billing Implementation — Phase 5 (Lifecycle Automation) Complete
 
 ---
 
@@ -114,11 +114,16 @@
 - [x] **T76b** Create billing-help-panel.tsx for the billing page
 - [x] **T76c** Add missing routes to middleware: `/notifications(.*)`, `/calendar(.*)`, `/ims(.*)`, `/cross-references(.*)`
 
-## B5 — Billing Phase 5: Lifecycle Automation — PENDING
+## B5 — Billing Phase 5: Lifecycle Automation — COMPLETE
 
-- [ ] **T77** Extend cron `check-expiries` with billing section (trial expiry, grace period, period reset)
-- [ ] **T78** Add trial ending + quota warning notifications to cron
-- [ ] **T79** Create payment webhook stub `/api/webhooks/payment/route.ts`
+- [x] **T77** Extend cron `check-expiries` with billing section 7 (5 sub-checks):
+  - 7a: Expire trials (TRIALING → CANCELLED when trialEndsAt < now) + notification
+  - 7b: Expire grace periods (PAST_DUE → CANCELLED when gracePeriodEndsAt < now) + notification
+  - 7c: Period reset (advance dates, create new UsageRecord with resource snapshot)
+  - 7d: Trial ending notifications (3 days before trialEndsAt, deduped daily)
+  - 7e: Quota warning notifications (80%+ AI usage, QUOTA_WARNING or QUOTA_LIMIT_REACHED)
+- [x] **T78** All 5 billing notification types wired: SUBSCRIPTION_TRIAL_ENDING, SUBSCRIPTION_CANCELLED, QUOTA_WARNING, QUOTA_LIMIT_REACHED, SUBSCRIPTION_PAYMENT_FAILED (stub)
+- [x] **T79** Create payment webhook stub `/api/webhooks/payment/route.ts` (Paystack HMAC-SHA512 verification, event logging, TODO comments for Phase 6)
 
 ## B6 — Billing Phase 6: Payment Integration (Paystack) — PENDING
 

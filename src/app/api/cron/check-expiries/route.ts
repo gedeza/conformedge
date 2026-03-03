@@ -5,6 +5,9 @@ import { db } from "@/lib/db"
 import { sendNotificationEmail } from "@/lib/email"
 import { isNotificationEnabled, filterEnabledUsers } from "@/lib/notification-preferences"
 import { captureError } from "@/lib/error-tracking"
+import { PLAN_DEFINITIONS, QUOTA_WARNING_THRESHOLD } from "@/lib/billing/plans"
+import { snapshotResourceCounts } from "@/lib/billing/usage"
+import type { PlanTier } from "@/types"
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -698,6 +701,320 @@ export async function GET(request: NextRequest) {
       data: { status: "EXPIRED" },
     })
 
+    // ── 7. Billing lifecycle ──────────────────────────
+    let trialsExpired = 0
+    let gracePeriodsCancelled = 0
+    let periodsReset = 0
+    let billingNotifications = 0
+
+    try {
+      // 7a. Expire trials: TRIALING → CANCELLED when trialEndsAt < now
+      const expiredTrials = await db.subscription.findMany({
+        where: {
+          status: "TRIALING",
+          trialEndsAt: { lt: now },
+        },
+        select: { id: true, organizationId: true },
+      })
+
+      for (const sub of expiredTrials) {
+        await db.subscription.update({
+          where: { id: sub.id },
+          data: { status: "CANCELLED" },
+        })
+        trialsExpired++
+
+        // Notify org owners/admins
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const [inAppIds, emailIds] = await Promise.all([
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_CANCELLED", "IN_APP"),
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_CANCELLED", "EMAIL"),
+        ])
+
+        const trialExpiredTitle = "Trial expired"
+        const trialExpiredMsg = "Your free trial has expired. Subscribe to a plan to continue using ConformEdge."
+
+        for (const userId of inAppIds) {
+          await db.notification.create({
+            data: {
+              title: trialExpiredTitle,
+              message: trialExpiredMsg,
+              type: "SUBSCRIPTION_CANCELLED",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({
+            userId,
+            title: trialExpiredTitle,
+            message: trialExpiredMsg,
+            type: "SUBSCRIPTION_CANCELLED",
+          })
+        }
+      }
+
+      // 7b. Expire grace periods: PAST_DUE → CANCELLED when gracePeriodEndsAt < now
+      const expiredGrace = await db.subscription.findMany({
+        where: {
+          status: "PAST_DUE",
+          gracePeriodEndsAt: { lt: now },
+        },
+        select: { id: true, organizationId: true },
+      })
+
+      for (const sub of expiredGrace) {
+        await db.subscription.update({
+          where: { id: sub.id },
+          data: { status: "CANCELLED" },
+        })
+        gracePeriodsCancelled++
+
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const [inAppIds, emailIds] = await Promise.all([
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_CANCELLED", "IN_APP"),
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_CANCELLED", "EMAIL"),
+        ])
+
+        const cancelTitle = "Subscription cancelled"
+        const cancelMsg = "Your subscription has been cancelled due to failed payment. Subscribe again to regain access."
+
+        for (const userId of inAppIds) {
+          await db.notification.create({
+            data: {
+              title: cancelTitle,
+              message: cancelMsg,
+              type: "SUBSCRIPTION_CANCELLED",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({
+            userId,
+            title: cancelTitle,
+            message: cancelMsg,
+            type: "SUBSCRIPTION_CANCELLED",
+          })
+        }
+      }
+
+      // 7c. Period reset: create new UsageRecord when currentPeriodEnd < now
+      const expiredPeriods = await db.subscription.findMany({
+        where: {
+          status: { in: ["ACTIVE"] },
+          currentPeriodEnd: { lt: now },
+        },
+        select: {
+          id: true,
+          organizationId: true,
+          billingCycle: true,
+          currentPeriodEnd: true,
+        },
+      })
+
+      for (const sub of expiredPeriods) {
+        const newPeriodStart = sub.currentPeriodEnd
+        const newPeriodEnd = sub.billingCycle === "ANNUAL"
+          ? addDays(newPeriodStart, 365)
+          : addDays(newPeriodStart, 30)
+
+        await db.subscription.update({
+          where: { id: sub.id },
+          data: {
+            currentPeriodStart: newPeriodStart,
+            currentPeriodEnd: newPeriodEnd,
+          },
+        })
+
+        // Create fresh usage record with resource snapshot
+        await snapshotResourceCounts(sub.organizationId, newPeriodStart, newPeriodEnd)
+        periodsReset++
+      }
+
+      // 7d. Trial ending notifications: 3 days before trialEndsAt
+      const in3Days = addDays(now, 3)
+      const trialEndingSoon = await db.subscription.findMany({
+        where: {
+          status: "TRIALING",
+          trialEndsAt: { gt: now, lte: in3Days },
+        },
+        select: { organizationId: true, trialEndsAt: true },
+      })
+
+      for (const sub of trialEndingSoon) {
+        const daysLeft = Math.ceil(
+          (new Date(sub.trialEndsAt!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
+
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const [inAppIds, emailIds] = await Promise.all([
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_TRIAL_ENDING", "IN_APP"),
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_TRIAL_ENDING", "EMAIL"),
+        ])
+
+        const trialTitle = `Trial ends in ${daysLeft} day${daysLeft > 1 ? "s" : ""}`
+        const trialMsg = `Your free trial expires ${daysLeft === 1 ? "tomorrow" : `in ${daysLeft} days`}. Subscribe to a plan to keep your data and features.`
+
+        for (const userId of inAppIds) {
+          const existing = await db.notification.findFirst({
+            where: {
+              userId,
+              organizationId: sub.organizationId,
+              type: "SUBSCRIPTION_TRIAL_ENDING",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+          if (existing) continue
+
+          await db.notification.create({
+            data: {
+              title: trialTitle,
+              message: trialMsg,
+              type: "SUBSCRIPTION_TRIAL_ENDING",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({
+            userId,
+            title: trialTitle,
+            message: trialMsg,
+            type: "SUBSCRIPTION_TRIAL_ENDING",
+          })
+        }
+      }
+
+      // 7e. Quota warning notifications: at 80% AI usage
+      const activeSubscriptions = await db.subscription.findMany({
+        where: {
+          status: { in: ["TRIALING", "ACTIVE"] },
+        },
+        select: {
+          plan: true,
+          organizationId: true,
+          currentPeriodStart: true,
+        },
+      })
+
+      for (const sub of activeSubscriptions) {
+        const plan = PLAN_DEFINITIONS[sub.plan as PlanTier]
+        if (plan.limits.aiClassificationsPerMonth === null) continue // Unlimited
+
+        const usageRecord = await db.usageRecord.findUnique({
+          where: {
+            organizationId_periodStart: {
+              organizationId: sub.organizationId,
+              periodStart: sub.currentPeriodStart,
+            },
+          },
+          select: { aiClassificationsUsed: true },
+        })
+
+        if (!usageRecord) continue
+
+        const ratio = usageRecord.aiClassificationsUsed / plan.limits.aiClassificationsPerMonth
+        if (ratio < QUOTA_WARNING_THRESHOLD) continue
+
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN", "MANAGER"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const [inAppIds, emailIds] = await Promise.all([
+          filterEnabledUsers(mgrIds, "QUOTA_WARNING", "IN_APP"),
+          filterEnabledUsers(mgrIds, "QUOTA_WARNING", "EMAIL"),
+        ])
+
+        const pct = Math.round(ratio * 100)
+        const isExhausted = ratio >= 1
+        const quotaTitle = isExhausted ? "AI quota exhausted" : `AI quota at ${pct}%`
+        const quotaMsg = isExhausted
+          ? `You've used all ${plan.limits.aiClassificationsPerMonth} AI classifications this month. Purchase credit packs to continue.`
+          : `You've used ${usageRecord.aiClassificationsUsed} of ${plan.limits.aiClassificationsPerMonth} AI classifications (${pct}%). Consider upgrading or purchasing credits.`
+
+        for (const userId of inAppIds) {
+          const existing = await db.notification.findFirst({
+            where: {
+              userId,
+              organizationId: sub.organizationId,
+              type: isExhausted ? "QUOTA_LIMIT_REACHED" : "QUOTA_WARNING",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+          if (existing) continue
+
+          await db.notification.create({
+            data: {
+              title: quotaTitle,
+              message: quotaMsg,
+              type: isExhausted ? "QUOTA_LIMIT_REACHED" : "QUOTA_WARNING",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({
+            userId,
+            title: quotaTitle,
+            message: quotaMsg,
+            type: isExhausted ? "QUOTA_LIMIT_REACHED" : "QUOTA_WARNING",
+          })
+        }
+      }
+    } catch (err) {
+      captureError(err, { source: "cron.billingLifecycle" })
+    }
+
     Sentry.captureCheckIn({
       checkInId,
       monitorSlug: "check-expiries",
@@ -711,6 +1028,12 @@ export async function GET(request: NextRequest) {
       assessmentsNotified,
       checklistsGenerated,
       shareLinksExpired: expiredLinks.count,
+      billing: {
+        trialsExpired,
+        gracePeriodsCancelled,
+        periodsReset,
+        billingNotifications,
+      },
       timestamp: now.toISOString(),
     })
   } catch (error) {
