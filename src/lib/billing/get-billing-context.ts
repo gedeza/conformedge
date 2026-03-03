@@ -34,6 +34,7 @@ export const getBillingContext = cache(async function getBillingContext(
       currentPeriodEnd: subscription?.currentPeriodEnd ?? new Date(),
       trialEndsAt: subscription?.trialEndsAt ?? null,
       cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
+      gracePeriodEndsAt: subscription?.gracePeriodEndsAt ?? null,
     },
     creditBalance: creditBalance?.balance ?? 0,
     usage: {

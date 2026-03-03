@@ -53,7 +53,7 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
   SUBSCRIPTION_PAYMENT_FAILED: {
     color: "#dc2626",
     label: "Payment Failed",
-    hint: "Please update your payment method to avoid service interruption.",
+    hint: "Your payment failed. Update your payment method within the grace period to avoid cancellation. Visit your billing page to resolve this.",
   },
   SUBSCRIPTION_CANCELLED: {
     color: "#6b7280",

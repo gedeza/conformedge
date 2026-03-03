@@ -34,6 +34,7 @@ export interface BillingContext {
     currentPeriodEnd: Date
     trialEndsAt: Date | null
     cancelAtPeriodEnd: boolean
+    gracePeriodEndsAt: Date | null
   }
   creditBalance: number
   usage: {

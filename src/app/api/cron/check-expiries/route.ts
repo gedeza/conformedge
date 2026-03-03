@@ -1011,6 +1011,79 @@ export async function GET(request: NextRequest) {
           })
         }
       }
+      // 7f. Dunning reminders: PAST_DUE subs with grace period ending in 3 or 1 days
+      const pastDueSubs = await db.subscription.findMany({
+        where: {
+          status: "PAST_DUE",
+          gracePeriodEndsAt: { gt: now },
+        },
+        select: { organizationId: true, gracePeriodEndsAt: true },
+      })
+
+      for (const sub of pastDueSubs) {
+        if (!sub.gracePeriodEndsAt) continue
+
+        const daysLeft = Math.ceil(
+          (new Date(sub.gracePeriodEndsAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
+
+        // Only send reminders at 3 days and 1 day before cancellation
+        if (daysLeft !== 3 && daysLeft !== 1) continue
+
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const [inAppIds, emailIds] = await Promise.all([
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_PAYMENT_FAILED", "IN_APP"),
+          filterEnabledUsers(mgrIds, "SUBSCRIPTION_PAYMENT_FAILED", "EMAIL"),
+        ])
+
+        const dunningTitle = daysLeft === 1
+          ? "Final reminder: payment required"
+          : "Payment reminder: action needed"
+        const dunningMsg = `Your payment failed. You have ${daysLeft} day${daysLeft > 1 ? "s" : ""} to update your payment method before your subscription is cancelled.`
+
+        for (const userId of inAppIds) {
+          // Dedupe: only 1 notification per user per day for this type
+          const existing = await db.notification.findFirst({
+            where: {
+              userId,
+              organizationId: sub.organizationId,
+              type: "SUBSCRIPTION_PAYMENT_FAILED",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+          if (existing) continue
+
+          await db.notification.create({
+            data: {
+              title: dunningTitle,
+              message: dunningMsg,
+              type: "SUBSCRIPTION_PAYMENT_FAILED",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({
+            userId,
+            title: dunningTitle,
+            message: dunningMsg,
+            type: "SUBSCRIPTION_PAYMENT_FAILED",
+          })
+        }
+      }
     } catch (err) {
       captureError(err, { source: "cron.billingLifecycle" })
     }

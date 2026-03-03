@@ -1,5 +1,6 @@
 "use client"
 
+import { AlertTriangle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PLAN_DEFINITIONS, formatZar, getMonthlyPriceZar } from "@/lib/billing/plans"
@@ -18,6 +19,10 @@ export function CurrentPlanCard({ billing }: CurrentPlanCardProps) {
 
   const trialDaysRemaining = billing.subscription.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(billing.subscription.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null
+
+  const graceDaysRemaining = billing.subscription.gracePeriodEndsAt
+    ? Math.max(0, Math.ceil((new Date(billing.subscription.gracePeriodEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : null
 
   return (
@@ -69,9 +74,29 @@ export function CurrentPlanCard({ billing }: CurrentPlanCardProps) {
               </p>
             </div>
           )}
+          {graceDaysRemaining !== null && billing.subscription.status === "PAST_DUE" && (
+            <div>
+              <p className="text-sm text-muted-foreground">Grace Period</p>
+              <p className="text-2xl font-bold text-destructive">{graceDaysRemaining} days</p>
+              <p className="text-xs text-muted-foreground">
+                Cancels {new Date(billing.subscription.gracePeriodEndsAt!).toLocaleDateString("en-ZA")}
+              </p>
+            </div>
+          )}
         </div>
 
-        {billing.subscription.cancelAtPeriodEnd && (
+        {billing.subscription.status === "PAST_DUE" && (
+          <div className="mt-4 flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+            <span>
+              Your last payment failed. Update your payment method within{" "}
+              {graceDaysRemaining ?? 0} day{graceDaysRemaining !== 1 ? "s" : ""} to avoid
+              cancellation. All features are restricted until payment is resolved.
+            </span>
+          </div>
+        )}
+
+        {billing.subscription.cancelAtPeriodEnd && billing.subscription.status !== "PAST_DUE" && (
           <div className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
             Your subscription will be cancelled at the end of the current billing period.
           </div>
