@@ -10,12 +10,14 @@ import {
   CheckSquare,
   Sparkles,
 } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 import { getDashboardMetrics, getOnboardingStatus, getClassificationStats } from "./actions"
 import { OnboardingCard } from "./onboarding-card"
 import { GapCoverageCard } from "@/components/dashboard/gap-coverage-card"
 import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-widget"
 import { UpcomingAssessmentsWidget } from "@/components/dashboard/upcoming-assessments-widget"
 import { UpcomingChecklistsWidget } from "@/components/dashboard/upcoming-checklists-widget"
+import { SubscriptionWidget } from "@/components/dashboard/subscription-widget"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 export default async function DashboardPage() {
@@ -33,26 +35,34 @@ export default async function DashboardPage() {
     // Auth error — show empty state
   }
 
-  const cards = [
+  const cards: { title: string; value: number; icon: LucideIcon; iconBg: string; iconColor: string }[] = [
     {
       title: "Active Projects",
       value: metrics?.activeProjects ?? 0,
       icon: FolderKanban,
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-500",
     },
     {
       title: "Documents",
       value: metrics?.totalDocuments ?? 0,
       icon: FileText,
+      iconBg: "bg-landing-accent/10",
+      iconColor: "text-landing-accent",
     },
     {
       title: "Assessments",
       value: metrics?.completedAssessments ?? 0,
       icon: ClipboardCheck,
+      iconBg: "bg-landing-cta/10",
+      iconColor: "text-landing-cta",
     },
     {
       title: "Open CAPAs",
       value: metrics?.openCapas ?? 0,
       icon: AlertTriangle,
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-500",
     },
   ]
 
@@ -75,10 +85,12 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
-          <Card key={card.title}>
+          <Card key={card.title} className="border-border/50 transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-              <card.icon className="h-4 w-4 text-muted-foreground" />
+              <div className={`flex size-9 items-center justify-center rounded-lg ${card.iconBg}`}>
+                <card.icon className={`size-4 ${card.iconColor}`} />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>
@@ -88,7 +100,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="relative overflow-hidden border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>Compliance Overview</CardTitle>
           </CardHeader>
@@ -118,12 +130,15 @@ export default async function DashboardPage() {
               </div>
             </div>
           </CardContent>
+          <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-landing-cta to-landing-accent" />
         </Card>
 
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>AI Classification</CardTitle>
-            <Sparkles className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-landing-accent/10">
+              <Sparkles className="size-4 text-landing-accent" />
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -167,11 +182,13 @@ export default async function DashboardPage() {
 
         <PendingReviewsWidget />
 
+        <SubscriptionWidget />
+
         <UpcomingAssessmentsWidget />
 
         <UpcomingChecklistsWidget />
 
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
