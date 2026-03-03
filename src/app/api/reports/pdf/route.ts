@@ -59,7 +59,6 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "PDF export failed"
-    return NextResponse.json({ error: message }, { status: 500 })
+    return NextResponse.json({ error: "PDF export failed. Please try again." }, { status: 500 })
   }
 }

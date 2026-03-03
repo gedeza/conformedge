@@ -10,7 +10,7 @@ async function fetchBuffer(fileUrl: string): Promise<Buffer> {
   if (isR2Key(fileUrl)) {
     const url = await getPresignedDownloadUrl(fileUrl)
     const res = await fetch(url)
-    if (!res.ok) throw new Error(`R2 fetch failed: ${res.status}`)
+    if (!res.ok) throw new Error(`Storage fetch failed: ${res.status}`)
     return Buffer.from(await res.arrayBuffer())
   }
 

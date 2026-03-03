@@ -220,7 +220,7 @@ export async function POST(
 
     if (error instanceof Error && error.message.includes("credit balance")) {
       return NextResponse.json(
-        { error: "AI service billing issue. Please check your Anthropic API plan." },
+        { error: "AI service temporarily unavailable. Please contact support." },
         { status: 402 }
       )
     }

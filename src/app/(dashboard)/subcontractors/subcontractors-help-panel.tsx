@@ -1,13 +1,13 @@
 "use client"
 
-import { HardHat, Award, ShieldCheck, Share2 } from "lucide-react"
+import { Building2, Award, ShieldCheck, Share2 } from "lucide-react"
 import { HelpPanel } from "@/components/shared/help-panel"
 
 export function SubcontractorsHelpPanel() {
   return (
     <HelpPanel
       title="Guide"
-      icon={HardHat}
+      icon={Building2}
       summary="Track your subcontractors' compliance status, certifications, BEE levels, and safety ratings. Invite subcontractors to upload their own certificates via a self-service portal."
       items={[
         { icon: Award, label: "Certifications", description: "ISO certs, CIDB grading, BEE certificates, Letters of Good Standing" },

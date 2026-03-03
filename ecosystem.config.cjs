@@ -1,6 +1,5 @@
 /**
  * PM2 Ecosystem Configuration for ConformEdge
- * Matches existing server patterns (ThriveSend, KopanoWorks)
  */
 
 module.exports = {

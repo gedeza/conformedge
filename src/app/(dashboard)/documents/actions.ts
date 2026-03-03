@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
+import { captureError } from "@/lib/error-tracking"
 import type { ActionResult } from "@/types"
 
 const documentSchema = z.object({
@@ -421,7 +422,7 @@ export async function deleteDocument(id: string): Promise<ActionResult> {
         try {
           await deleteFromR2(existing.fileUrl)
         } catch (e) {
-          console.error("R2 delete failed (non-blocking):", e)
+          captureError(e, { source: "document.deleteStorage" })
         }
       }
     }

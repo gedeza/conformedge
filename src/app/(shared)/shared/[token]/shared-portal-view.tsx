@@ -1,5 +1,5 @@
 import { format } from "date-fns"
-import { FileText, ClipboardCheck, AlertTriangle, CheckSquare, HardHat } from "lucide-react"
+import { FileText, ClipboardCheck, AlertTriangle, CheckSquare, Building2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,7 +22,7 @@ export function SharedPortalView({ data, label }: SharedPortalViewProps) {
     config.assessments && { id: "assessments", label: "Assessments", icon: ClipboardCheck, count: assessments.length },
     config.capas && { id: "capas", label: "CAPAs", icon: AlertTriangle, count: capas.length },
     config.checklists && { id: "checklists", label: "Checklists", icon: CheckSquare, count: checklists.length },
-    config.subcontractors && { id: "subcontractors", label: "Subcontractors", icon: HardHat, count: subcontractors.length },
+    config.subcontractors && { id: "subcontractors", label: "Subcontractors", icon: Building2, count: subcontractors.length },
   ].filter(Boolean) as { id: string; label: string; icon: React.ComponentType<{ className?: string }>; count: number }[]
 
   const defaultTab = tabs[0]?.id ?? "documents"

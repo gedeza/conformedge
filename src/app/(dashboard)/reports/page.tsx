@@ -4,7 +4,7 @@ import {
   ClipboardCheck,
   AlertTriangle,
   CheckSquare,
-  HardHat,
+  Building2,
   TrendingUp,
   Clock,
   FileWarning,
@@ -56,7 +56,7 @@ export default async function ReportsPage({ searchParams }: Props) {
     { title: "Assessments", value: s.totalAssessments, icon: ClipboardCheck },
     { title: "CAPAs", value: s.totalCapas, icon: AlertTriangle },
     { title: "Checklists", value: s.totalChecklists, icon: CheckSquare },
-    { title: "Subcontractors", value: s.totalSubcontractors, icon: HardHat },
+    { title: "Subcontractors", value: s.totalSubcontractors, icon: Building2 },
   ]
 
   return (

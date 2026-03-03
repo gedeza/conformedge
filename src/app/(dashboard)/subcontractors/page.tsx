@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { EmptyState } from "@/components/shared/empty-state"
-import { HardHat } from "lucide-react"
+import { Building2 } from "lucide-react"
 import { getSubcontractors } from "./actions"
 import { SubcontractorTable } from "./subcontractor-table"
 import { SubcontractorFormTrigger } from "./subcontractor-form-trigger"
@@ -25,7 +25,7 @@ export default async function SubcontractorsPage() {
       <div className="space-y-6">
         <PageHeader heading="Subcontractors" description="Monitor subcontractor compliance and certifications" />
         <EmptyState
-          icon={HardHat}
+          icon={Building2}
           title="Organization required"
           description="Please select or create an organization to manage subcontractors."
         />
@@ -41,7 +41,7 @@ export default async function SubcontractorsPage() {
       </PageHeader>
       {subcontractors.length === 0 ? (
         <EmptyState
-          icon={HardHat}
+          icon={Building2}
           title="No subcontractors yet"
           description="Add subcontractors to track their certifications and compliance status."
         >

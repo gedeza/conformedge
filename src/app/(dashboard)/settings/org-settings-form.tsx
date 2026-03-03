@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
+import { INDUSTRIES } from "@/lib/constants"
 import { updateOrgSettings } from "./actions"
 
 const formSchema = z.object({
@@ -68,7 +68,7 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {SA_CONSTRUCTION_INDUSTRIES.map((industry) => (
+                {INDUSTRIES.map((industry) => (
                   <SelectItem key={industry} value={industry}>
                     {industry}
                   </SelectItem>

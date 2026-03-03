@@ -135,20 +135,26 @@ export const CERTIFICATION_STATUSES = {
   REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
 } as const
 
-export const SA_CONSTRUCTION_INDUSTRIES = [
+export const INDUSTRIES = [
   "General Building",
   "Civil Engineering",
   "Electrical Engineering",
   "Mechanical Engineering",
+  "Electrical Contracting",
+  "Plumbing & Pipefitting",
   "Road Construction",
   "Water & Sanitation",
   "Mining & Resources",
   "Energy & Power",
+  "Manufacturing",
   "Telecommunications",
   "Environmental Services",
   "Project Management",
   "Consulting Engineering",
   "Facilities Management",
+  "IT Services",
+  "Healthcare",
+  "Logistics & Transport",
   "Other",
 ] as const
 
@@ -170,7 +176,7 @@ export const NAV_ITEMS = [
   { title: "Assessments", href: "/assessments", icon: "ClipboardCheck" },
   { title: "CAPAs", href: "/capas", icon: "AlertTriangle" },
   { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
-  { title: "Subcontractors", href: "/subcontractors", icon: "HardHat" },
+  { title: "Subcontractors", href: "/subcontractors", icon: "Building2" },
   { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
   { title: "Audit Trail", href: "/audit-trail", icon: "ScrollText" },
   { title: "Reports", href: "/reports", icon: "BarChart3" },

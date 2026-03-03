@@ -117,13 +117,12 @@ export async function sendAuditPackEmail({
 
     if (error) {
       captureError(new Error(error.message), { source: "email.sendBulk" })
-      return { success: false, error: error.message }
+      return { success: false, error: "Failed to send email. Please try again." }
     }
 
     return { success: true }
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error"
     captureError(err, { source: "email.sendBulk" })
-    return { success: false, error: message }
+    return { success: false, error: "Failed to send email. Please try again." }
   }
 }

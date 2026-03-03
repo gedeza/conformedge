@@ -5,17 +5,13 @@ export async function GET() {
   try {
     await db.$queryRaw`SELECT 1`
     return NextResponse.json({
-      status: "healthy",
-      database: "connected",
-      version: process.env.SENTRY_RELEASE ?? "dev",
+      status: "ok",
       timestamp: new Date().toISOString(),
     })
   } catch {
     return NextResponse.json(
       {
-        status: "unhealthy",
-        database: "disconnected",
-        version: process.env.SENTRY_RELEASE ?? "dev",
+        status: "error",
         timestamp: new Date().toISOString(),
       },
       { status: 503 }

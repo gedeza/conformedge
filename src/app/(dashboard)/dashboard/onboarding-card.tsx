@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
+import { INDUSTRIES } from "@/lib/constants"
 import { dismissOnboarding, setOrgIndustry, type OnboardingStep } from "./actions"
 
 interface OnboardingCardProps {
@@ -83,7 +83,7 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
                 <SelectValue placeholder="Select your industry" />
               </SelectTrigger>
               <SelectContent>
-                {SA_CONSTRUCTION_INDUSTRIES.map((industry) => (
+                {INDUSTRIES.map((industry) => (
                   <SelectItem key={industry} value={industry}>
                     {industry}
                   </SelectItem>

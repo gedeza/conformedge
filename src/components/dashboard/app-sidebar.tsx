@@ -10,7 +10,7 @@ import {
   CalendarDays,
   AlertTriangle,
   CheckSquare,
-  HardHat,
+  Building2,
   Package,
   BarChart3,
   Settings,
@@ -44,7 +44,7 @@ const coreItems = [
   { title: "Calendar", href: "/calendar", icon: CalendarDays },
   { title: "CAPAs", href: "/capas", icon: AlertTriangle },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
-  { title: "Subcontractors", href: "/subcontractors", icon: HardHat },
+  { title: "Subcontractors", href: "/subcontractors", icon: Building2 },
 ]
 
 const analysisItems = [

@@ -21,7 +21,7 @@ export async function extractTextViaOCR(buffer: Buffer): Promise<string> {
 
   const text = result.fullTextAnnotation?.text ?? ""
   if (!text.trim()) {
-    throw new Error("OCR could not extract any text from this file")
+    throw new Error("Text extraction failed — the file may be empty or unreadable")
   }
 
   return text

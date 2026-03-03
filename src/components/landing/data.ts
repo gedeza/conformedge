@@ -3,7 +3,7 @@ import {
   ClipboardCheck,
   AlertTriangle,
   CheckSquare,
-  HardHat,
+  Building2,
   Package,
   Brain,
   BarChart3,
@@ -76,7 +76,7 @@ export type FeatureItem = {
 export const FEATURES: FeatureItem[] = [
   {
     title: "AI Document Classification",
-    description: "Upload any document and Claude AI instantly maps it to the correct ISO standard and clause — with confidence scoring you can verify.",
+    description: "Upload any document and AI instantly maps it to the correct ISO standard and clause — with confidence scoring you can verify.",
     icon: Brain,
     span: 2,
   },
@@ -98,7 +98,7 @@ export const FEATURES: FeatureItem[] = [
   {
     title: "Subcontractor Management",
     description: "Monitor certifications, BEE levels, safety ratings, and get alerts before certificates expire.",
-    icon: HardHat,
+    icon: Building2,
   },
   {
     title: "Audit Pack Generation",
@@ -120,7 +120,7 @@ export const FEATURES: FeatureItem[] = [
 export const FEATURE_DETAILS = [
   {
     title: "AI-Powered Document Intelligence",
-    subtitle: "Powered by Claude AI",
+    subtitle: "Powered by ConformEdge AI",
     description: "Upload any document — PDF, Word, Excel, or scanned image — and our AI engine instantly classifies it against the correct ISO standard and clause. Get confidence scores, gap insights, and cross-standard coverage analysis in seconds.",
     bullets: [
       "Automatic ISO clause mapping with confidence scoring",

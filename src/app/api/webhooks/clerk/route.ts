@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   if (!WEBHOOK_SECRET) {
     return NextResponse.json(
-      { error: "Webhook secret not configured" },
+      { error: "Internal server error" },
       { status: 500 }
     )
   }

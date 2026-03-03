@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
-import { SA_CONSTRUCTION_INDUSTRIES } from "@/lib/constants"
+import { INDUSTRIES } from "@/lib/constants"
 import type { ActionResult } from "@/types"
 
 export const getDashboardMetrics = cache(async function getDashboardMetrics() {
@@ -144,7 +144,7 @@ export async function setOrgIndustry(industry: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId } = await getAuthContext()
 
-    if (!SA_CONSTRUCTION_INDUSTRIES.includes(industry as typeof SA_CONSTRUCTION_INDUSTRIES[number])) {
+    if (!INDUSTRIES.includes(industry as typeof INDUSTRIES[number])) {
       return { success: false, error: "Invalid industry selection" }
     }
 

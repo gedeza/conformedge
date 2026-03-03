@@ -11,7 +11,7 @@ export function DocumentsHelpPanel() {
       summary="Upload compliance documents (policies, SOPs, certificates) and let AI automatically classify them against ISO standard clauses. Documents flow through approval workflows before going live."
       items={[
         { icon: Upload, label: "Upload", description: "Upload files — AI auto-classifies them to ISO clauses" },
-        { icon: Sparkles, label: "AI Classification", description: "Claude analyses content and maps to relevant standard clauses" },
+        { icon: Sparkles, label: "AI Classification", description: "Our AI analyses content and maps to relevant standard clauses" },
         { icon: Send, label: "Approval Workflow", description: "Submit documents for sequential review and sign-off" },
         { icon: FolderKanban, label: "Link to Project", description: "Assign documents to a project for organised tracking" },
       ]}

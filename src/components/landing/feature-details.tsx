@@ -66,7 +66,7 @@ export function FeatureDetails() {
                         <div className="size-2.5 rounded-full bg-green-400/50" />
                       </div>
                       <div className="ml-4 flex-1 rounded-md bg-muted px-3 py-1 text-[10px] text-muted-foreground">
-                        app.conformedge.co.za
+                        conformedge.co.za
                       </div>
                     </div>
                     {/* Content placeholder */}
