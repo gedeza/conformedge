@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-03
-**Phase:** Billing Implementation — Phase 2 (Subscription Provisioning) Complete
+**Phase:** Billing Implementation — Phase 3 (Enforcement Points) Complete
 
 ---
 
@@ -85,6 +85,46 @@
 - [x] **T54** Run backfill against local DB and verify — 3 orgs bootstrapped, idempotent re-run confirmed
 - [!] **T55** Deploy and run backfill against production — **After commit/push**
 
+## B3 — Billing Phase 3: Enforcement Points — ALL COMPLETE
+
+- [x] **T56** AI classification quota — `classify/route.ts` (402 when blocked, credit deduction, usage recording)
+- [x] **T57** Document count limit — `documents/actions.ts` (`createDocument` + `bulkCreateDocuments`)
+- [x] **T58** Standards count limit — `settings/actions.ts` (`toggleStandardActive` blocks when at limit)
+- [x] **T59** IMS feature gate — `ims/actions.ts` + `cross-references/actions.ts` (Professional+)
+- [x] **T60** Client Portal gate — `share-link-actions.ts` (Professional+ for DOCUMENT/AUDIT_PACK/PORTAL)
+- [x] **T61** Subcontractor Portal gate — `share-link-actions.ts` (Business+ for SUBCONTRACTOR type)
+- [x] **T62** Recurring Checklists gate — `checklists/actions.ts` `configureRecurrence` (Professional+)
+- [x] **T63** Custom Form Builder gate — `checklists/actions.ts` `updateItemResponse` non-COMPLIANCE (Business+)
+- [x] **T64** Report Export gate — `reports/pdf/route.ts` + `reports/csv/route.ts` (Professional+)
+- [x] **T65** Gap Analysis gate — `gap-analysis/actions.ts` (Professional+)
+- [x] **T66** Audit Pack Generation gate — `audit-packs/actions.ts` `createAuditPack` (Business+)
+- [x] **T67** Approval Workflows gate — `workflow-template-actions.ts` + `approval-actions.ts` (Business+)
+- [x] **T68** Verify: `npx tsc --noEmit` — zero errors
+- [x] **T69** Verify: `npm run build` — build successful
+
+## B4 — Billing Phase 4: Billing UI — PENDING
+
+- [ ] **T70** Create `src/components/billing/upgrade-prompt.tsx` — alert shown at limits
+- [ ] **T71** Create `src/components/billing/trial-banner.tsx` — top-of-layout during trial
+- [ ] **T72** Create `src/components/billing/usage-bar.tsx` — reusable progress bar
+- [ ] **T73** Create `src/app/(dashboard)/billing/page.tsx` — billing settings page
+- [ ] **T74** Create billing server actions + card components
+- [ ] **T75** Add Billing link to sidebar + middleware
+- [ ] **T76** Wire upgrade prompts into feature-gated pages
+
+## B5 — Billing Phase 5: Lifecycle Automation — PENDING
+
+- [ ] **T77** Extend cron `check-expiries` with billing section (trial expiry, grace period, period reset)
+- [ ] **T78** Add trial ending + quota warning notifications to cron
+- [ ] **T79** Create payment webhook stub `/api/webhooks/payment/route.ts`
+
+## B6 — Billing Phase 6: Payment Integration (Paystack) — PENDING
+
+- [ ] **T80** Install `react-paystack`, implement checkout flow
+- [ ] **T81** Wire payment webhook to process Paystack events
+- [ ] **T82** Generate VAT-compliant invoices via `@react-pdf/renderer`
+- [ ] **T83** Handle payment failures: grace period → dunning → cancellation
+
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
 
 Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are selling points.
@@ -146,6 +186,20 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T52 | Modified Clerk webhook with billing bootstrap on org.created | 2026-03-03 |
 | T53 | Created backfill script `prisma/scripts/backfill-subscriptions.ts` | 2026-03-03 |
 | T54 | Ran backfill on local DB — 3 orgs bootstrapped, idempotent confirmed | 2026-03-03 |
+| T56 | AI classification quota enforcement in classify route | 2026-03-03 |
+| T57 | Document count limit in createDocument + bulkCreateDocuments | 2026-03-03 |
+| T58 | Standards count limit in toggleStandardActive | 2026-03-03 |
+| T59 | IMS feature gate in ims/actions + cross-references/actions | 2026-03-03 |
+| T60 | Client Portal gate in share-link-actions | 2026-03-03 |
+| T61 | Subcontractor Portal gate in share-link-actions | 2026-03-03 |
+| T62 | Recurring Checklists gate in configureRecurrence | 2026-03-03 |
+| T63 | Custom Form Builder gate in updateItemResponse | 2026-03-03 |
+| T64 | Report Export gate in PDF + CSV routes | 2026-03-03 |
+| T65 | Gap Analysis gate in gap-analysis/actions | 2026-03-03 |
+| T66 | Audit Pack Generation gate in createAuditPack | 2026-03-03 |
+| T67 | Approval Workflows gate in workflow-template + approval actions | 2026-03-03 |
+| T68 | TypeScript type check — zero errors | 2026-03-03 |
+| T69 | Production build — successful | 2026-03-03 |
 
 ---
 

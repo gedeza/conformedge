@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const auditPackSchema = z.object({
@@ -52,6 +53,12 @@ export async function createAuditPack(values: AuditPackFormValues): Promise<Acti
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: audit packs require Business+
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "auditPackGeneration")
+    if (!gate.allowed) return { success: false, error: gate.reason }
+
     const parsed = auditPackSchema.parse(values)
 
     const pack = await db.auditPack.create({

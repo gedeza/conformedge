@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canManageOrg } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const stepSchema = z.object({
@@ -51,6 +52,12 @@ export async function createWorkflowTemplate(
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canManageOrg(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: approval workflows require Business+
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "approvalWorkflows")
+    if (!gate.allowed) return { success: false, error: gate.reason }
+
     const parsed = templateSchema.parse(values)
 
     // If this is marked as default, unmark others

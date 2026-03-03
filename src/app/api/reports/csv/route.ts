@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getReportData } from "@/app/(dashboard)/reports/actions"
 import { parseDateRange } from "@/app/(dashboard)/reports/date-utils"
+import { getAuthContext } from "@/lib/auth"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,6 +12,14 @@ export async function GET(request: NextRequest) {
       searchParams.get("from") ?? undefined,
       searchParams.get("to") ?? undefined
     )
+
+    // Billing: report export requires Professional+
+    const { dbOrgId } = await getAuthContext()
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "reportExport")
+    if (!gate.allowed) {
+      return NextResponse.json({ error: gate.reason }, { status: 402 })
+    }
 
     const data = await getReportData(dateRange)
     const s = data.summary

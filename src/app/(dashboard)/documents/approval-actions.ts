@@ -7,6 +7,7 @@ import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { createNotification } from "@/lib/notifications"
 import { canCreate, canManageOrg } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const submitSchema = z.object({
@@ -28,6 +29,12 @@ export async function submitForApproval(values: SubmitForApprovalValues): Promis
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: approval workflows require Business+
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "approvalWorkflows")
+    if (!gate.allowed) return { success: false, error: gate.reason }
+
     const parsed = submitSchema.parse(values)
 
     // Validate document belongs to org and is DRAFT

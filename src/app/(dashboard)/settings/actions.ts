@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canManageOrg } from "@/lib/permissions"
+import { getBillingContext, checkStandardsLimit } from "@/lib/billing"
 import type { Prisma } from "@/generated/prisma/client"
 import type { ActionResult } from "@/types"
 
@@ -126,6 +127,14 @@ export async function toggleStandardActive(standardId: string, isActive: boolean
 
     if (!canManageOrg(role)) {
       return { success: false, error: "Insufficient permissions" }
+    }
+
+    // Billing: check standards limit when activating
+    if (isActive) {
+      const activeCount = await db.standard.count({ where: { isActive: true } })
+      const billing = await getBillingContext(dbOrgId)
+      const stdCheck = checkStandardsLimit(billing, activeCount)
+      if (!stdCheck.allowed) return { success: false, error: stdCheck.reason }
     }
 
     await db.standard.update({

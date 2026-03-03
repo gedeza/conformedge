@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canManageOrg } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import { generateShareToken, hashShareToken } from "@/lib/share-tokens"
 import { APP_URL } from "@/lib/constants"
 import type { ActionResult } from "@/types"
@@ -53,6 +54,16 @@ export async function createShareLink(values: CreateShareLinkValues): Promise<Ac
     if (!canManageOrg(role)) return { success: false, error: "Insufficient permissions" }
 
     const parsed = createShareLinkSchema.parse(values)
+
+    // Billing: gate by share link type
+    const billing = await getBillingContext(dbOrgId)
+    if (parsed.type === "SUBCONTRACTOR") {
+      const gate = checkFeatureAccess(billing, "subcontractorPortal")
+      if (!gate.allowed) return { success: false, error: gate.reason }
+    } else {
+      const gate = checkFeatureAccess(billing, "clientPortal")
+      if (!gate.allowed) return { success: false, error: gate.reason }
+    }
 
     // Validate entityId exists and belongs to org for DOCUMENT / AUDIT_PACK
     if (parsed.type === "DOCUMENT") {

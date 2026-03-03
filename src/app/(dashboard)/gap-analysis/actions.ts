@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import { getGapAnalysisInternal } from "./gap-analysis-core"
 
 // Re-export types for consumers
@@ -20,6 +21,12 @@ export async function getGapAnalysis(
   projectId?: string
 ) {
   const { dbOrgId } = await getAuthContext()
+
+  // Billing: gap analysis requires Professional+
+  const billing = await getBillingContext(dbOrgId)
+  const gate = checkFeatureAccess(billing, "gapAnalysis")
+  if (!gate.allowed) throw new Error(gate.reason)
+
   return getGapAnalysisInternal(dbOrgId, standardCode, projectId)
 }
 

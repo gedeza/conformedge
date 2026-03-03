@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete, canConduct } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { Prisma } from "@/generated/prisma/client"
 import type { ActionResult } from "@/types"
 
@@ -588,6 +589,11 @@ export async function configureRecurrence(
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
+    // Billing: recurring checklists require Professional+
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "recurringChecklists")
+    if (!gate.allowed) return { success: false, error: gate.reason }
+
     const template = await db.checklistTemplate.findFirst({
       where: { id: templateId, organizationId: dbOrgId },
     })
@@ -697,6 +703,13 @@ export async function updateItemResponse(
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canConduct(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: custom form fields (non-COMPLIANCE) require Business+
+    if (fieldType !== "COMPLIANCE") {
+      const billing = await getBillingContext(dbOrgId)
+      const gate = checkFeatureAccess(billing, "customFormBuilder")
+      if (!gate.allowed) return { success: false, error: gate.reason }
+    }
 
     const checklist = await db.complianceChecklist.findFirst({ where: { id: checklistId, organizationId: dbOrgId } })
     if (!checklist) return { success: false, error: "Checklist not found" }

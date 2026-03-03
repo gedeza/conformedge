@@ -3,6 +3,7 @@
 import { cache } from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 
 export interface MatrixStandard {
   id: string
@@ -46,7 +47,12 @@ export interface StandardOverlapData {
 }
 
 export const getCrossReferenceMatrix = cache(async (): Promise<CrossReferenceMatrixData> => {
-  await getAuthContext()
+  const { dbOrgId } = await getAuthContext()
+
+  // Billing: cross-references (IMS feature) requires Professional+
+  const billing = await getBillingContext(dbOrgId)
+  const gate = checkFeatureAccess(billing, "ims")
+  if (!gate.allowed) throw new Error(gate.reason)
 
   const standards = await db.standard.findMany({
     where: { isActive: true },

@@ -10,6 +10,7 @@ import { getGapInsightsForDocument } from "@/lib/gap-detection"
 import { notifyOrgMembers } from "@/lib/notifications"
 import { createRateLimiter } from "@/lib/rate-limit"
 import { captureError } from "@/lib/error-tracking"
+import { getBillingContext, checkAiClassificationLimit, recordAiClassificationUsage } from "@/lib/billing"
 
 // Per-org: 10 classify requests per 60 seconds
 const classifyLimiter = createRateLimiter("classify", {
@@ -42,6 +43,16 @@ export async function POST(
           status: 429,
           headers: { "Retry-After": String(retryAfterSec) },
         }
+      )
+    }
+
+    // Billing: check AI classification quota
+    const billing = await getBillingContext(dbOrgId)
+    const aiCheck = checkAiClassificationLimit(billing)
+    if (!aiCheck.allowed) {
+      return NextResponse.json(
+        { error: aiCheck.reason, upgradeRequired: aiCheck.upgradeRequired },
+        { status: 402 }
       )
     }
 
@@ -157,6 +168,14 @@ export async function POST(
       }
     })
 
+    // Record billing usage (fire-and-forget)
+    recordAiClassificationUsage(
+      dbOrgId,
+      billing.subscription.currentPeriodStart,
+      billing.subscription.currentPeriodEnd,
+      { useCredit: aiCheck.useCredit, documentId: id, performedById: dbUserId }
+    )
+
     logAuditEvent({
       action: "AI_CLASSIFY",
       entityType: "Document",
@@ -164,6 +183,7 @@ export async function POST(
       metadata: {
         classificationsCount: resolved.length,
         summary: result.summary,
+        creditUsed: aiCheck.useCredit,
       },
       userId: dbUserId,
       organizationId: dbOrgId,

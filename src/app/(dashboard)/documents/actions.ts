@@ -7,6 +7,7 @@ import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import { captureError } from "@/lib/error-tracking"
+import { getBillingContext, checkDocumentLimit } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const documentSchema = z.object({
@@ -238,6 +239,12 @@ export async function createDocument(values: DocumentFormValues): Promise<Action
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: check document limit
+    const billing = await getBillingContext(dbOrgId)
+    const docCheck = checkDocumentLimit(billing)
+    if (!docCheck.allowed) return { success: false, error: docCheck.reason }
+
     const parsed = documentSchema.parse(values)
 
     const doc = await db.document.create({
@@ -277,6 +284,18 @@ export async function bulkCreateDocuments(
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing: check document limit (account for batch size)
+    const billing = await getBillingContext(dbOrgId)
+    const docCheck = checkDocumentLimit(billing)
+    if (!docCheck.allowed) return { success: false, error: docCheck.reason }
+    // Also check if batch would exceed limit
+    if (docCheck.limit !== null && docCheck.limit !== undefined && docCheck.current !== undefined) {
+      const remaining = docCheck.limit - docCheck.current
+      if (files.length > remaining) {
+        return { success: false, error: `Only ${remaining} document(s) remaining on your plan. You're trying to upload ${files.length}.` }
+      }
+    }
 
     const docs = await Promise.all(
       files.map((f) =>

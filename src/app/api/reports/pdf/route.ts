@@ -5,6 +5,7 @@ import { getReportData } from "@/app/(dashboard)/reports/actions"
 import { parseDateRange } from "@/app/(dashboard)/reports/date-utils"
 import { ReportsPDF } from "@/lib/pdf/reports-pdf"
 import { getAuthContext } from "@/lib/auth"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import { db } from "@/lib/db"
 import { format } from "date-fns"
 
@@ -20,6 +21,13 @@ export async function GET(request: NextRequest) {
       getReportData(dateRange),
       getAuthContext(),
     ])
+
+    // Billing: report export requires Professional+
+    const billing = await getBillingContext(dbOrgId)
+    const gate = checkFeatureAccess(billing, "reportExport")
+    if (!gate.allowed) {
+      return NextResponse.json({ error: gate.reason }, { status: 402 })
+    }
 
     const org = await db.organization.findUnique({
       where: { id: dbOrgId },
