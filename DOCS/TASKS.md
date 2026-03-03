@@ -55,10 +55,21 @@
 - [x] **T29** Generalize Subcontractor help panel — removed CIDB/BEE references
 - [x] **T31** Generalize landing page copy — hero, footer, CTA, testimonials, problem section, pricing tier descriptions
 - [x] **T32** Generalize pain point descriptions in data.ts — "on site" → "arrives", added "vendor"
+- [x] **T29** Reverted — CIDB/BEE references restored (they are a competitive advantage, not a liability)
 - [ ] **T26** Monitor 15→50 user gap post-launch for potential "Growth" tier — **Trigger: 20-35% of Business customers using <25 seats after 6 months**
 - [ ] **T27** Evaluate mining sector entry (highest-value adjacent market)
 - [ ] **T28** Consider configurable vendor scoring weights per organization
 - [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes)
+
+## P5 — Multi-Vertical Compliance Frameworks (Future)
+
+Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are selling points.
+
+- [ ] **T33** Add DMRE compliance references for mining sector
+- [ ] **T34** Add ECSA compliance references for engineering sector
+- [ ] **T35** Add SACPCMP compliance references for project management sector
+- [ ] **T36** Add POPIA compliance references for IT services sector
+- [ ] **T37** Make compliance scoring weights industry-aware (CIDB/BEE for construction, DMRE for mining, etc.)
 
 ---
 

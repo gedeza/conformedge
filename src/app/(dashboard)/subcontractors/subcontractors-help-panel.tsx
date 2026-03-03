@@ -8,10 +8,10 @@ export function SubcontractorsHelpPanel() {
     <HelpPanel
       title="Guide"
       icon={Building2}
-      summary="Track your subcontractors' and vendors' compliance status, certifications, and ratings. Invite them to upload their own certificates via a self-service portal."
+      summary="Track your subcontractors' compliance status, certifications, BEE levels, and safety ratings. Invite subcontractors to upload their own certificates via a self-service portal."
       items={[
-        { icon: Award, label: "Certifications", description: "ISO certificates, trade licences, safety accreditations, and compliance documents" },
-        { icon: ShieldCheck, label: "Tiers & Ratings", description: "Platinum / Gold / Silver tier based on compliance score and certifications" },
+        { icon: Award, label: "Certifications", description: "ISO certs, CIDB grading, BEE certificates, Letters of Good Standing" },
+        { icon: ShieldCheck, label: "Tiers & Ratings", description: "Platinum / Gold / Silver tier based on BEE level and safety rating" },
         { icon: Share2, label: "Self-Service Portal", description: "Send a link so subcontractors can upload certs themselves" },
       ]}
       expandLabel="Portal & tips"
@@ -19,7 +19,7 @@ export function SubcontractorsHelpPanel() {
         "Click <strong>Invite to Portal</strong> on a subcontractor's detail page to generate a share link",
         "Subcontractors can upload new or renewed certs — uploads are <strong>Pending Review</strong> until you approve",
         "Expiring certifications trigger <strong>automatic notifications</strong> so nothing lapses",
-        "Compliance score and certifications determine the subcontractor's <strong>tier</strong> (Platinum, Gold, Silver)",
+        "BEE level and safety rating determine the subcontractor's <strong>tier</strong> (Platinum, Gold, Silver)",
         "Use the detail page to <strong>approve or reject</strong> uploaded certificates",
       ]}
     />

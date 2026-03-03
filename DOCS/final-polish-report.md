@@ -98,12 +98,22 @@ The 5/15/50/Unlimited progression was derived from competitor research and SA ma
 ### Key Finding: ConformEdge is Already 80% Industry-Agnostic
 
 The construction framing is **surface-level only** — confined to:
-- 11 strings on the landing page
-- The `SA_CONSTRUCTION_INDUSTRIES` constant name (the list already includes non-construction entries)
+- 11 strings on the landing page (now generalized)
+- The `INDUSTRIES` constant (expanded with 7 new sectors)
 - The Subcontractor module's BEE/safety scoring algorithm
-- 4 minor help panel references
+- Help panel references to CIDB/BEE
 
 Every core engine — AI classification, gap detection, IMS, CAPAs, checklists, audit packs, approval workflows, client portal — is **fully generic** and works for any ISO-regulated industry today.
+
+### Strategic Decision (2026-03-03): Multi-Vertical Depth, Not Horizontal Shallowness
+
+**CIDB/BEE references are a competitive advantage and must be KEPT.** They are the reason a SA construction company would choose ConformEdge over a generic international tool. The expansion strategy is to **add more industry-specific compliance frameworks** alongside CIDB/BEE — not to remove existing depth:
+
+- **Construction:** CIDB grading, BEE certificates (already implemented)
+- **Mining:** DMRE compliance (future)
+- **Engineering:** ECSA registration (future)
+- **Project Management:** SACPCMP compliance (future)
+- **IT Services:** POPIA compliance (future)
 
 ### Effort to Open Up
 
