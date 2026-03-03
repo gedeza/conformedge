@@ -62,7 +62,7 @@ export default async function ChecklistDetailPage({
       )}
 
       <div className={`grid gap-4 grid-cols-2 ${customItems.length > 0 ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Completion</CardTitle>
           </CardHeader>
@@ -71,19 +71,19 @@ export default async function ChecklistDetailPage({
             <Progress value={checklist.completionPercentage} className="h-2 mt-2" />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Items</CardTitle>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold">{totalItems}</div></CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-green-700">Compliant</CardTitle>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold text-green-700">{compliant}</div></CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-red-700">Non-Compliant</CardTitle>
           </CardHeader>
@@ -101,7 +101,7 @@ export default async function ChecklistDetailPage({
         )}
       </div>
 
-      <Card>
+      <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Checklist Items</CardTitle>
           <div className="flex gap-2">

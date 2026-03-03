@@ -180,7 +180,7 @@ export default async function CapaDetailPage({
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader><CardTitle>CAPA Details</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -240,7 +240,7 @@ export default async function CapaDetailPage({
         </TabsContent>
 
         <TabsContent value="findings" className="space-y-4">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckSquare className="h-5 w-5" />
@@ -300,7 +300,7 @@ export default async function CapaDetailPage({
         </TabsContent>
 
         <TabsContent value="history">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader><CardTitle>History</CardTitle></CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">Audit trail coming from the audit log.</p>

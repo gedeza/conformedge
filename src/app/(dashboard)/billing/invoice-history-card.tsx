@@ -29,7 +29,7 @@ function formatDate(date: Date): string {
 
 export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader>
         <CardTitle className="text-lg">Invoice History</CardTitle>
         <CardDescription>Your billing history and invoices</CardDescription>

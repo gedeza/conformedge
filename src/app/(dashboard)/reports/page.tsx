@@ -51,12 +51,12 @@ export default async function ReportsPage({ searchParams }: Props) {
   const s = data.summary
 
   const metricCards = [
-    { title: "Projects", value: s.totalProjects, icon: FolderKanban },
-    { title: "Documents", value: s.totalDocuments, icon: FileText },
-    { title: "Assessments", value: s.totalAssessments, icon: ClipboardCheck },
-    { title: "CAPAs", value: s.totalCapas, icon: AlertTriangle },
-    { title: "Checklists", value: s.totalChecklists, icon: CheckSquare },
-    { title: "Subcontractors", value: s.totalSubcontractors, icon: Building2 },
+    { title: "Projects", value: s.totalProjects, icon: FolderKanban, iconBg: "bg-blue-500/10", iconColor: "text-blue-500" },
+    { title: "Documents", value: s.totalDocuments, icon: FileText, iconBg: "bg-blue-500/10", iconColor: "text-blue-500" },
+    { title: "Assessments", value: s.totalAssessments, icon: ClipboardCheck, iconBg: "bg-landing-cta/10", iconColor: "text-landing-cta" },
+    { title: "CAPAs", value: s.totalCapas, icon: AlertTriangle, iconBg: "bg-amber-500/10", iconColor: "text-amber-500" },
+    { title: "Checklists", value: s.totalChecklists, icon: CheckSquare, iconBg: "bg-purple-500/10", iconColor: "text-purple-500" },
+    { title: "Subcontractors", value: s.totalSubcontractors, icon: Building2, iconBg: "bg-slate-500/10", iconColor: "text-slate-500" },
   ]
 
   return (
@@ -72,10 +72,12 @@ export default async function ReportsPage({ searchParams }: Props) {
       {/* Summary metrics */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {metricCards.map((card) => (
-          <Card key={card.title}>
+          <Card key={card.title} className="border-border/50 transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-medium text-muted-foreground">{card.title}</CardTitle>
-              <card.icon className="h-4 w-4 text-muted-foreground" />
+              <div className={`flex size-9 items-center justify-center rounded-lg ${card.iconBg}`}>
+                <card.icon className={`size-4 ${card.iconColor}`} />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{card.value}</div>
@@ -86,10 +88,12 @@ export default async function ReportsPage({ searchParams }: Props) {
 
       {/* Compliance score + alerts row */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Compliance Score</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/10">
+              <TrendingUp className="size-4 text-emerald-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
@@ -98,10 +102,12 @@ export default async function ReportsPage({ searchParams }: Props) {
             <Progress value={s.avgComplianceScore ?? 0} className="h-2 mt-3" />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Overdue CAPAs</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-red-500/10">
+              <Clock className="size-4 text-red-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${s.overdueCapas > 0 ? "text-red-600" : "text-green-600"}`}>
@@ -112,10 +118,12 @@ export default async function ReportsPage({ searchParams }: Props) {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Expired Documents</CardTitle>
-            <FileWarning className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-orange-500/10">
+              <FileWarning className="size-4 text-orange-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${s.expiringDocs > 0 ? "text-orange-600" : "text-green-600"}`}>

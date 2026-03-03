@@ -64,46 +64,56 @@ export default async function ProjectDetailPage({
       </PageHeader>
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-5">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Documents</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-blue-500/10">
+              <FileText className="size-4 text-blue-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.documents}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Assessments</CardTitle>
-            <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-landing-cta/10">
+              <ClipboardCheck className="size-4 text-landing-cta" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.assessments}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">CAPAs</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10">
+              <AlertTriangle className="size-4 text-amber-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.capas}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Checklists</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-purple-500/10">
+              <CheckSquare className="size-4 text-purple-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.checklists}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Audit Packs</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-indigo-500/10">
+              <Package className="size-4 text-indigo-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{counts.auditPacks}</div>
@@ -125,10 +135,12 @@ export default async function ProjectDetailPage({
           {metrics && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Compliance Score */}
-              <Card>
+              <Card className="border-border/50 transition-all hover:shadow-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
-                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-green-500/10">
+                    <ShieldCheck className="size-4 text-green-500" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {metrics.complianceScore.total === 0 ? (
@@ -153,10 +165,12 @@ export default async function ProjectDetailPage({
               </Card>
 
               {/* Checklist Progress */}
-              <Card>
+              <Card className="border-border/50 transition-all hover:shadow-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Checklist Progress</CardTitle>
-                  <ListChecks className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-purple-500/10">
+                    <ListChecks className="size-4 text-purple-500" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {metrics.checklistProgress.total === 0 ? (
@@ -176,10 +190,12 @@ export default async function ProjectDetailPage({
               </Card>
 
               {/* Overdue CAPAs */}
-              <Card>
+              <Card className="border-border/50 transition-all hover:shadow-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Overdue CAPAs</CardTitle>
-                  <CircleAlert className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-red-500/10">
+                    <CircleAlert className="size-4 text-red-500" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -204,10 +220,12 @@ export default async function ProjectDetailPage({
               </Card>
 
               {/* Risk Distribution */}
-              <Card>
+              <Card className="border-border/50 transition-all hover:shadow-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Risk Distribution</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-indigo-500/10">
+                    <BarChart3 className="size-4 text-indigo-500" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {metrics.riskDistribution.every((r) => r.count === 0) ? (
@@ -240,7 +258,7 @@ export default async function ProjectDetailPage({
 
           {chartData && <ProjectCharts data={chartData} />}
 
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Project Details</CardTitle>
             </CardHeader>
@@ -279,7 +297,7 @@ export default async function ProjectDetailPage({
           </Card>
         </TabsContent>
         <TabsContent value="documents">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Documents</CardTitle>
             </CardHeader>
@@ -305,7 +323,7 @@ export default async function ProjectDetailPage({
           </Card>
         </TabsContent>
         <TabsContent value="assessments">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Assessments</CardTitle>
             </CardHeader>
@@ -335,7 +353,7 @@ export default async function ProjectDetailPage({
           </Card>
         </TabsContent>
         <TabsContent value="capas">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>CAPAs</CardTitle>
             </CardHeader>
@@ -361,7 +379,7 @@ export default async function ProjectDetailPage({
           </Card>
         </TabsContent>
         <TabsContent value="checklists">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Checklists</CardTitle>
             </CardHeader>
@@ -392,7 +410,7 @@ export default async function ProjectDetailPage({
           {gapData ? (
             <ProjectGapTab data={gapData} />
           ) : (
-            <Card>
+            <Card className="border-border/50 transition-all hover:shadow-md">
               <CardContent className="py-8 text-center text-muted-foreground">
                 Gap analysis data unavailable.
               </CardContent>

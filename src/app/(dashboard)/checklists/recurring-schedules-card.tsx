@@ -24,10 +24,12 @@ export async function RecurringSchedulesCard() {
   if (schedules.length === 0) return null
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Recurring Schedules</CardTitle>
-        <RefreshCw className="h-4 w-4 text-muted-foreground" />
+        <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/10">
+          <RefreshCw className="size-4 text-emerald-500" />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

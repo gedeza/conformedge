@@ -50,37 +50,45 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
 
       {/* Summary cards */}
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clauses</CardTitle>
-            <SearchCheck className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-landing-accent/10">
+              <SearchCheck className="size-4 text-landing-accent" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalSubClauses}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Covered</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-green-600" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-green-600/10">
+              <ShieldCheck className="size-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{data.covered}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Partial</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10">
+              <AlertTriangle className="size-4 text-amber-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-500">{data.partial}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Gaps</CardTitle>
-            <ShieldAlert className="h-4 w-4 text-red-600" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-red-600/10">
+              <ShieldAlert className="size-4 text-red-600" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{data.gaps}</div>
@@ -89,7 +97,7 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
       </div>
 
       {/* Overall coverage bar */}
-      <Card>
+      <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">Overall Coverage</CardTitle>
         </CardHeader>

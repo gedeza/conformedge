@@ -17,10 +17,12 @@ export async function GapCoverageCard() {
 
   if (!summary || summary.totalClauses === 0) {
     return (
-      <Card>
+      <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle>Gap Coverage</CardTitle>
-          <SearchCheck className="h-4 w-4 text-muted-foreground" />
+          <div className="flex size-9 items-center justify-center rounded-lg bg-landing-accent/10">
+            <SearchCheck className="size-4 text-landing-accent" />
+          </div>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
@@ -32,10 +34,12 @@ export async function GapCoverageCard() {
   }
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Gap Coverage</CardTitle>
-        <SearchCheck className="h-4 w-4 text-muted-foreground" />
+        <div className="flex size-9 items-center justify-center rounded-lg bg-landing-accent/10">
+          <SearchCheck className="size-4 text-landing-accent" />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>

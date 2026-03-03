@@ -46,7 +46,7 @@ export function CreditPacksCard({ billing, paystackEnabled, transactions }: Cred
   }
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -54,7 +54,7 @@ export function CreditPacksCard({ billing, paystackEnabled, transactions }: Cred
             <CardDescription>Purchase additional AI classification credits</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Coins className="size-5 text-muted-foreground" />
+            <Coins className="size-5 text-amber-500" />
             <span className="text-2xl font-bold">{billing.creditBalance}</span>
             <span className="text-sm text-muted-foreground">credits</span>
           </div>

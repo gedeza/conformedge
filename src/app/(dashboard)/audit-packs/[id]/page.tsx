@@ -67,37 +67,45 @@ export default async function AuditPackDetailPage({
       </PageHeader>
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Documents</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-blue-500/10">
+              <FileText className="size-4 text-blue-500" />
+            </div>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold">{docCount}</div></CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Assessments</CardTitle>
-            <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-landing-cta/10">
+              <ClipboardCheck className="size-4 text-landing-cta" />
+            </div>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold">{assessmentCount}</div></CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">CAPAs</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10">
+              <AlertTriangle className="size-4 text-amber-500" />
+            </div>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold">{capaCount}</div></CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Checklists</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-purple-500/10">
+              <CheckSquare className="size-4 text-purple-500" />
+            </div>
           </CardHeader>
           <CardContent><div className="text-2xl font-bold">{checklistCount}</div></CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader><CardTitle>Details</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-sm">

@@ -50,7 +50,7 @@ export default async function SettingsPage() {
         <SettingsHelpPanel />
       </PageHeader>
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>Organization</CardTitle>
             <CardDescription>Manage organization details and preferences</CardDescription>
@@ -63,7 +63,7 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>Team Members</CardTitle>
             <CardDescription>Manage team roles</CardDescription>
@@ -76,7 +76,7 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>ISO Standards</CardTitle>
             <CardDescription>Toggle which standards are active</CardDescription>
@@ -89,7 +89,7 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle>Notifications</CardTitle>
             <CardDescription>Configure notification preferences per channel</CardDescription>
@@ -102,7 +102,7 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
-        <Card className="md:col-span-2">
+        <Card className="border-border/50 transition-all hover:shadow-md md:col-span-2">
           <CardHeader>
             <CardTitle>Approval Workflows</CardTitle>
             <CardDescription>Define approval chains for document sign-off</CardDescription>
@@ -115,7 +115,7 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
-        <Card className="md:col-span-2">
+        <Card className="border-border/50 transition-all hover:shadow-md md:col-span-2">
           <CardHeader>
             <CardTitle>External Sharing</CardTitle>
             <CardDescription>Share documents, audit packs, or compliance portals with external stakeholders</CardDescription>

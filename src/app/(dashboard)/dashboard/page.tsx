@@ -121,11 +121,11 @@ export default async function DashboardPage() {
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
-                <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                <CheckSquare className="h-4 w-4 text-purple-500" />
                 <span>{metrics?.totalChecklists ?? 0} checklists</span>
               </div>
               <div className="flex items-center gap-2">
-                <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+                <ClipboardCheck className="h-4 w-4 text-landing-cta" />
                 <span>{metrics?.completedAssessments ?? 0} assessments done</span>
               </div>
             </div>

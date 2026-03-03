@@ -123,7 +123,7 @@ export default async function DocumentDetailPage({
         </TabsList>
 
         <TabsContent value="details" className="space-y-4">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Document Details</CardTitle>
             </CardHeader>
@@ -187,7 +187,7 @@ export default async function DocumentDetailPage({
         </TabsContent>
 
         <TabsContent value="classifications" className="space-y-4">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>ISO Clause Classifications</CardTitle>
             </CardHeader>
@@ -252,7 +252,7 @@ export default async function DocumentDetailPage({
         </TabsContent>
 
         <TabsContent value="approvals">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Approval Workflow</CardTitle>
             </CardHeader>
@@ -272,7 +272,7 @@ export default async function DocumentDetailPage({
         </TabsContent>
 
         <TabsContent value="history">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Document History</CardTitle>
             </CardHeader>

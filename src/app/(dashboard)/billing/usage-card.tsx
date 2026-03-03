@@ -13,7 +13,7 @@ export function UsageCard({ billing }: UsageCardProps) {
   const plan = PLAN_DEFINITIONS[billing.subscription.plan]
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader>
         <CardTitle className="text-lg">Usage</CardTitle>
         <CardDescription>Current billing period resource usage</CardDescription>

@@ -26,7 +26,7 @@ export function CurrentPlanCard({ billing }: CurrentPlanCardProps) {
     : null
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

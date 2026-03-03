@@ -36,10 +36,12 @@ export default async function IMSDashboardPage() {
       </PageHeader>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Active Standards</CardTitle>
-            <Layers className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-indigo-500/10">
+              <Layers className="size-4 text-indigo-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.activeStandardCount}</div>
@@ -49,10 +51,12 @@ export default async function IMSDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Integration Efficiency</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-500/10">
+              <TrendingUp className="size-4 text-emerald-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.integrationScore.efficiencyPercent}%</div>
@@ -62,10 +66,12 @@ export default async function IMSDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Consolidated Readiness</CardTitle>
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-green-500/10">
+              <ShieldCheck className="size-4 text-green-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.consolidatedReadiness.weightedScore}%</div>
@@ -75,10 +81,12 @@ export default async function IMSDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Gap Cascades</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <div className="flex size-9 items-center justify-center rounded-lg bg-amber-500/10">
+              <AlertTriangle className="size-4 text-amber-500" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.gapCascades.length}</div>

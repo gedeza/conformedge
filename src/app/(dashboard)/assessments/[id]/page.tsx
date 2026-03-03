@@ -77,7 +77,7 @@ export default async function AssessmentDetailPage({
       )}
 
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Overall Score</CardTitle>
           </CardHeader>
@@ -87,7 +87,7 @@ export default async function AssessmentDetailPage({
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Risk Level</CardTitle>
           </CardHeader>
@@ -99,7 +99,7 @@ export default async function AssessmentDetailPage({
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Questions</CardTitle>
           </CardHeader>
@@ -107,7 +107,7 @@ export default async function AssessmentDetailPage({
             <div className="text-2xl font-bold">{answeredQuestions}/{totalQuestions}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Standard</CardTitle>
           </CardHeader>
@@ -119,7 +119,7 @@ export default async function AssessmentDetailPage({
       </div>
 
       {totalQuestions > 0 && (
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
             <CardTitle className="text-sm font-medium">Progress</CardTitle>
           </CardHeader>
@@ -131,7 +131,7 @@ export default async function AssessmentDetailPage({
       )}
 
       {totalQuestions === 0 && (
-        <Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground mb-4">No questions generated yet. Generate questions from the standard clauses to begin.</p>
             <GenerateQuestionsButton assessmentId={assessment.id} />
@@ -139,7 +139,7 @@ export default async function AssessmentDetailPage({
         </Card>
       )}
 
-      <Card>
+      <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader>
           <CardTitle>Details</CardTitle>
         </CardHeader>

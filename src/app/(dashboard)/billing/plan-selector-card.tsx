@@ -41,7 +41,7 @@ export function PlanSelectorCard({ billing, paystackEnabled }: PlanSelectorCardP
   }
 
   return (
-    <Card>
+    <Card className="border-border/50 transition-all hover:shadow-md">
       <CardHeader>
         <CardTitle className="text-lg">Plans</CardTitle>
         <CardDescription>Compare plans and upgrade when ready</CardDescription>

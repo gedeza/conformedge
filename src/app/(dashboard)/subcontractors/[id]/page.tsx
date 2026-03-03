@@ -80,7 +80,7 @@ export default async function SubcontractorDetailPage({
 
         <TabsContent value="overview" className="space-y-4">
           <ComplianceScoreCard subcontractorId={sub.id} initialScore={complianceScore} />
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Company Details</CardTitle>
             </CardHeader>
@@ -116,7 +116,7 @@ export default async function SubcontractorDetailPage({
         </TabsContent>
 
         <TabsContent value="certifications" className="space-y-4">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Certifications</CardTitle>
               <CertificationActions subcontractorId={sub.id} />
@@ -130,7 +130,7 @@ export default async function SubcontractorDetailPage({
                     <div key={cert.id} className="flex items-start justify-between rounded-md border p-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Shield className="h-4 w-4 text-muted-foreground" />
+                          <Shield className="h-4 w-4 text-blue-500" />
                           <span className="font-medium">{cert.name}</span>
                           {getExpiryBadge(cert.expiresAt)}
                           {cert.status && <StatusBadge type="certificationStatus" value={cert.status} />}
@@ -170,7 +170,7 @@ export default async function SubcontractorDetailPage({
         </TabsContent>
 
         <TabsContent value="history">
-          <Card>
+          <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>History</CardTitle>
             </CardHeader>
