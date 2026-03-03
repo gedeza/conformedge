@@ -1,3 +1,4 @@
+import { Pool } from "pg"
 import { PrismaClient } from "@/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 
@@ -6,10 +7,18 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL!,
+    max: 5,                // stay within shared VPS PostgreSQL budget
+    idleTimeoutMillis: 60_000,
+    connectionTimeoutMillis: 10_000,
+  })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 
 export const db = globalForPrisma.prisma ?? createPrismaClient()
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db
+// Cache globally in ALL environments to prevent multiple pools
+// (standard pattern skips production, but adapter-pg pool leaks are costly)
+globalForPrisma.prisma = db
