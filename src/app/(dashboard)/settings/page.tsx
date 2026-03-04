@@ -28,6 +28,7 @@ export default async function SettingsPage() {
   let shareAuditPacks: { id: string; title: string }[] = []
   let shareSubcontractors: { id: string; name: string }[] = []
   let role = "VIEWER"
+  let currentUserId = ""
   let authError = false
 
   try {
@@ -37,6 +38,7 @@ export default async function SettingsPage() {
     const { getAuthContext } = await import("@/lib/auth")
     const ctx = await getAuthContext()
     role = ctx.role
+    currentUserId = ctx.dbUserId
     // Fetch entity pickers for share link dialog
     ;[shareDocs, shareAuditPacks, shareSubcontractors] = await Promise.all([
       db.document.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
@@ -75,7 +77,7 @@ export default async function SettingsPage() {
             {authError || members.length === 0 ? (
               <p className="text-sm text-muted-foreground">No team members found.</p>
             ) : (
-              <MembersList members={members} />
+              <MembersList members={members} currentUserId={currentUserId} canManage={canManageOrg(role)} />
             )}
           </CardContent>
         </Card>

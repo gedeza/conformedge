@@ -193,31 +193,50 @@ export async function POST(req: Request) {
     })
 
     if (user && org) {
-      // Check if OrganizationUser already exists (e.g. created by invitation accept flow with correct role)
-      const existing = await db.organizationUser.findUnique({
+      const roleMap: Record<string, string> = {
+        "org:admin": "ADMIN",
+        "org:member": "VIEWER",
+      }
+
+      await db.organizationUser.upsert({
         where: {
           userId_organizationId: {
             userId: user.id,
             organizationId: org.id,
           },
         },
+        update: {
+          role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
+          isActive: true,
+        },
+        create: {
+          userId: user.id,
+          organizationId: org.id,
+          role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
+        },
       })
+    }
+  }
 
-      if (!existing) {
-        // Only create if not already present — don't override invitation role
-        const roleMap: Record<string, string> = {
-          "org:admin": "ADMIN",
-          "org:member": "VIEWER",
-        }
+  // Sync membership removal from Clerk → deactivate in our DB
+  if (eventType === "organizationMembership.deleted") {
+    const { organization, public_user_data } = evt.data as {
+      organization: { id: string }
+      public_user_data: { user_id: string }
+    }
 
-        await db.organizationUser.create({
-          data: {
-            userId: user.id,
-            organizationId: org.id,
-            role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
-          },
-        })
-      }
+    const user = await db.user.findUnique({
+      where: { clerkUserId: public_user_data.user_id },
+    })
+    const org = await db.organization.findUnique({
+      where: { clerkOrgId: organization.id },
+    })
+
+    if (user && org) {
+      await db.organizationUser.updateMany({
+        where: { userId: user.id, organizationId: org.id },
+        data: { isActive: false },
+      })
     }
   }
 

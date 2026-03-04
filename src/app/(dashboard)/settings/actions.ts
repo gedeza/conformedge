@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { z } from "zod/v4"
+import { clerkClient } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
 import { getAuthContext, getOrgMembers } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
@@ -110,6 +111,84 @@ export async function updateMemberRole(userId: string, role: string): Promise<Ac
     return { success: true }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to update role" }
+  }
+}
+
+export async function removeMember(userId: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role: callerRole } = await getAuthContext()
+
+    if (!canManageOrg(callerRole)) {
+      return { success: false, error: "Insufficient permissions" }
+    }
+
+    // Look up the membership + user details
+    const membership = await db.organizationUser.findFirst({
+      where: { userId, organizationId: dbOrgId, isActive: true },
+      include: {
+        user: { select: { id: true, clerkUserId: true, email: true, firstName: true, lastName: true } },
+      },
+    })
+
+    if (!membership) return { success: false, error: "Member not found" }
+
+    // Prevent removing OWNER
+    if (membership.role === "OWNER") {
+      return { success: false, error: "Cannot remove the organization owner" }
+    }
+
+    // Prevent removing yourself
+    if (userId === dbUserId) {
+      return { success: false, error: "Cannot remove yourself" }
+    }
+
+    // Deactivate in our DB
+    await db.organizationUser.update({
+      where: {
+        userId_organizationId: {
+          userId,
+          organizationId: dbOrgId,
+        },
+      },
+      data: { isActive: false },
+    })
+
+    // Remove from Clerk organization
+    const org = await db.organization.findUnique({
+      where: { id: dbOrgId },
+      select: { clerkOrgId: true },
+    })
+
+    if (org) {
+      const clerk = await clerkClient()
+      try {
+        await clerk.organizations.deleteOrganizationMembership({
+          organizationId: org.clerkOrgId,
+          userId: membership.user.clerkUserId,
+        })
+      } catch (err) {
+        // Log but don't fail — DB is already updated
+        console.error("Failed to remove Clerk membership:", err)
+      }
+    }
+
+    logAuditEvent({
+      action: "REMOVE_MEMBER",
+      entityType: "OrganizationUser",
+      entityId: userId,
+      metadata: {
+        email: membership.user.email,
+        name: `${membership.user.firstName} ${membership.user.lastName}`,
+        role: membership.role,
+      },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath("/settings")
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to remove member" }
   }
 }
 

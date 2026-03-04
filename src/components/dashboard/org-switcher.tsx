@@ -18,20 +18,14 @@ export function OrgSwitcher() {
         elements: {
           rootBox: "w-full",
           organizationSwitcherTrigger: "w-full justify-start px-2 py-1.5",
+          // Prevent ad-hoc org creation — orgs are created through proper onboarding only
+          organizationSwitcherPopoverActionButton__createOrganization: {
+            display: "none",
+          },
         },
       }}
       afterSelectOrganizationUrl="/dashboard"
       afterCreateOrganizationUrl="/dashboard"
-      organizationProfileProps={{
-        appearance: {
-          elements: {
-            // Hide Clerk's built-in invite button — we use our own invitation system
-            membersPageInviteButton: { display: "none" },
-            invitedMemberEmailAddresses__tableBody: { display: "none" },
-            invitedMemberEmailAddresses__headerTitle: { display: "none" },
-          },
-        },
-      }}
     />
   )
 }
