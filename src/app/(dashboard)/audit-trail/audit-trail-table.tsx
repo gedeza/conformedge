@@ -344,11 +344,22 @@ export function AuditTrailTable({
                 Object.keys(detailEvent.metadata).length > 0 && (
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Metadata
+                      Details
                     </p>
-                    <pre className="rounded-md bg-muted p-3 text-xs overflow-auto max-h-60">
-                      {JSON.stringify(detailEvent.metadata, null, 2)}
-                    </pre>
+                    <div className="rounded-md border bg-muted/40 divide-y">
+                      {Object.entries(detailEvent.metadata).map(([key, value]) => (
+                        <div key={key} className="flex items-start gap-3 px-3 py-2 text-sm">
+                          <span className="text-muted-foreground capitalize min-w-[100px] shrink-0">
+                            {key.replace(/([A-Z])/g, " $1").replace(/[_-]/g, " ").trim()}
+                          </span>
+                          <span className="font-medium break-all">
+                            {typeof value === "object" && value !== null
+                              ? JSON.stringify(value)
+                              : String(value ?? "—")}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
             </div>
