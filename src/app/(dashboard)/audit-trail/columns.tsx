@@ -87,16 +87,24 @@ export function getColumns({ onViewDetail }: ColumnOptions): ColumnDef<AuditEven
       accessorKey: "entityType",
       header: "Entity",
       cell: ({ row }) => {
-        const { entityType, entityId, metadata } = row.original
+        const { action, entityType, entityId, metadata } = row.original
         const href = ENTITY_HREFS[entityType]
         const label = getMetadataLabel(metadata as Record<string, unknown> | null)
+        const isDeleted = action === "DELETE"
 
         return (
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{entityType}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium">{entityType}</span>
+              {isDeleted && (
+                <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 text-[10px] px-1 py-0">
+                  Deleted
+                </Badge>
+              )}
+            </div>
             {label && (
-              <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-                {href ? (
+              <span className={cn("text-xs truncate max-w-[200px]", isDeleted ? "text-muted-foreground line-through" : "text-muted-foreground")}>
+                {href && !isDeleted ? (
                   <a href={`${href}/${entityId}`} className="hover:underline">
                     {label}
                   </a>
