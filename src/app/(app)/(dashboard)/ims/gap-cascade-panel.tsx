@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { GapCascade } from "@/lib/ims/types"
-import type { CoverageStatus } from "@/app/(dashboard)/gap-analysis/gap-analysis-core"
+import type { CoverageStatus } from "@/app/(app)/(dashboard)/gap-analysis/gap-analysis-core"
 
 interface GapCascadePanelProps {
   cascades: GapCascade[]

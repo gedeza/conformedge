@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import type { SharedRequirementsRow } from "@/lib/ims/types"
-import type { CoverageStatus } from "@/app/(dashboard)/gap-analysis/gap-analysis-core"
+import type { CoverageStatus } from "@/app/(app)/(dashboard)/gap-analysis/gap-analysis-core"
 
 interface SharedRequirementsMatrixProps {
   rows: SharedRequirementsRow[]

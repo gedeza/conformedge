@@ -9,7 +9,7 @@ import { Layers, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { linkCapaToStandardClauses, unlinkCapaFromStandardClause } from "./actions"
-import type { CoverageStatus } from "@/app/(dashboard)/gap-analysis/gap-analysis-core"
+import type { CoverageStatus } from "@/app/(app)/(dashboard)/gap-analysis/gap-analysis-core"
 
 interface LinkedClause {
   id: string

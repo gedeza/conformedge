@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from "@/app/(dashboard)/notifications/actions"
+import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from "@/app/(app)/(dashboard)/notifications/actions"
 
 type Notification = Awaited<ReturnType<typeof getNotifications>>[number]
 

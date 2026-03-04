@@ -1,8 +1,5 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { ClerkProvider } from "@clerk/nextjs"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "@/components/ui/sonner"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -27,28 +24,16 @@ export const metadata: Metadata = {
   },
 }
 
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-const hasValidClerkKey = clerkKey && clerkKey.startsWith("pk_") && clerkKey.length > 20
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const content = (
+  return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+        {children}
       </body>
     </html>
   )
-
-  if (!hasValidClerkKey) {
-    return content
-  }
-
-  return <ClerkProvider>{content}</ClerkProvider>
 }

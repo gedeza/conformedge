@@ -4,7 +4,7 @@ import { CalendarDays, ArrowRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { StatusBadge } from "@/components/shared/status-badge"
-import { getUpcomingAssessments } from "@/app/(dashboard)/assessments/actions"
+import { getUpcomingAssessments } from "@/app/(app)/(dashboard)/assessments/actions"
 
 export async function UpcomingAssessmentsWidget() {
   let assessments: Awaited<ReturnType<typeof getUpcomingAssessments>> = []

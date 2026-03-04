@@ -4,7 +4,7 @@ import { cache } from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { subMonths, startOfMonth, format, addMonths } from "date-fns"
-import { calculateComplianceScore } from "@/app/(dashboard)/subcontractors/compliance-score"
+import { calculateComplianceScore } from "@/app/(app)/(dashboard)/subcontractors/compliance-score"
 import type { DateRangeParams } from "./date-utils"
 
 function dateFilter(dateRange: DateRangeParams, field = "createdAt") {

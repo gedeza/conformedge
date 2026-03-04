@@ -1,6 +1,6 @@
 import React from "react"
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
-import type { ReportData } from "@/app/(dashboard)/reports/actions"
+import type { ReportData } from "@/app/(app)/(dashboard)/reports/actions"
 
 // ── Brand colors ──────────────────────────────
 const colors = {

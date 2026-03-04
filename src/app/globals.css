@@ -159,3 +159,13 @@
 .animate-subtle-float {
   animation: subtle-float 6s ease-in-out infinite;
 }
+
+/* Scroll-reveal animation (DOM-driven, no React re-renders) */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(1.5rem);
+}
+
+div:not(.scroll-hidden) {
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}

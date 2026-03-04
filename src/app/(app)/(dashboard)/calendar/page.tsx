@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/shared/page-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getCalendarAssessments } from "@/app/(dashboard)/assessments/actions"
+import { getCalendarAssessments } from "@/app/(app)/(dashboard)/assessments/actions"
 import { CalendarView } from "./calendar-view"
 import { CalendarListView } from "./calendar-list-view"
 import { CalendarHelpPanel } from "./calendar-help-panel"

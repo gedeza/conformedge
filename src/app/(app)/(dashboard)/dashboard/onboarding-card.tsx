@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { INDUSTRIES } from "@/lib/constants"
 import { dismissOnboarding, setOrgIndustry, type OnboardingStep } from "./actions"
-import { sendInvitation } from "@/app/(dashboard)/settings/invitation-actions"
+import { sendInvitation } from "@/app/(app)/(dashboard)/settings/invitation-actions"
 
 interface OnboardingCardProps {
   steps: OnboardingStep[]

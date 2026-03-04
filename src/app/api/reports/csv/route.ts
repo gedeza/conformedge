@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getReportData } from "@/app/(dashboard)/reports/actions"
-import { parseDateRange } from "@/app/(dashboard)/reports/date-utils"
+import { getReportData } from "@/app/(app)/(dashboard)/reports/actions"
+import { parseDateRange } from "@/app/(app)/(dashboard)/reports/date-utils"
 import { getAuthContext } from "@/lib/auth"
 import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 

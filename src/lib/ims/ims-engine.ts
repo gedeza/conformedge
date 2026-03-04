@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
-import { getGapAnalysisInternal } from "@/app/(dashboard)/gap-analysis/gap-analysis-core"
-import type { CoverageStatus } from "@/app/(dashboard)/gap-analysis/gap-analysis-core"
+import { getGapAnalysisInternal } from "@/app/(app)/(dashboard)/gap-analysis/gap-analysis-core"
+import type { CoverageStatus } from "@/app/(app)/(dashboard)/gap-analysis/gap-analysis-core"
 import { UnionFind } from "./union-find"
 import type {
   IMSSummary,

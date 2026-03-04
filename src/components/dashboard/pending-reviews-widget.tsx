@@ -4,7 +4,7 @@ import { ClipboardPen, ArrowRight } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { getMyPendingReviews } from "@/app/(dashboard)/documents/approval-actions"
+import { getMyPendingReviews } from "@/app/(app)/(dashboard)/documents/approval-actions"
 
 export async function PendingReviewsWidget() {
   let reviews: Awaited<ReturnType<typeof getMyPendingReviews>> = []
