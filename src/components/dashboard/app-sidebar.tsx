@@ -73,7 +73,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <Image src="/images/logo-icon.png" alt="ConformEdge" width={32} height={32} className="rounded-lg" />
+                <Image src="/images/C_Edge_Logo.png" alt="ConformEdge" width={32} height={32} className="rounded-lg" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">ConformEdge</span>
                   <span className="truncate text-xs text-muted-foreground">
