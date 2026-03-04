@@ -193,27 +193,31 @@ export async function POST(req: Request) {
     })
 
     if (user && org) {
-      const roleMap: Record<string, string> = {
-        "org:admin": "ADMIN",
-        "org:member": "VIEWER",
-      }
-
-      await db.organizationUser.upsert({
+      // Check if OrganizationUser already exists (e.g. created by invitation accept flow with correct role)
+      const existing = await db.organizationUser.findUnique({
         where: {
           userId_organizationId: {
             userId: user.id,
             organizationId: org.id,
           },
         },
-        update: {
-          role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
-        },
-        create: {
-          userId: user.id,
-          organizationId: org.id,
-          role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
-        },
       })
+
+      if (!existing) {
+        // Only create if not already present — don't override invitation role
+        const roleMap: Record<string, string> = {
+          "org:admin": "ADMIN",
+          "org:member": "VIEWER",
+        }
+
+        await db.organizationUser.create({
+          data: {
+            userId: user.id,
+            organizationId: org.id,
+            role: (roleMap[role] || "VIEWER") as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
+          },
+        })
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useTransition } from "react"
+import { useEffect, useState, useTransition, useRef, useCallback } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { CheckCircle2, XCircle, Mail, Shield, Clock, Loader2 } from "lucide-react"
@@ -8,10 +8,27 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getInvitationByCode, acceptInvitation, type InvitationDetails } from "./actions"
 
+const COOKIE_NAME = "invitation_code"
+
+function setCookie(value: string) {
+  // 1-hour expiry, SameSite=Lax so it survives Clerk redirects
+  document.cookie = `${COOKIE_NAME}=${encodeURIComponent(value)}; path=/; max-age=3600; SameSite=Lax`
+}
+
+function getCookie(): string | null {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_NAME}=([^;]*)`))
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+function clearCookie() {
+  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0`
+}
+
 type ViewState =
   | { kind: "loading" }
   | { kind: "error"; message: string }
   | { kind: "details"; invitation: InvitationDetails }
+  | { kind: "accepting" }
   | { kind: "accepted" }
 
 export function AcceptInvitationContent() {
@@ -20,9 +37,26 @@ export function AcceptInvitationContent() {
   const { isSignedIn, isLoaded } = useUser()
   const [view, setView] = useState<ViewState>({ kind: "loading" })
   const [isPending, startTransition] = useTransition()
+  const autoAcceptTriggered = useRef(false)
 
-  const code = searchParams.get("code") ?? ""
+  // Resolve code: URL param first, then cookie fallback
+  const paramCode = searchParams.get("code") ?? ""
+  const [code, setCode] = useState(paramCode)
 
+  // On mount: persist code to cookie / restore from cookie
+  useEffect(() => {
+    if (paramCode) {
+      setCookie(paramCode)
+      setCode(paramCode)
+    } else {
+      const cookieCode = getCookie()
+      if (cookieCode) {
+        setCode(cookieCode)
+      }
+    }
+  }, [paramCode])
+
+  // Fetch invitation details when code is available
   useEffect(() => {
     if (!code) {
       setView({ kind: "error", message: "No invitation code provided" })
@@ -38,25 +72,42 @@ export function AcceptInvitationContent() {
     })
   }, [code])
 
-  function handleAccept() {
+  const doAccept = useCallback(() => {
     startTransition(async () => {
+      setView({ kind: "accepting" })
       const result = await acceptInvitation(code)
       if (result.success) {
+        clearCookie()
         setView({ kind: "accepted" })
-        // Redirect to dashboard after short delay
         setTimeout(() => router.push("/dashboard"), 2000)
       } else {
         setView({ kind: "error", message: result.error ?? "Failed to accept" })
       }
     })
-  }
+  }, [code, router, startTransition])
 
-  if (view.kind === "loading") {
+  // Auto-accept: when signed in + code valid + details loaded
+  useEffect(() => {
+    if (
+      isLoaded &&
+      isSignedIn &&
+      view.kind === "details" &&
+      code &&
+      !autoAcceptTriggered.current
+    ) {
+      autoAcceptTriggered.current = true
+      doAccept()
+    }
+  }, [isLoaded, isSignedIn, view.kind, code, doAccept])
+
+  if (view.kind === "loading" || view.kind === "accepting") {
     return (
       <Card className="w-full max-w-md shadow-sm">
         <CardContent className="flex flex-col items-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading invitation...</p>
+          <p className="mt-4 text-sm text-muted-foreground">
+            {view.kind === "accepting" ? "Accepting invitation..." : "Loading invitation..."}
+          </p>
         </CardContent>
       </Card>
     )
@@ -142,7 +193,7 @@ export function AcceptInvitationContent() {
             <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         ) : isSignedIn ? (
-          <Button className="w-full" size="lg" onClick={handleAccept} disabled={isPending}>
+          <Button className="w-full" size="lg" onClick={doAccept} disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

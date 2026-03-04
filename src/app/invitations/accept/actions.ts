@@ -97,13 +97,38 @@ export async function acceptInvitation(code: string): Promise<ActionResult> {
       return { success: false, error: "This invitation has expired" }
     }
 
-    // Get or create the DB user
-    const dbUser = await db.user.findUnique({
+    // Get or create the DB user — handles webhook race condition
+    let dbUser = await db.user.findUnique({
       where: { clerkUserId },
     })
 
     if (!dbUser) {
-      return { success: false, error: "User not found. Please complete your profile setup first." }
+      // Webhook hasn't fired yet — create the user inline from Clerk data
+      const clerk = await clerkClient()
+      const clerkUser = await clerk.users.getUser(clerkUserId)
+      const primaryEmail = clerkUser.emailAddresses?.[0]?.emailAddress
+
+      if (!primaryEmail) {
+        return { success: false, error: "Could not retrieve your email. Please try again." }
+      }
+
+      dbUser = await db.user.upsert({
+        where: { clerkUserId },
+        update: {
+          email: primaryEmail,
+          firstName: clerkUser.firstName || "",
+          lastName: clerkUser.lastName || "",
+          imageUrl: clerkUser.imageUrl,
+          lastLoginAt: new Date(),
+        },
+        create: {
+          clerkUserId,
+          email: primaryEmail,
+          firstName: clerkUser.firstName || "",
+          lastName: clerkUser.lastName || "",
+          imageUrl: clerkUser.imageUrl,
+        },
+      })
     }
 
     // Check if already a member
@@ -128,13 +153,21 @@ export async function acceptInvitation(code: string): Promise<ActionResult> {
     // Map our role to Clerk role
     const clerkRole = invitation.role === "OWNER" ? "org:admin" : "org:member"
 
-    // Add user to Clerk org
-    const clerk = await clerkClient()
-    await clerk.organizations.createOrganizationMembership({
-      organizationId: invitation.organization.clerkOrgId,
-      userId: clerkUserId,
-      role: clerkRole,
-    })
+    // Add user to Clerk org (may already exist if Clerk processed it)
+    const clerkForMembership = await clerkClient()
+    try {
+      await clerkForMembership.organizations.createOrganizationMembership({
+        organizationId: invitation.organization.clerkOrgId,
+        userId: clerkUserId,
+        role: clerkRole,
+      })
+    } catch (membershipErr: unknown) {
+      // Ignore "already a member" errors — Clerk may have already added them
+      const errMsg = membershipErr instanceof Error ? membershipErr.message : String(membershipErr)
+      if (!errMsg.includes("already") && !errMsg.includes("duplicate")) {
+        throw membershipErr
+      }
+    }
 
     // Create OrganizationUser with specified role
     await db.organizationUser.create({
