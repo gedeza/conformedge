@@ -89,6 +89,7 @@ export const NOTIFICATION_TYPES = {
   SUBSCRIPTION_CANCELLED: { label: "Subscription Cancelled", color: "bg-gray-100 text-gray-600" },
   QUOTA_LIMIT_REACHED: { label: "Quota Reached", color: "bg-orange-100 text-orange-800" },
   QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
+  TEAM_INVITATION: { label: "Team Invitation", color: "bg-blue-100 text-blue-800" },
 } as const
 
 export const RECURRENCE_FREQUENCIES = {
@@ -138,6 +139,13 @@ export const CERTIFICATION_STATUSES = {
   PENDING_REVIEW: { label: "Pending Review", color: "bg-amber-100 text-amber-800" },
   APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },
   REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
+} as const
+
+export const INVITATION_STATUSES = {
+  PENDING: { label: "Pending", color: "bg-blue-100 text-blue-800" },
+  ACCEPTED: { label: "Accepted", color: "bg-green-100 text-green-800" },
+  EXPIRED: { label: "Expired", color: "bg-orange-100 text-orange-800" },
+  REVOKED: { label: "Revoked", color: "bg-red-100 text-red-800" },
 } as const
 
 export const INDUSTRIES = [

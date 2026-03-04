@@ -4,12 +4,14 @@ import { getOrgSettings, getMembers, getStandardsList } from "./actions"
 import { getNotificationPreferences, type NotificationPreferenceMap } from "./notification-actions"
 import { getWorkflowTemplates, type WorkflowTemplate } from "./workflow-template-actions"
 import { getShareLinks, type ShareLinkItem } from "./share-link-actions"
+import { getInvitations, type InvitationItem } from "./invitation-actions"
 import { OrgSettingsForm } from "./org-settings-form"
 import { MembersList } from "./members-list"
 import { StandardsList } from "./standards-list"
 import { NotificationPreferences } from "./notification-preferences"
 import { WorkflowTemplates } from "./workflow-templates"
 import { ShareLinks } from "./share-links"
+import { Invitations } from "./invitations"
 import { SettingsHelpPanel } from "./settings-help-panel"
 import { canManageOrg } from "@/lib/permissions"
 import { db } from "@/lib/db"
@@ -21,6 +23,7 @@ export default async function SettingsPage() {
   let notifPrefs: NotificationPreferenceMap | null = null
   let workflowTemplates: WorkflowTemplate[] = []
   let shareLinks: ShareLinkItem[] = []
+  let invitations: InvitationItem[] = []
   let shareDocs: { id: string; title: string }[] = []
   let shareAuditPacks: { id: string; title: string }[] = []
   let shareSubcontractors: { id: string; name: string }[] = []
@@ -28,8 +31,8 @@ export default async function SettingsPage() {
   let authError = false
 
   try {
-    ;[org, members, standards, notifPrefs, workflowTemplates, shareLinks] = await Promise.all([
-      getOrgSettings(), getMembers(), getStandardsList(), getNotificationPreferences(), getWorkflowTemplates(), getShareLinks(),
+    ;[org, members, standards, notifPrefs, workflowTemplates, shareLinks, invitations] = await Promise.all([
+      getOrgSettings(), getMembers(), getStandardsList(), getNotificationPreferences(), getWorkflowTemplates(), getShareLinks(), getInvitations(),
     ])
     const { getAuthContext } = await import("@/lib/auth")
     const ctx = await getAuthContext()
@@ -73,6 +76,19 @@ export default async function SettingsPage() {
               <p className="text-sm text-muted-foreground">No team members found.</p>
             ) : (
               <MembersList members={members} />
+            )}
+          </CardContent>
+        </Card>
+        <Card className="border-border/50 transition-all hover:shadow-md md:col-span-2">
+          <CardHeader>
+            <CardTitle>Team Invitations</CardTitle>
+            <CardDescription>Invite new members to your organization via email</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {authError ? (
+              <p className="text-sm text-muted-foreground">Select an organization to manage invitations.</p>
+            ) : (
+              <Invitations invitations={invitations} canManage={canManageOrg(role)} />
             )}
           </CardContent>
         </Card>

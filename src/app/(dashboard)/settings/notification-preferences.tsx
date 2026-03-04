@@ -59,6 +59,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Quota Warning",
     description: "When you're approaching a plan limit (80%)",
   },
+  TEAM_INVITATION: {
+    label: "Team Invitation",
+    description: "When a team member accepts an invitation to join the organization",
+  },
 }
 
 const TYPES: NotificationType[] = [
@@ -70,6 +74,7 @@ const TYPES: NotificationType[] = [
   "APPROVAL_REQUEST",
   "CERT_UPLOAD",
   "CHECKLIST_DUE",
+  "TEAM_INVITATION",
 ]
 
 interface Props {

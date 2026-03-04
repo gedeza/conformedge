@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { useOrganization } from "@clerk/nextjs"
 import { CheckCircle2, Circle, ArrowRight, X, Rocket, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { INDUSTRIES } from "@/lib/constants"
 import { dismissOnboarding, setOrgIndustry, type OnboardingStep } from "./actions"
+import { sendInvitation } from "@/app/(dashboard)/settings/invitation-actions"
 
 interface OnboardingCardProps {
   steps: OnboardingStep[]
@@ -23,7 +23,7 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
   const [isPending, startTransition] = useTransition()
   const [inviteEmail, setInviteEmail] = useState("")
   const [isInviting, setIsInviting] = useState(false)
-  const { organization } = useOrganization()
+  const [inviteRole, setInviteRole] = useState("VIEWER")
   const progress = (completedCount / totalSteps) * 100
 
   function handleDismiss() {
@@ -50,19 +50,19 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
 
   async function handleInvite() {
     if (!inviteEmail.trim()) return
-    if (!organization) {
-      toast.error("No organization found")
-      return
-    }
 
     setIsInviting(true)
     try {
-      await organization.inviteMember({
-        emailAddress: inviteEmail.trim(),
-        role: "org:member",
+      const result = await sendInvitation({
+        email: inviteEmail.trim(),
+        role: inviteRole as "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
       })
-      toast.success(`Invitation sent to ${inviteEmail}`)
-      setInviteEmail("")
+      if (result.success) {
+        toast.success(`Invitation sent to ${inviteEmail}`)
+        setInviteEmail("")
+      } else {
+        toast.error(result.error ?? "Failed to send invitation")
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to send invitation")
     } finally {
@@ -114,9 +114,20 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
                     handleInvite()
                   }
                 }}
-                className="h-8 text-xs"
+                className="h-8 text-xs flex-1"
                 disabled={isInviting}
               />
+              <Select value={inviteRole} onValueChange={setInviteRole}>
+                <SelectTrigger className="w-24 h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                  <SelectItem value="MANAGER">Manager</SelectItem>
+                  <SelectItem value="AUDITOR">Auditor</SelectItem>
+                  <SelectItem value="VIEWER">Viewer</SelectItem>
+                </SelectContent>
+              </Select>
               <Button
                 size="sm"
                 className="h-8 text-xs shrink-0"

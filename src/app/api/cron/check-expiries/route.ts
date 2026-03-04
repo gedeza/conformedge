@@ -692,7 +692,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 6. Auto-expire share links ──────────────────────
+    // ── 6. Auto-expire invitations ──────────────────────
+    const expiredInvitations = await db.invitation.updateMany({
+      where: {
+        status: "PENDING",
+        expiresAt: { lt: now },
+      },
+      data: { status: "EXPIRED" },
+    })
+
+    // ── 7. Auto-expire share links ──────────────────────
     const expiredLinks = await db.shareLink.updateMany({
       where: {
         status: "ACTIVE",
@@ -701,7 +710,7 @@ export async function GET(request: NextRequest) {
       data: { status: "EXPIRED" },
     })
 
-    // ── 7. Billing lifecycle ──────────────────────────
+    // ── 8. Billing lifecycle ──────────────────────────
     let trialsExpired = 0
     let gracePeriodsCancelled = 0
     let periodsReset = 0
@@ -1100,6 +1109,7 @@ export async function GET(request: NextRequest) {
       capasEscalated: escalated,
       assessmentsNotified,
       checklistsGenerated,
+      invitationsExpired: expiredInvitations.count,
       shareLinksExpired: expiredLinks.count,
       billing: {
         trialsExpired,
