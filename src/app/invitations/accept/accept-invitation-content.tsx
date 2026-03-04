@@ -155,16 +155,16 @@ export function AcceptInvitationContent() {
         ) : (
           <div className="space-y-3">
             <SignUpButton
-              mode="modal"
               forceRedirectUrl={`/invitations/accept?code=${code}`}
+              fallbackRedirectUrl={`/invitations/accept?code=${code}`}
             >
               <Button className="w-full" size="lg">
                 Sign Up &amp; Accept
               </Button>
             </SignUpButton>
             <SignInButton
-              mode="modal"
               forceRedirectUrl={`/invitations/accept?code=${code}`}
+              fallbackRedirectUrl={`/invitations/accept?code=${code}`}
             >
               <Button className="w-full" size="lg" variant="outline">
                 Already have an account? Sign In
