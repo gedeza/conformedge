@@ -22,6 +22,16 @@ export function OrgSwitcher() {
       }}
       afterSelectOrganizationUrl="/dashboard"
       afterCreateOrganizationUrl="/dashboard"
+      organizationProfileProps={{
+        appearance: {
+          elements: {
+            // Hide Clerk's built-in invite button — we use our own invitation system
+            membersPageInviteButton: { display: "none" },
+            invitedMemberEmailAddresses__tableBody: { display: "none" },
+            invitedMemberEmailAddresses__headerTitle: { display: "none" },
+          },
+        },
+      }}
     />
   )
 }
