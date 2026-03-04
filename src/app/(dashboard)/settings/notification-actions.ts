@@ -21,6 +21,7 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   "APPROVAL_REQUEST",
   "CERT_UPLOAD",
   "CHECKLIST_DUE",
+  "TEAM_INVITATION",
 ]
 
 /**
