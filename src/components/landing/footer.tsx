@@ -10,7 +10,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/images/C_Edge_Logo.png" alt="ConformEdge" width={28} height={28} />
+              <Image src="/images/logo-icon.png" alt="ConformEdge" width={28} height={28} />
               <span className="text-lg font-bold tracking-tight">ConformEdge</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">

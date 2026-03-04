@@ -36,7 +36,7 @@ export function Header() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 text-white">
-          <Image src="/images/C_Edge_Logo.png" alt="ConformEdge" width={28} height={28} />
+          <Image src="/images/logo-icon.png" alt="ConformEdge" width={28} height={28} />
           <span className="text-lg font-bold tracking-tight">ConformEdge</span>
         </Link>
 
@@ -75,7 +75,7 @@ export function Header() {
             <SheetTitle className="sr-only">Navigation menu</SheetTitle>
             <div className="flex flex-col gap-6 pt-8">
               <Link href="/" className="flex items-center gap-2 text-white" onClick={() => setOpen(false)}>
-                <Image src="/images/C_Edge_Logo.png" alt="ConformEdge" width={24} height={24} />
+                <Image src="/images/logo-icon.png" alt="ConformEdge" width={24} height={24} />
                 <span className="text-lg font-bold">ConformEdge</span>
               </Link>
               <nav className="flex flex-col gap-4">
