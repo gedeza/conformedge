@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useUser, SignInButton } from "@clerk/nextjs"
+import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { CheckCircle2, XCircle, Mail, Shield, Clock, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -154,17 +154,22 @@ export function AcceptInvitationContent() {
           </Button>
         ) : (
           <div className="space-y-3">
-            <SignInButton
+            <SignUpButton
               mode="modal"
               forceRedirectUrl={`/invitations/accept?code=${code}`}
             >
               <Button className="w-full" size="lg">
-                Sign in to Accept
+                Sign Up &amp; Accept
+              </Button>
+            </SignUpButton>
+            <SignInButton
+              mode="modal"
+              forceRedirectUrl={`/invitations/accept?code=${code}`}
+            >
+              <Button className="w-full" size="lg" variant="outline">
+                Already have an account? Sign In
               </Button>
             </SignInButton>
-            <p className="text-xs text-center text-muted-foreground">
-              Don&apos;t have an account? Sign up first, then return to this link.
-            </p>
           </div>
         )}
       </CardContent>
