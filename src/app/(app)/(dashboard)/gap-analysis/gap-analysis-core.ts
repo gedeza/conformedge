@@ -240,7 +240,10 @@ export async function getGapAnalysisInternal(
     const stdPartial = stdLeafData.filter((d) => d.status === "PARTIAL").length
     const stdGaps = stdLeafData.filter((d) => d.status === "GAP").length
     const stdTotal = leafClauses.length
-    const coveragePercent = stdTotal > 0 ? Math.round((stdCovered / stdTotal) * 100) : 0
+    // Covered = 100%, Partial (doc OR checklist but not both) = 50%
+    const coveragePercent = stdTotal > 0
+      ? Math.round(((stdCovered + stdPartial * 0.5) / stdTotal) * 100)
+      : 0
 
     totalSubClauses += stdTotal
     totalCovered += stdCovered
@@ -261,7 +264,9 @@ export async function getGapAnalysisInternal(
   })
 
   const overallCoveragePercent =
-    totalSubClauses > 0 ? Math.round((totalCovered / totalSubClauses) * 100) : 0
+    totalSubClauses > 0
+      ? Math.round(((totalCovered + totalPartial * 0.5) / totalSubClauses) * 100)
+      : 0
 
   return {
     totalSubClauses,
