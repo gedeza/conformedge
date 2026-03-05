@@ -20,6 +20,102 @@ import { UpcomingChecklistsWidget } from "@/components/dashboard/upcoming-checkl
 import { SubscriptionWidget } from "@/components/dashboard/subscription-widget"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
+const ACTION_LABELS: Record<string, string> = {
+  CREATE: "Created",
+  UPDATE: "Updated",
+  DELETE: "Deleted",
+  STATUS_CHANGE: "Changed status of",
+  AI_CLASSIFY: "AI classified",
+  CROSS_STANDARD_CLASSIFY: "Cross-standard classified",
+  TAG_CLAUSE: "Tagged clause on",
+  UNTAG_CLAUSE: "Untagged clause on",
+  VERIFY_CLASSIFICATION: "Verified classification of",
+  NEW_VERSION: "Created new version of",
+  GENERATE_QUESTIONS: "Generated questions for",
+  CALCULATE_SCORE: "Calculated score for",
+  GENERATE_ITEMS: "Generated items for",
+  TOGGLE_COMPLIANCE: "Updated compliance on",
+  ADD_ITEM: "Added item to",
+  UPDATE_RESPONSE: "Updated response on",
+  RAISE_CAPA: "Raised CAPA from",
+  CREATE_FROM_TEMPLATE: "Created from template",
+  CREATE_TEMPLATE: "Created template",
+  DELETE_TEMPLATE: "Deleted template",
+  UPDATE_TEMPLATE_ITEMS: "Updated template items",
+  ADD_ACTION: "Added action to",
+  ESCALATE: "Escalated",
+  LINK_CLAUSES: "Linked clauses on",
+  UNLINK_CLAUSE: "Unlinked clause from",
+  SUBMIT_FOR_APPROVAL: "Submitted for approval",
+  APPROVAL_STEP_APPROVED: "Approved",
+  APPROVAL_STEP_REJECTED: "Rejected",
+  APPROVAL_STEP_SKIPPED: "Skipped approval step on",
+  APPROVAL_CANCELLED: "Cancelled approval of",
+  CREATE_SHARE_LINK: "Created share link for",
+  REVOKE_SHARE_LINK: "Revoked share link",
+  DELETE_SHARE_LINK: "Deleted share link",
+  VIEW: "Viewed",
+  DOWNLOAD: "Downloaded",
+  DOWNLOAD_PDF: "Downloaded PDF of",
+  UPLOAD: "Uploaded",
+  PORTAL_CERT_UPLOAD: "Uploaded certification via portal",
+  SET_INDUSTRY: "Set industry for",
+  DISMISS_ONBOARDING: "Completed onboarding",
+  UPDATE_SETTINGS: "Updated settings",
+  UPDATE_ROLE: "Updated role for",
+  REMOVE_MEMBER: "Removed member from",
+  SET_DEFAULT: "Set default on",
+  INVITE_SENT: "Sent invitation",
+  INVITE_ACCEPTED: "Invitation accepted",
+  INVITE_REVOKED: "Revoked invitation",
+  ADD_CERTIFICATION: "Added certification to",
+  UPDATE_CERTIFICATION: "Updated certification on",
+  DELETE_CERTIFICATION: "Deleted certification from",
+  RECALCULATE_SCORE: "Recalculated score for",
+  AUTO_GENERATE: "Auto-generated",
+  COMPILE: "Compiled",
+  EMAIL_SENT: "Sent email for",
+  CONFIGURE_RECURRENCE: "Configured recurrence on",
+  TOGGLE_PAUSE: "Toggled pause on",
+}
+
+const ENTITY_LABELS: Record<string, string> = {
+  Document: "document",
+  Assessment: "assessment",
+  Capa: "CAPA",
+  ComplianceChecklist: "checklist",
+  ChecklistTemplate: "checklist template",
+  Project: "project",
+  Organization: "organization",
+  AuditPack: "audit pack",
+  Subcontractor: "subcontractor",
+  SubcontractorCertification: "certification",
+  ShareLink: "share link",
+  ApprovalRequest: "approval",
+  User: "user",
+  OrganizationUser: "member",
+  Invitation: "invitation",
+}
+
+function humanizeActivity(action: string, entityType: string, metadata: Record<string, unknown> | null): string {
+  const verb = ACTION_LABELS[action] || action.toLowerCase().replace(/_/g, " ")
+  const entity = ENTITY_LABELS[entityType] || entityType.toLowerCase()
+  const name = metadata?.title || metadata?.name || ""
+  if (name) return `${verb} ${entity} "${name}"`
+  return `${verb} ${entity}`
+}
+
+function activityDotColor(action: string): string {
+  if (action === "DELETE" || action === "REMOVE_MEMBER") return "bg-red-500"
+  if (action === "CREATE" || action === "UPLOAD" || action === "ADD_CERTIFICATION") return "bg-green-500"
+  if (action.includes("APPROVE")) return "bg-green-500"
+  if (action.includes("REJECT")) return "bg-red-500"
+  if (action === "AI_CLASSIFY" || action === "CROSS_STANDARD_CLASSIFY") return "bg-purple-500"
+  if (action === "STATUS_CHANGE") return "bg-yellow-500"
+  if (action === "COMPILE" || action === "DOWNLOAD_PDF") return "bg-blue-500"
+  return "bg-primary"
+}
+
 export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
   let onboarding: Awaited<ReturnType<typeof getOnboardingStatus>> | null = null
@@ -197,23 +293,24 @@ export default async function DashboardPage() {
               <p className="text-sm text-muted-foreground">No recent activity.</p>
             ) : (
               <div className="space-y-3">
-                {metrics.recentActivity.map((event) => (
-                  <div key={event.id} className="flex items-start gap-3 text-sm">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {event.action} {event.entityType}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {event.user
-                          ? `${event.user.firstName} ${event.user.lastName}`
-                          : "System"}
-                        {" — "}
-                        {format(event.createdAt, "MMM d, h:mm a")}
-                      </p>
+                {metrics.recentActivity.map((event) => {
+                  const label = humanizeActivity(event.action, event.entityType, event.metadata as Record<string, unknown> | null)
+                  return (
+                    <div key={event.id} className="flex items-start gap-3 text-sm">
+                      <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${activityDotColor(event.action)}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{label}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {event.user
+                            ? `${event.user.firstName} ${event.user.lastName}`
+                            : "System"}
+                          {" — "}
+                          {format(event.createdAt, "MMM d, h:mm a")}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </CardContent>
