@@ -63,13 +63,13 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
         </Card>
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Covered</CardTitle>
+            <CardTitle className="text-sm font-medium">Evidence Mapped</CardTitle>
             <div className="flex size-9 items-center justify-center rounded-lg bg-green-600/10">
               <ShieldCheck className="size-4 text-green-600" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{data.covered}</div>
+            <div className="text-2xl font-bold text-green-600">{data.covered + data.partial}</div>
           </CardContent>
         </Card>
         <Card className="border-border/50 transition-all hover:shadow-md">
@@ -104,7 +104,7 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
         <CardContent className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
-              {data.covered} of {data.totalSubClauses} clauses fully covered
+              {data.covered + data.partial} of {data.totalSubClauses} clauses with evidence
             </span>
             <span className="font-semibold">{data.overallCoveragePercent}%</span>
           </div>
