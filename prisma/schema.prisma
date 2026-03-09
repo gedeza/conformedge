@@ -99,6 +99,7 @@ enum NotificationType {
   INCIDENT_REPORTED
   OBJECTIVE_DUE
   MANAGEMENT_REVIEW_DUE
+  PERMIT_EXPIRING
   SUBSCRIPTION_TRIAL_ENDING
   SUBSCRIPTION_PAYMENT_FAILED
   SUBSCRIPTION_CANCELLED
@@ -229,6 +230,33 @@ enum IncidentType {
   PROPERTY_DAMAGE
 }
 
+enum WorkPermitType {
+  HOT_WORK
+  CONFINED_SPACE
+  WORKING_AT_HEIGHTS
+  ELECTRICAL
+  EXCAVATION
+  LIFTING
+  GENERAL
+}
+
+enum WorkPermitStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  ACTIVE
+  SUSPENDED
+  CLOSED
+  CANCELLED
+  EXPIRED
+}
+
+enum ExtensionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // ─────────────────────────────────────────────
 // BILLING ENUMS
 // ─────────────────────────────────────────────
@@ -302,6 +330,7 @@ model Organization {
   incidents                  Incident[]
   objectives                 Objective[]
   managementReviews          ManagementReview[]
+  workPermits                WorkPermit[]
 
   // Billing
   subscription       Subscription?
@@ -353,6 +382,11 @@ model User {
   createdReviews             ManagementReview[]         @relation("ReviewCreator")
   reviewAttendances          ManagementReviewAttendee[]
   reviewActions              ManagementReviewAction[]
+  requestedPermits           WorkPermit[]              @relation("PermitRequester")
+  issuedPermits              WorkPermit[]              @relation("PermitIssuer")
+  checkedPermitItems         WorkPermitChecklist[]     @relation("PermitChecklistChecker")
+  reviewedExtensions         WorkPermitExtension[]     @relation("ExtensionReviewer")
+  requestedExtensions        WorkPermitExtension[]     @relation("ExtensionRequester")
 
   @@map("users")
 }
@@ -394,6 +428,7 @@ model Project {
   auditPacks         AuditPack[]
   checklistTemplates ChecklistTemplate[]   @relation("TemplateDefaultProject")
   incidents          Incident[]
+  workPermits        WorkPermit[]
 
   @@map("projects")
 }
@@ -1022,6 +1057,90 @@ model Incident {
   @@index([organizationId, incidentDate(sort: Desc)], map: "idx_incident_org_date")
   @@index([projectId], map: "idx_incident_project")
   @@map("incidents")
+}
+
+// ─────────────────────────────────────────────
+// WORK PERMITS (PERMIT TO WORK)
+// ─────────────────────────────────────────────
+
+model WorkPermit {
+  id                  String           @id @default(uuid())
+  permitNumber        String?          @unique @map("permit_number")
+  permitType          WorkPermitType   @map("permit_type")
+  status              WorkPermitStatus @default(DRAFT)
+  riskLevel           RiskLevel        @default(MEDIUM) @map("risk_level")
+  title               String
+  location            String
+  description         String           @db.Text
+  hazardsIdentified   String?          @db.Text @map("hazards_identified")
+  precautions         String?          @db.Text
+  ppeRequirements     String?          @db.Text @map("ppe_requirements")
+  emergencyProcedures String?          @db.Text @map("emergency_procedures")
+  validFrom           DateTime         @map("valid_from")
+  validTo             DateTime         @map("valid_to")
+  approvedAt          DateTime?        @map("approved_at")
+  activatedAt         DateTime?        @map("activated_at")
+  closedAt            DateTime?        @map("closed_at")
+  closureNotes        String?          @map("closure_notes")
+  organizationId      String           @map("organization_id")
+  projectId           String?          @map("project_id")
+  requestedById       String           @map("requested_by_id")
+  issuedById          String?          @map("issued_by_id")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project        Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  requestedBy    User                  @relation("PermitRequester", fields: [requestedById], references: [id])
+  issuedBy       User?                 @relation("PermitIssuer", fields: [issuedById], references: [id])
+  checklistItems WorkPermitChecklist[]
+  extensions     WorkPermitExtension[]
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_permit_org_created")
+  @@index([organizationId, status], map: "idx_permit_org_status")
+  @@index([organizationId, permitType], map: "idx_permit_org_type")
+  @@index([organizationId, validTo], map: "idx_permit_org_valid_to")
+  @@index([projectId], map: "idx_permit_project")
+  @@map("work_permits")
+}
+
+model WorkPermitChecklist {
+  id          String    @id @default(uuid())
+  description String
+  isChecked   Boolean   @default(false) @map("is_checked")
+  sortOrder   Int       @map("sort_order")
+  permitId    String    @map("permit_id")
+  checkedById String?   @map("checked_by_id")
+  checkedAt   DateTime? @map("checked_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  permit    WorkPermit @relation(fields: [permitId], references: [id], onDelete: Cascade)
+  checkedBy User?      @relation("PermitChecklistChecker", fields: [checkedById], references: [id])
+
+  @@index([permitId, sortOrder], map: "idx_permit_checklist_order")
+  @@map("work_permit_checklists")
+}
+
+model WorkPermitExtension {
+  id              String          @id @default(uuid())
+  permitId        String          @map("permit_id")
+  originalValidTo DateTime        @map("original_valid_to")
+  newValidTo      DateTime        @map("new_valid_to")
+  reason          String          @db.Text
+  status          ExtensionStatus @default(PENDING)
+  reviewedById    String?         @map("reviewed_by_id")
+  reviewedAt      DateTime?       @map("reviewed_at")
+  reviewNotes     String?         @map("review_notes")
+  requestedById   String          @map("requested_by_id")
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  permit      WorkPermit @relation(fields: [permitId], references: [id], onDelete: Cascade)
+  reviewedBy  User?      @relation("ExtensionReviewer", fields: [reviewedById], references: [id])
+  requestedBy User       @relation("ExtensionRequester", fields: [requestedById], references: [id])
+
+  @@index([permitId, createdAt(sort: Desc)], map: "idx_permit_extension_permit")
+  @@index([status], map: "idx_permit_extension_status")
+  @@map("work_permit_extensions")
 }
 
 // ─────────────────────────────────────────────

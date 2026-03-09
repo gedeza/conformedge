@@ -75,6 +75,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Management Review Due",
     description: "When a management review is scheduled or upcoming",
   },
+  PERMIT_EXPIRING: {
+    label: "Permit Expiring",
+    description: "When a work permit is about to expire or has expired",
+  },
 }
 
 const TYPES: NotificationType[] = [

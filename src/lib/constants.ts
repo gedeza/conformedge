@@ -155,6 +155,34 @@ export const NOTIFICATION_TYPES = {
   QUOTA_LIMIT_REACHED: { label: "Quota Reached", color: "bg-orange-100 text-orange-800" },
   QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
   TEAM_INVITATION: { label: "Team Invitation", color: "bg-blue-100 text-blue-800" },
+  PERMIT_EXPIRING: { label: "Permit Expiring", color: "bg-orange-100 text-orange-800" },
+} as const
+
+export const WORK_PERMIT_STATUSES = {
+  DRAFT:            { label: "Draft",            color: "bg-gray-100 text-gray-800" },
+  PENDING_APPROVAL: { label: "Pending Approval", color: "bg-yellow-100 text-yellow-800" },
+  APPROVED:         { label: "Approved",         color: "bg-blue-100 text-blue-800" },
+  ACTIVE:           { label: "Active",           color: "bg-green-100 text-green-800" },
+  SUSPENDED:        { label: "Suspended",        color: "bg-orange-100 text-orange-800" },
+  CLOSED:           { label: "Closed",           color: "bg-gray-100 text-gray-600" },
+  CANCELLED:        { label: "Cancelled",        color: "bg-red-100 text-red-800" },
+  EXPIRED:          { label: "Expired",          color: "bg-red-200 text-red-900" },
+} as const
+
+export const WORK_PERMIT_TYPES = {
+  HOT_WORK:           { label: "Hot Work",            color: "bg-red-100 text-red-800" },
+  CONFINED_SPACE:     { label: "Confined Space",      color: "bg-purple-100 text-purple-800" },
+  WORKING_AT_HEIGHTS: { label: "Working at Heights",  color: "bg-sky-100 text-sky-800" },
+  ELECTRICAL:         { label: "Electrical",          color: "bg-yellow-100 text-yellow-800" },
+  EXCAVATION:         { label: "Excavation",          color: "bg-amber-100 text-amber-800" },
+  LIFTING:            { label: "Lifting Operations",  color: "bg-indigo-100 text-indigo-800" },
+  GENERAL:            { label: "General",             color: "bg-gray-100 text-gray-800" },
+} as const
+
+export const EXTENSION_STATUSES = {
+  PENDING:  { label: "Pending",  color: "bg-yellow-100 text-yellow-800" },
+  APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },
+  REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
 } as const
 
 export const RECURRENCE_FREQUENCIES = {

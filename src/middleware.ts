@@ -22,6 +22,7 @@ const isProtectedRoute = createRouteMatcher([
   "/ims(.*)",
   "/cross-references(.*)",
   "/management-reviews(.*)",
+  "/permits(.*)",
   "/api/download(.*)",
 ])
 

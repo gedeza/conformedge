@@ -331,6 +331,127 @@ async function main() {
     console.log("  ⏭️  Already exists: " + reviewTitle)
   }
 
+  // ─────────────────────────────────────────────
+  // Work Permits
+  // ─────────────────────────────────────────────
+  console.log("\n🛡️ Seeding work permits...")
+
+  const permit1Title = "Hot Work - Welding on Steel Frame Level 4"
+  const existingPermit1 = await prisma.workPermit.findFirst({
+    where: { title: permit1Title, organizationId: org.id },
+  })
+  if (!existingPermit1) {
+    const permit = await prisma.workPermit.create({
+      data: {
+        title: permit1Title,
+        permitNumber: "PTW-2026-001",
+        permitType: "HOT_WORK",
+        status: "ACTIVE",
+        riskLevel: "HIGH",
+        location: "Building A - Level 4, Steel Structure",
+        description:
+          "MIG welding operations on the main steel frame connections at Level 4. Work involves joining primary beams to column brackets per structural drawing SD-104.",
+        hazardsIdentified:
+          "Fire risk from sparks and molten metal\nBurns from hot surfaces\nFume inhalation\nFalling objects from height\nElectric shock from welding equipment",
+        precautions:
+          "Fire blankets deployed below work area\nFire extinguisher within 5m\nSpotter assigned for duration\nAll combustibles removed from 10m radius",
+        ppeRequirements:
+          "Welding helmet with auto-darkening lens\nFlame-resistant coveralls\nWelding gloves\nSafety boots with metatarsal guards\nFall arrest harness (working at height)",
+        emergencyProcedures:
+          "In case of fire: Activate nearest fire alarm, use extinguisher if safe. Evacuate via stairwell B.\nIn case of injury: Call site first aider (ext 555), do not move injured person.\nAssembly point: Car park A.",
+        validFrom: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
+        validTo: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
+        approvedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
+        requestedById: owner.id,
+        issuedById: owner.id,
+        organizationId: org.id,
+      },
+    })
+    await prisma.workPermitChecklist.createMany({
+      data: [
+        { permitId: permit.id, description: "Area cleared of combustible materials", isChecked: true, sortOrder: 0, checkedById: owner.id, checkedAt: now },
+        { permitId: permit.id, description: "Fire extinguisher positioned within 5m", isChecked: true, sortOrder: 1, checkedById: owner.id, checkedAt: now },
+        { permitId: permit.id, description: "Fire watch spotter assigned", isChecked: true, sortOrder: 2, checkedById: owner.id, checkedAt: now },
+        { permitId: permit.id, description: "Welding equipment inspected and earthed", isChecked: false, sortOrder: 3 },
+        { permitId: permit.id, description: "Gas cylinders secured upright", isChecked: false, sortOrder: 4 },
+      ],
+    })
+    console.log("  ✅ Created: " + permit1Title + " (ACTIVE, 5 checklist items)")
+  } else {
+    console.log("  ⏭️  Already exists: " + permit1Title)
+  }
+
+  const permit2Title = "Confined Space Entry - Storm Water Culvert Inspection"
+  const existingPermit2 = await prisma.workPermit.findFirst({
+    where: { title: permit2Title, organizationId: org.id },
+  })
+  if (!existingPermit2) {
+    await prisma.workPermit.create({
+      data: {
+        title: permit2Title,
+        permitNumber: "PTW-2026-002",
+        permitType: "CONFINED_SPACE",
+        status: "PENDING_APPROVAL",
+        riskLevel: "CRITICAL",
+        location: "Site C - Underground culvert network",
+        description:
+          "Entry into storm water culvert for structural integrity inspection. Two-person team with standby rescue. Atmospheric monitoring required throughout.",
+        hazardsIdentified:
+          "Oxygen deficiency\nToxic gas accumulation (H2S, CO)\nFlash flooding\nStructural collapse\nLimited egress",
+        precautions:
+          "Continuous atmospheric monitoring (4-gas detector)\nStandby rescue team at entry point\nCommunication check every 15 minutes\nWeather forecast confirmed - no rain expected",
+        ppeRequirements:
+          "Self-contained breathing apparatus (SCBA)\nFull body harness with retrieval line\nHard hat with headlamp\nRubber boots\nGas detector (personal)",
+        emergencyProcedures:
+          "DO NOT enter to rescue without SCBA.\nActivate rescue winch at entry point.\nCall emergency services: 10111\nSite emergency number: ext 999",
+        validFrom: new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000),
+        validTo: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+        requestedById: owner.id,
+        organizationId: org.id,
+      },
+    })
+    console.log("  ✅ Created: " + permit2Title + " (PENDING_APPROVAL)")
+  } else {
+    console.log("  ⏭️  Already exists: " + permit2Title)
+  }
+
+  const permit3Title = "Working at Heights - Roof Waterproofing"
+  const existingPermit3 = await prisma.workPermit.findFirst({
+    where: { title: permit3Title, organizationId: org.id },
+  })
+  if (!existingPermit3) {
+    await prisma.workPermit.create({
+      data: {
+        title: permit3Title,
+        permitNumber: "PTW-2026-003",
+        permitType: "WORKING_AT_HEIGHTS",
+        status: "CLOSED",
+        riskLevel: "HIGH",
+        location: "Building B - Rooftop",
+        description:
+          "Application of torch-on waterproofing membrane to Building B flat roof. Work completed over 3 days.",
+        hazardsIdentified:
+          "Fall from height (12m)\nBurns from gas torch\nSlip hazard on membrane surface",
+        precautions:
+          "Edge protection barriers installed on all sides\nSafety nets below work area\nNon-slip footwear required\nWork suspended if wind > 40 km/h",
+        ppeRequirements: "Full body harness\nHard hat\nSafety boots\nHeat-resistant gloves",
+        validFrom: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
+        validTo: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+        approvedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
+        closedAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
+        closureNotes: "All waterproofing work completed successfully. Area cleaned and barriers removed. No incidents reported.",
+        requestedById: owner.id,
+        issuedById: owner.id,
+        organizationId: org.id,
+      },
+    })
+    console.log("  ✅ Created: " + permit3Title + " (CLOSED)")
+  } else {
+    console.log("  ⏭️  Already exists: " + permit3Title)
+  }
+
   console.log("\n✅ Demo seed complete!")
 }
 

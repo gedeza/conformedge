@@ -1281,6 +1281,126 @@ export async function GET(request: NextRequest) {
       captureError(err, { source: "cron.billingLifecycle" })
     }
 
+    // ── 10. Work Permit auto-expiry & expiry warnings ──────
+    let permitsExpired = 0
+    let permitsWarned = 0
+    try {
+      // Auto-expire ACTIVE permits past validTo
+      const expiredPermits = await db.workPermit.findMany({
+        where: {
+          status: "ACTIVE",
+          validTo: { lt: now },
+        },
+        select: { id: true, title: true, organizationId: true, requestedById: true },
+      })
+
+      for (const permit of expiredPermits) {
+        await db.workPermit.update({
+          where: { id: permit.id },
+          data: { status: "EXPIRED", closedAt: now },
+        })
+        permitsExpired++
+
+        // Notify requester
+        const userIds = [permit.requestedById]
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: permit.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN", "MANAGER"] },
+          },
+          select: { userId: true },
+        })
+        for (const m of orgManagers) {
+          if (!userIds.includes(m.userId)) userIds.push(m.userId)
+        }
+
+        const title = `Work permit expired: "${permit.title}"`
+        const message = `Work permit "${permit.title}" has expired and been automatically closed.`
+
+        const enabledIds = await filterEnabledUsers(userIds, "PERMIT_EXPIRING", "IN_APP")
+        const emailIds = await filterEnabledUsers(userIds, "PERMIT_EXPIRING", "EMAIL")
+
+        for (const userId of enabledIds) {
+          await db.notification.create({
+            data: {
+              title,
+              message,
+              type: "PERMIT_EXPIRING",
+              userId,
+              organizationId: permit.organizationId,
+            },
+          })
+          created++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({ userId, title, message, type: "PERMIT_EXPIRING" })
+        }
+      }
+
+      // Warn on ACTIVE permits expiring within 24h
+      const in24h = addDays(now, 1)
+      const expiringPermits = await db.workPermit.findMany({
+        where: {
+          status: "ACTIVE",
+          validTo: { gte: now, lte: in24h },
+        },
+        select: { id: true, title: true, organizationId: true, requestedById: true },
+      })
+
+      for (const permit of expiringPermits) {
+        const userIds = [permit.requestedById]
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: permit.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN", "MANAGER"] },
+          },
+          select: { userId: true },
+        })
+        for (const m of orgManagers) {
+          if (!userIds.includes(m.userId)) userIds.push(m.userId)
+        }
+
+        const title = `Work permit expiring soon: "${permit.title}"`
+        const message = `Work permit "${permit.title}" will expire within the next 24 hours.`
+
+        const enabledIds = await filterEnabledUsers(userIds, "PERMIT_EXPIRING", "IN_APP")
+
+        for (const userId of enabledIds) {
+          const existing = await db.notification.findFirst({
+            where: {
+              userId,
+              organizationId: permit.organizationId,
+              type: "PERMIT_EXPIRING",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+          if (existing) continue
+
+          await db.notification.create({
+            data: {
+              title,
+              message,
+              type: "PERMIT_EXPIRING",
+              userId,
+              organizationId: permit.organizationId,
+            },
+          })
+          created++
+          permitsWarned++
+        }
+
+        const emailIds = await filterEnabledUsers(userIds, "PERMIT_EXPIRING", "EMAIL")
+        for (const userId of emailIds) {
+          sendNotificationEmail({ userId, title, message, type: "PERMIT_EXPIRING" })
+        }
+      }
+    } catch (err) {
+      captureError(err, { source: "cron.workPermitExpiry" })
+    }
+
     Sentry.captureCheckIn({
       checkInId,
       monitorSlug: "check-expiries",
@@ -1295,6 +1415,8 @@ export async function GET(request: NextRequest) {
       incidentsNotified,
       objectivesNotified,
       checklistsGenerated,
+      permitsExpired,
+      permitsWarned,
       invitationsExpired: expiredInvitations.count,
       shareLinksExpired: expiredLinks.count,
       billing: {

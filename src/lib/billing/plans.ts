@@ -24,6 +24,7 @@ export interface FeatureGates {
   customStandards: boolean
   incidentManagement: boolean
   objectivesTracking: boolean
+  permitToWork: boolean
   apiAccess: boolean
   sso: boolean
 }
@@ -62,6 +63,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       customStandards: false,
       incidentManagement: false,
       objectivesTracking: false,
+      permitToWork: false,
       apiAccess: false,
       sso: false,
     },
@@ -90,6 +92,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       customStandards: false,
       incidentManagement: true,
       objectivesTracking: true,
+      permitToWork: true,
       apiAccess: false,
       sso: false,
     },
@@ -118,6 +121,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       customStandards: true,
       incidentManagement: true,
       objectivesTracking: true,
+      permitToWork: true,
       apiAccess: false,
       sso: false,
     },
@@ -146,6 +150,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       customStandards: true,
       incidentManagement: true,
       objectivesTracking: true,
+      permitToWork: true,
       apiAccess: true,
       sso: true,
     },

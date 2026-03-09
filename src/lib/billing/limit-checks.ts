@@ -197,6 +197,7 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     customStandards: "Custom Standards",
     incidentManagement: "Incident & Near-Miss Management",
     objectivesTracking: "Objectives & KPI Tracking",
+    permitToWork: "Permit to Work",
     apiAccess: "API Access",
     sso: "Single Sign-On",
   }

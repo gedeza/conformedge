@@ -21,6 +21,9 @@ import {
   OBJECTIVE_STATUSES,
   MANAGEMENT_REVIEW_STATUSES,
   REVIEW_ACTION_STATUSES,
+  WORK_PERMIT_STATUSES,
+  WORK_PERMIT_TYPES,
+  EXTENSION_STATUSES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -46,6 +49,9 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   objective: OBJECTIVE_STATUSES,
   managementReview: MANAGEMENT_REVIEW_STATUSES,
   reviewAction: REVIEW_ACTION_STATUSES,
+  permit: WORK_PERMIT_STATUSES,
+  permitType: WORK_PERMIT_TYPES,
+  extension: EXTENSION_STATUSES,
 }
 
 interface StatusBadgeProps {

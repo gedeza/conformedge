@@ -21,6 +21,8 @@ import { SubscriptionWidget } from "@/components/dashboard/subscription-widget"
 import { OpenIncidentsWidget } from "@/components/dashboard/open-incidents-widget"
 import { ObjectivesWidget } from "@/components/dashboard/objectives-widget"
 import { ManagementReviewsWidget } from "@/components/dashboard/management-reviews-widget"
+import { WorkPermitsWidget } from "@/components/dashboard/work-permits-widget"
+import { getActivePermitsSummary } from "../permits/actions"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 const ACTION_LABELS: Record<string, string> = {
@@ -101,6 +103,8 @@ const ENTITY_LABELS: Record<string, string> = {
   Incident: "incident",
   Objective: "objective",
   ManagementReview: "management review",
+  WorkPermit: "work permit",
+  WorkPermitExtension: "permit extension",
 }
 
 function humanizeActivity(action: string, entityType: string, metadata: Record<string, unknown> | null): string {
@@ -126,12 +130,14 @@ export default async function DashboardPage() {
   let metrics: Awaited<ReturnType<typeof getDashboardMetrics>> | null = null
   let onboarding: Awaited<ReturnType<typeof getOnboardingStatus>> | null = null
   let classificationStats: Awaited<ReturnType<typeof getClassificationStats>> | null = null
+  let permitsSummary: Awaited<ReturnType<typeof getActivePermitsSummary>> = null
 
   try {
-    ;[metrics, onboarding, classificationStats] = await Promise.all([
+    ;[metrics, onboarding, classificationStats, permitsSummary] = await Promise.all([
       getDashboardMetrics(),
       getOnboardingStatus(),
       getClassificationStats(),
+      getActivePermitsSummary(),
     ])
   } catch {
     // Auth error — show empty state
@@ -295,6 +301,8 @@ export default async function DashboardPage() {
         <ObjectivesWidget />
 
         <ManagementReviewsWidget />
+
+        <WorkPermitsWidget data={permitsSummary} />
 
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>

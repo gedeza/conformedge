@@ -24,6 +24,7 @@ import {
   Siren,
   Target,
   ClipboardList,
+  ShieldCheck,
 } from "lucide-react"
 
 import {
@@ -50,6 +51,7 @@ const coreItems = [
   { title: "Incidents", href: "/incidents", icon: Siren },
   { title: "Objectives", href: "/objectives", icon: Target },
   { title: "Mgmt Reviews", href: "/management-reviews", icon: ClipboardList },
+  { title: "Work Permits", href: "/permits", icon: ShieldCheck },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
   { title: "Subcontractors", href: "/subcontractors", icon: Building2 },
 ]

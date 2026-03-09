@@ -90,6 +90,11 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Management Review",
     hint: "A management review is scheduled or upcoming.",
   },
+  PERMIT_EXPIRING: {
+    color: "#ea580c",
+    label: "Permit Expiring",
+    hint: "Review and renew the work permit or close out the job before it expires.",
+  },
 }
 
 function EmailLayout({ children }: { children: React.ReactNode }) {
