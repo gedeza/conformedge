@@ -22,6 +22,8 @@ export interface FeatureGates {
   auditPackGeneration: boolean
   approvalWorkflows: boolean
   customStandards: boolean
+  incidentManagement: boolean
+  objectivesTracking: boolean
   apiAccess: boolean
   sso: boolean
 }
@@ -58,6 +60,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       auditPackGeneration: false,
       approvalWorkflows: false,
       customStandards: false,
+      incidentManagement: false,
+      objectivesTracking: false,
       apiAccess: false,
       sso: false,
     },
@@ -84,6 +88,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       auditPackGeneration: false,
       approvalWorkflows: false,
       customStandards: false,
+      incidentManagement: true,
+      objectivesTracking: true,
       apiAccess: false,
       sso: false,
     },
@@ -110,6 +116,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       auditPackGeneration: true,
       approvalWorkflows: true,
       customStandards: true,
+      incidentManagement: true,
+      objectivesTracking: true,
       apiAccess: false,
       sso: false,
     },
@@ -136,6 +144,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       auditPackGeneration: true,
       approvalWorkflows: true,
       customStandards: true,
+      incidentManagement: true,
+      objectivesTracking: true,
       apiAccess: true,
       sso: true,
     },

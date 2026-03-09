@@ -39,6 +39,14 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Checklist Due",
     description: "When a recurring checklist is auto-generated and ready for completion",
   },
+  INCIDENT_REPORTED: {
+    label: "Incident Reported",
+    description: "When an incident or near-miss is reported in your organization",
+  },
+  OBJECTIVE_DUE: {
+    label: "Objective Due",
+    description: "When an objective is approaching its due date or needs a measurement",
+  },
   SUBSCRIPTION_TRIAL_ENDING: {
     label: "Trial Ending",
     description: "When your free trial is about to expire",
@@ -62,6 +70,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
   TEAM_INVITATION: {
     label: "Team Invitation",
     description: "When a team member accepts an invitation to join the organization",
+  },
+  MANAGEMENT_REVIEW_DUE: {
+    label: "Management Review Due",
+    description: "When a management review is scheduled or upcoming",
   },
 }
 

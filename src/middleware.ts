@@ -7,6 +7,8 @@ const isProtectedRoute = createRouteMatcher([
   "/documents(.*)",
   "/assessments(.*)",
   "/capas(.*)",
+  "/incidents(.*)",
+  "/objectives(.*)",
   "/checklists(.*)",
   "/subcontractors(.*)",
   "/audit-packs(.*)",
@@ -19,6 +21,7 @@ const isProtectedRoute = createRouteMatcher([
   "/calendar(.*)",
   "/ims(.*)",
   "/cross-references(.*)",
+  "/management-reviews(.*)",
   "/api/download(.*)",
 ])
 

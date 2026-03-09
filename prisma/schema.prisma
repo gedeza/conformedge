@@ -96,6 +96,9 @@ enum NotificationType {
   APPROVAL_REQUEST
   CERT_UPLOAD
   CHECKLIST_DUE
+  INCIDENT_REPORTED
+  OBJECTIVE_DUE
+  MANAGEMENT_REVIEW_DUE
   SUBSCRIPTION_TRIAL_ENDING
   SUBSCRIPTION_PAYMENT_FAILED
   SUBSCRIPTION_CANCELLED
@@ -161,6 +164,69 @@ enum InvitationStatus {
   ACCEPTED
   EXPIRED
   REVOKED
+}
+
+enum ManagementReviewStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum AgendaItemType {
+  AUDIT_RESULTS
+  CUSTOMER_FEEDBACK
+  PROCESS_PERFORMANCE
+  CAPA_STATUS
+  PREVIOUS_ACTIONS
+  CHANGES_CONTEXT
+  IMPROVEMENT_OPPORTUNITIES
+  RESOURCE_NEEDS
+  RISK_OPPORTUNITIES
+  OBJECTIVES_PERFORMANCE
+  INCIDENT_TRENDS
+  OTHER
+}
+
+enum ReviewActionStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ObjectiveStatus {
+  DRAFT
+  ACTIVE
+  ON_TRACK
+  AT_RISK
+  BEHIND
+  ACHIEVED
+  CANCELLED
+}
+
+enum MeasurementFrequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum IncidentStatus {
+  REPORTED
+  INVESTIGATING
+  CORRECTIVE_ACTION
+  CLOSED
+}
+
+enum IncidentType {
+  NEAR_MISS
+  FIRST_AID
+  MEDICAL
+  LOST_TIME
+  FATALITY
+  ENVIRONMENTAL
+  PROPERTY_DAMAGE
 }
 
 // ─────────────────────────────────────────────
@@ -233,6 +299,9 @@ model Organization {
   approvalRequests           ApprovalRequest[]
   shareLinks                 ShareLink[]
   invitations                Invitation[]
+  incidents                  Incident[]
+  objectives                 Objective[]
+  managementReviews          ManagementReview[]
 
   // Billing
   subscription       Subscription?
@@ -276,6 +345,14 @@ model User {
   createdShareLinks          ShareLink[]                @relation("ShareLinkCreator")
   defaultAssigneeTemplates   ChecklistTemplate[]        @relation("TemplateDefaultAssignee")
   sentInvitations            Invitation[]               @relation("InvitationInviter")
+  reportedIncidents          Incident[]                 @relation("IncidentReporter")
+  investigatedIncidents      Incident[]                 @relation("IncidentInvestigator")
+  ownedObjectives            Objective[]                @relation("ObjectiveOwner")
+  recordedMeasurements       ObjectiveMeasurement[]     @relation("MeasurementRecorder")
+  facilitatedReviews         ManagementReview[]         @relation("ReviewFacilitator")
+  createdReviews             ManagementReview[]         @relation("ReviewCreator")
+  reviewAttendances          ManagementReviewAttendee[]
+  reviewActions              ManagementReviewAction[]
 
   @@map("users")
 }
@@ -316,6 +393,7 @@ model Project {
   checklists         ComplianceChecklist[]
   auditPacks         AuditPack[]
   checklistTemplates ChecklistTemplate[]   @relation("TemplateDefaultProject")
+  incidents          Incident[]
 
   @@map("projects")
 }
@@ -334,7 +412,9 @@ model Standard {
   clauses     StandardClause[]
   assessments Assessment[]
   checklists  ComplianceChecklist[]
-  templates   ChecklistTemplate[]
+  templates          ChecklistTemplate[]
+  objectives         Objective[]
+  managementReviews  ManagementReviewStandard[]
 
   @@map("standards")
 }
@@ -358,6 +438,7 @@ model StandardClause {
   crossReferencesAsSource  ClauseCrossReference[]   @relation("CrossRefSource")
   crossReferencesAsTarget  ClauseCrossReference[]   @relation("CrossRefTarget")
   capas                    CapaStandardClause[]
+  objectives               Objective[]
 
   @@map("standard_clauses")
 }
@@ -500,6 +581,7 @@ model Capa {
   capaActions      CapaAction[]
   linkedItems      ChecklistItem[]
   standardClauses  CapaStandardClause[]
+  incidents        Incident[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_capa_org_created")
   @@index([organizationId, status], map: "idx_capa_org_status")
@@ -900,6 +982,49 @@ model Invitation {
 }
 
 // ─────────────────────────────────────────────
+// INCIDENT & NEAR-MISS MANAGEMENT
+// ─────────────────────────────────────────────
+
+model Incident {
+  id               String         @id @default(uuid())
+  title            String
+  description      String?
+  incidentType     IncidentType   @map("incident_type")
+  status           IncidentStatus @default(REPORTED) @map("status")
+  severity         RiskLevel      @default(MEDIUM)
+  incidentDate     DateTime       @map("incident_date")
+  location         String?
+  injuredParty     String?        @map("injured_party")
+  witnesses        String?
+  immediateAction  String?        @map("immediate_action")
+  rootCause        String?        @map("root_cause")
+  rootCauseData    Json?          @map("root_cause_data")
+  investigationDue DateTime?      @map("investigation_due")
+  closedDate       DateTime?      @map("closed_date")
+  organizationId   String         @map("organization_id")
+  projectId        String?        @map("project_id")
+  reportedById     String         @map("reported_by_id")
+  investigatorId   String?        @map("investigator_id")
+  capaId           String?        @map("capa_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  reportedBy   User         @relation("IncidentReporter", fields: [reportedById], references: [id])
+  investigator User?        @relation("IncidentInvestigator", fields: [investigatorId], references: [id])
+  capa         Capa?        @relation(fields: [capaId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_incident_org_created")
+  @@index([organizationId, status], map: "idx_incident_org_status")
+  @@index([organizationId, incidentType], map: "idx_incident_org_type")
+  @@index([organizationId, incidentDate(sort: Desc)], map: "idx_incident_org_date")
+  @@index([projectId], map: "idx_incident_project")
+  @@map("incidents")
+}
+
+// ─────────────────────────────────────────────
 // BILLING & SUBSCRIPTIONS
 // ─────────────────────────────────────────────
 
@@ -1006,4 +1131,143 @@ model UsageRecord {
   @@unique([organizationId, periodStart])
   @@index([organizationId, periodStart(sort: Desc)], map: "idx_usage_record_org_period")
   @@map("usage_records")
+}
+
+// ─────────────────────────────────────────────
+// OBJECTIVES & KPI TRACKING
+// ─────────────────────────────────────────────
+
+model Objective {
+  id                   String               @id @default(uuid())
+  title                String
+  description          String?
+  status               ObjectiveStatus      @default(DRAFT)
+  targetValue          Float                @map("target_value")
+  currentValue         Float                @default(0) @map("current_value")
+  unit                 String?
+  measurementFrequency MeasurementFrequency @map("measurement_frequency")
+  dueDate              DateTime?            @map("due_date")
+  organizationId       String               @map("organization_id")
+  standardId           String?              @map("standard_id")
+  standardClauseId     String?              @map("standard_clause_id")
+  ownerId              String               @map("owner_id")
+  createdAt            DateTime             @default(now()) @map("created_at")
+  updatedAt            DateTime             @updatedAt @map("updated_at")
+
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  standard       Standard?             @relation(fields: [standardId], references: [id], onDelete: SetNull)
+  standardClause StandardClause?       @relation(fields: [standardClauseId], references: [id], onDelete: SetNull)
+  owner          User                  @relation("ObjectiveOwner", fields: [ownerId], references: [id])
+  measurements   ObjectiveMeasurement[]
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_objective_org_created")
+  @@index([organizationId, status], map: "idx_objective_org_status")
+  @@index([standardClauseId], map: "idx_objective_clause")
+  @@map("objectives")
+}
+
+model ObjectiveMeasurement {
+  id           String   @id @default(uuid())
+  value        Float
+  notes        String?
+  objectiveId  String   @map("objective_id")
+  recordedById String   @map("recorded_by_id")
+  measuredAt   DateTime @default(now()) @map("measured_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  objective  Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  recordedBy User      @relation("MeasurementRecorder", fields: [recordedById], references: [id])
+
+  @@index([objectiveId, measuredAt(sort: Desc)], map: "idx_measurement_obj_date")
+  @@map("objective_measurements")
+}
+
+// ─────────────────────────────────────────────
+// MANAGEMENT REVIEWS
+// ─────────────────────────────────────────────
+
+model ManagementReview {
+  id             String                     @id @default(uuid())
+  title          String
+  reviewDate     DateTime                   @map("review_date")
+  location       String?
+  status         ManagementReviewStatus     @default(PLANNED)
+  meetingMinutes String?                    @map("meeting_minutes")
+  nextReviewDate DateTime?                  @map("next_review_date")
+  organizationId String                     @map("organization_id")
+  facilitatorId  String                     @map("facilitator_id")
+  createdById    String                     @map("created_by_id")
+  createdAt      DateTime                   @default(now()) @map("created_at")
+  updatedAt      DateTime                   @updatedAt @map("updated_at")
+
+  organization Organization               @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  facilitator  User                        @relation("ReviewFacilitator", fields: [facilitatorId], references: [id])
+  createdBy    User                        @relation("ReviewCreator", fields: [createdById], references: [id])
+  standards    ManagementReviewStandard[]
+  attendees    ManagementReviewAttendee[]
+  agendaItems  ManagementReviewAgendaItem[]
+  actions      ManagementReviewAction[]
+
+  @@index([organizationId, reviewDate(sort: Desc)], map: "idx_mgmt_review_org_date")
+  @@index([organizationId, status], map: "idx_mgmt_review_org_status")
+  @@map("management_reviews")
+}
+
+model ManagementReviewStandard {
+  id         String   @id @default(uuid())
+  reviewId   String   @map("review_id")
+  standardId String   @map("standard_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  review   ManagementReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  standard Standard         @relation(fields: [standardId], references: [id])
+
+  @@unique([reviewId, standardId])
+  @@map("management_review_standards")
+}
+
+model ManagementReviewAttendee {
+  id        String   @id @default(uuid())
+  reviewId  String   @map("review_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  review ManagementReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  user   User             @relation(fields: [userId], references: [id])
+
+  @@unique([reviewId, userId])
+  @@map("management_review_attendees")
+}
+
+model ManagementReviewAgendaItem {
+  id        String         @id @default(uuid())
+  reviewId  String         @map("review_id")
+  type      AgendaItemType
+  title     String
+  notes     String?
+  sortOrder Int            @map("sort_order")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  review ManagementReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@map("management_review_agenda_items")
+}
+
+model ManagementReviewAction {
+  id          String             @id @default(uuid())
+  reviewId    String             @map("review_id")
+  description String
+  status      ReviewActionStatus @default(OPEN)
+  dueDate     DateTime?          @map("due_date")
+  completedAt DateTime?          @map("completed_at")
+  assigneeId  String?            @map("assignee_id")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  review   ManagementReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  assignee User?            @relation(fields: [assigneeId], references: [id])
+
+  @@index([reviewId, status], map: "idx_review_action_status")
+  @@map("management_review_actions")
 }

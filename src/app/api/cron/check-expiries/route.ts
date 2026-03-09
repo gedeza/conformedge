@@ -566,7 +566,191 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 5. Recurring checklist generation ──────────────────
+    // ── 5. Overdue incident investigations ──────────────────
+    let incidentsNotified = 0
+
+    const overdueIncidents = await db.incident.findMany({
+      where: {
+        status: { in: ["REPORTED", "INVESTIGATING"] },
+        investigationDue: { lt: now },
+      },
+      select: {
+        id: true,
+        title: true,
+        investigationDue: true,
+        investigatorId: true,
+        reportedById: true,
+        organizationId: true,
+      },
+    })
+
+    for (const incident of overdueIncidents) {
+      const targetUserId = incident.investigatorId ?? incident.reportedById
+
+      const existing = await db.notification.findFirst({
+        where: {
+          userId: targetUserId,
+          organizationId: incident.organizationId,
+          type: "INCIDENT_REPORTED",
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+      if (existing) continue
+
+      const incTitle = "Investigation overdue"
+      const incMsg = `Investigation for incident "${incident.title}" is past its due date. Please take action.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(targetUserId, "INCIDENT_REPORTED", "IN_APP"),
+        isNotificationEnabled(targetUserId, "INCIDENT_REPORTED", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: incTitle,
+            message: incMsg,
+            type: "INCIDENT_REPORTED",
+            userId: targetUserId,
+            organizationId: incident.organizationId,
+          },
+        })
+        created++
+        incidentsNotified++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: targetUserId,
+          title: incTitle,
+          message: incMsg,
+          type: "INCIDENT_REPORTED",
+        })
+      }
+    }
+
+    // ── 6. Objective due / measurement overdue notifications ──
+    let objectivesNotified = 0
+
+    // 6a. Objectives due within 7 days
+    const soonObjectives = await db.objective.findMany({
+      where: {
+        status: { notIn: ["DRAFT", "CANCELLED"] },
+        dueDate: { gt: now, lte: in7Days },
+      },
+      select: {
+        id: true,
+        title: true,
+        ownerId: true,
+        organizationId: true,
+      },
+    })
+
+    for (const obj of soonObjectives) {
+      const existing = await db.notification.findFirst({
+        where: {
+          userId: obj.ownerId,
+          organizationId: obj.organizationId,
+          type: "OBJECTIVE_DUE",
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+      if (existing) continue
+
+      const objTitle = "Objective due soon"
+      const objMsg = `"${obj.title}" is due within 7 days. Review your progress.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(obj.ownerId, "OBJECTIVE_DUE", "IN_APP"),
+        isNotificationEnabled(obj.ownerId, "OBJECTIVE_DUE", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: objTitle,
+            message: objMsg,
+            type: "OBJECTIVE_DUE",
+            userId: obj.ownerId,
+            organizationId: obj.organizationId,
+          },
+        })
+        created++
+        objectivesNotified++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: obj.ownerId,
+          title: objTitle,
+          message: objMsg,
+          type: "OBJECTIVE_DUE",
+        })
+      }
+    }
+
+    // 6b. Overdue objectives (past due date, not achieved/cancelled)
+    const overdueObjectives = await db.objective.findMany({
+      where: {
+        status: { notIn: ["DRAFT", "CANCELLED"] },
+        dueDate: { lt: now },
+      },
+      select: {
+        id: true,
+        title: true,
+        ownerId: true,
+        organizationId: true,
+        currentValue: true,
+        targetValue: true,
+      },
+    })
+
+    for (const obj of overdueObjectives) {
+      if (obj.currentValue >= obj.targetValue) continue
+
+      const existing = await db.notification.findFirst({
+        where: {
+          userId: obj.ownerId,
+          organizationId: obj.organizationId,
+          type: "OBJECTIVE_DUE",
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+      if (existing) continue
+
+      const objTitle = "Objective overdue"
+      const objMsg = `"${obj.title}" is past its due date and has not been achieved.`
+
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(obj.ownerId, "OBJECTIVE_DUE", "IN_APP"),
+        isNotificationEnabled(obj.ownerId, "OBJECTIVE_DUE", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: objTitle,
+            message: objMsg,
+            type: "OBJECTIVE_DUE",
+            userId: obj.ownerId,
+            organizationId: obj.organizationId,
+          },
+        })
+        created++
+        objectivesNotified++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: obj.ownerId,
+          title: objTitle,
+          message: objMsg,
+          type: "OBJECTIVE_DUE",
+        })
+      }
+    }
+
+    // ── 7. Recurring checklist generation ──────────────────
     let checklistsGenerated = 0
 
     const dueTemplates = await db.checklistTemplate.findMany({
@@ -692,7 +876,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 6. Auto-expire invitations ──────────────────────
+    // ── 8. Auto-expire invitations ──────────────────────
     const expiredInvitations = await db.invitation.updateMany({
       where: {
         status: "PENDING",
@@ -701,7 +885,7 @@ export async function GET(request: NextRequest) {
       data: { status: "EXPIRED" },
     })
 
-    // ── 7. Auto-expire share links ──────────────────────
+    // ── 9. Auto-expire share links ──────────────────────
     const expiredLinks = await db.shareLink.updateMany({
       where: {
         status: "ACTIVE",
@@ -710,14 +894,14 @@ export async function GET(request: NextRequest) {
       data: { status: "EXPIRED" },
     })
 
-    // ── 8. Billing lifecycle ──────────────────────────
+    // ── 10. Billing lifecycle ──────────────────────────
     let trialsExpired = 0
     let gracePeriodsCancelled = 0
     let periodsReset = 0
     let billingNotifications = 0
 
     try {
-      // 7a. Expire trials: TRIALING → CANCELLED when trialEndsAt < now
+      // 10a. Expire trials: TRIALING → CANCELLED when trialEndsAt < now
       const expiredTrials = await db.subscription.findMany({
         where: {
           status: "TRIALING",
@@ -776,7 +960,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // 7b. Expire grace periods: PAST_DUE → CANCELLED when gracePeriodEndsAt < now
+      // 10b. Expire grace periods: PAST_DUE → CANCELLED when gracePeriodEndsAt < now
       const expiredGrace = await db.subscription.findMany({
         where: {
           status: "PAST_DUE",
@@ -834,7 +1018,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // 7c. Period reset: create new UsageRecord when currentPeriodEnd < now
+      // 10c. Period reset: create new UsageRecord when currentPeriodEnd < now
       const expiredPeriods = await db.subscription.findMany({
         where: {
           status: { in: ["ACTIVE"] },
@@ -867,7 +1051,7 @@ export async function GET(request: NextRequest) {
         periodsReset++
       }
 
-      // 7d. Trial ending notifications: 3 days before trialEndsAt
+      // 10d. Trial ending notifications: 3 days before trialEndsAt
       const in3Days = addDays(now, 3)
       const trialEndingSoon = await db.subscription.findMany({
         where: {
@@ -934,7 +1118,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // 7e. Quota warning notifications: at 80% AI usage
+      // 10e. Quota warning notifications: at 80% AI usage
       const activeSubscriptions = await db.subscription.findMany({
         where: {
           status: { in: ["TRIALING", "ACTIVE"] },
@@ -1020,7 +1204,7 @@ export async function GET(request: NextRequest) {
           })
         }
       }
-      // 7f. Dunning reminders: PAST_DUE subs with grace period ending in 3 or 1 days
+      // 10f. Dunning reminders: PAST_DUE subs with grace period ending in 3 or 1 days
       const pastDueSubs = await db.subscription.findMany({
         where: {
           status: "PAST_DUE",
@@ -1108,6 +1292,8 @@ export async function GET(request: NextRequest) {
       notificationsCreated: created,
       capasEscalated: escalated,
       assessmentsNotified,
+      incidentsNotified,
+      objectivesNotified,
       checklistsGenerated,
       invitationsExpired: expiredInvitations.count,
       shareLinksExpired: expiredLinks.count,

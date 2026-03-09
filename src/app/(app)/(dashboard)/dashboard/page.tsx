@@ -18,6 +18,9 @@ import { PendingReviewsWidget } from "@/components/dashboard/pending-reviews-wid
 import { UpcomingAssessmentsWidget } from "@/components/dashboard/upcoming-assessments-widget"
 import { UpcomingChecklistsWidget } from "@/components/dashboard/upcoming-checklists-widget"
 import { SubscriptionWidget } from "@/components/dashboard/subscription-widget"
+import { OpenIncidentsWidget } from "@/components/dashboard/open-incidents-widget"
+import { ObjectivesWidget } from "@/components/dashboard/objectives-widget"
+import { ManagementReviewsWidget } from "@/components/dashboard/management-reviews-widget"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 const ACTION_LABELS: Record<string, string> = {
@@ -95,6 +98,9 @@ const ENTITY_LABELS: Record<string, string> = {
   User: "user",
   OrganizationUser: "member",
   Invitation: "invitation",
+  Incident: "incident",
+  Objective: "objective",
+  ManagementReview: "management review",
 }
 
 function humanizeActivity(action: string, entityType: string, metadata: Record<string, unknown> | null): string {
@@ -283,6 +289,12 @@ export default async function DashboardPage() {
         <UpcomingAssessmentsWidget />
 
         <UpcomingChecklistsWidget />
+
+        <OpenIncidentsWidget />
+
+        <ObjectivesWidget />
+
+        <ManagementReviewsWidget />
 
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>

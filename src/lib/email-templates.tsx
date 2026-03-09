@@ -45,6 +45,16 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Checklist Due",
     hint: "Complete the checklist before the next cycle.",
   },
+  INCIDENT_REPORTED: {
+    color: "#dc2626",
+    label: "Incident Reported",
+    hint: "Investigate the incident and take corrective action promptly.",
+  },
+  OBJECTIVE_DUE: {
+    color: "#4f46e5",
+    label: "Objective Due",
+    hint: "Review your objective progress and record a measurement if needed.",
+  },
   SUBSCRIPTION_TRIAL_ENDING: {
     color: "#2563eb",
     label: "Trial Ending Soon",
@@ -74,6 +84,11 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     color: "#2563eb",
     label: "Team Invitation",
     hint: "",
+  },
+  MANAGEMENT_REVIEW_DUE: {
+    color: "#7c3aed",
+    label: "Management Review",
+    hint: "A management review is scheduled or upcoming.",
   },
 }
 

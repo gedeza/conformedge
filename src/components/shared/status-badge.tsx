@@ -16,6 +16,11 @@ import {
   CERTIFICATION_STATUSES,
   ASSESSMENT_STATUSES,
   INVITATION_STATUSES,
+  INCIDENT_STATUSES,
+  INCIDENT_TYPES,
+  OBJECTIVE_STATUSES,
+  MANAGEMENT_REVIEW_STATUSES,
+  REVIEW_ACTION_STATUSES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -36,6 +41,11 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   certificationStatus: CERTIFICATION_STATUSES,
   assessment: ASSESSMENT_STATUSES,
   invitation: INVITATION_STATUSES,
+  incident: INCIDENT_STATUSES,
+  incidentType: INCIDENT_TYPES,
+  objective: OBJECTIVE_STATUSES,
+  managementReview: MANAGEMENT_REVIEW_STATUSES,
+  reviewAction: REVIEW_ACTION_STATUSES,
 }
 
 interface StatusBadgeProps {

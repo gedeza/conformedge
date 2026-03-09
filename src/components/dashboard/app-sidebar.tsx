@@ -21,6 +21,9 @@ import {
   Layers,
   Bell,
   CreditCard,
+  Siren,
+  Target,
+  ClipboardList,
 } from "lucide-react"
 
 import {
@@ -44,6 +47,9 @@ const coreItems = [
   { title: "Assessments", href: "/assessments", icon: ClipboardCheck },
   { title: "Calendar", href: "/calendar", icon: CalendarDays },
   { title: "CAPAs", href: "/capas", icon: AlertTriangle },
+  { title: "Incidents", href: "/incidents", icon: Siren },
+  { title: "Objectives", href: "/objectives", icon: Target },
+  { title: "Mgmt Reviews", href: "/management-reviews", icon: ClipboardList },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
   { title: "Subcontractors", href: "/subcontractors", icon: Building2 },
 ]

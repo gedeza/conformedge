@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
-**Last Updated:** 2026-03-03
-**Phase:** All Billing Phases Complete + Post-Deploy Hotfixes Applied
+**Last Updated:** 2026-03-09
+**Phase:** All Billing Phases Complete + Phase 4 Competitive Feature Additions Planned
 
 ---
 
@@ -148,6 +148,71 @@
 
 - [x] **T85** Fix billing gate crash on IMS, Gap Analysis, and Cross-References pages — return null instead of throwing, show UpgradePrompt (6f578d5)
 - [x] **T86** Remove unused `react-paystack` package — peer dep conflict with React 19 broke deploys (275b74c)
+
+## Phase 4 — Competitive Feature Additions (Post-Competitive Analysis 2026-03-09)
+
+Source: `DOCS/competitive-analysis/MyEasyISO-vs-ConformEdge.md`
+Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT broaden beyond construction.
+
+### 4A — Incident & Near-Miss Management (CRITICAL — Build Now)
+
+- [ ] **T88** Design Incident schema: `Incident` model (type, severity, location, date, description, immediateActions, investigation, rootCause, correctiveActions, status lifecycle)
+- [ ] **T89** Add `IncidentType` enum (NEAR_MISS, FIRST_AID, MEDICAL, LOST_TIME, FATALITY, ENVIRONMENTAL, PROPERTY_DAMAGE)
+- [ ] **T90** Add `IncidentStatus` enum (REPORTED → INVESTIGATING → CORRECTIVE_ACTION → CLOSED)
+- [ ] **T91** Create Prisma migration for Incident + related models
+- [ ] **T92** Create server actions: `createIncident`, `updateIncident`, `getIncidents`, `getIncident`, `addInvestigation`, `linkCapa`
+- [ ] **T93** Create `/incidents` list page with table, filters, status badges
+- [ ] **T94** Create `/incidents/new` form page
+- [ ] **T95** Create `/incidents/[id]` detail page (timeline, investigation, linked CAPAs)
+- [ ] **T96** Add INCIDENT_REPORTED notification type + cron for overdue investigations
+- [ ] **T97** Add incidents to dashboard widget (open incidents, LTI rate)
+- [ ] **T98** Add incidents to reports page (incident trend, severity breakdown)
+- [ ] **T99** Create incidents-help-panel.tsx
+- [ ] **T100** Add sidebar nav item + middleware route
+- [ ] **T101** SA statutory form output: W.Cl.2 (IOD), SAPS 277 (fatality notice) — PDF generation
+
+### 4B — Objectives, Targets & KPI Tracking (HIGH — Build Now)
+
+- [ ] **T102** Design Objective schema: `Objective` model (title, description, standard, clause, targetValue, currentValue, unit, measurementFrequency, owner, dueDate, status)
+- [ ] **T103** Add `ObjectiveStatus` enum (DRAFT, ACTIVE, ON_TRACK, AT_RISK, BEHIND, ACHIEVED, CANCELLED)
+- [ ] **T104** Create Prisma migration for Objective + KPI measurement records
+- [ ] **T105** Create server actions: `createObjective`, `updateObjective`, `recordMeasurement`, `getObjectives`
+- [ ] **T106** Create `/objectives` list page with progress bars, status filters
+- [ ] **T107** Create `/objectives/new` form page (link to standard/clause)
+- [ ] **T108** Create `/objectives/[id]` detail page (measurement history chart, trend)
+- [ ] **T109** Add objectives widget to dashboard (on-track vs at-risk count)
+- [ ] **T110** Integrate with gap analysis — flag clauses where objectives exist but no measurement data
+- [ ] **T111** Add OBJECTIVE_DUE notification type + cron for measurement reminders
+- [ ] **T112** Create objectives-help-panel.tsx
+- [ ] **T113** Add sidebar nav item + middleware route
+
+### 4C — Management Review Module (HIGH — Build within 3 months)
+
+- [ ] **T114** Design ManagementReview schema: `ManagementReview` model (date, chairperson, attendees, agenda, minutes, actionItems, status)
+- [ ] **T115** Create Prisma migration
+- [ ] **T116** Create server actions: `createReview`, `updateReview`, `addActionItem`, `getReviews`
+- [ ] **T117** Create `/management-reviews` list page
+- [ ] **T118** Create `/management-reviews/new` form with pre-populated agenda from live dashboard data
+- [ ] **T119** Create `/management-reviews/[id]` detail page (agenda, minutes, action tracker)
+- [ ] **T120** Add MANAGEMENT_REVIEW_SCHEDULED notification type
+- [ ] **T121** Create management-reviews-help-panel.tsx
+- [ ] **T122** Add sidebar nav item + middleware route
+
+### 4D — Work Permit Management (MEDIUM-HIGH — Build within 6 months)
+
+- [ ] **T123** Design WorkPermit schema: types (confined space, heights, hot work, excavation, electrical), lifecycle (REQUESTED → APPROVED → ACTIVE → CLOSED/CANCELLED), issuer/receiver
+- [ ] **T124** Create Prisma migration
+- [ ] **T125** Create server actions + CRUD pages
+- [ ] **T126** Add work-permits-help-panel.tsx + sidebar nav + middleware route
+- [ ] **T127** Integrate with subcontractor portal (subcontractor work permit visibility)
+
+### 4E — Mobile-Optimised Field Capture / PWA (HIGH — Build within 9 months)
+
+- [ ] **T128** Add PWA manifest + service worker to Next.js
+- [ ] **T129** Offline-first data capture for checklists with sync
+- [ ] **T130** Camera integration for photo evidence
+- [ ] **T131** Signature capture component
+- [ ] **T132** Responsive mobile layouts for checklists, incidents, inspections
 
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
 

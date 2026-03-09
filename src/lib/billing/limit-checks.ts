@@ -195,6 +195,8 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     auditPackGeneration: "Audit Pack Generation",
     approvalWorkflows: "Approval Workflows",
     customStandards: "Custom Standards",
+    incidentManagement: "Incident & Near-Miss Management",
+    objectivesTracking: "Objectives & KPI Tracking",
     apiAccess: "API Access",
     sso: "Single Sign-On",
   }

@@ -41,6 +41,69 @@ export const CAPA_STATUSES = {
   OVERDUE: { label: "Overdue", color: "bg-red-100 text-red-800" },
 } as const
 
+export const INCIDENT_STATUSES = {
+  REPORTED:          { label: "Reported",          color: "bg-blue-100 text-blue-800" },
+  INVESTIGATING:     { label: "Investigating",     color: "bg-yellow-100 text-yellow-800" },
+  CORRECTIVE_ACTION: { label: "Corrective Action", color: "bg-orange-100 text-orange-800" },
+  CLOSED:            { label: "Closed",            color: "bg-green-100 text-green-800" },
+} as const
+
+export const INCIDENT_TYPES = {
+  NEAR_MISS:       { label: "Near Miss",         color: "bg-sky-100 text-sky-800" },
+  FIRST_AID:       { label: "First Aid",         color: "bg-yellow-100 text-yellow-800" },
+  MEDICAL:         { label: "Medical Treatment", color: "bg-orange-100 text-orange-800" },
+  LOST_TIME:       { label: "Lost Time Injury",  color: "bg-red-100 text-red-800" },
+  FATALITY:        { label: "Fatality",          color: "bg-red-900 text-red-100" },
+  ENVIRONMENTAL:   { label: "Environmental",     color: "bg-emerald-100 text-emerald-800" },
+  PROPERTY_DAMAGE: { label: "Property Damage",   color: "bg-amber-100 text-amber-800" },
+} as const
+
+export const OBJECTIVE_STATUSES = {
+  DRAFT:     { label: "Draft",     color: "bg-gray-100 text-gray-800" },
+  ACTIVE:    { label: "Active",    color: "bg-blue-100 text-blue-800" },
+  ON_TRACK:  { label: "On Track",  color: "bg-green-100 text-green-800" },
+  AT_RISK:   { label: "At Risk",   color: "bg-yellow-100 text-yellow-800" },
+  BEHIND:    { label: "Behind",    color: "bg-red-100 text-red-800" },
+  ACHIEVED:  { label: "Achieved",  color: "bg-emerald-100 text-emerald-800" },
+  CANCELLED: { label: "Cancelled", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const MEASUREMENT_FREQUENCIES = {
+  WEEKLY:    { label: "Weekly",    days: 7 },
+  MONTHLY:   { label: "Monthly",   days: 30 },
+  QUARTERLY: { label: "Quarterly", days: 90 },
+  ANNUALLY:  { label: "Annually",  days: 365 },
+} as const
+
+export const MANAGEMENT_REVIEW_STATUSES = {
+  PLANNED:     { label: "Planned",     color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { label: "In Progress", color: "bg-yellow-100 text-yellow-800" },
+  COMPLETED:   { label: "Completed",   color: "bg-green-100 text-green-800" },
+  CANCELLED:   { label: "Cancelled",   color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const REVIEW_ACTION_STATUSES = {
+  OPEN:        { label: "Open",        color: "bg-blue-100 text-blue-800" },
+  IN_PROGRESS: { label: "In Progress", color: "bg-yellow-100 text-yellow-800" },
+  COMPLETED:   { label: "Completed",   color: "bg-green-100 text-green-800" },
+  CANCELLED:   { label: "Cancelled",   color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const AGENDA_ITEM_TYPES = {
+  AUDIT_RESULTS:             { label: "Audit Results" },
+  CUSTOMER_FEEDBACK:         { label: "Customer Feedback" },
+  PROCESS_PERFORMANCE:       { label: "Process Performance" },
+  CAPA_STATUS:               { label: "CAPA Status" },
+  PREVIOUS_ACTIONS:          { label: "Previous Action Items" },
+  CHANGES_CONTEXT:           { label: "Changes Affecting the QMS" },
+  IMPROVEMENT_OPPORTUNITIES: { label: "Improvement Opportunities" },
+  RESOURCE_NEEDS:            { label: "Resource Needs" },
+  RISK_OPPORTUNITIES:        { label: "Risks & Opportunities" },
+  OBJECTIVES_PERFORMANCE:    { label: "Objectives Performance" },
+  INCIDENT_TRENDS:           { label: "Incident Trends" },
+  OTHER:                     { label: "Other" },
+} as const
+
 export const CAPA_PRIORITIES = {
   LOW: { label: "Low", color: "bg-green-100 text-green-800" },
   MEDIUM: { label: "Medium", color: "bg-yellow-100 text-yellow-800" },
@@ -84,6 +147,8 @@ export const NOTIFICATION_TYPES = {
   APPROVAL_REQUEST: { label: "Approval Request", color: "bg-purple-100 text-purple-800" },
   CERT_UPLOAD: { label: "Certificate Upload", color: "bg-amber-100 text-amber-800" },
   CHECKLIST_DUE: { label: "Checklist Due", color: "bg-emerald-100 text-emerald-800" },
+  INCIDENT_REPORTED: { label: "Incident Reported", color: "bg-red-100 text-red-800" },
+  OBJECTIVE_DUE: { label: "Objective Due", color: "bg-indigo-100 text-indigo-800" },
   SUBSCRIPTION_TRIAL_ENDING: { label: "Trial Ending", color: "bg-blue-100 text-blue-800" },
   SUBSCRIPTION_PAYMENT_FAILED: { label: "Payment Failed", color: "bg-red-100 text-red-800" },
   SUBSCRIPTION_CANCELLED: { label: "Subscription Cancelled", color: "bg-gray-100 text-gray-600" },
@@ -188,6 +253,8 @@ export const NAV_ITEMS = [
   { title: "Documents", href: "/documents", icon: "FileText" },
   { title: "Assessments", href: "/assessments", icon: "ClipboardCheck" },
   { title: "CAPAs", href: "/capas", icon: "AlertTriangle" },
+  { title: "Incidents", href: "/incidents", icon: "Siren" },
+  { title: "Objectives", href: "/objectives", icon: "Target" },
   { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
   { title: "Subcontractors", href: "/subcontractors", icon: "Building2" },
   { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
