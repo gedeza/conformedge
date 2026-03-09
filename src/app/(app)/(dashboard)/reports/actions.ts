@@ -60,6 +60,13 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     // Compliance trend: checklists with dates (last 12 months)
     trendChecklists,
 
+    // Incidents
+    totalIncidents,
+    incidentsByType,
+    incidentsBySeverity,
+    incidentsByStatus,
+    openIncidents,
+
     // Subcontractor metrics
     subcontractorsWithCerts,
     subcontractorsByBeeLevel,
@@ -136,6 +143,15 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       },
       select: { completionPercentage: true, createdAt: true },
       orderBy: { createdAt: "asc" },
+    }),
+
+    // Incidents
+    db.incident.count({ where: { organizationId: dbOrgId, ...dateWhere } }),
+    db.incident.groupBy({ by: ["incidentType"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
+    db.incident.groupBy({ by: ["severity"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
+    db.incident.groupBy({ by: ["status"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
+    db.incident.count({
+      where: { organizationId: dbOrgId, status: { in: ["REPORTED", "INVESTIGATING"] } },
     }),
 
     // Subcontractors with certs for scoring + expiry
@@ -292,10 +308,15 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       totalCapas,
       totalChecklists,
       totalSubcontractors,
+      totalIncidents,
+      openIncidents,
       avgComplianceScore: avgScore._avg.overallScore ?? null,
       overdueCapas,
       expiringDocs,
     },
+    incidentsByType: incidentsByType.map((r) => ({ type: r.incidentType, count: r._count })),
+    incidentsBySeverity: incidentsBySeverity.map((r) => ({ severity: r.severity, count: r._count })),
+    incidentsByStatus: incidentsByStatus.map((r) => ({ status: r.status, count: r._count })),
     projectsByStatus: projectsByStatus.map((r) => ({ status: r.status, count: r._count })),
     documentsByStatus: documentsByStatus.map((r) => ({ status: r.status, count: r._count })),
     capasByStatus: capasByStatus.map((r) => ({ status: r.status, count: r._count })),

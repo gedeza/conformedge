@@ -41,10 +41,32 @@ export async function GET(request: NextRequest) {
     lines.push(`CAPAs,${s.totalCapas}`)
     lines.push(`Checklists,${s.totalChecklists}`)
     lines.push(`Subcontractors,${s.totalSubcontractors}`)
+    lines.push(`Incidents,${s.totalIncidents}`)
+    lines.push(`Open Incidents,${s.openIncidents}`)
     lines.push(`Avg Compliance Score,${s.avgComplianceScore !== null ? s.avgComplianceScore.toFixed(1) : "N/A"}`)
     lines.push(`Overdue CAPAs,${s.overdueCapas}`)
     lines.push(`Expired Documents,${s.expiringDocs}`)
     lines.push("")
+
+    // Incidents by Type
+    if (data.incidentsByType.length > 0) {
+      lines.push("INCIDENTS BY TYPE")
+      lines.push("Type,Count")
+      for (const row of data.incidentsByType) {
+        lines.push(`${row.type},${row.count}`)
+      }
+      lines.push("")
+    }
+
+    // Incidents by Severity
+    if (data.incidentsBySeverity.length > 0) {
+      lines.push("INCIDENTS BY SEVERITY")
+      lines.push("Severity,Count")
+      for (const row of data.incidentsBySeverity) {
+        lines.push(`${row.severity},${row.count}`)
+      }
+      lines.push("")
+    }
 
     // Compliance by Standard
     lines.push("COMPLIANCE BY STANDARD")

@@ -16,6 +16,9 @@ interface ReportChartsProps {
   monthlyActivity: ReportData["monthlyActivity"]
   complianceTrend: ReportData["complianceTrend"]
   subcontractorMetrics: ReportData["subcontractorMetrics"]
+  incidentsByType: ReportData["incidentsByType"]
+  incidentsBySeverity: ReportData["incidentsBySeverity"]
+  incidentsByStatus: ReportData["incidentsByStatus"]
 }
 
 function expiryBadgeVariant(days: number): "destructive" | "secondary" | "outline" | "default" {
@@ -50,6 +53,9 @@ export function ReportCharts({
   monthlyActivity,
   complianceTrend,
   subcontractorMetrics,
+  incidentsByType,
+  incidentsBySeverity,
+  incidentsByStatus,
 }: ReportChartsProps) {
   return (
     <>
@@ -117,6 +123,30 @@ export function ReportCharts({
           data={monthlyActivity}
           xKey="month"
           yKey="events"
+        />
+      </div>
+
+      {/* ── Incident Metrics Section ── */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight">Incident Analytics</h2>
+        <p className="text-sm text-muted-foreground">Incident trends by type, severity, and status</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <PieChartCard
+          title="Incidents by Type"
+          description="Distribution of incident types"
+          data={incidentsByType.map((i) => ({ name: i.type.replace(/_/g, " "), value: i.count }))}
+        />
+        <PieChartCard
+          title="Incidents by Severity"
+          description="Severity levels across all incidents"
+          data={incidentsBySeverity.map((i) => ({ name: i.severity, value: i.count }))}
+        />
+        <PieChartCard
+          title="Incidents by Status"
+          description="Current status of all incidents"
+          data={incidentsByStatus.map((i) => ({ name: i.status.replace(/_/g, " "), value: i.count }))}
         />
       </div>
 

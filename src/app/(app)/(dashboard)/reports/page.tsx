@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Clock,
   FileWarning,
+  ShieldAlert,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -57,6 +58,7 @@ export default async function ReportsPage({ searchParams }: Props) {
     { title: "CAPAs", value: s.totalCapas, icon: AlertTriangle, iconBg: "bg-amber-500/10", iconColor: "text-amber-500" },
     { title: "Checklists", value: s.totalChecklists, icon: CheckSquare, iconBg: "bg-purple-500/10", iconColor: "text-purple-500" },
     { title: "Subcontractors", value: s.totalSubcontractors, icon: Building2, iconBg: "bg-slate-500/10", iconColor: "text-slate-500" },
+    { title: "Incidents", value: s.totalIncidents, icon: ShieldAlert, iconBg: "bg-red-500/10", iconColor: "text-red-500" },
   ]
 
   return (
@@ -70,7 +72,7 @@ export default async function ReportsPage({ searchParams }: Props) {
       <DateRangeFilter />
 
       {/* Summary metrics */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
         {metricCards.map((card) => (
           <Card key={card.title} className="border-border/50 transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -87,7 +89,7 @@ export default async function ReportsPage({ searchParams }: Props) {
       </div>
 
       {/* Compliance score + alerts row */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Compliance Score</CardTitle>
@@ -134,6 +136,22 @@ export default async function ReportsPage({ searchParams }: Props) {
             </p>
           </CardContent>
         </Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Open Incidents</CardTitle>
+            <div className="flex size-9 items-center justify-center rounded-lg bg-red-500/10">
+              <ShieldAlert className="size-4 text-red-500" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-3xl font-bold ${s.openIncidents > 0 ? "text-red-600" : "text-green-600"}`}>
+              {s.openIncidents}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {s.openIncidents > 0 ? "Reported or under investigation" : "No open incidents"}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Charts — client component */}
@@ -147,6 +165,9 @@ export default async function ReportsPage({ searchParams }: Props) {
         monthlyActivity={data.monthlyActivity}
         complianceTrend={data.complianceTrend}
         subcontractorMetrics={data.subcontractorMetrics}
+        incidentsByType={data.incidentsByType}
+        incidentsBySeverity={data.incidentsBySeverity}
+        incidentsByStatus={data.incidentsByStatus}
       />
     </div>
   )
