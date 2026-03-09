@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ChevronDown, ChevronRight, FileText, ListChecks } from "lucide-react"
+import { ChevronDown, ChevronRight, FileText, ListChecks, Target, AlertCircle } from "lucide-react"
 import { CrossRefPopover } from "./cross-ref-popover"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,6 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { GapAnalysisSummary, CoverageStatus, TopLevelClauseGap, ClauseGapData } from "./actions"
 
 interface Props {
@@ -40,6 +46,49 @@ function StatusBadge({ status }: { status: CoverageStatus }) {
   )
 }
 
+function ObjectiveIndicator({ objectives }: { objectives: ClauseGapData["objectives"] }) {
+  if (objectives.length === 0) return null
+
+  const withoutMeasurements = objectives.filter((o) => !o.hasMeasurements)
+  const hasWarning = withoutMeasurements.length > 0
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className={cn(
+            "flex items-center gap-1 text-xs",
+            hasWarning ? "text-amber-600" : "text-blue-600"
+          )}>
+            {hasWarning ? (
+              <AlertCircle className="h-3 w-3" />
+            ) : (
+              <Target className="h-3 w-3" />
+            )}
+            <span>{objectives.length}</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="left" className="max-w-xs">
+          <p className="font-medium text-xs mb-1">
+            {objectives.length} objective{objectives.length !== 1 ? "s" : ""} linked
+          </p>
+          {objectives.map((obj) => (
+            <div key={obj.objectiveId} className="text-xs py-0.5">
+              <span>{obj.title}</span>
+              <span className="text-muted-foreground ml-1">
+                ({obj.currentValue}/{obj.targetValue})
+              </span>
+              {!obj.hasMeasurements && (
+                <span className="text-amber-600 ml-1">— No measurements</span>
+              )}
+            </div>
+          ))}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+
 function SubClauseRow({ clause }: { clause: ClauseGapData }) {
   return (
     <div className="flex items-center justify-between py-2 px-4 text-sm border-b last:border-b-0">
@@ -48,6 +97,7 @@ function SubClauseRow({ clause }: { clause: ClauseGapData }) {
         <span>{clause.title}</span>
       </div>
       <div className="flex items-center gap-3 shrink-0">
+        <ObjectiveIndicator objectives={clause.objectives} />
         {clause.crossRefCount > 0 && (
           <CrossRefPopover clauseId={clause.clauseId} count={clause.crossRefCount} />
         )}

@@ -8,6 +8,7 @@ import { getGapAnalysisInternal } from "./gap-analysis-core"
 // Re-export types for consumers
 export type {
   CoverageStatus,
+  ClauseObjectiveData,
   ClauseGapData,
   TopLevelClauseGap,
   StandardGapAnalysis,

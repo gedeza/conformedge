@@ -4,6 +4,15 @@ import { db } from "@/lib/db"
 
 export type CoverageStatus = "COVERED" | "PARTIAL" | "GAP"
 
+export interface ClauseObjectiveData {
+  objectiveId: string
+  title: string
+  status: string
+  targetValue: number
+  currentValue: number
+  hasMeasurements: boolean
+}
+
 export interface ClauseGapData {
   clauseId: string
   clauseNumber: string
@@ -14,6 +23,7 @@ export interface ClauseGapData {
   checklistCompliantCount: number
   checklistTotalCount: number
   crossRefCount: number
+  objectives: ClauseObjectiveData[]
 }
 
 export interface TopLevelClauseGap {
@@ -44,6 +54,11 @@ export interface GapAnalysisSummary {
   gaps: number
   overallCoveragePercent: number
   standards: StandardGapAnalysis[]
+  objectiveSummary: {
+    totalObjectives: number
+    clausesWithObjectives: number
+    objectivesWithoutMeasurements: number
+  }
 }
 
 // ─── Core (non-server-action) ────────────────────────
@@ -69,8 +84,8 @@ export async function getGapAnalysisInternal(
   }
   if (projectId) checklistWhere.projectId = projectId
 
-  // 4 parallel queries
-  const [standards, docClassifications, checklistItems, crossRefCounts] = await Promise.all([
+  // 5 parallel queries
+  const [standards, docClassifications, checklistItems, crossRefCounts, objectives] = await Promise.all([
     db.standard.findMany({
       where: standardWhere,
       include: {
@@ -115,6 +130,23 @@ export async function getGapAnalysisInternal(
         targetClauseId: true,
       },
     }),
+
+    db.objective.findMany({
+      where: {
+        organizationId: orgId,
+        standardClauseId: { not: null },
+        status: { notIn: ["CANCELLED"] },
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        targetValue: true,
+        currentValue: true,
+        standardClauseId: true,
+        _count: { select: { measurements: true } },
+      },
+    }),
   ])
 
   // Build lookup sets
@@ -141,6 +173,26 @@ export async function getGapAnalysisInternal(
     crossRefByClause.set(cr.targetClauseId, (crossRefByClause.get(cr.targetClauseId) || 0) + 1)
   }
 
+  const objectivesByClause = new Map<string, ClauseObjectiveData[]>()
+  let totalObjectivesWithoutMeasurements = 0
+  const clausesWithObjectivesSet = new Set<string>()
+  for (const obj of objectives) {
+    if (!obj.standardClauseId) continue
+    clausesWithObjectivesSet.add(obj.standardClauseId)
+    const list = objectivesByClause.get(obj.standardClauseId) || []
+    const hasMeasurements = obj._count.measurements > 0
+    if (!hasMeasurements) totalObjectivesWithoutMeasurements++
+    list.push({
+      objectiveId: obj.id,
+      title: obj.title,
+      status: obj.status,
+      targetValue: obj.targetValue,
+      currentValue: obj.currentValue,
+      hasMeasurements,
+    })
+    objectivesByClause.set(obj.standardClauseId, list)
+  }
+
   // Aggregate per standard
   let totalSubClauses = 0
   let totalCovered = 0
@@ -158,10 +210,12 @@ export async function getGapAnalysisInternal(
       compliant: number
       total: number
       crossRefCount: number
+      objectives: ClauseObjectiveData[]
     } {
       const docCount = docCountByClause.get(clauseId) || 0
       const checklist = checklistByClause.get(clauseId) || { compliant: 0, total: 0 }
       const crossRefCount = crossRefByClause.get(clauseId) || 0
+      const clauseObjectives = objectivesByClause.get(clauseId) || []
 
       const hasDoc = docCount > 0
       const hasCompliant = checklist.compliant > 0
@@ -175,7 +229,7 @@ export async function getGapAnalysisInternal(
         status = "GAP"
       }
 
-      return { status, docCount, compliant: checklist.compliant, total: checklist.total, crossRefCount }
+      return { status, docCount, compliant: checklist.compliant, total: checklist.total, crossRefCount, objectives: clauseObjectives }
     }
 
     const clauseGroups: TopLevelClauseGap[] = subClauses.length > 0
@@ -194,6 +248,7 @@ export async function getGapAnalysisInternal(
                 checklistCompliantCount: info.compliant,
                 checklistTotalCount: info.total,
                 crossRefCount: info.crossRefCount,
+                objectives: info.objectives,
               }
             })
 
@@ -231,6 +286,7 @@ export async function getGapAnalysisInternal(
               checklistCompliantCount: info.compliant,
               checklistTotalCount: info.total,
               crossRefCount: info.crossRefCount,
+              objectives: info.objectives,
             }],
           }
         })
@@ -275,5 +331,10 @@ export async function getGapAnalysisInternal(
     gaps: totalGaps,
     overallCoveragePercent,
     standards: standardResults,
+    objectiveSummary: {
+      totalObjectives: objectives.length,
+      clausesWithObjectives: clausesWithObjectivesSet.size,
+      objectivesWithoutMeasurements: totalObjectivesWithoutMeasurements,
+    },
   }
 }

@@ -1,4 +1,4 @@
-import { SearchCheck, ShieldAlert, ShieldCheck, AlertTriangle } from "lucide-react"
+import { SearchCheck, ShieldAlert, ShieldCheck, AlertTriangle, Target } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
@@ -49,7 +49,7 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
       </PageHeader>
 
       {/* Summary cards */}
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-5">
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clauses</CardTitle>
@@ -94,7 +94,34 @@ export default async function GapAnalysisPage({ searchParams }: Props) {
             <div className="text-2xl font-bold text-red-600">{data.gaps}</div>
           </CardContent>
         </Card>
+        <Card className="border-border/50 transition-all hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Objectives Tracked</CardTitle>
+            <div className="flex size-9 items-center justify-center rounded-lg bg-blue-600/10">
+              <Target className="size-4 text-blue-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{data.objectiveSummary.totalObjectives}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {data.objectiveSummary.clausesWithObjectives} clause{data.objectiveSummary.clausesWithObjectives !== 1 ? "s" : ""}
+            </p>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Objectives without measurements warning */}
+      {data.objectiveSummary.objectivesWithoutMeasurements > 0 && (
+        <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30">
+          <CardContent className="py-3 flex items-center gap-3">
+            <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+            <p className="text-sm text-amber-800 dark:text-amber-300">
+              <span className="font-medium">{data.objectiveSummary.objectivesWithoutMeasurements} objective{data.objectiveSummary.objectivesWithoutMeasurements !== 1 ? "s" : ""}</span>
+              {" "}linked to clauses but with no measurement data recorded. Add measurements to track progress.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Overall coverage bar */}
       <Card className="border-border/50 transition-all hover:shadow-md">
