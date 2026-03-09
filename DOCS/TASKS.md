@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-09
-**Phase:** Phase 4A–4D Complete + Billing Complete. Remaining: T98, T101, T110, T127, 4E (PWA)
+**Phase:** Phase 4A–4D Complete + Billing Complete. Remaining: T101, T110, 4E (PWA)
 
 ---
 
@@ -206,7 +206,7 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 - [x] **T126** Add permits-help-panel.tsx + sidebar nav + middleware route
 - [x] **T126b** Add cron auto-expiry: ACTIVE permits past validTo auto-expire, 24h warning notifications
 - [x] **T126c** Add dashboard widget (WorkPermitsWidget)
-- [ ] **T127** Integrate with subcontractor portal (subcontractor work permit visibility)
+- [x] **T127** Integrate with subcontractor portal (subcontractor work permit visibility)
 
 ### 4X — Cross-Cutting Fixes (2026-03-09)
 

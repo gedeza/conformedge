@@ -108,6 +108,31 @@ export async function getSharedSubcontractorData(shareLink: ShareLink) {
   })
 }
 
+export async function getSharedWorkPermits(shareLink: ShareLink) {
+  if (shareLink.type !== "SUBCONTRACTOR") return []
+
+  return db.workPermit.findMany({
+    where: {
+      organizationId: shareLink.organizationId,
+      status: { in: ["APPROVED", "ACTIVE"] },
+    },
+    select: {
+      id: true,
+      permitNumber: true,
+      title: true,
+      permitType: true,
+      status: true,
+      riskLevel: true,
+      location: true,
+      validFrom: true,
+      validTo: true,
+      ppeRequirements: true,
+      emergencyProcedures: true,
+    },
+    orderBy: { validFrom: "desc" },
+  })
+}
+
 interface PortalConfig {
   documents?: boolean
   assessments?: boolean

@@ -2,7 +2,7 @@ import { headers } from "next/headers"
 import { ShieldAlert } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { validateShareToken, logShareAccess, incrementViewCount } from "@/lib/share-link"
-import { getSharedDocument, getSharedAuditPack, getSharedPortalData, getSharedSubcontractorData } from "@/lib/share-data"
+import { getSharedDocument, getSharedAuditPack, getSharedPortalData, getSharedSubcontractorData, getSharedWorkPermits } from "@/lib/share-data"
 import { SharedDocumentView } from "./shared-document-view"
 import { SharedAuditPackView } from "./shared-audit-pack-view"
 import { SharedPortalView } from "./shared-portal-view"
@@ -88,7 +88,10 @@ export default async function SharedPage({
   }
 
   if (shareLink.type === "SUBCONTRACTOR") {
-    const subcontractor = await getSharedSubcontractorData(shareLink)
+    const [subcontractor, activePermits] = await Promise.all([
+      getSharedSubcontractorData(shareLink),
+      getSharedWorkPermits(shareLink),
+    ])
     if (!subcontractor) {
       return <NotFoundCard />
     }
@@ -99,6 +102,7 @@ export default async function SharedPage({
           subcontractor={subcontractor}
           token={token}
           allowDownload={shareLink.allowDownload}
+          activePermits={activePermits}
         />
       </div>
     )

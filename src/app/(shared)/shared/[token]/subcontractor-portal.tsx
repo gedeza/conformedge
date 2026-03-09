@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { format, differenceInDays } from "date-fns"
-import { Shield, Upload, Building2, FileDown, RefreshCw } from "lucide-react"
+import { Shield, Upload, Building2, FileDown, RefreshCw, HardHat, MapPin, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,10 +44,25 @@ interface SubcontractorData {
   certifications: Certification[]
 }
 
+interface ActivePermit {
+  id: string
+  permitNumber: string | null
+  title: string
+  permitType: string
+  status: string
+  riskLevel: string
+  location: string
+  validFrom: Date
+  validTo: Date
+  ppeRequirements: string | null
+  emergencyProcedures: string | null
+}
+
 interface SubcontractorPortalProps {
   subcontractor: SubcontractorData
   token: string
   allowDownload: boolean
+  activePermits?: ActivePermit[]
 }
 
 function getExpiryBadge(expiresAt: Date | null) {
@@ -58,7 +73,24 @@ function getExpiryBadge(expiresAt: Date | null) {
   return <Badge variant="outline" className="bg-green-100 text-green-800">Valid</Badge>
 }
 
-export function SubcontractorPortal({ subcontractor, token, allowDownload }: SubcontractorPortalProps) {
+const RISK_COLORS: Record<string, string> = {
+  LOW: "bg-green-100 text-green-800",
+  MEDIUM: "bg-yellow-100 text-yellow-800",
+  HIGH: "bg-orange-100 text-orange-800",
+  CRITICAL: "bg-red-100 text-red-800",
+}
+
+const PERMIT_TYPE_LABELS: Record<string, string> = {
+  HOT_WORK: "Hot Work",
+  CONFINED_SPACE: "Confined Space",
+  WORKING_AT_HEIGHTS: "Working at Heights",
+  ELECTRICAL: "Electrical",
+  EXCAVATION: "Excavation",
+  LIFTING: "Lifting",
+  GENERAL: "General",
+}
+
+export function SubcontractorPortal({ subcontractor, token, allowDownload, activePermits = [] }: SubcontractorPortalProps) {
   const [certs, setCerts] = useState(subcontractor.certifications)
 
   return (
@@ -156,6 +188,66 @@ export function SubcontractorPortal({ subcontractor, token, allowDownload }: Sub
           )}
         </CardContent>
       </Card>
+
+      {/* Active Work Permits */}
+      {activePermits.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <HardHat className="h-5 w-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Active Work Permits on Site</CardTitle>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Current approved and active permits. Review PPE requirements and emergency procedures before entering work areas.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {activePermits.map((permit) => (
+                <div key={permit.id} className="rounded-md border p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium">{permit.title}</span>
+                        <Badge variant="outline">{PERMIT_TYPE_LABELS[permit.permitType] ?? permit.permitType}</Badge>
+                        <Badge variant="outline" className={RISK_COLORS[permit.riskLevel] ?? ""}>
+                          {permit.riskLevel}
+                        </Badge>
+                        <Badge variant="outline" className="bg-blue-100 text-blue-800">
+                          {permit.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5" />
+                        {permit.location}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {permit.permitNumber && `${permit.permitNumber} · `}
+                        Valid: {format(new Date(permit.validFrom), "d MMM")} — {format(new Date(permit.validTo), "d MMM yyyy")}
+                      </p>
+                    </div>
+                  </div>
+                  {permit.ppeRequirements && (
+                    <div className="rounded bg-muted/50 p-2 text-sm">
+                      <span className="font-medium text-xs uppercase tracking-wide text-muted-foreground">PPE Required</span>
+                      <p className="mt-0.5 whitespace-pre-line">{permit.ppeRequirements}</p>
+                    </div>
+                  )}
+                  {permit.emergencyProcedures && (
+                    <div className="rounded bg-red-50 p-2 text-sm">
+                      <div className="flex items-center gap-1">
+                        <AlertTriangle className="h-3.5 w-3.5 text-red-600" />
+                        <span className="font-medium text-xs uppercase tracking-wide text-red-700">Emergency Procedures</span>
+                      </div>
+                      <p className="mt-0.5 whitespace-pre-line text-red-900">{permit.emergencyProcedures}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
