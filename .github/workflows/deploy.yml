@@ -40,6 +40,9 @@ jobs:
             echo "==> Running database migrations..."
             npx prisma migrate deploy
 
+            echo "==> Cleaning up stray files..."
+            rm -f verify-demo.ts
+
             echo "==> Building application..."
             npm run build
 
