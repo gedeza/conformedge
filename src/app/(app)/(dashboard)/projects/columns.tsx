@@ -18,6 +18,7 @@ import { canEdit, canDelete } from "@/lib/permissions"
 export type ProjectRow = {
   id: string
   name: string
+  description: string | null
   status: string
   startDate: Date | null
   endDate: Date | null

@@ -154,11 +154,11 @@ export function DocumentTable({ data, projects, role }: DocumentTableProps) {
         document={editDoc ? {
           id: editDoc.id,
           title: editDoc.title,
-          description: null,
+          description: editDoc.description,
           status: editDoc.status,
           projectId: editDoc.project?.id,
           expiresAt: editDoc.expiresAt,
-          fileUrl: null,
+          fileUrl: editDoc.fileUrl,
         } : undefined}
         projects={projects}
       />

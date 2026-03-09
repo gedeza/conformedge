@@ -60,7 +60,7 @@ export function ProjectTable({ data, role }: ProjectTableProps) {
         project={editProject ? {
           id: editProject.id,
           name: editProject.name,
-          description: null,
+          description: editProject.description,
           status: editProject.status,
           startDate: editProject.startDate,
           endDate: editProject.endDate,

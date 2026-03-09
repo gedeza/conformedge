@@ -56,6 +56,7 @@ export async function getReviews(page = 1) {
       include: {
         facilitator: { select: { id: true, firstName: true, lastName: true } },
         standards: { include: { standard: { select: { id: true, code: true, name: true } } } },
+        attendees: { select: { userId: true } },
         _count: { select: { agendaItems: true, actions: true, attendees: true } },
       },
       orderBy: { reviewDate: "desc" },

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -67,6 +67,26 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
       expiresAt: document?.expiresAt ?? undefined,
     },
   })
+
+  useEffect(() => {
+    if (document) {
+      form.reset({
+        title: document.title,
+        description: document.description ?? "",
+        status: (document.status as DocumentFormValues["status"]) ?? "DRAFT",
+        projectId: document.projectId ?? undefined,
+        expiresAt: document.expiresAt ?? undefined,
+      })
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        status: "DRAFT",
+        projectId: undefined,
+        expiresAt: undefined,
+      })
+    }
+  }, [document, form])
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -195,7 +215,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Status" />
@@ -219,7 +239,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Project <span className="text-muted-foreground font-normal">(optional)</span></FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="None" />

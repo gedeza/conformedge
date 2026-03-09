@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useEffect, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -58,6 +58,26 @@ export function ChecklistForm({ open, onOpenChange, checklist, standards, projec
     },
   })
 
+  useEffect(() => {
+    if (checklist) {
+      form.reset({
+        title: checklist.title,
+        description: checklist.description ?? "",
+        standardId: checklist.standardId,
+        projectId: checklist.projectId ?? undefined,
+        assignedToId: checklist.assignedToId ?? undefined,
+      })
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        standardId: "",
+        projectId: undefined,
+        assignedToId: undefined,
+      })
+    }
+  }, [checklist, form])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = isEditing
@@ -99,7 +119,7 @@ export function ChecklistForm({ open, onOpenChange, checklist, standards, projec
             <FormField control={form.control} name="standardId" render={({ field }) => (
               <FormItem>
                 <FormLabel>ISO Standard</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl><SelectTrigger><SelectValue placeholder="Select standard" /></SelectTrigger></FormControl>
                   <SelectContent>
                     {standards.map((s) => (
@@ -114,7 +134,7 @@ export function ChecklistForm({ open, onOpenChange, checklist, standards, projec
               <FormField control={form.control} name="projectId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {projects.map((p) => (
@@ -128,7 +148,7 @@ export function ChecklistForm({ open, onOpenChange, checklist, standards, projec
               <FormField control={form.control} name="assignedToId" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Assigned To</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {members.map((m) => (

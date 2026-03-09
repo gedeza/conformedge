@@ -63,7 +63,7 @@ export function AssessmentTable({ data, standards, projects, members, role }: As
         assessment={editItem ? {
           id: editItem.id,
           title: editItem.title,
-          description: null,
+          description: editItem.description,
           standardId: editItem.standard?.id ?? "",
           projectId: editItem.project?.id ?? null,
           scheduledDate: editItem.scheduledDate,

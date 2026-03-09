@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useEffect, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -70,6 +70,26 @@ export function ProjectForm({ open, onOpenChange, project }: ProjectFormProps) {
     },
   })
 
+  useEffect(() => {
+    if (project) {
+      form.reset({
+        name: project.name,
+        description: project.description ?? "",
+        status: (project.status as ProjectFormValues["status"]) ?? "PLANNING",
+        startDate: project.startDate ?? undefined,
+        endDate: project.endDate ?? undefined,
+      })
+    } else {
+      form.reset({
+        name: "",
+        description: "",
+        status: "PLANNING",
+        startDate: undefined,
+        endDate: undefined,
+      })
+    }
+  }, [project, form])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = isEditing
@@ -130,7 +150,7 @@ export function ProjectForm({ open, onOpenChange, project }: ProjectFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />

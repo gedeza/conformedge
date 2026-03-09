@@ -14,12 +14,13 @@ import { canEdit, canDelete } from "@/lib/permissions"
 export type ChecklistRow = {
   id: string
   title: string
+  description: string | null
   status: string
   completionPercentage: number
   createdAt: Date
-  standard: { code: string; name: string }
+  standard: { id: string; code: string; name: string }
   project: { id: string; name: string } | null
-  assignedTo: { firstName: string; lastName: string } | null
+  assignedTo: { id: string; firstName: string; lastName: string } | null
   template: { id: string; name: string; isRecurring: boolean; recurrenceFrequency: string | null } | null
   _count: { items: number }
 }

@@ -18,9 +18,11 @@ export type ReviewRow = {
   status: string
   reviewDate: Date
   location: string | null
+  meetingMinutes: string | null
   nextReviewDate: Date | null
   facilitator: { id: string; firstName: string; lastName: string }
   standards: { standard: { id: string; code: string; name: string } }[]
+  attendees: { userId: string }[]
   _count: { agendaItems: number; actions: number; attendees: number }
 }
 

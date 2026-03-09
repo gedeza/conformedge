@@ -14,13 +14,16 @@ import { canEdit, canDelete } from "@/lib/permissions"
 export type CapaRow = {
   id: string
   title: string
+  description: string | null
   type: string
   status: string
   priority: string
+  rootCause: string | null
+  rootCauseData: unknown
   dueDate: Date | null
   createdAt: Date
   project: { id: string; name: string } | null
-  assignedTo: { firstName: string; lastName: string } | null
+  assignedTo: { id: string; firstName: string; lastName: string } | null
   _count: { capaActions: number }
 }
 

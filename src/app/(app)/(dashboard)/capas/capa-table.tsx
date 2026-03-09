@@ -62,14 +62,14 @@ export function CapaTable({ data, projects, members, role }: CapaTableProps) {
         capa={editItem ? {
           id: editItem.id,
           title: editItem.title,
-          description: null,
+          description: editItem.description,
           type: editItem.type,
           status: editItem.status,
           priority: editItem.priority,
-          rootCause: null,
+          rootCause: editItem.rootCause,
           dueDate: editItem.dueDate,
           projectId: editItem.project?.id ?? null,
-          assignedToId: editItem.assignedTo ? "" : null,
+          assignedToId: editItem.assignedTo?.id ?? null,
         } : undefined}
         projects={projects}
         members={members}

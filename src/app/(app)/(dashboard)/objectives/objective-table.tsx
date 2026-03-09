@@ -62,7 +62,7 @@ export function ObjectiveTable({ data, standards, members, role }: ObjectiveTabl
         objective={editItem ? {
           id: editItem.id,
           title: editItem.title,
-          description: null,
+          description: editItem.description,
           targetValue: editItem.targetValue,
           unit: editItem.unit,
           measurementFrequency: editItem.measurementFrequency,

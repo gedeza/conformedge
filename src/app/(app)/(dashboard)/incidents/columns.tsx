@@ -14,11 +14,18 @@ import { canEdit, canDelete } from "@/lib/permissions"
 export type IncidentRow = {
   id: string
   title: string
+  description: string | null
   incidentType: string
   status: string
   severity: string
   incidentDate: Date
   location: string | null
+  injuredParty: string | null
+  witnesses: string | null
+  immediateAction: string | null
+  rootCause: string | null
+  rootCauseData: unknown
+  investigationDue: Date | null
   createdAt: Date
   project: { id: string; name: string } | null
   reportedBy: { id: string; firstName: string; lastName: string } | null

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -123,6 +123,45 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
     },
   })
 
+  useEffect(() => {
+    if (capa) {
+      form.reset({
+        title: capa.title,
+        description: capa.description ?? "",
+        type: (capa.type as CapaFormValues["type"]) ?? "CORRECTIVE",
+        status: (capa.status as CapaFormValues["status"]) ?? "OPEN",
+        priority: (capa.priority as CapaFormValues["priority"]) ?? "MEDIUM",
+        rootCause: capa.rootCause ?? "",
+        dueDate: capa.dueDate ?? undefined,
+        projectId: capa.projectId ?? undefined,
+        assignedToId: capa.assignedToId ?? undefined,
+      })
+      const data = parseExistingRootCauseData(capa)
+      setRcMethod(data?.method ?? "simple")
+      setRcCategory(data?.category ?? "")
+      setWhys(data?.method === "5-whys" && data.whys.length > 0 ? data.whys : [createEmptyWhy(0)])
+      setFiveWhysRootCause(data?.method === "5-whys" ? data.rootCause : "")
+      setContainmentAction(data?.containmentAction ?? "")
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        type: "CORRECTIVE",
+        status: "OPEN",
+        priority: "MEDIUM",
+        rootCause: "",
+        dueDate: undefined,
+        projectId: undefined,
+        assignedToId: undefined,
+      })
+      setRcMethod("simple")
+      setRcCategory("")
+      setWhys([createEmptyWhy(0)])
+      setFiveWhysRootCause("")
+      setContainmentAction("")
+    }
+  }, [capa, form])
+
   function addWhy() {
     if (whys.length >= 5) return
     setWhys([...whys, createEmptyWhy(whys.length)])
@@ -218,7 +257,7 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(CAPA_TYPES).map(([v, c]) => (
@@ -236,7 +275,7 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(CAPA_STATUSES).filter(([k]) => k !== "OVERDUE").map(([v, c]) => (
@@ -254,7 +293,7 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Priority</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(CAPA_PRIORITIES).map(([v, c]) => (
@@ -418,7 +457,7 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Assigned To</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {members.map((m) => (
@@ -437,7 +476,7 @@ export function CapaForm({ open, onOpenChange, capa, projects, members }: CapaFo
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project (optional)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {projects.map((p) => (

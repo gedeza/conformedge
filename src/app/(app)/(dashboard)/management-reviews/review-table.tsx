@@ -67,8 +67,8 @@ export function ReviewTable({ data, members, standards, role }: ReviewTableProps
           nextReviewDate: editItem.nextReviewDate,
           facilitatorId: editItem.facilitator.id,
           standardIds: editItem.standards.map((s) => s.standard.id),
-          meetingMinutes: null,
-          attendeeIds: [],
+          meetingMinutes: editItem.meetingMinutes,
+          attendeeIds: editItem.attendees.map((a) => a.userId),
         } : undefined}
         members={members}
         standards={standards}

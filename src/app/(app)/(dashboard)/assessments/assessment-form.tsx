@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useEffect, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -70,6 +70,28 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
     },
   })
 
+  useEffect(() => {
+    if (assessment) {
+      form.reset({
+        title: assessment.title,
+        description: assessment.description ?? "",
+        standardId: assessment.standardId,
+        projectId: assessment.projectId ?? undefined,
+        scheduledDate: assessment.scheduledDate ?? undefined,
+        assessorId: assessment.assessorId ?? undefined,
+      })
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        standardId: "",
+        projectId: undefined,
+        scheduledDate: undefined,
+        assessorId: undefined,
+      })
+    }
+  }, [assessment, form])
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = isEditing
@@ -126,7 +148,7 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ISO Standard</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select standard" />
@@ -165,7 +187,7 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Assessor</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Myself (default)" />
@@ -188,7 +210,7 @@ export function AssessmentForm({ open, onOpenChange, assessment, standards, proj
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project (optional)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="None" />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useEffect, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -68,6 +68,32 @@ export function ReviewForm({ open, onOpenChange, review, members, standards }: R
       attendeeIds: review?.attendeeIds ?? [],
     },
   })
+
+  useEffect(() => {
+    if (review) {
+      form.reset({
+        title: review.title,
+        reviewDate: review.reviewDate,
+        location: review.location ?? "",
+        meetingMinutes: review.meetingMinutes ?? "",
+        nextReviewDate: review.nextReviewDate ?? undefined,
+        facilitatorId: review.facilitatorId,
+        standardIds: review.standardIds,
+        attendeeIds: review.attendeeIds,
+      })
+    } else {
+      form.reset({
+        title: "",
+        reviewDate: new Date(),
+        location: "",
+        meetingMinutes: "",
+        nextReviewDate: undefined,
+        facilitatorId: "",
+        standardIds: [],
+        attendeeIds: [],
+      })
+    }
+  }, [review, form])
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
@@ -152,7 +178,7 @@ export function ReviewForm({ open, onOpenChange, review, members, standards }: R
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Facilitator</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Select facilitator" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {members.map((m) => (

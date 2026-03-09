@@ -19,6 +19,11 @@ export type PermitRow = {
   status: string
   riskLevel: string
   location: string
+  description: string
+  hazardsIdentified: string | null
+  precautions: string | null
+  ppeRequirements: string | null
+  emergencyProcedures: string | null
   validFrom: Date
   validTo: Date
   createdAt: Date

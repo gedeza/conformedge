@@ -63,10 +63,10 @@ export function ChecklistTable({ data, standards, projects, members, role }: Che
         checklist={editItem ? {
           id: editItem.id,
           title: editItem.title,
-          description: null,
-          standardId: "",
+          description: editItem.description,
+          standardId: editItem.standard?.id ?? "",
           projectId: editItem.project?.id ?? null,
-          assignedToId: editItem.assignedTo ? "" : null,
+          assignedToId: editItem.assignedTo?.id ?? null,
         } : undefined}
         standards={standards}
         projects={projects}

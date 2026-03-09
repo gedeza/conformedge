@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -87,6 +87,43 @@ export function PermitForm({ open, onOpenChange, permit, projects, members }: Pe
     },
   })
 
+  useEffect(() => {
+    if (permit) {
+      form.reset({
+        title: permit.title,
+        permitType: (permit.permitType as PermitFormValues["permitType"]) ?? "GENERAL",
+        riskLevel: (permit.riskLevel as PermitFormValues["riskLevel"]) ?? "MEDIUM",
+        location: permit.location,
+        description: permit.description,
+        hazardsIdentified: permit.hazardsIdentified ?? "",
+        precautions: permit.precautions ?? "",
+        ppeRequirements: permit.ppeRequirements ?? "",
+        emergencyProcedures: permit.emergencyProcedures ?? "",
+        validFrom: permit.validFrom,
+        validTo: permit.validTo,
+        projectId: permit.projectId ?? undefined,
+        issuedById: permit.issuedById ?? undefined,
+      })
+    } else {
+      form.reset({
+        title: "",
+        permitType: "GENERAL",
+        riskLevel: "MEDIUM",
+        location: "",
+        description: "",
+        hazardsIdentified: "",
+        precautions: "",
+        ppeRequirements: "",
+        emergencyProcedures: "",
+        validFrom: new Date(),
+        validTo: new Date(Date.now() + 8 * 60 * 60 * 1000),
+        projectId: undefined,
+        issuedById: undefined,
+      })
+      setChecklistItems([])
+    }
+  }, [permit, form])
+
   function addChecklistItem() {
     if (newItem.trim()) {
       setChecklistItems([...checklistItems, newItem.trim()])
@@ -144,7 +181,7 @@ export function PermitForm({ open, onOpenChange, permit, projects, members }: Pe
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Permit Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(WORK_PERMIT_TYPES).map(([v, c]) => (
@@ -162,7 +199,7 @@ export function PermitForm({ open, onOpenChange, permit, projects, members }: Pe
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Risk Level</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(RISK_LEVELS).map(([v, c]) => (
@@ -283,7 +320,7 @@ export function PermitForm({ open, onOpenChange, permit, projects, members }: Pe
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Project (optional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {projects.map((p) => (
@@ -301,7 +338,7 @@ export function PermitForm({ open, onOpenChange, permit, projects, members }: Pe
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Issuer (optional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Auto on approval" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {members.map((m) => (

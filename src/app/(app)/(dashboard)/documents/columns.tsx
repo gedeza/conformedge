@@ -19,10 +19,12 @@ import { canEdit, canDelete } from "@/lib/permissions"
 export type DocumentRow = {
   id: string
   title: string
+  description: string | null
   status: string
   version: number
   fileType: string | null
   fileSize: number | null
+  fileUrl: string | null
   expiresAt: Date | null
   createdAt: Date
   project: { id: string; name: string } | null

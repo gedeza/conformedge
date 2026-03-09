@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -135,6 +135,54 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
     },
   })
 
+  useEffect(() => {
+    if (incident) {
+      form.reset({
+        title: incident.title,
+        description: incident.description ?? "",
+        incidentType: (incident.incidentType as IncidentFormValues["incidentType"]),
+        severity: (incident.severity as IncidentFormValues["severity"]),
+        incidentDate: incident.incidentDate,
+        location: incident.location ?? "",
+        injuredParty: incident.injuredParty ?? "",
+        witnesses: incident.witnesses ?? "",
+        immediateAction: incident.immediateAction ?? "",
+        rootCause: incident.rootCause ?? "",
+        investigationDue: incident.investigationDue ?? undefined,
+        projectId: incident.projectId ?? undefined,
+        investigatorId: incident.investigatorId ?? undefined,
+      })
+      const data = parseExistingRootCauseData(incident)
+      setRcMethod(data?.method ?? "simple")
+      setRcCategory(data?.category ?? "")
+      setWhys(data?.method === "5-whys" && data.whys.length > 0 ? data.whys : [createEmptyWhy(0)])
+      setFiveWhysRootCause(data?.method === "5-whys" ? data.rootCause : "")
+      setContainmentAction(data?.containmentAction ?? "")
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        incidentType: "NEAR_MISS",
+        severity: "MEDIUM",
+        incidentDate: new Date(),
+        location: "",
+        injuredParty: "",
+        witnesses: "",
+        immediateAction: "",
+        rootCause: "",
+        investigationDue: undefined,
+        projectId: undefined,
+        investigatorId: undefined,
+      })
+      setRcMethod("simple")
+      setRcCategory("")
+      setWhys([createEmptyWhy(0)])
+      setFiveWhysRootCause("")
+      setContainmentAction("")
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incident])
+
   function addWhy() {
     if (whys.length >= 5) return
     setWhys([...whys, createEmptyWhy(whys.length)])
@@ -230,7 +278,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(INCIDENT_TYPES).map(([v, c]) => (
@@ -248,7 +296,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Severity</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(RISK_LEVELS).map(([v, c]) => (
@@ -470,7 +518,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Investigator</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {members.map((m) => (
@@ -490,7 +538,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project (optional)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                     <SelectContent>
                       {projects.map((p) => (

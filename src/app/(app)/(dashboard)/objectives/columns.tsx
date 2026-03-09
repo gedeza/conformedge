@@ -16,6 +16,7 @@ import { deriveObjectiveStatus } from "@/lib/objective-status"
 export type ObjectiveRow = {
   id: string
   title: string
+  description: string | null
   status: string
   targetValue: number
   currentValue: number

@@ -15,6 +15,7 @@ import { getAssessmentStatus } from "@/lib/assessment-status"
 export type AssessmentRow = {
   id: string
   title: string
+  description: string | null
   overallScore: number | null
   riskLevel: string | null
   scheduledDate: Date | null

@@ -76,6 +76,37 @@ export function ObjectiveForm({ open, onOpenChange, objective, standards, member
   })
 
   useEffect(() => {
+    if (objective) {
+      form.reset({
+        title: objective.title,
+        description: objective.description ?? "",
+        targetValue: objective.targetValue,
+        unit: objective.unit ?? "",
+        measurementFrequency: (objective.measurementFrequency as ObjectiveFormValues["measurementFrequency"]) ?? "MONTHLY",
+        dueDate: objective.dueDate ?? undefined,
+        standardId: objective.standardId ?? undefined,
+        standardClauseId: objective.standardClauseId ?? undefined,
+        ownerId: objective.ownerId,
+      })
+      setSelectedStandardId(objective.standardId || "")
+    } else {
+      form.reset({
+        title: "",
+        description: "",
+        targetValue: 100,
+        unit: "",
+        measurementFrequency: "MONTHLY",
+        dueDate: undefined,
+        standardId: undefined,
+        standardClauseId: undefined,
+        ownerId: "",
+      })
+      setSelectedStandardId("")
+      setClauses([])
+    }
+  }, [objective, form])
+
+  useEffect(() => {
     if (selectedStandardId) {
       getClausesForStandard(selectedStandardId).then(setClauses)
     } else {
@@ -161,7 +192,7 @@ export function ObjectiveForm({ open, onOpenChange, objective, standards, member
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Frequency</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {Object.entries(MEASUREMENT_FREQUENCIES).map(([v, c]) => (
@@ -195,7 +226,7 @@ export function ObjectiveForm({ open, onOpenChange, objective, standards, member
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Owner</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select owner" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {members.map((m) => (
@@ -223,7 +254,7 @@ export function ObjectiveForm({ open, onOpenChange, objective, standards, member
                         setSelectedStandardId(val)
                         form.setValue("standardClauseId", undefined)
                       }}
-                      defaultValue={field.value}
+                      value={field.value}
                     >
                       <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                       <SelectContent>
@@ -244,7 +275,7 @@ export function ObjectiveForm({ open, onOpenChange, objective, standards, member
                     <FormLabel>Clause (optional)</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       disabled={clauses.length === 0}
                     >
                       <FormControl><SelectTrigger><SelectValue placeholder={clauses.length === 0 ? "Select standard first" : "None"} /></SelectTrigger></FormControl>
