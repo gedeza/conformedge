@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-09
-**Phase:** Phase 4A–4D Complete + Billing Complete. Remaining: T101, T110, 4E (PWA)
+**Phase:** Phase 4A–4D Complete + Billing Complete. Remaining: T101, 4E (PWA)
 
 ---
 
@@ -166,7 +166,7 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 - [x] **T95** Create `/incidents/[id]` detail page (timeline, investigation, linked CAPAs)
 - [x] **T96** Add INCIDENT_REPORTED notification type + cron for overdue investigations
 - [x] **T97** Add incidents to dashboard widget (OpenIncidentsWidget)
-- [ ] **T98** Add incidents to reports page (incident trend, severity breakdown)
+- [x] **T98** Add incidents to reports page (incident trend, severity breakdown)
 - [x] **T99** Create incidents-help-panel.tsx
 - [x] **T100** Add sidebar nav item + middleware route
 - [ ] **T101** SA statutory form output: W.Cl.2 (IOD), SAPS 277 (fatality notice) — PDF generation
@@ -181,7 +181,7 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 - [x] **T107** Create `/objectives/new` form page (link to standard/clause)
 - [x] **T108** Create `/objectives/[id]` detail page (measurement history chart via measurement-trend-chart.tsx)
 - [x] **T109** Add objectives widget to dashboard (ObjectivesWidget)
-- [ ] **T110** Integrate with gap analysis — flag clauses where objectives exist but no measurement data
+- [x] **T110** Integrate with gap analysis — flag clauses where objectives exist but no measurement data
 - [x] **T111** Add OBJECTIVE_DUE notification type + cron for measurement reminders
 - [x] **T112** Create objectives-help-panel.tsx
 - [x] **T113** Add sidebar nav item + middleware route
@@ -308,6 +308,8 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T123–T126c | Phase 4D Work Permits — full CRUD, checklist items, extensions, cron auto-expiry, help panel, dashboard widget, sidebar | 2026-03-09 |
 | T133 | Fix edit forms losing data across all 9 entity types (28 files) | 2026-03-09 |
 | T134 | Seed demo data into correct production org (ConformEdge Systems) | 2026-03-09 |
+| T98 | Add incident analytics to reports page (trend chart, severity breakdown) | 2026-03-09 |
+| T110 | Integrate objectives with gap analysis — per-clause indicators, summary card, measurement warnings | 2026-03-09 |
 
 ---
 
