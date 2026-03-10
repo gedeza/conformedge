@@ -83,7 +83,7 @@ export default async function ObjectiveDetailPage({
           <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader><CardTitle>Details</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 <div>
                   <span className="text-muted-foreground">Status</span>
                   <div className="mt-1"><StatusBadge type="objective" value={derivedStatus} /></div>

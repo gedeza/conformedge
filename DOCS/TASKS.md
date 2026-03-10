@@ -216,11 +216,11 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 ### 4E — Mobile-Optimised Field Capture / PWA (Future)
 
 - [x] **T135** Add iSu Technologies developer branding (footer credit, sidebar credit, auth pages, meta tags)
-- [ ] **T128** Add PWA manifest + service worker to Next.js
-- [ ] **T129** Offline-first data capture for checklists with sync
-- [ ] **T130** Camera integration for photo evidence
-- [ ] **T131** Signature capture component
-- [ ] **T132** Responsive mobile layouts for checklists, incidents, inspections
+- [x] **T128** Add PWA manifest + service worker + app icons + metadata to Next.js
+- [x] **T129** Offline-first data capture — IndexedDB sync queue, auto-sync on reconnect, offline indicator in sidebar
+- [x] **T130** Camera integration for photo evidence (front/back camera, file upload fallback, client-side resize)
+- [x] **T131** Signature capture component (canvas-based, touch-ready, retina-aware)
+- [x] **T132** Responsive mobile layouts — PageHeader, DataTable, Pagination + all 12 detail pages
 
 ## P5 — Multi-Vertical Compliance Frameworks (Future)
 
@@ -312,6 +312,11 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T98 | Add incident analytics to reports page (trend chart, severity breakdown) | 2026-03-09 |
 | T110 | Integrate objectives with gap analysis — per-clause indicators, summary card, measurement warnings | 2026-03-09 |
 | T135 | Add iSu Technologies developer branding — landing footer, dashboard sidebar, auth pages, shared portal, meta tags | 2026-03-10 |
+| T128 | PWA manifest + service worker + app icons + viewport/theme metadata | 2026-03-10 |
+| T132 | Responsive mobile layouts — PageHeader, DataTable, Pagination + all 12 detail pages | 2026-03-10 |
+| T131 | Signature capture component (canvas-based, touch-ready, retina-aware) | 2026-03-10 |
+| T130 | Camera integration for photo evidence (front/back camera, file upload fallback, client-side resize) | 2026-03-10 |
+| T129 | Offline-first data capture — IndexedDB sync queue, auto-sync on reconnect, offline indicator | 2026-03-10 |
 
 ---
 

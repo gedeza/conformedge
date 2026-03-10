@@ -30,7 +30,7 @@ export function Pagination({ page, totalPages, total, pageSize, basePath, search
   const from = (page - 1) * pageSize + 1
 
   return (
-    <div className="flex items-center justify-between pt-4">
+    <div className="flex flex-col items-center gap-2 pt-4 sm:flex-row sm:justify-between">
       <p className="text-sm text-muted-foreground">
         Showing {from}–{showing} of {total}
       </p>
@@ -38,7 +38,7 @@ export function Pagination({ page, totalPages, total, pageSize, basePath, search
         <Button variant="outline" size="sm" asChild disabled={page <= 1}>
           <Link href={buildHref(page - 1)} aria-disabled={page <= 1}>
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Link>
         </Button>
         <span className="text-sm text-muted-foreground px-2">
@@ -46,7 +46,7 @@ export function Pagination({ page, totalPages, total, pageSize, basePath, search
         </span>
         <Button variant="outline" size="sm" asChild disabled={page >= totalPages}>
           <Link href={buildHref(page + 1)} aria-disabled={page >= totalPages}>
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="h-4 w-4" />
           </Link>
         </Button>

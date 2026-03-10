@@ -66,7 +66,7 @@ export default async function AuditPackDetailPage({
         </div>
       </PageHeader>
 
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Documents</CardTitle>
@@ -108,7 +108,7 @@ export default async function AuditPackDetailPage({
       <Card className="border-border/50 transition-all hover:shadow-md">
         <CardHeader><CardTitle>Details</CardTitle></CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
             <div>
               <span className="text-muted-foreground">Project</span>
               <p className="mt-1 font-medium">

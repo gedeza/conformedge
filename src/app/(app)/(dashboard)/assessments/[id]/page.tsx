@@ -76,7 +76,7 @@ export default async function AssessmentDetailPage({
         </div>
       )}
 
-      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Overall Score</CardTitle>
@@ -144,7 +144,7 @@ export default async function AssessmentDetailPage({
           <CardTitle>Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
             <div>
               <span className="text-muted-foreground">Assessor</span>
               <p className="mt-1 font-medium">{assessment.assessor.firstName} {assessment.assessor.lastName}</p>

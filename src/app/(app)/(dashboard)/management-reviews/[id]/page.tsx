@@ -57,7 +57,7 @@ export default async function ReviewDetailPage({
           <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader><CardTitle>Review Details</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 <div className="flex items-start gap-2">
                   <CalendarDays className="h-4 w-4 text-muted-foreground mt-0.5" />
                   <div>

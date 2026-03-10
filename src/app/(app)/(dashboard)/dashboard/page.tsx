@@ -227,7 +227,7 @@ export default async function DashboardPage() {
                 className="h-3"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div className="flex items-center gap-2">
                 <CheckSquare className="h-4 w-4 text-purple-500" />
                 <span>{metrics?.totalChecklists ?? 0} checklists</span>
@@ -267,7 +267,7 @@ export default async function DashboardPage() {
                 className="h-3"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
               <div>
                 <span className="text-muted-foreground">Avg accuracy</span>
                 <p className="font-medium">

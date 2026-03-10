@@ -83,14 +83,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         {searchKey && (
           <Input
             placeholder={searchPlaceholder}
             aria-label={searchPlaceholder}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            className="max-w-sm"
+            className="w-full sm:max-w-sm"
           />
         )}
         {filterKey && filterOptions && (
@@ -100,7 +100,7 @@ export function DataTable<TData, TValue>({
               table.getColumn(filterKey)?.setFilterValue(value === "all" ? "" : value)
             }
           >
-            <SelectTrigger className="w-[180px]" aria-label={filterPlaceholder}>
+            <SelectTrigger className="w-full sm:w-[180px]" aria-label={filterPlaceholder}>
               <SelectValue placeholder={filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
@@ -153,7 +153,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
         <p className="text-sm text-muted-foreground">
           {table.getFilteredRowModel().rows.length} row(s)
         </p>
@@ -165,7 +165,7 @@ export function DataTable<TData, TValue>({
             disabled={!table.getCanPreviousPage()}
           >
             <ChevronLeft className="h-4 w-4" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Button>
           <Button
             variant="outline"
@@ -173,7 +173,7 @@ export function DataTable<TData, TValue>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

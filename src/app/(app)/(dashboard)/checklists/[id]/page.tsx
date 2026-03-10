@@ -61,7 +61,7 @@ export default async function ChecklistDetailPage({
         </Alert>
       )}
 
-      <div className={`grid gap-4 grid-cols-2 ${customItems.length > 0 ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
+      <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2 ${customItems.length > 0 ? "lg:grid-cols-5" : "lg:grid-cols-4"}`}>
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Completion</CardTitle>

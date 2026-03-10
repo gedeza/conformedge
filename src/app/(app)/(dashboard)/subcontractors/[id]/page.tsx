@@ -85,7 +85,7 @@ export default async function SubcontractorDetailPage({
               <CardTitle>Company Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 <div>
                   <span className="text-muted-foreground">Tier</span>
                   <div className="mt-1"><StatusBadge type="subcontractor" value={sub.tier} /></div>

@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
+import { OfflineIndicator } from "@/components/shared/offline-indicator"
 import {
   LayoutDashboard,
   FolderKanban,
@@ -175,6 +176,7 @@ export function AppSidebar() {
             )
           })}
         </SidebarMenu>
+        <OfflineIndicator className="mx-3 mb-1 group-data-[collapsible=icon]:hidden" />
         <div className="px-3 pb-2 pt-1 text-[10px] text-muted-foreground/50 group-data-[collapsible=icon]:hidden">
           by{" "}
           <a
