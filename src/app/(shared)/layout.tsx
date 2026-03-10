@@ -14,7 +14,8 @@ export default function SharedLayout({ children }: { children: React.ReactNode }
       <main className="flex-1 container mx-auto px-4 py-6">{children}</main>
       <footer className="border-t bg-white py-4">
         <div className="container mx-auto px-4 text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} ISU Technologies. Powered by {APP_NAME}.
+          &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies. Powered by {APP_NAME}. Developed by{" "}
+          <a href="https://isutech.co.za" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors">iSu Technologies</a>.
         </div>
       </footer>
     </div>

@@ -175,6 +175,17 @@ export function AppSidebar() {
             )
           })}
         </SidebarMenu>
+        <div className="px-3 pb-2 pt-1 text-[10px] text-muted-foreground/50 group-data-[collapsible=icon]:hidden">
+          by{" "}
+          <a
+            href="https://isutech.co.za"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-muted-foreground transition-colors"
+          >
+            iSu Technologies
+          </a>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )

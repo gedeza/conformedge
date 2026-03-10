@@ -128,7 +128,7 @@ function EmailLayout({ children }: { children: React.ReactNode }) {
                           This is an automated notification from ConformEdge.
                         </p>
                         <p style={{ margin: 0, color: "#a1a1aa" }}>
-                          &copy; {new Date().getFullYear()} ISU Technologies. All rights reserved.
+                          &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies. All rights reserved.
                         </p>
                       </td>
                     </tr>

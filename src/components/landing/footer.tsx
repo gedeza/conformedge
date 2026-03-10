@@ -80,10 +80,19 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
           <p className="text-xs text-white/40">
-            &copy; {new Date().getFullYear()} ISU Technologies (Pty) Ltd. All rights reserved.
+            &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies. All rights reserved.
           </p>
           <p className="text-xs text-white/40">
-            Built in South Africa
+            Developed by{" "}
+            <a
+              href="https://isutech.co.za"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 underline decoration-white/20 transition-colors hover:text-white"
+            >
+              iSu Technologies
+            </a>
+            {" "}| Built in South Africa
           </p>
         </div>
       </div>

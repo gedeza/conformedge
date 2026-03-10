@@ -2,6 +2,12 @@ export const APP_NAME = "ConformEdge"
 export const APP_DESCRIPTION = "AI-Powered ISO Compliance Management"
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
+export const DEVELOPER = {
+  name: "iSu Technologies",
+  legalName: "ISU Technologies",
+  url: "https://isutech.co.za",
+} as const
+
 export const ROLES = {
   OWNER: "OWNER",
   ADMIN: "ADMIN",

@@ -215,6 +215,7 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 
 ### 4E — Mobile-Optimised Field Capture / PWA (Future)
 
+- [x] **T135** Add iSu Technologies developer branding (footer credit, sidebar credit, auth pages, meta tags)
 - [ ] **T128** Add PWA manifest + service worker to Next.js
 - [ ] **T129** Offline-first data capture for checklists with sync
 - [ ] **T130** Camera integration for photo evidence
@@ -310,6 +311,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T134 | Seed demo data into correct production org (ConformEdge Systems) | 2026-03-09 |
 | T98 | Add incident analytics to reports page (trend chart, severity breakdown) | 2026-03-09 |
 | T110 | Integrate objectives with gap analysis — per-clause indicators, summary card, measurement warnings | 2026-03-09 |
+| T135 | Add iSu Technologies developer branding — landing footer, dashboard sidebar, auth pages, shared portal, meta tags | 2026-03-10 |
 
 ---
 
