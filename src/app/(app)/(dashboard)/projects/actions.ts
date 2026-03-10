@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
+import { getBillingContext, checkProjectLimit } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const projectSchema = z.object({
@@ -65,6 +66,13 @@ export async function createProject(values: ProjectFormValues): Promise<ActionRe
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Enforce project limit per plan tier
+    const billing = await getBillingContext(dbOrgId)
+    const projectCount = await db.project.count({ where: { organizationId: dbOrgId } })
+    const limitCheck = checkProjectLimit(billing, projectCount)
+    if (!limitCheck.allowed) return { success: false, error: limitCheck.reason! }
+
     const parsed = projectSchema.parse(values)
 
     const project = await db.project.create({

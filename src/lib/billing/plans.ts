@@ -8,6 +8,8 @@ export interface PlanLimits {
   maxUsers: number | null          // null = unlimited
   maxStandards: number | null
   maxDocuments: number | null
+  maxProjects: number | null       // null = unlimited — prevents consultant abuse
+  maxSubcontractors: number | null // null = unlimited — prevents consultant abuse
   aiClassificationsPerMonth: number | null
 }
 
@@ -48,6 +50,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxUsers: 5,
       maxStandards: 2,
       maxDocuments: 1_000,
+      maxProjects: 5,
+      maxSubcontractors: 10,
       aiClassificationsPerMonth: 50,
     },
     features: {
@@ -77,6 +81,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxUsers: 10,
       maxStandards: 5,
       maxDocuments: null,
+      maxProjects: 15,
+      maxSubcontractors: 25,
       aiClassificationsPerMonth: 200,
     },
     features: {
@@ -106,6 +112,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxUsers: 25,
       maxStandards: null,
       maxDocuments: null,
+      maxProjects: 30,
+      maxSubcontractors: 50,
       aiClassificationsPerMonth: 500,
     },
     features: {
@@ -135,6 +143,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxUsers: null,
       maxStandards: null,
       maxDocuments: null,
+      maxProjects: null,
+      maxSubcontractors: null,
       aiClassificationsPerMonth: null,
     },
     features: {

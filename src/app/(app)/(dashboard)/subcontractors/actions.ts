@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
+import { getBillingContext, checkSubcontractorLimit } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const subcontractorSchema = z.object({
@@ -56,6 +57,13 @@ export async function createSubcontractor(values: SubcontractorFormValues): Prom
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Enforce subcontractor limit per plan tier
+    const billing = await getBillingContext(dbOrgId)
+    const subCount = await db.subcontractor.count({ where: { organizationId: dbOrgId } })
+    const limitCheck = checkSubcontractorLimit(billing, subCount)
+    if (!limitCheck.allowed) return { success: false, error: limitCheck.reason! }
+
     const parsed = subcontractorSchema.parse(values)
 
     const sub = await db.subcontractor.create({

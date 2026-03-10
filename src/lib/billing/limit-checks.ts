@@ -94,6 +94,72 @@ export function checkStandardsLimit(billing: BillingContext, activeStandardCount
 }
 
 /**
+ * Check if the org can create more projects.
+ * Prevents consultant abuse — a consulting firm managing 50 clients
+ * as "projects" within one org instead of using the Partner program.
+ */
+export function checkProjectLimit(billing: BillingContext, currentProjectCount: number): LimitCheckResult {
+  if (!isActiveSubscription(billing.subscription.status)) {
+    return { allowed: false, reason: "Subscription is not active." }
+  }
+
+  if (billing.subscription.status === "TRIALING") {
+    return { allowed: true }
+  }
+
+  const plan = PLAN_DEFINITIONS[billing.subscription.plan]
+  if (plan.limits.maxProjects === null) {
+    return { allowed: true }
+  }
+
+  if (currentProjectCount >= plan.limits.maxProjects) {
+    const upgrade = getNextTier(billing.subscription.plan)
+    return {
+      allowed: false,
+      reason: `Your ${plan.name} plan supports up to ${plan.limits.maxProjects} projects. Need more? Upgrade your plan or contact us about our Consulting Partner program.`,
+      upgradeRequired: upgrade,
+      current: currentProjectCount,
+      limit: plan.limits.maxProjects,
+    }
+  }
+
+  return { allowed: true, current: currentProjectCount, limit: plan.limits.maxProjects }
+}
+
+/**
+ * Check if the org can add more subcontractors.
+ * Prevents consultant abuse — forces high-volume subcontractor management
+ * into higher tiers or the Partner program.
+ */
+export function checkSubcontractorLimit(billing: BillingContext, currentSubcontractorCount: number): LimitCheckResult {
+  if (!isActiveSubscription(billing.subscription.status)) {
+    return { allowed: false, reason: "Subscription is not active." }
+  }
+
+  if (billing.subscription.status === "TRIALING") {
+    return { allowed: true }
+  }
+
+  const plan = PLAN_DEFINITIONS[billing.subscription.plan]
+  if (plan.limits.maxSubcontractors === null) {
+    return { allowed: true }
+  }
+
+  if (currentSubcontractorCount >= plan.limits.maxSubcontractors) {
+    const upgrade = getNextTier(billing.subscription.plan)
+    return {
+      allowed: false,
+      reason: `Your ${plan.name} plan supports up to ${plan.limits.maxSubcontractors} subcontractors. Need more? Upgrade your plan or contact us about our Consulting Partner program.`,
+      upgradeRequired: upgrade,
+      current: currentSubcontractorCount,
+      limit: plan.limits.maxSubcontractors,
+    }
+  }
+
+  return { allowed: true, current: currentSubcontractorCount, limit: plan.limits.maxSubcontractors }
+}
+
+/**
  * Check if the org can use an AI classification.
  * Priority: monthly quota first, then purchased credits.
  */

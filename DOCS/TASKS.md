@@ -241,6 +241,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T140** Feature gate redistribution — Professional now includes audit packs, approval workflows, custom forms; Business adds API access (plans.ts)
 - [x] **T141** Per-user overage pricing added to landing page tier descriptions (+R99/R149/R199 per tier)
 - [x] **T142** Pricing strategy document — full market research, competitor analysis, consulting/government models (DOCS/pricing-strategy/PRICING-STRATEGY-2026.md)
+- [x] **T147** Add project + subcontractor limits per tier to prevent consultant abuse (plans.ts, limit-checks.ts, project actions, subcontractor actions)
 - [ ] **T143** Build "Become a Partner" landing page for consulting firms (future)
 - [ ] **T144** Government price list PDF template for procurement (future)
 - [ ] **T145** Consultant dashboard — cross-org management view (future)
@@ -341,6 +342,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T140 | Feature gate redistribution — Professional gets audit packs, approvals, custom forms; Business gets API | 2026-03-10 |
 | T141 | Per-user overage pricing in landing page tier descriptions | 2026-03-10 |
 | T142 | Pricing strategy document — market research, competitor analysis, consulting/government models | 2026-03-10 |
+| T147 | Project (5/15/30/∞) + subcontractor (10/25/50/∞) limits per tier — anti-consultant-abuse gate | 2026-03-10 |
 
 ---
 
