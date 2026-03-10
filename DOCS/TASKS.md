@@ -169,7 +169,7 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 - [x] **T98** Add incidents to reports page (incident trend, severity breakdown)
 - [x] **T99** Create incidents-help-panel.tsx
 - [x] **T100** Add sidebar nav item + middleware route
-- [ ] **T101** SA statutory form output: W.Cl.2 (IOD), SAPS 277 (fatality notice) — PDF generation
+- [x] **T101** SA statutory form output: W.Cl.2 (IOD), SAPS 277 (fatality notice) — PDF generation + dropdown on incident detail
 
 ### 4B — Objectives, Targets & KPI Tracking — COMPLETE
 
@@ -319,6 +319,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T129 | Offline-first data capture — IndexedDB sync queue, auto-sync on reconnect, offline indicator | 2026-03-10 |
 | T33 | DMRE/MHSA compliance references — 8 chapters, 33 sub-clauses covering mine health & safety | 2026-03-10 |
 | T36 | POPIA compliance references — 11 chapters, 40 sub-clauses covering data protection | 2026-03-10 |
+| T101 | SA statutory forms — W.Cl.2 (IOD) + SAPS 277 (fatality) PDF generation with dropdown on incident detail | 2026-03-10 |
 
 ---
 

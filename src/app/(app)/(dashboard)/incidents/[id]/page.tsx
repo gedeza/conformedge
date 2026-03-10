@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/shared/page-header"
 import { getAuthContext } from "@/lib/auth"
 import { getIncident, getCapaOptions } from "../actions"
 import { IncidentActionsPanel } from "./incident-actions-panel"
+import { StatutoryFormButton } from "./statutory-form-button"
 import type { RootCauseData } from "@/types"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -128,6 +129,7 @@ export default async function IncidentDetailPage({
 
       <PageHeader heading={incident.title} description={incident.description ?? undefined}>
         <div className="flex items-center gap-2">
+          <StatutoryFormButton incidentId={incident.id} />
           <StatusBadge type="incident" value={incident.status} />
           <StatusBadge type="incidentType" value={incident.incidentType} />
           <StatusBadge type="risk" value={incident.severity} />
