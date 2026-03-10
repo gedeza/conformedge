@@ -176,7 +176,7 @@ export function checkFeatureAccess(
 // Helpers
 // ─────────────────────────────────────────────
 
-const TIER_ORDER: PlanTier[] = ["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"]
+const TIER_ORDER: PlanTier[] = ["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"] // STARTER = Essentials in UI
 
 function getNextTier(current: PlanTier): PlanTier | undefined {
   const idx = TIER_ORDER.indexOf(current)

@@ -41,13 +41,13 @@ export interface PlanDefinition {
 export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   STARTER: {
     tier: "STARTER",
-    name: "Starter",
-    monthlyPriceZar: 699_00,       // R699 in cents
+    name: "Essentials",
+    monthlyPriceZar: 1_299_00,     // R1,299 in cents
     description: "For small businesses getting started with ISO compliance.",
     limits: {
       maxUsers: 5,
       maxStandards: 2,
-      maxDocuments: 500,
+      maxDocuments: 1_000,
       aiClassificationsPerMonth: 50,
     },
     features: {
@@ -71,11 +71,11 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   PROFESSIONAL: {
     tier: "PROFESSIONAL",
     name: "Professional",
-    monthlyPriceZar: 1_999_00,     // R1,999 in cents
+    monthlyPriceZar: 2_999_00,     // R2,999 in cents
     description: "For growing companies managing multiple standards.",
     limits: {
-      maxUsers: 15,
-      maxStandards: 7,
+      maxUsers: 10,
+      maxStandards: 5,
       maxDocuments: null,
       aiClassificationsPerMonth: 200,
     },
@@ -86,9 +86,9 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       reportExport: true,
       gapAnalysis: true,
       subcontractorPortal: false,
-      customFormBuilder: false,
-      auditPackGeneration: false,
-      approvalWorkflows: false,
+      customFormBuilder: true,
+      auditPackGeneration: true,
+      approvalWorkflows: true,
       customStandards: false,
       incidentManagement: true,
       objectivesTracking: true,
@@ -100,10 +100,10 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   BUSINESS: {
     tier: "BUSINESS",
     name: "Business",
-    monthlyPriceZar: 4_499_00,     // R4,499 in cents
-    description: "For multi-site firms with advanced compliance needs.",
+    monthlyPriceZar: 5_999_00,     // R5,999 in cents
+    description: "For multi-site firms with SA regulatory compliance needs.",
     limits: {
-      maxUsers: 50,
+      maxUsers: 25,
       maxStandards: null,
       maxDocuments: null,
       aiClassificationsPerMonth: 500,
@@ -122,7 +122,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       incidentManagement: true,
       objectivesTracking: true,
       permitToWork: true,
-      apiAccess: false,
+      apiAccess: true,
       sso: false,
     },
   },
@@ -169,9 +169,10 @@ export interface CreditPack {
 }
 
 export const CREDIT_PACKS: CreditPack[] = [
-  { id: "pack-100", credits: 100, priceZar: 15_00, perCreditZar: 15 },
-  { id: "pack-500", credits: 500, priceZar: 65_00, perCreditZar: 13 },
-  { id: "pack-1000", credits: 1000, priceZar: 120_00, perCreditZar: 12 },
+  { id: "pack-100", credits: 100, priceZar: 25_00, perCreditZar: 25 },
+  { id: "pack-500", credits: 500, priceZar: 99_00, perCreditZar: 19 },
+  { id: "pack-1000", credits: 1000, priceZar: 179_00, perCreditZar: 17 },
+  { id: "pack-5000", credits: 5000, priceZar: 749_00, perCreditZar: 14 },
 ]
 
 // ─────────────────────────────────────────────

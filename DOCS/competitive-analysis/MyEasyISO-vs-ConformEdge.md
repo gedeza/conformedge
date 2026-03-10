@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-MyEasyISO (by Effivity Technologies, 20+ years, 7,500 customers globally) offers 30+ modules covering every conceivable QHSE function. ConformEdge offers 14 modules but with AI-powered intelligence that MyEasyISO cannot replicate without a full rebuild.
+MyEasyISO (by Effivity Technologies, 20+ years, 7,500 customers globally) offers 30+ modules covering every conceivable QHSE function. ConformEdge now offers **31 modules** with AI-powered intelligence, SA-specific regulatory automation, and 9 compliance frameworks that MyEasyISO cannot replicate without a full rebuild. **Update (2026-03-10):** All 5 recommended features have been built (Incidents, Objectives, Management Reviews, Work Permits, PWA). Module count has grown from 14 to 31. Pricing revised upward — see `DOCS/pricing-strategy/PRICING-STRATEGY-2026.md`.
 
 **Key finding:** MyEasyISO is broad but outdated. ConformEdge is focused but intelligent. Neither is a direct threat to the other — they serve different paradigms. The strategic question is not "should we worry?" but rather "what should we selectively add to close deal-breaking gaps?"
 

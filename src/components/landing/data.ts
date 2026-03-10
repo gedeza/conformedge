@@ -25,6 +25,8 @@ export const ISO_STANDARDS = [
   { code: "ISO 19011", name: "Auditing", clauses: 25 },
   { code: "ISO 31000", name: "Risk Management", clauses: 24 },
   { code: "ISO 44001", name: "Collaborative Business", clauses: 22 },
+  { code: "DMRE/MHSA", name: "Mine Health & Safety", clauses: 33 },
+  { code: "POPIA", name: "Data Protection", clauses: 40 },
 ] as const
 
 export const PAIN_POINTS = [
@@ -133,7 +135,7 @@ export const FEATURE_DETAILS = [
   {
     title: "Integrated Management System",
     subtitle: "Multi-Standard Compliance",
-    description: "Manage ISO 9001, 14001, 45001, 27001, and more from a single dashboard. Our IMS engine identifies equivalent requirements across standards, so one document can satisfy multiple clauses.",
+    description: "Manage ISO 9001, 14001, 45001, 27001, DMRE/MHSA, POPIA, and more from a single dashboard. Our IMS engine identifies equivalent requirements across standards, so one document can satisfy multiple clauses.",
     bullets: [
       "Cross-standard requirement mapping",
       "Shared compliance evidence across standards",
@@ -145,10 +147,10 @@ export const FEATURE_DETAILS = [
 ] as const
 
 export const METRICS = [
-  { value: 7, suffix: "", label: "ISO Standards Covered", prefix: "" },
-  { value: 187, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
+  { value: 9, suffix: "", label: "Compliance Frameworks", prefix: "" },
+  { value: 227, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
   { value: 85, suffix: "%", label: "Faster Audit Prep", prefix: "" },
-  { value: 24, suffix: "/7", label: "Compliance Monitoring", prefix: "" },
+  { value: 31, suffix: "", label: "Integrated Modules", prefix: "" },
 ] as const
 
 // Billing constants
@@ -165,50 +167,57 @@ export type PricingTier = {
 
 export const PRICING_TIERS: PricingTier[] = [
   {
-    name: "Starter",
-    monthlyPrice: 699,
+    name: "Essentials",
+    monthlyPrice: 1299,
     description: "For small businesses getting started with ISO compliance.",
     features: [
-      "Up to 5 users",
-      "2 ISO standards",
-      "500 documents",
+      "Up to 5 users (+R99/user)",
+      "2 compliance frameworks",
+      "1,000 documents",
       "50 AI classifications/month",
-      "Compliance checklists",
-      "Email support",
+      "Assessments & checklists",
+      "CAPAs & gap analysis",
+      "Calendar & scheduling",
+      "Email support (48h SLA)",
     ],
     cta: "Start Free Trial",
     highlighted: false,
   },
   {
     name: "Professional",
-    monthlyPrice: 1999,
+    monthlyPrice: 2999,
     description: "For growing companies managing multiple standards.",
     features: [
-      "Up to 15 users",
-      "All 7 ISO standards",
+      "Up to 10 users (+R149/user)",
+      "5 compliance frameworks",
       "Unlimited documents",
       "200 AI classifications/month",
       "IMS cross-standard mapping",
+      "Incident management",
+      "Objectives & KPI tracking",
+      "Work permits (3 types)",
+      "Audit packs & approval workflows",
       "Client portal sharing",
-      "Recurring checklists",
-      "Priority support",
+      "Report export (CSV/PDF)",
+      "Priority support (24h SLA)",
     ],
     cta: "Start Free Trial",
     highlighted: true,
   },
   {
     name: "Business",
-    monthlyPrice: 4499,
-    description: "For multi-site firms with advanced compliance needs.",
+    monthlyPrice: 5999,
+    description: "For multi-site firms with SA regulatory compliance needs.",
     features: [
-      "Up to 50 users",
-      "All 7 + custom standards",
+      "Up to 25 users (+R199/user)",
+      "All 9 frameworks (incl. DMRE & POPIA)",
       "500 AI classifications/month",
-      "Subcontractor portal",
-      "Custom form builder",
-      "Audit pack generation",
-      "Approval workflows",
-      "Dedicated support",
+      "SA statutory forms (W.Cl.2, SAPS 277)",
+      "Work permits (all 7 types)",
+      "Subcontractor compliance portal",
+      "Advanced reports & analytics",
+      "API access",
+      "Dedicated support (8h SLA)",
     ],
     cta: "Start Free Trial",
     highlighted: false,
@@ -221,9 +230,10 @@ export const PRICING_TIERS: PricingTier[] = [
       "Unlimited users",
       "Unlimited AI classifications",
       "SSO & advanced security",
-      "API access",
-      "Dedicated account manager",
+      "Full API access (read/write)",
       "Custom integrations",
+      "Dedicated account manager",
+      "4h response SLA",
       "On-site training",
     ],
     cta: "Contact Sales",
@@ -239,9 +249,9 @@ export type AiCreditPack = {
 }
 
 export const AI_CREDIT_PACKS: AiCreditPack[] = [
-  { credits: 100, price: 15, perCredit: 0.15 },
-  { credits: 500, price: 65, perCredit: 0.13, popular: true },
-  { credits: 1000, price: 120, perCredit: 0.12 },
+  { credits: 100, price: 25, perCredit: 0.25 },
+  { credits: 500, price: 99, perCredit: 0.198, popular: true },
+  { credits: 1000, price: 179, perCredit: 0.179 },
 ]
 
 export const FOOTER_LINKS = {

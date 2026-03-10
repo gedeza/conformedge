@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
 **Last Updated:** 2026-03-10
-**Phase:** Phase 4A–4E Complete + Billing Complete + P5 (DMRE, POPIA). Remaining: T101, T34, T35, T37
+**Phase:** Phase 4A–4E Complete + Billing Complete + P5 (DMRE, POPIA) + Pricing Revision. Remaining: T34, T35, T37
 
 ---
 
@@ -46,7 +46,7 @@
 
 ## P3 — Before Billing Implementation — ALL COMPLETE
 
-- [x] **T23** Finalize user tier limits at 5/15/50/Unlimited — **CONFIRMED, documented in billing plan**
+- [x] **T23** Finalize user tier limits at 5/10/25/Unlimited — **Revised 2026-03-10 (was 5/15/50/Unlimited)**
 - [x] **T24** Design onboarding AI credit allowance — **100 credits, expire with trial, documented in billing plan**
 - [x] **T25** Plan trial-period unlimited user invites — **Enforce on conversion only, documented in billing plan**
 
@@ -232,6 +232,20 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T36** Add POPIA compliance references for IT services sector (11 chapters, 40 sub-clauses)
 - [ ] **T37** Make compliance scoring weights industry-aware (CIDB/BEE for construction, DMRE for mining, etc.)
 
+## P6 — Pricing Revision & Market Strategy
+
+- [x] **T136** Pricing tier revision — Starter→Essentials R1,299, Professional R2,999, Business R5,999, Enterprise R12,000+ (plans.ts, constants.ts, landing data.ts)
+- [x] **T137** AI credit pack repricing — R25/100, R99/500, R179/1000, R749/5000 (plans.ts, landing data.ts)
+- [x] **T138** Landing page metrics update — 9 frameworks, 227+ sub-clauses, 31 modules (data.ts)
+- [x] **T139** Landing page standards list update — added DMRE/MHSA + POPIA (data.ts)
+- [x] **T140** Feature gate redistribution — Professional now includes audit packs, approval workflows, custom forms; Business adds API access (plans.ts)
+- [x] **T141** Per-user overage pricing added to landing page tier descriptions (+R99/R149/R199 per tier)
+- [x] **T142** Pricing strategy document — full market research, competitor analysis, consulting/government models (DOCS/pricing-strategy/PRICING-STRATEGY-2026.md)
+- [ ] **T143** Build "Become a Partner" landing page for consulting firms (future)
+- [ ] **T144** Government price list PDF template for procurement (future)
+- [ ] **T145** Consultant dashboard — cross-org management view (future)
+- [ ] **T146** SITA vendor registration + B-BBEE certification (manual, business action)
+
 ---
 
 ## Completed Tasks
@@ -320,6 +334,13 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T33 | DMRE/MHSA compliance references — 8 chapters, 33 sub-clauses covering mine health & safety | 2026-03-10 |
 | T36 | POPIA compliance references — 11 chapters, 40 sub-clauses covering data protection | 2026-03-10 |
 | T101 | SA statutory forms — W.Cl.2 (IOD) + SAPS 277 (fatality) PDF generation with dropdown on incident detail | 2026-03-10 |
+| T136 | Pricing tier revision — Essentials R1,299, Professional R2,999, Business R5,999, Enterprise R12,000+ | 2026-03-10 |
+| T137 | AI credit pack repricing — R25/100, R99/500, R179/1000, R749/5000 | 2026-03-10 |
+| T138 | Landing page metrics — 9 frameworks, 227+ sub-clauses, 31 modules | 2026-03-10 |
+| T139 | Landing page standards — added DMRE/MHSA + POPIA to standards list | 2026-03-10 |
+| T140 | Feature gate redistribution — Professional gets audit packs, approvals, custom forms; Business gets API | 2026-03-10 |
+| T141 | Per-user overage pricing in landing page tier descriptions | 2026-03-10 |
+| T142 | Pricing strategy document — market research, competitor analysis, consulting/government models | 2026-03-10 |
 
 ---
 

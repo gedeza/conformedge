@@ -313,7 +313,7 @@ export const SUBSCRIPTION_STATUSES = {
 } as const
 
 export const PLAN_TIERS = {
-  STARTER: { label: "Starter", color: "bg-gray-100 text-gray-800" },
+  STARTER: { label: "Essentials", color: "bg-gray-100 text-gray-800" },
   PROFESSIONAL: { label: "Professional", color: "bg-blue-100 text-blue-800" },
   BUSINESS: { label: "Business", color: "bg-purple-100 text-purple-800" },
   ENTERPRISE: { label: "Enterprise", color: "bg-amber-100 text-amber-800" },
