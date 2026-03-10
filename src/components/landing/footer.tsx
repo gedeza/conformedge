@@ -83,16 +83,7 @@ export function Footer() {
             &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies. All rights reserved.
           </p>
           <p className="text-xs text-white/40">
-            Developed by{" "}
-            <a
-              href="https://isutech.co.za"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/60 underline decoration-white/20 transition-colors hover:text-white"
-            >
-              iSu Technologies
-            </a>
-            {" "}| Built in South Africa
+            Built in South Africa
           </p>
         </div>
       </div>
