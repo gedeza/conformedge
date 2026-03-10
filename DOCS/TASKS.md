@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
-**Last Updated:** 2026-03-09
-**Phase:** Phase 4A–4D Complete + Billing Complete. Remaining: T101, 4E (PWA)
+**Last Updated:** 2026-03-10
+**Phase:** Phase 4A–4E Complete + Billing Complete + P5 (DMRE, POPIA). Remaining: T101, T34, T35, T37
 
 ---
 
@@ -226,10 +226,10 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 
 Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are selling points.
 
-- [ ] **T33** Add DMRE compliance references for mining sector
+- [x] **T33** Add DMRE/MHSA compliance references for mining sector (8 chapters, 33 sub-clauses)
 - [ ] **T34** Add ECSA compliance references for engineering sector
 - [ ] **T35** Add SACPCMP compliance references for project management sector
-- [ ] **T36** Add POPIA compliance references for IT services sector
+- [x] **T36** Add POPIA compliance references for IT services sector (11 chapters, 40 sub-clauses)
 - [ ] **T37** Make compliance scoring weights industry-aware (CIDB/BEE for construction, DMRE for mining, etc.)
 
 ---
@@ -317,6 +317,8 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 | T131 | Signature capture component (canvas-based, touch-ready, retina-aware) | 2026-03-10 |
 | T130 | Camera integration for photo evidence (front/back camera, file upload fallback, client-side resize) | 2026-03-10 |
 | T129 | Offline-first data capture — IndexedDB sync queue, auto-sync on reconnect, offline indicator | 2026-03-10 |
+| T33 | DMRE/MHSA compliance references — 8 chapters, 33 sub-clauses covering mine health & safety | 2026-03-10 |
+| T36 | POPIA compliance references — 11 chapters, 40 sub-clauses covering data protection | 2026-03-10 |
 
 ---
 

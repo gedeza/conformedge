@@ -6,6 +6,8 @@ import { ISO22301_SUB_CLAUSES } from "./seed-data/iso22301-subclauses"
 import { ISO27001_SUB_CLAUSES } from "./seed-data/iso27001-subclauses"
 import { ISO37001_SUB_CLAUSES } from "./seed-data/iso37001-subclauses"
 import { ISO39001_SUB_CLAUSES } from "./seed-data/iso39001-subclauses"
+import { DMRE_MHSA_SUB_CLAUSES } from "./seed-data/dmre-mhsa-subclauses"
+import { POPIA_SUB_CLAUSES } from "./seed-data/popia-subclauses"
 import { generateHLSCrossReferences, DOMAIN_CROSS_REFERENCES } from "./seed-data/cross-references"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
@@ -78,6 +80,18 @@ const STANDARDS: StandardSeed[] = [
     name: "ISO 39001:2012",
     description: "Road Traffic Safety Management Systems - Requirements with guidance for use",
     version: "2012",
+  },
+  {
+    code: "DMRE_MHSA",
+    name: "MHSA (Act 29 of 1996)",
+    description: "Mine Health and Safety Act — South African regulatory framework for mining sector health, safety, and compliance",
+    version: "1996",
+  },
+  {
+    code: "POPIA",
+    name: "POPIA (Act 4 of 2013)",
+    description: "Protection of Personal Information Act — South African data protection legislation for lawful processing of personal information",
+    version: "2013",
   },
 ]
 
@@ -351,6 +365,107 @@ const STANDARD_CLAUSES: Record<string, ClauseData[]> = {
       clauseNumber: "10",
       title: "Improvement",
       description: "Determine opportunities for improvement, react to nonconformities and RTS incidents with corrective actions, and continually improve road traffic safety performance and the RTS MS.",
+    },
+  ],
+
+  DMRE_MHSA: [
+    {
+      clauseNumber: "1",
+      title: "Definitions and Application",
+      description: "Definitions of key terms and application of the Mine Health and Safety Act to mines, mining areas, and works in South Africa.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Health and Safety at Mines",
+      description: "Employer and employee duties, risk assessment, codes of practice, health and safety policy, occupational hygiene, health surveillance, and emergency preparedness.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Tripartite Institutions",
+      description: "Mine Health and Safety Council, health and safety committees, and health and safety representatives — roles, election, and functions.",
+    },
+    {
+      clauseNumber: "4",
+      title: "Officers and Inspections",
+      description: "Chief Inspector of Mines, inspector powers, prohibition and improvement notices, and enforcement mechanisms.",
+    },
+    {
+      clauseNumber: "5",
+      title: "Incidents and Reporting",
+      description: "Reporting of incidents, accidents, occupational diseases, and dangerous occurrences. Investigation requirements and record-keeping.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Regulations and Standards",
+      description: "Mandatory codes of practice, mine design and ventilation, ground control, machinery safety, PPE, and training requirements.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Offences and Penalties",
+      description: "Offences under the Act, penalties including fines and imprisonment, and director/officer personal liability.",
+    },
+    {
+      clauseNumber: "8",
+      title: "General Provisions",
+      description: "Compensation for occupational injuries, rehabilitation, contractor management, and environmental management obligations.",
+    },
+  ],
+
+  POPIA: [
+    {
+      clauseNumber: "1",
+      title: "Definitions, Purpose and Application",
+      description: "Definitions of key terms, purpose of the Act to protect personal information, and scope of application including exclusions.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Conditions for Lawful Processing",
+      description: "Eight conditions for lawful processing: accountability, processing limitation, purpose specification, further processing limitation, information quality, openness, security safeguards, and data subject participation.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Rights of Data Subjects",
+      description: "Rights of access, correction, deletion, objection to processing, protection from automated decision-making, and the right to submit complaints.",
+    },
+    {
+      clauseNumber: "4",
+      title: "Exemptions",
+      description: "General exemptions from certain conditions and the process for applying for exemptions from the Information Regulator.",
+    },
+    {
+      clauseNumber: "5",
+      title: "Special Personal Information",
+      description: "Prohibition on processing special categories of personal information (race, health, biometrics, criminal records) and authorised exceptions. Processing of children's personal information.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Transborder Information Flows",
+      description: "Restrictions on cross-border transfer of personal information, adequacy requirements, binding corporate rules, and contractual safeguards.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Information Regulator",
+      description: "Establishment, functions, enforcement and investigation powers, and codes of conduct issued by the Information Regulator.",
+    },
+    {
+      clauseNumber: "8",
+      title: "Information Officer",
+      description: "Designation, delegation to deputies, responsibilities including compliance framework, impact assessments, and registration with the Regulator.",
+    },
+    {
+      clauseNumber: "9",
+      title: "Security Compromises",
+      description: "Notification obligations for data breaches, required content of notifications, and breach response and remediation procedures.",
+    },
+    {
+      clauseNumber: "10",
+      title: "Direct Marketing",
+      description: "Restrictions on unsolicited electronic direct marketing, opt-out requirements, and handling of pre-existing marketing lists.",
+    },
+    {
+      clauseNumber: "11",
+      title: "Offences, Penalties and Administrative Fines",
+      description: "Criminal offences, penalties up to R10 million or 10 years imprisonment, civil remedies for data subjects, and operator liability.",
     },
   ],
 }
@@ -657,6 +772,8 @@ async function main() {
     ISO27001: ISO27001_SUB_CLAUSES,
     ISO37001: ISO37001_SUB_CLAUSES,
     ISO39001: ISO39001_SUB_CLAUSES,
+    DMRE_MHSA: DMRE_MHSA_SUB_CLAUSES,
+    POPIA: POPIA_SUB_CLAUSES,
   }
 
   let totalSubClauses = 0
@@ -669,9 +786,11 @@ async function main() {
     }
 
     // Build a map of parent clause numbers to their IDs for this standard
+    // Derive parent numbers dynamically from the sub-clause data
     const parentClauseMap = new Map<string, string>()
+    const parentNumbers = [...new Set(subClauses.map((sc) => sc.parentClauseNumber))]
 
-    for (const parentClauseNumber of ["4", "5", "6", "7", "8", "9", "10"]) {
+    for (const parentClauseNumber of parentNumbers) {
       const parent = await prisma.standardClause.findFirst({
         where: {
           clauseNumber: parentClauseNumber,
