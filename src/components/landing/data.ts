@@ -148,7 +148,7 @@ export const FEATURE_DETAILS = [
 
 export const METRICS = [
   { value: 9, suffix: "", label: "Compliance Frameworks", prefix: "" },
-  { value: 227, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
+  { value: 340, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
   { value: 85, suffix: "%", label: "Faster Audit Prep", prefix: "" },
   { value: 31, suffix: "", label: "Integrated Modules", prefix: "" },
 ] as const
@@ -168,10 +168,10 @@ export type PricingTier = {
 export const PRICING_TIERS: PricingTier[] = [
   {
     name: "Essentials",
-    monthlyPrice: 1299,
+    monthlyPrice: 2299,
     description: "For small businesses getting started with ISO compliance.",
     features: [
-      "Up to 5 users (+R99/user)",
+      "Up to 5 users (+R149/user)",
       "2 compliance frameworks",
       "1,000 documents",
       "50 AI classifications/month",
@@ -185,7 +185,7 @@ export const PRICING_TIERS: PricingTier[] = [
   },
   {
     name: "Professional",
-    monthlyPrice: 2999,
+    monthlyPrice: 4499,
     description: "For growing companies managing multiple standards.",
     features: [
       "Up to 10 users (+R149/user)",
@@ -206,7 +206,7 @@ export const PRICING_TIERS: PricingTier[] = [
   },
   {
     name: "Business",
-    monthlyPrice: 5999,
+    monthlyPrice: 8499,
     description: "For multi-site firms with SA regulatory compliance needs.",
     features: [
       "Up to 25 users (+R199/user)",

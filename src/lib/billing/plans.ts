@@ -44,7 +44,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   STARTER: {
     tier: "STARTER",
     name: "Essentials",
-    monthlyPriceZar: 1_299_00,     // R1,299 in cents
+    monthlyPriceZar: 2_299_00,     // R2,299 in cents
     description: "For small businesses getting started with ISO compliance.",
     limits: {
       maxUsers: 5,
@@ -75,7 +75,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   PROFESSIONAL: {
     tier: "PROFESSIONAL",
     name: "Professional",
-    monthlyPriceZar: 2_999_00,     // R2,999 in cents
+    monthlyPriceZar: 4_499_00,     // R4,499 in cents
     description: "For growing companies managing multiple standards.",
     limits: {
       maxUsers: 10,
@@ -106,7 +106,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   BUSINESS: {
     tier: "BUSINESS",
     name: "Business",
-    monthlyPriceZar: 5_999_00,     // R5,999 in cents
+    monthlyPriceZar: 8_499_00,     // R8,499 in cents
     description: "For multi-site firms with SA regulatory compliance needs.",
     limits: {
       maxUsers: 25,
