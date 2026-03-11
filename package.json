@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:demo": "npx tsx prisma/seed-demo.ts"
+    "seed:demo": "npx tsx prisma/seed-demo.ts",
+    "seed:maziya": "npx tsx prisma/scripts/seed-maziya-demo.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
