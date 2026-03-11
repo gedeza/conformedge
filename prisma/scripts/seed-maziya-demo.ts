@@ -29,6 +29,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
 const SENTINEL_PROJECT = "PRASA Western Cape Re-Signalling"
+const TARGET_ORG = process.env.SEED_ORG_NAME || "ConformEdge Systems"
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
@@ -71,12 +72,26 @@ function findStandard(standards: StandardWithClauses[], code: string) {
 async function main() {
   console.log("🔍 Finding active organization and owner...")
 
-  const orgUser = await prisma.organizationUser.findFirst({
-    where: { role: "OWNER", isActive: true },
+  // Find org by name — defaults to "ConformEdge Systems" on production
+  // Override with SEED_ORG_NAME env var for other environments
+  let orgUser = await prisma.organizationUser.findFirst({
+    where: {
+      role: "OWNER",
+      isActive: true,
+      organization: { name: TARGET_ORG },
+    },
     include: { organization: true, user: true },
-    orderBy: { createdAt: "asc" },
   })
-  if (!orgUser) throw new Error("No active organization with an OWNER found")
+  if (!orgUser) {
+    // Fallback: find any active OWNER (for dev/local environments)
+    orgUser = await prisma.organizationUser.findFirst({
+      where: { role: "OWNER", isActive: true },
+      include: { organization: true, user: true },
+      orderBy: { createdAt: "desc" },
+    })
+    if (!orgUser) throw new Error("No active organization with an OWNER found")
+    console.log(`  ⚠️  Org "${TARGET_ORG}" not found, using "${orgUser.organization.name}" instead`)
+  }
 
   const org = orgUser.organization
   const owner = orgUser.user
