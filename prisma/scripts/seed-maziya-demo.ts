@@ -74,22 +74,24 @@ async function main() {
 
   // Find org by name — defaults to "ConformEdge Systems" on production
   // Override with SEED_ORG_NAME env var for other environments
+  // Look for OWNER or ADMIN in the target org
   let orgUser = await prisma.organizationUser.findFirst({
     where: {
-      role: "OWNER",
+      role: { in: ["OWNER", "ADMIN"] },
       isActive: true,
       organization: { name: TARGET_ORG },
     },
     include: { organization: true, user: true },
+    orderBy: { role: "asc" }, // ADMIN < OWNER — prefer OWNER if both exist
   })
   if (!orgUser) {
-    // Fallback: find any active OWNER (for dev/local environments)
+    // Fallback: find any active OWNER/ADMIN (for dev/local environments)
     orgUser = await prisma.organizationUser.findFirst({
-      where: { role: "OWNER", isActive: true },
+      where: { role: { in: ["OWNER", "ADMIN"] }, isActive: true },
       include: { organization: true, user: true },
       orderBy: { createdAt: "desc" },
     })
-    if (!orgUser) throw new Error("No active organization with an OWNER found")
+    if (!orgUser) throw new Error("No active organization with an OWNER/ADMIN found")
     console.log(`  ⚠️  Org "${TARGET_ORG}" not found, using "${orgUser.organization.name}" instead`)
   }
 
