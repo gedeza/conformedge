@@ -1,7 +1,208 @@
-import { Check, Brain, Layers } from "lucide-react"
+import { Check, Brain, Layers, FileText, Shield, BarChart3, Link2, ArrowRight } from "lucide-react"
 import { FEATURE_DETAILS } from "./data"
 
 const icons = [Brain, Layers]
+
+function AiDocumentMockup() {
+  return (
+    <div className="relative rounded-xl border border-border/50 bg-white p-1 shadow-lg">
+      {/* Browser chrome */}
+      <div className="flex items-center gap-2 rounded-t-lg bg-muted/50 px-4 py-2">
+        <div className="flex gap-1.5">
+          <div className="size-2.5 rounded-full bg-red-400/50" />
+          <div className="size-2.5 rounded-full bg-yellow-400/50" />
+          <div className="size-2.5 rounded-full bg-green-400/50" />
+        </div>
+        <div className="ml-4 flex-1 rounded-md bg-muted px-3 py-1 text-[10px] text-muted-foreground">
+          conformedge.co.za/dashboard/documents
+        </div>
+      </div>
+      {/* Realistic AI classification UI */}
+      <div className="rounded-b-lg bg-slate-50 p-4 sm:p-5">
+        {/* Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText className="size-4 text-blue-600" />
+            <span className="text-xs font-semibold text-slate-800">AI Document Classification</span>
+          </div>
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+            Auto-Classified
+          </span>
+        </div>
+
+        {/* Document card */}
+        <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-red-50">
+              <FileText className="size-4 text-red-500" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-medium text-slate-800">Safety-Management-Plan-2026.pdf</p>
+              <p className="mt-0.5 text-[10px] text-slate-500">Uploaded 2 minutes ago · 24 pages</p>
+            </div>
+          </div>
+
+          {/* Classification result */}
+          <div className="mt-3 rounded-md border border-blue-100 bg-blue-50/50 p-2.5">
+            <div className="flex items-center gap-2">
+              <Brain className="size-3.5 text-blue-600" />
+              <span className="text-[10px] font-semibold text-blue-800">AI Classification Result</span>
+            </div>
+            <div className="mt-2 space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-600">Standard</span>
+                <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-800">ISO 45001:2018</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-600">Clause</span>
+                <span className="text-[10px] font-medium text-slate-800">6.1.2 — Hazard identification</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-600">Confidence</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-full w-[94%] rounded-full bg-emerald-500" />
+                  </div>
+                  <span className="text-[10px] font-semibold text-emerald-600">94%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Gap insight */}
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50/50 p-2.5">
+          <div className="flex items-start gap-2">
+            <BarChart3 className="mt-0.5 size-3 shrink-0 text-amber-600" />
+            <div>
+              <span className="text-[10px] font-semibold text-amber-800">Gap Insight</span>
+              <p className="mt-0.5 text-[10px] text-amber-700">
+                Clause 6.1.3 (Risk assessment) has only 23% coverage — consider uploading your risk register.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-slate-800">847</p>
+            <p className="text-[9px] text-slate-500">Docs Classified</p>
+          </div>
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-emerald-600">91%</p>
+            <p className="text-[9px] text-slate-500">Avg Confidence</p>
+          </div>
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-blue-600">5</p>
+            <p className="text-[9px] text-slate-500">Standards Covered</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ImsMockup() {
+  const standards = [
+    { code: "ISO 9001", color: "bg-blue-500", coverage: "87%" },
+    { code: "ISO 14001", color: "bg-emerald-500", coverage: "72%" },
+    { code: "ISO 45001", color: "bg-amber-500", coverage: "91%" },
+  ]
+
+  const crossRefs = [
+    { from: "9001 §4.1", to: "14001 §4.1", label: "Context of the organization", score: "95%" },
+    { from: "9001 §6.1", to: "45001 §6.1", label: "Actions to address risks", score: "88%" },
+    { from: "14001 §7.2", to: "45001 §7.2", label: "Competence", score: "92%" },
+  ]
+
+  return (
+    <div className="relative rounded-xl border border-border/50 bg-white p-1 shadow-lg">
+      {/* Browser chrome */}
+      <div className="flex items-center gap-2 rounded-t-lg bg-muted/50 px-4 py-2">
+        <div className="flex gap-1.5">
+          <div className="size-2.5 rounded-full bg-red-400/50" />
+          <div className="size-2.5 rounded-full bg-yellow-400/50" />
+          <div className="size-2.5 rounded-full bg-green-400/50" />
+        </div>
+        <div className="ml-4 flex-1 rounded-md bg-muted px-3 py-1 text-[10px] text-muted-foreground">
+          conformedge.co.za/dashboard/ims
+        </div>
+      </div>
+      {/* Realistic IMS UI */}
+      <div className="rounded-b-lg bg-slate-50 p-4 sm:p-5">
+        {/* Header */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers className="size-4 text-violet-600" />
+            <span className="text-xs font-semibold text-slate-800">Integrated Management System</span>
+          </div>
+          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+            Integration Score: 78%
+          </span>
+        </div>
+
+        {/* Standard readiness bars */}
+        <div className="space-y-2.5">
+          {standards.map((std) => (
+            <div key={std.code} className="rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Shield className="size-3 text-slate-500" />
+                  <span className="text-[10px] font-semibold text-slate-800">{std.code}</span>
+                </div>
+                <span className="text-[10px] font-bold text-slate-700">{std.coverage}</span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className={`h-full rounded-full ${std.color}`}
+                  style={{ width: std.coverage }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Cross-standard mappings */}
+        <div className="mt-3 rounded-lg border border-violet-200 bg-violet-50/50 p-2.5">
+          <div className="flex items-center gap-2">
+            <Link2 className="size-3 text-violet-600" />
+            <span className="text-[10px] font-semibold text-violet-800">Cross-Standard Equivalences</span>
+          </div>
+          <div className="mt-2 space-y-1.5">
+            {crossRefs.map((ref) => (
+              <div key={ref.from} className="flex items-center gap-1.5 rounded-md bg-white p-1.5 shadow-sm ring-1 ring-violet-100">
+                <span className="rounded bg-blue-100 px-1 py-0.5 text-[8px] font-medium text-blue-700">{ref.from}</span>
+                <ArrowRight className="size-2.5 text-violet-400" />
+                <span className="rounded bg-emerald-100 px-1 py-0.5 text-[8px] font-medium text-emerald-700">{ref.to}</span>
+                <span className="ml-auto hidden text-[8px] text-slate-500 sm:inline">{ref.label}</span>
+                <span className="text-[9px] font-bold text-violet-600">{ref.score}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* IMS summary stats */}
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-violet-600">47</p>
+            <p className="text-[9px] text-slate-500">Shared Clauses</p>
+          </div>
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-emerald-600">23</p>
+            <p className="text-[9px] text-slate-500">Gap Cascades</p>
+          </div>
+          <div className="rounded-md bg-white p-2 text-center shadow-sm ring-1 ring-slate-100">
+            <p className="text-sm font-bold text-blue-600">3</p>
+            <p className="text-[9px] text-slate-500">Standards Active</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const mockups = [AiDocumentMockup, ImsMockup]
 
 export function FeatureDetails() {
   return (
@@ -19,6 +220,7 @@ export function FeatureDetails() {
         <div className="mt-16 space-y-24">
           {FEATURE_DETAILS.map((detail, idx) => {
             const Icon = icons[idx]
+            const Mockup = mockups[idx]
             const isReversed = idx % 2 === 1
             return (
               <div
@@ -55,50 +257,9 @@ export function FeatureDetails() {
                   </ul>
                 </div>
 
-                {/* Screenshot placeholder */}
+                {/* Feature mockup */}
                 <div className={isReversed ? "lg:[direction:ltr]" : ""}>
-                  <div className="relative rounded-xl border border-border/50 bg-white p-1 shadow-lg">
-                    {/* Browser chrome */}
-                    <div className="flex items-center gap-2 rounded-t-lg bg-muted/50 px-4 py-2">
-                      <div className="flex gap-1.5">
-                        <div className="size-2.5 rounded-full bg-red-400/50" />
-                        <div className="size-2.5 rounded-full bg-yellow-400/50" />
-                        <div className="size-2.5 rounded-full bg-green-400/50" />
-                      </div>
-                      <div className="ml-4 flex-1 rounded-md bg-muted px-3 py-1 text-[10px] text-muted-foreground">
-                        conformedge.co.za
-                      </div>
-                    </div>
-                    {/* Content placeholder */}
-                    <div className="aspect-[16/10] rounded-b-lg bg-gradient-to-br from-muted/30 to-muted/80 p-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-3 w-32 rounded bg-foreground/10" />
-                          <div className="h-6 w-20 rounded-full bg-landing-accent/20" />
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
-                          {Array.from({ length: 3 }).map((_, i) => (
-                            <div key={i} className="rounded-lg bg-white/60 p-3 shadow-sm">
-                              <div className="h-2 w-10 rounded bg-foreground/10" />
-                              <div className="mt-2 h-5 w-14 rounded bg-landing-cta/20" />
-                            </div>
-                          ))}
-                        </div>
-                        <div className="rounded-lg bg-white/60 p-3 shadow-sm">
-                          <div className="h-2 w-20 rounded bg-foreground/10" />
-                          <div className="mt-3 space-y-2">
-                            {Array.from({ length: 3 }).map((_, i) => (
-                              <div key={i} className="flex items-center gap-2">
-                                <div className="size-3 rounded bg-landing-accent/30" />
-                                <div className="h-1.5 flex-1 rounded bg-foreground/5" />
-                                <div className="h-4 w-16 rounded-full bg-landing-cta/15" />
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <Mockup />
                 </div>
               </div>
             )
