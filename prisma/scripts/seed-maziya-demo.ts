@@ -922,7 +922,7 @@ async function main() {
   const hotWorkPermit = await prisma.workPermit.create({
     data: {
       title: "Hot Work — MIG Welding on Signalling Mast Brackets",
-      permitNumber: "PTW-2026-001",
+      permitNumber: "MZY-PTW-001",
       permitType: "HOT_WORK",
       status: "ACTIVE",
       riskLevel: "HIGH",
@@ -957,7 +957,7 @@ async function main() {
   const electricalPermit = await prisma.workPermit.create({
     data: {
       title: "Electrical Isolation — 3kV Traction Substation Bay 5",
-      permitNumber: "PTW-2026-002",
+      permitNumber: "MZY-PTW-002",
       permitType: "ELECTRICAL",
       status: "PENDING_APPROVAL",
       riskLevel: "CRITICAL",
@@ -990,7 +990,7 @@ async function main() {
   await prisma.workPermit.create({
     data: {
       title: "Confined Space Entry — Storm Water Culvert, PTCS Route",
-      permitNumber: "PTW-2026-003",
+      permitNumber: "MZY-PTW-003",
       permitType: "CONFINED_SPACE",
       status: "ACTIVE",
       riskLevel: "CRITICAL",
@@ -1015,7 +1015,7 @@ async function main() {
   await prisma.workPermit.create({
     data: {
       title: "Working at Heights — Signal Tower Antenna Installation",
-      permitNumber: "PTW-2026-004",
+      permitNumber: "MZY-PTW-004",
       permitType: "WORKING_AT_HEIGHTS",
       status: "CLOSED",
       riskLevel: "HIGH",
@@ -1042,7 +1042,7 @@ async function main() {
   const liftingPermit = await prisma.workPermit.create({
     data: {
       title: "Lifting Operations — Signalling Mast Installation",
-      permitNumber: "PTW-2026-005",
+      permitNumber: "MZY-PTW-005",
       permitType: "LIFTING",
       status: "PENDING_APPROVAL",
       riskLevel: "HIGH",
@@ -1074,7 +1074,7 @@ async function main() {
   await prisma.workPermit.create({
     data: {
       title: "Excavation — Fibre-Optic Cable Trench, River Crossing 3",
-      permitNumber: "PTW-2026-006",
+      permitNumber: "MZY-PTW-006",
       permitType: "EXCAVATION",
       status: "ACTIVE",
       riskLevel: "HIGH",
@@ -1099,7 +1099,7 @@ async function main() {
   await prisma.workPermit.create({
     data: {
       title: "General — Site Establishment & Mobilisation",
-      permitNumber: "PTW-2026-007",
+      permitNumber: "MZY-PTW-007",
       permitType: "GENERAL",
       status: "CLOSED",
       riskLevel: "MEDIUM",
