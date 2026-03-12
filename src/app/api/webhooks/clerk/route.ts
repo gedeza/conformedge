@@ -193,6 +193,32 @@ export async function POST(req: Request) {
     })
 
     if (user && org) {
+      // ── Multi-org abuse guard ──────────────────────────────
+      // Non-partner users may only be active members of up to MAX_ORGS_PER_USER organizations.
+      // Partner users are exempt (they legitimately access many orgs via the partner console).
+      const MAX_ORGS_PER_USER = 2
+
+      const [activeMemberships, partnerUser] = await Promise.all([
+        db.organizationUser.count({
+          where: { userId: user.id, isActive: true },
+        }),
+        db.partnerUser.findFirst({
+          where: { userId: user.id, isActive: true },
+          select: { id: true },
+        }),
+      ])
+
+      if (!partnerUser && activeMemberships >= MAX_ORGS_PER_USER) {
+        // Log the blocked attempt for admin review
+        console.warn(
+          `[MULTI-ORG GUARD] Blocked user ${user.email} (${user.id}) from joining org ${org.name} (${org.id}). ` +
+          `Already in ${activeMemberships} orgs. Not a partner user.`
+        )
+        // Still return 200 to Clerk (don't retry), but don't create the membership in our DB
+        return NextResponse.json({ received: true, blocked: "multi_org_limit" })
+      }
+      // ── End multi-org abuse guard ──────────────────────────
+
       const roleMap: Record<string, string> = {
         "org:admin": "ADMIN",
         "org:member": "VIEWER",
