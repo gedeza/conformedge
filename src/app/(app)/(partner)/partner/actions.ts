@@ -656,3 +656,58 @@ export async function getClientOrgDetail(organizationId: string) {
     recentAudit,
   }
 }
+
+// ─────────────────────────────────────────────
+// PARTNER BILLING
+// ─────────────────────────────────────────────
+
+export async function getPartnerBillingData() {
+  const ctx = await getPartnerContext()
+  if (!ctx) return null
+
+  const [partner, invoices, calculation] = await Promise.all([
+    db.partner.findUnique({
+      where: { id: ctx.partnerId },
+      select: {
+        name: true,
+        tier: true,
+        basePlatformFeeCents: true,
+        defaultSmallFeeCents: true,
+        defaultMediumFeeCents: true,
+        defaultLargeFeeCents: true,
+        volumeDiscountPercent: true,
+        commissionPercent: true,
+      },
+    }),
+    db.partnerInvoice.findMany({
+      where: { partnerId: ctx.partnerId },
+      orderBy: { createdAt: "desc" },
+      take: 12,
+    }),
+    // Dynamic import to avoid circular deps
+    import("@/lib/billing/partner-billing").then((m) => m.calculatePartnerInvoice(ctx.partnerId)),
+  ])
+
+  return { partner, invoices, calculation }
+}
+
+export async function generateInvoice(): Promise<ActionResult<{ id: string }>> {
+  try {
+    const ctx = await getPartnerContext()
+    if (!ctx) return { success: false, error: "Not a partner user" }
+    if (!isPartnerAdmin(ctx.partnerRole)) {
+      return { success: false, error: "Only partner admins can generate invoices" }
+    }
+
+    const { generatePartnerInvoice } = await import("@/lib/billing/partner-billing")
+    const invoiceId = await generatePartnerInvoice(ctx.partnerId)
+
+    if (!invoiceId) return { success: false, error: "Failed to generate invoice" }
+
+    revalidatePath("/partner/billing")
+    return { success: true, data: { id: invoiceId } }
+  } catch (err) {
+    console.error("generateInvoice error:", err)
+    return { success: false, error: "Failed to generate invoice" }
+  }
+}

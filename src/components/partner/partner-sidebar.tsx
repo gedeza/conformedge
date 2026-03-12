@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Building2,
   Users,
+  CreditCard,
   Settings,
   ArrowLeft,
 } from "lucide-react"
@@ -28,6 +29,7 @@ const partnerItems = [
   { title: "Overview", href: "/partner", icon: LayoutDashboard },
   { title: "Client Organizations", href: "/partner/clients", icon: Building2 },
   { title: "Partner Team", href: "/partner/team", icon: Users },
+  { title: "Billing", href: "/partner/billing", icon: CreditCard },
 ]
 
 const footerItems = [

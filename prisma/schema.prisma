@@ -1477,6 +1477,7 @@ model Partner {
   // Relations
   partnerUsers        PartnerUser[]
   clientOrganizations PartnerOrganization[]
+  invoices            PartnerInvoice[]
 
   @@index([status], map: "idx_partner_status")
   @@index([tier], map: "idx_partner_tier")
@@ -1523,4 +1524,41 @@ model PartnerOrganization {
   @@unique([partnerId, organizationId])
   @@index([organizationId], map: "idx_partner_org_org")
   @@map("partner_organizations")
+}
+
+model PartnerInvoice {
+  id                  String        @id @default(uuid())
+  partnerId           String        @map("partner_id")
+  invoiceNumber       String        @unique @map("invoice_number")
+  status              InvoiceStatus @default(DRAFT)
+
+  // Amounts in cents (ZAR)
+  platformFeeCents    Int           @map("platform_fee_cents")
+  clientFeesCents     Int           @map("client_fees_cents")     // Sum of all per-client fees
+  discountCents       Int           @default(0) @map("discount_cents") // Volume discount
+  subtotalCents       Int           @map("subtotal_cents")
+  vatCents            Int           @map("vat_cents")             // 15% SA VAT
+  totalCents          Int           @map("total_cents")
+
+  // Period
+  periodStart         DateTime      @map("period_start")
+  periodEnd           DateTime      @map("period_end")
+  dueAt               DateTime      @map("due_at")
+  paidAt              DateTime?     @map("paid_at")
+
+  // Line items breakdown (JSON array)
+  lineItems           Json          @map("line_items")
+
+  // Payment
+  externalPaymentId   String?       @map("external_payment_id")
+  notes               String?       @db.Text
+
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId, createdAt(sort: Desc)], map: "idx_partner_invoice_partner")
+  @@index([status], map: "idx_partner_invoice_status")
+  @@map("partner_invoices")
 }
