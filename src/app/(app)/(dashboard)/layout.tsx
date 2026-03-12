@@ -5,6 +5,7 @@ import { DashboardHeader } from "@/components/dashboard/header"
 import { TrialBannerWrapper } from "@/components/billing/trial-banner-wrapper"
 import { PartnerNavLink } from "@/components/partner/partner-nav-link"
 import { ReferralAttribution } from "@/components/shared/referral-attribution"
+import { AdminNavLink } from "@/components/admin/admin-nav-link"
 
 export default function DashboardLayout({
   children,
@@ -20,8 +21,9 @@ export default function DashboardLayout({
           <TrialBannerWrapper />
         </Suspense>
         <Suspense fallback={null}>
-          <div className="px-6 pt-2">
+          <div className="flex gap-2 px-6 pt-2">
             <PartnerNavLink />
+            <AdminNavLink />
           </div>
         </Suspense>
         <Suspense fallback={null}>
