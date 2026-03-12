@@ -363,6 +363,7 @@ model Organization {
   workPermits                WorkPermit[]
   organizationStandards      OrganizationStandard[]
   partnerOrganizations       PartnerOrganization[]
+  referrals                  Referral[]
 
   // Billing
   subscription       Subscription?
@@ -1466,6 +1467,12 @@ model Partner {
   volumeDiscountPercent   Float     @default(0) @map("volume_discount_percent")        // Negotiated volume discount
   commissionPercent       Float     @default(15) @map("commission_percent")            // Referral commission %
 
+  // Branding (WHITE_LABEL partners)
+  logoKey             String?   @map("logo_key")              // R2 key for partner logo
+  primaryColor        String?   @map("primary_color")         // Hex color e.g. #1e40af
+  accentColor         String?   @map("accent_color")          // Hex color e.g. #3b82f6
+  brandName           String?   @map("brand_name")            // Display name override
+
   // Operational
   maxClientOrgs       Int?          @map("max_client_orgs")          // null = unlimited
   approvedAt          DateTime?     @map("approved_at")
@@ -1478,6 +1485,7 @@ model Partner {
   partnerUsers        PartnerUser[]
   clientOrganizations PartnerOrganization[]
   invoices            PartnerInvoice[]
+  referrals           Referral[]
 
   @@index([status], map: "idx_partner_status")
   @@index([tier], map: "idx_partner_tier")
@@ -1561,4 +1569,51 @@ model PartnerInvoice {
   @@index([partnerId, createdAt(sort: Desc)], map: "idx_partner_invoice_partner")
   @@index([status], map: "idx_partner_invoice_status")
   @@map("partner_invoices")
+}
+
+// ─────────────────────────────────────────────
+// REFERRAL PROGRAM
+// ─────────────────────────────────────────────
+
+enum ReferralStatus {
+  PENDING       // Link generated, no signup yet
+  CLICKED       // Link was visited
+  SIGNED_UP     // Org created but not paid
+  CONVERTED     // Org became a paid customer
+  EXPIRED       // Link expired without conversion
+  CANCELLED     // Manually cancelled
+}
+
+model Referral {
+  id                String         @id @default(uuid())
+  partnerId         String         @map("partner_id")
+  code              String         @unique                    // e.g. "acme-x7k2m9"
+
+  // Tracking
+  referredOrgId     String?        @map("referred_org_id")
+  status            ReferralStatus @default(PENDING)
+
+  // Contact info captured at signup
+  referredEmail     String?        @map("referred_email")
+  referredCompany   String?        @map("referred_company")
+
+  // Conversion tracking
+  clickCount        Int            @default(0) @map("click_count")
+  signedUpAt        DateTime?      @map("signed_up_at")
+  convertedAt       DateTime?      @map("converted_at")
+
+  // Commission
+  commissionPercent Float          @map("commission_percent")  // Snapshot from partner at creation
+  commissionCents   Int?           @map("commission_cents")    // Calculated on conversion
+  commissionPaidAt  DateTime?      @map("commission_paid_at")
+
+  expiresAt         DateTime       @map("expires_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  partner      Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  referredOrg  Organization? @relation(fields: [referredOrgId], references: [id], onDelete: SetNull)
+
+  @@index([partnerId, status], map: "idx_referral_partner_status")
+  @@map("referrals")
 }

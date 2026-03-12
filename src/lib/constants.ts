@@ -392,6 +392,15 @@ export const PARTNER_VOLUME_DISCOUNTS = [
   { minClients: 10, discountPercent: 10 },
 ] as const
 
+export const REFERRAL_STATUSES = {
+  PENDING: { label: "Pending", color: "bg-gray-100 text-gray-800" },
+  CLICKED: { label: "Clicked", color: "bg-blue-100 text-blue-800" },
+  SIGNED_UP: { label: "Signed Up", color: "bg-amber-100 text-amber-800" },
+  CONVERTED: { label: "Converted", color: "bg-green-100 text-green-800" },
+  EXPIRED: { label: "Expired", color: "bg-red-100 text-red-800" },
+  CANCELLED: { label: "Cancelled", color: "bg-gray-100 text-gray-500" },
+} as const
+
 export const MAPPING_TYPE_COLORS = {
   EQUIVALENT: {
     dot: "bg-blue-500",

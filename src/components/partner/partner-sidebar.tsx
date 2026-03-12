@@ -10,6 +10,7 @@ import {
   CreditCard,
   Settings,
   ArrowLeft,
+  Share2,
 } from "lucide-react"
 
 import {
@@ -29,6 +30,7 @@ const partnerItems = [
   { title: "Overview", href: "/partner", icon: LayoutDashboard },
   { title: "Client Organizations", href: "/partner/clients", icon: Building2 },
   { title: "Partner Team", href: "/partner/team", icon: Users },
+  { title: "Referrals", href: "/partner/referrals", icon: Share2 },
   { title: "Billing", href: "/partner/billing", icon: CreditCard },
 ]
 
@@ -37,8 +39,22 @@ const footerItems = [
   { title: "Back to Dashboard", href: "/dashboard", icon: ArrowLeft },
 ]
 
-export function PartnerSidebar() {
+interface PartnerSidebarProps {
+  branding?: {
+    logoKey: string | null
+    brandName: string | null
+    primaryColor: string | null
+    accentColor: string | null
+  } | null
+}
+
+export function PartnerSidebar({ branding }: PartnerSidebarProps) {
   const pathname = usePathname()
+
+  const displayName = branding?.brandName || "ConformEdge"
+  const logoSrc = branding?.logoKey
+    ? `/api/partner/logo/${branding.logoKey}`
+    : "/images/logo-icon.png"
 
   return (
     <Sidebar>
@@ -47,9 +63,9 @@ export function PartnerSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/partner">
-                <Image src="/images/logo-icon.png" alt="ConformEdge" width={32} height={32} className="rounded-lg" />
+                <Image src={logoSrc} alt={displayName} width={32} height={32} className="rounded-lg" />
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">ConformEdge</span>
+                  <span className="truncate font-semibold">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
                     Partner Console
                   </span>

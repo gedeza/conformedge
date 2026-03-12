@@ -711,3 +711,170 @@ export async function generateInvoice(): Promise<ActionResult<{ id: string }>> {
     return { success: false, error: "Failed to generate invoice" }
   }
 }
+
+// ─────────────────────────────────────────────
+// P5: BRANDING
+// ─────────────────────────────────────────────
+
+const brandingSchema = z.object({
+  brandName: z.string().max(100).optional(),
+  primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a hex color").optional(),
+  accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a hex color").optional(),
+})
+
+export async function updatePartnerBranding(
+  data: z.infer<typeof brandingSchema>
+): Promise<ActionResult> {
+  try {
+    const ctx = await getPartnerContext()
+    if (!ctx) return { success: false, error: "Not a partner user" }
+    if (!isPartnerAdmin(ctx.partnerRole)) {
+      return { success: false, error: "Only partner admins can update branding" }
+    }
+
+    const parsed = brandingSchema.parse(data)
+
+    await db.partner.update({
+      where: { id: ctx.partnerId },
+      data: {
+        brandName: parsed.brandName || null,
+        primaryColor: parsed.primaryColor || null,
+        accentColor: parsed.accentColor || null,
+      },
+    })
+
+    revalidatePath("/partner/settings")
+    revalidatePath("/partner")
+    return { success: true }
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { success: false, error: err.issues[0]?.message ?? "Invalid input" }
+    }
+    console.error("updatePartnerBranding error:", err)
+    return { success: false, error: "Failed to update branding" }
+  }
+}
+
+export async function getPartnerBrandingData() {
+  const ctx = await getPartnerContext()
+  if (!ctx) return null
+
+  return db.partner.findUnique({
+    where: { id: ctx.partnerId },
+    select: {
+      tier: true,
+      logoKey: true,
+      brandName: true,
+      primaryColor: true,
+      accentColor: true,
+    },
+  })
+}
+
+// ─────────────────────────────────────────────
+// P6: REFERRALS
+// ─────────────────────────────────────────────
+
+export async function generateReferralLink(): Promise<ActionResult<{ code: string; url: string }>> {
+  try {
+    const ctx = await getPartnerContext()
+    if (!ctx) return { success: false, error: "Not a partner user" }
+    if (!isPartnerAdmin(ctx.partnerRole)) {
+      return { success: false, error: "Only partner admins can generate referral links" }
+    }
+
+    const partner = await db.partner.findUnique({
+      where: { id: ctx.partnerId },
+      select: { slug: true, commissionPercent: true },
+    })
+    if (!partner) return { success: false, error: "Partner not found" }
+
+    // Generate unique code: slug-random6
+    const randomPart = Math.random().toString(36).slice(2, 8)
+    const code = `${partner.slug}-${randomPart}`
+
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + 90)
+
+    await db.referral.create({
+      data: {
+        partnerId: ctx.partnerId,
+        code,
+        commissionPercent: partner.commissionPercent,
+        expiresAt,
+      },
+    })
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
+    revalidatePath("/partner/referrals")
+    return { success: true, data: { code, url: `${appUrl}/ref/${code}` } }
+  } catch (err) {
+    console.error("generateReferralLink error:", err)
+    return { success: false, error: "Failed to generate referral link" }
+  }
+}
+
+export async function getReferrals() {
+  const ctx = await getPartnerContext()
+  if (!ctx) return []
+
+  return db.referral.findMany({
+    where: { partnerId: ctx.partnerId },
+    include: {
+      referredOrg: { select: { name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+}
+
+export async function getReferralSummary() {
+  const ctx = await getPartnerContext()
+  if (!ctx) return null
+
+  const referrals = await db.referral.findMany({
+    where: { partnerId: ctx.partnerId },
+    select: { status: true, commissionCents: true },
+  })
+
+  return {
+    total: referrals.length,
+    pending: referrals.filter((r) => r.status === "PENDING" || r.status === "CLICKED").length,
+    signedUp: referrals.filter((r) => r.status === "SIGNED_UP").length,
+    converted: referrals.filter((r) => r.status === "CONVERTED").length,
+    totalCommissionCents: referrals
+      .filter((r) => r.status === "CONVERTED" && r.commissionCents)
+      .reduce((sum, r) => sum + (r.commissionCents ?? 0), 0),
+    unpaidCommissionCents: referrals
+      .filter((r) => r.status === "CONVERTED" && r.commissionCents && !r.commissionCents)
+      .reduce((sum, r) => sum + (r.commissionCents ?? 0), 0),
+  }
+}
+
+export async function cancelReferral(referralId: string): Promise<ActionResult> {
+  try {
+    const ctx = await getPartnerContext()
+    if (!ctx) return { success: false, error: "Not a partner user" }
+    if (!isPartnerAdmin(ctx.partnerRole)) {
+      return { success: false, error: "Only partner admins can cancel referrals" }
+    }
+
+    const referral = await db.referral.findFirst({
+      where: { id: referralId, partnerId: ctx.partnerId },
+    })
+    if (!referral) return { success: false, error: "Referral not found" }
+    if (referral.status === "CONVERTED") {
+      return { success: false, error: "Cannot cancel a converted referral" }
+    }
+
+    await db.referral.update({
+      where: { id: referralId },
+      data: { status: "CANCELLED" },
+    })
+
+    revalidatePath("/partner/referrals")
+    return { success: true }
+  } catch (err) {
+    console.error("cancelReferral error:", err)
+    return { success: false, error: "Failed to cancel referral" }
+  }
+}

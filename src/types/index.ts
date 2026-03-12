@@ -34,6 +34,7 @@ export type PartnerTier = "CONSULTING" | "WHITE_LABEL" | "REFERRAL"
 export type PartnerStatus = "APPLIED" | "APPROVED" | "ACTIVE" | "SUSPENDED" | "TERMINATED"
 export type PartnerRole = "PARTNER_ADMIN" | "PARTNER_MANAGER" | "PARTNER_VIEWER"
 export type PartnerClientSize = "SMALL" | "MEDIUM" | "LARGE"
+export type ReferralStatus = "PENDING" | "CLICKED" | "SIGNED_UP" | "CONVERTED" | "EXPIRED" | "CANCELLED"
 
 // Billing types
 export type PlanTier = "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE"

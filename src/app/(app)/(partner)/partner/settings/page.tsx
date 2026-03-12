@@ -2,16 +2,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getPartnerContext } from "@/lib/partner-auth"
-import { getPartner } from "../actions"
+import { getPartner, getPartnerBrandingData } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { PARTNER_TIERS, PARTNER_STATUSES } from "@/lib/constants"
+import { BrandingForm } from "./branding-form"
 
 export default async function PartnerSettingsPage() {
   const ctx = await getPartnerContext()
   if (!ctx) redirect("/dashboard")
 
-  const partner = await getPartner(ctx.partnerId)
+  const [partner, branding] = await Promise.all([
+    getPartner(ctx.partnerId),
+    getPartnerBrandingData(),
+  ])
   if (!partner) redirect("/dashboard")
 
   const tierConfig = PARTNER_TIERS[partner.tier as keyof typeof PARTNER_TIERS]
@@ -96,6 +100,14 @@ export default async function PartnerSettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <BrandingForm
+        logoKey={branding?.logoKey ?? null}
+        brandName={branding?.brandName ?? null}
+        primaryColor={branding?.primaryColor ?? null}
+        accentColor={branding?.accentColor ?? null}
+        tier={partner.tier}
+      />
 
       <Card>
         <CardHeader>
