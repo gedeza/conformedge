@@ -29,17 +29,35 @@ const certificationSchema = z.object({
 
 export type CertificationFormValues = z.infer<typeof certificationSchema>
 
-export async function getSubcontractors() {
-  const { dbOrgId } = await getAuthContext()
+const PAGE_SIZE = 100
 
-  return db.subcontractor.findMany({
-    where: { organizationId: dbOrgId },
-    include: {
-      certifications: { orderBy: { expiresAt: "asc" } },
-      _count: { select: { certifications: true } },
+export async function getSubcontractors(page = 1) {
+  const { dbOrgId } = await getAuthContext()
+  const where = { organizationId: dbOrgId }
+
+  const [subcontractors, total] = await Promise.all([
+    db.subcontractor.findMany({
+      where,
+      include: {
+        certifications: { orderBy: { expiresAt: "asc" }, take: 10 },
+        _count: { select: { certifications: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    db.subcontractor.count({ where }),
+  ])
+
+  return {
+    subcontractors,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
     },
-    orderBy: { createdAt: "desc" },
-  })
+  }
 }
 
 export async function getSubcontractor(id: string) {

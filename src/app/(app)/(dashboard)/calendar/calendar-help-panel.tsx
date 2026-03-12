@@ -16,10 +16,10 @@ export function CalendarHelpPanel() {
       ]}
       expandLabel="Calendar tips"
       tips={[
-        "Switch between <strong>Month View</strong> and <strong>List View</strong> using the tabs",
-        "Colour key: <strong>Blue</strong> = Scheduled, <strong>Yellow</strong> = In Progress, <strong>Green</strong> = Completed, <strong>Red</strong> = Overdue",
-        "Use the <strong>Today</strong> button to jump back to the current month",
-        "Schedule assessments from the <strong>Assessments</strong> page using the scheduled date field",
+        "Switch between Month View and List View using the tabs",
+        "Colour key: Blue = Scheduled, Yellow = In Progress, Green = Completed, Red = Overdue",
+        "Use the Today button to jump back to the current month",
+        "Schedule assessments from the Assessments page using the scheduled date field",
       ]}
     />
   )

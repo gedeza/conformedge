@@ -16,11 +16,11 @@ export function GapAnalysisHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Filter by <strong>standard</strong> to focus on a specific ISO certification",
-        "Filter by <strong>project</strong> to see coverage for a specific initiative",
-        "Coverage improves as you <strong>upload documents</strong> and <strong>complete assessments</strong>",
-        "Below 25% coverage triggers an <strong>automatic notification</strong> to alert your team",
-        "Expand each standard to see <strong>clause-level detail</strong> and identify exactly what's missing",
+        "Filter by standard to focus on a specific ISO certification",
+        "Filter by project to see coverage for a specific initiative",
+        "Coverage improves as you upload documents and complete assessments",
+        "Below 25% coverage triggers an automatic notification to alert your team",
+        "Expand each standard to see clause-level detail and identify exactly what's missing",
       ]}
     />
   )

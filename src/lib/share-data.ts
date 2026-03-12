@@ -109,8 +109,16 @@ export async function getSharedSubcontractorData(shareLink: ShareLink) {
 }
 
 export async function getSharedWorkPermits(shareLink: ShareLink) {
-  if (shareLink.type !== "SUBCONTRACTOR") return []
+  if (shareLink.type !== "SUBCONTRACTOR" || !shareLink.entityId) return []
 
+  // Verify the subcontractor exists for this org
+  const subcontractor = await db.subcontractor.findFirst({
+    where: { id: shareLink.entityId, organizationId: shareLink.organizationId },
+    select: { id: true },
+  })
+  if (!subcontractor) return []
+
+  // Return only ACTIVE/APPROVED permits for this org, bounded
   return db.workPermit.findMany({
     where: {
       organizationId: shareLink.organizationId,
@@ -130,6 +138,7 @@ export async function getSharedWorkPermits(shareLink: ShareLink) {
       emergencyProcedures: true,
     },
     orderBy: { validFrom: "desc" },
+    take: 20,
   })
 }
 

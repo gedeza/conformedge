@@ -16,10 +16,10 @@ export function ReportsHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Use the <strong>date range filter</strong> to compare periods (e.g. Q1 vs Q2)",
+        "Use the date range filter to compare periods (e.g. Q1 vs Q2)",
         "Charts include: compliance by standard, CAPAs by status/priority, document status, and more",
-        "The <strong>compliance trend</strong> chart shows your trajectory over 12 months",
-        "Export reports <strong>before management reviews</strong> to have data-driven discussions",
+        "The compliance trend chart shows your trajectory over 12 months",
+        "Export reports before management reviews to have data-driven discussions",
       ]}
     />
   )

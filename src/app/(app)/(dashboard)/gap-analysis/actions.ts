@@ -34,10 +34,13 @@ export async function getGapAnalysis(
 // ─── Helper: get standards list for filter dropdown ──
 
 export async function getStandardOptions() {
-  await getAuthContext()
+  const { dbOrgId } = await getAuthContext()
+
+  const { getActiveStandardIds } = await import("@/lib/standards")
+  const activeIds = await getActiveStandardIds(dbOrgId)
 
   return db.standard.findMany({
-    where: { isActive: true },
+    where: { id: { in: activeIds } },
     select: { code: true, name: true },
     orderBy: { code: "asc" },
   })

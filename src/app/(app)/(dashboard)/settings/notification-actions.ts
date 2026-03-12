@@ -12,6 +12,7 @@ export type NotificationPreferenceMap = Record<
   { IN_APP: boolean; EMAIL: boolean }
 >
 
+/** Authoritative list — keep in sync with TYPES in notification-preferences.tsx */
 const NOTIFICATION_TYPES: NotificationType[] = [
   "DOCUMENT_EXPIRY",
   "CAPA_DUE",
@@ -22,6 +23,10 @@ const NOTIFICATION_TYPES: NotificationType[] = [
   "CERT_UPLOAD",
   "CHECKLIST_DUE",
   "TEAM_INVITATION",
+  "INCIDENT_REPORTED",
+  "OBJECTIVE_DUE",
+  "MANAGEMENT_REVIEW_DUE",
+  "PERMIT_EXPIRING",
 ]
 
 /**

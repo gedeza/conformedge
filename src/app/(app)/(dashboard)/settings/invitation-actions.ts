@@ -1,3 +1,4 @@
+// @ts-nocheck — Dormant file: custom invitations disabled in favor of Clerk's built-in system
 "use server"
 
 import { revalidatePath } from "next/cache"
@@ -23,6 +24,9 @@ const sendInvitationSchema = z.object({
 export type SendInvitationValues = z.infer<typeof sendInvitationSchema>
 
 export async function sendInvitation(values: SendInvitationValues): Promise<ActionResult<{ id: string }>> {
+  // Feature disabled — invitations are handled via Clerk's built-in system
+  return { success: false, error: "Custom invitations are disabled. Use the organization profile to invite members." }
+
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canManageOrg(role)) return { success: false, error: "Insufficient permissions" }

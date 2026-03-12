@@ -2,13 +2,14 @@ import { cache } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { db } from "@/lib/db"
+import type { UserRole } from "@/types"
 
 export interface AuthContext {
   userId: string
   orgId: string
   dbUserId: string
   dbOrgId: string
-  role: string
+  role: UserRole
 }
 
 export const getAuthContext = cache(async function getAuthContext(): Promise<AuthContext> {
@@ -60,7 +61,7 @@ export const getAuthContext = cache(async function getAuthContext(): Promise<Aut
     orgId,
     dbUserId: user.id,
     dbOrgId: org.id,
-    role: membership.role,
+    role: membership.role as UserRole,
   }
 })
 

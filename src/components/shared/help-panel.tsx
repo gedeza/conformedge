@@ -88,7 +88,7 @@ export function HelpPanel({
                 <p className="text-sm font-medium mb-1">Tips:</p>
                 <ul className="text-sm text-muted-foreground space-y-0.5 list-disc pl-4">
                   {tips.map((tip, i) => (
-                    <li key={i} dangerouslySetInnerHTML={{ __html: tip }} />
+                    <li key={i}>{tip}</li>
                   ))}
                 </ul>
               </div>

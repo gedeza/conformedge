@@ -16,10 +16,10 @@ export function IMSHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "A high <strong>integration efficiency</strong> means many clauses overlap — less work to maintain",
-        "<strong>Gap cascades</strong> are high-priority — fixing one gap can improve compliance across multiple standards",
-        "Use the <strong>shared requirements matrix</strong> to see exactly which clauses map together",
-        "This view is most useful when you have <strong>2+ active ISO standards</strong>",
+        "A high integration efficiency means many clauses overlap — less work to maintain",
+        "Gap cascades are high-priority — fixing one gap can improve compliance across multiple standards",
+        "Use the shared requirements matrix to see exactly which clauses map together",
+        "This view is most useful when you have 2+ active ISO standards",
       ]}
     />
   )

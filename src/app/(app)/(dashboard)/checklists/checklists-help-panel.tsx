@@ -18,15 +18,15 @@ export function ChecklistsHelpPanel() {
       ]}
       expandLabel="Workflow & tips"
       tips={[
-        "Select a <strong>standard</strong> and the checklist auto-fills with its clauses",
-        "When adding items, choose a <strong>field type</strong>: Compliance (default), Yes/No, Number, Rating, or Dropdown",
-        "Number fields support <strong>min/max</strong> validation and a <strong>unit</strong> label (e.g. mm, kg)",
-        "Use <strong>templates</strong> (e.g. 'Monthly Safety Audit') for recurring checks — field types carry over",
-        "Click the <strong>pencil icon</strong> on a template to configure field types for each item",
-        "Assign a checklist to a <strong>team member</strong> for accountability",
-        "Completion status: <strong>Not Started → In Progress → Completed</strong>",
-        "Click the <strong>gear icon</strong> on a template to set up a recurring schedule",
-        "You can <strong>pause/resume</strong> any recurring schedule without losing the configuration",
+        "Select a standard and the checklist auto-fills with its clauses",
+        "When adding items, choose a field type: Compliance (default), Yes/No, Number, Rating, or Dropdown",
+        "Number fields support min/max validation and a unit label (e.g. mm, kg)",
+        "Use templates (e.g. 'Monthly Safety Audit') for recurring checks — field types carry over",
+        "Click the pencil icon on a template to configure field types for each item",
+        "Assign a checklist to a team member for accountability",
+        "Completion status: Not Started → In Progress → Completed",
+        "Click the gear icon on a template to set up a recurring schedule",
+        "You can pause/resume any recurring schedule without losing the configuration",
       ]}
     />
   )

@@ -275,6 +275,16 @@ export const ALLOWED_FILE_TYPES = [
 
 export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
+/** Derive safe file extension from validated MIME type (not user-supplied filename) */
+export const MIME_TO_EXT: Record<string, string> = {
+  "application/pdf": ".pdf",
+  "application/msword": ".doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+}
+
 export const NAV_ITEMS = [
   { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
   { title: "Projects", href: "/projects", icon: "FolderKanban" },

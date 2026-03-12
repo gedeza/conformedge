@@ -16,7 +16,13 @@ const capaSchema = z.object({
   status: z.enum(["OPEN", "IN_PROGRESS", "VERIFICATION", "CLOSED"]).default("OPEN"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).default("MEDIUM"),
   rootCause: z.string().max(2000).optional(),
-  rootCauseData: z.any().optional(), // JSON — validated on client
+  rootCauseData: z.object({
+    method: z.enum(["simple", "5-whys"]),
+    category: z.enum(["human", "machine", "material", "method", "environment", "measurement"]).optional(),
+    whys: z.array(z.object({ question: z.string(), answer: z.string() })).max(5),
+    rootCause: z.string().max(2000),
+    containmentAction: z.string().max(2000).optional(),
+  }).optional(),
   dueDate: z.coerce.date().optional(),
   projectId: z.string().optional(),
   assignedToId: z.string().optional(),

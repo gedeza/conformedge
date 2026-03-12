@@ -25,11 +25,11 @@ export function ProjectsHelpPanel() {
       ]}
       expandLabel="Lifecycle & tips"
       tips={[
-        "Lifecycle: <strong>Planning → Active → On Hold → Completed → Archived</strong>",
-        "Projects are <strong>optional</strong> — entities can exist without being linked to any project",
-        "Deleting a project <strong>does not delete its contents</strong> — linked items are simply unlinked",
-        "Use the <strong>Project dropdown</strong> when creating documents, assessments, CAPAs, or checklists to link them",
-        "The project dashboard shows <strong>compliance score, overdue CAPAs, risk distribution</strong>, and trends",
+        "Lifecycle: Planning → Active → On Hold → Completed → Archived",
+        "Projects are optional — entities can exist without being linked to any project",
+        "Deleting a project does not delete its contents — linked items are simply unlinked",
+        "Use the Project dropdown when creating documents, assessments, CAPAs, or checklists to link them",
+        "The project dashboard shows compliance score, overdue CAPAs, risk distribution, and trends",
       ]}
     />
   )

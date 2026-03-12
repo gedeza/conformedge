@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
-import path from "path"
 import { validateShareToken, logShareAccess } from "@/lib/share-link"
-import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE, MIME_TO_EXT } from "@/lib/constants"
 import { uploadToR2 } from "@/lib/r2"
 import { captureError } from "@/lib/error-tracking"
+import { createRateLimiter } from "@/lib/rate-limit"
+
+// Per share link: 10 uploads per 60 seconds
+const portalUploadLimiter = createRateLimiter("portal-upload", {
+  limit: 10,
+  windowMs: 60_000,
+})
 
 export async function POST(
   request: NextRequest,
@@ -19,6 +25,15 @@ export async function POST(
 
     if (shareLink.type !== "SUBCONTRACTOR") {
       return NextResponse.json({ error: "Upload not allowed for this link type" }, { status: 403 })
+    }
+
+    // Rate limit by share link ID
+    const rateLimit = portalUploadLimiter.check(shareLink.id)
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many uploads. Please try again shortly." },
+        { status: 429 }
+      )
     }
 
     const formData = await request.formData()
@@ -42,7 +57,7 @@ export async function POST(
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const ext = path.extname(file.name)
+    const ext = MIME_TO_EXT[file.type] ?? ".bin"
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
     // R2 key scoped to org (server-derived, not user input)
     const key = `${shareLink.organizationId}/${safeName}`

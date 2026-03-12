@@ -16,11 +16,11 @@ export function IncidentsHelpPanel() {
       ]}
       expandLabel="Types & tips"
       tips={[
-        "Incident types: <strong>Near Miss</strong>, First Aid, Medical, Lost Time, Fatality, Environmental, Property Damage",
-        "Status flow: <strong>Reported → Investigating → Corrective Action → Closed</strong>",
-        "<strong>Fatality</strong> incidents trigger immediate admin notifications",
-        "Overdue investigations appear on the <strong>dashboard</strong> and trigger <strong>notifications</strong>",
-        "Link incidents to <strong>CAPAs</strong> to ensure corrective actions are tracked and closed",
+        "Incident types: Near Miss, First Aid, Medical, Lost Time, Fatality, Environmental, Property Damage",
+        "Status flow: Reported → Investigating → Corrective Action → Closed",
+        "Fatality incidents trigger immediate admin notifications",
+        "Overdue investigations appear on the dashboard and trigger notifications",
+        "Link incidents to CAPAs to ensure corrective actions are tracked and closed",
       ]}
     />
   )

@@ -122,10 +122,20 @@ export async function createPermit(values: PermitFormValues): Promise<ActionResu
     }
 
     const permit = await db.$transaction(async (tx) => {
-      // Generate permit number
-      const count = await tx.workPermit.count({ where: { organizationId: dbOrgId } })
+      // Generate permit number with collision-safe approach
       const year = new Date().getFullYear()
-      const permitNumber = `PTW-${year}-${(count + 1).toString().padStart(4, "0")}`
+      const lastPermit = await tx.workPermit.findFirst({
+        where: { organizationId: dbOrgId },
+        orderBy: { createdAt: "desc" },
+        select: { permitNumber: true },
+      })
+      // Extract sequence from last permit number (e.g. PTW-2026-0042 → 42)
+      let seq = 1
+      if (lastPermit?.permitNumber) {
+        const match = lastPermit.permitNumber.match(/(\d+)$/)
+        if (match) seq = parseInt(match[1], 10) + 1
+      }
+      const permitNumber = `PTW-${year}-${seq.toString().padStart(4, "0")}`
 
       const p = await tx.workPermit.create({
         data: {
@@ -335,7 +345,7 @@ export async function transitionPermit(id: string, newStatus: string, closureNot
       notifyOrgMembers({
         title: "Work permit approved",
         message: `Permit "${existing.title}" (${existing.permitNumber}) has been approved.`,
-        type: "PERMIT_EXPIRING",
+        type: "SYSTEM",
         organizationId: dbOrgId,
         excludeUserId: dbUserId,
       })

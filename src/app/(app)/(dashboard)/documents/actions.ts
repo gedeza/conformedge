@@ -99,44 +99,46 @@ export async function getDocumentVersions(id: string) {
     parentDocumentId: true,
   } as const
 
-  // Fetch all documents in the org that have a parentDocumentId or are parents
-  // This is a single query — we walk the tree in memory to find the chain
-  const allOrgDocs = await db.document.findMany({
-    where: { organizationId: dbOrgId },
+  // Walk up from the target to find the root (bounded to 20 hops)
+  const target = await db.document.findFirst({
+    where: { id, organizationId: dbOrgId },
     select: versionSelect,
   })
-
-  // Build parent/child lookup maps
-  const byId = new Map(allOrgDocs.map((d) => [d.id, d]))
-  const target = byId.get(id)
   if (!target) return []
 
-  // Walk up to find root
+  // Walk up to root
   let rootId = target.id
-  let current = target
-  while (current.parentDocumentId) {
-    const parent = byId.get(current.parentDocumentId)
+  let currentDoc = target
+  const ancestors = [target]
+  for (let i = 0; i < 20 && currentDoc.parentDocumentId; i++) {
+    const parent = await db.document.findFirst({
+      where: { id: currentDoc.parentDocumentId, organizationId: dbOrgId },
+      select: versionSelect,
+    })
     if (!parent) break
+    ancestors.push(parent)
     rootId = parent.id
-    current = parent
+    currentDoc = parent
   }
 
-  // Collect all descendants from root
-  const chain = new Set<string>([rootId])
-  let added = true
-  while (added) {
-    added = false
-    for (const doc of allOrgDocs) {
-      if (doc.parentDocumentId && chain.has(doc.parentDocumentId) && !chain.has(doc.id)) {
-        chain.add(doc.id)
-        added = true
+  // Walk down from root — fetch all descendants with parentDocumentId in chain
+  const chain = new Map(ancestors.map((d) => [d.id, d]))
+  let frontier = [rootId]
+  while (frontier.length > 0) {
+    const children = await db.document.findMany({
+      where: { parentDocumentId: { in: frontier }, organizationId: dbOrgId },
+      select: versionSelect,
+    })
+    frontier = []
+    for (const child of children) {
+      if (!chain.has(child.id)) {
+        chain.set(child.id, child)
+        frontier.push(child.id)
       }
     }
   }
 
-  return allOrgDocs
-    .filter((d) => chain.has(d.id))
-    .sort((a, b) => b.version - a.version)
+  return Array.from(chain.values()).sort((a, b) => b.version - a.version)
 }
 
 export async function uploadNewVersion(
@@ -155,43 +157,45 @@ export async function uploadNewVersion(
     })
     if (!parent) return { success: false, error: "Document not found" }
 
-    // Archive the current version
-    await db.document.update({
-      where: { id: parentId },
-      data: { status: "ARCHIVED" },
-    })
-
-    // Create new version
-    const newDoc = await db.document.create({
-      data: {
-        title: values.title || parent.title,
-        description: values.description || parent.description,
-        status: "DRAFT",
-        fileUrl: values.fileUrl,
-        fileType: values.fileType,
-        fileSize: values.fileSize,
-        projectId: parent.projectId,
-        expiresAt: parent.expiresAt,
-        uploadedById: dbUserId,
-        organizationId: dbOrgId,
-        version: parent.version + 1,
-        parentDocumentId: parentId,
-      },
-    })
-
-    // Copy clause classifications to new version
-    if (parent.classifications.length > 0) {
-      await db.documentClassification.createMany({
-        data: parent.classifications.map((c) => ({
-          documentId: newDoc.id,
-          standardClauseId: c.standardClauseId,
-          confidence: c.confidence,
-          isVerified: c.isVerified,
-          verifiedById: c.verifiedById,
-          verifiedAt: c.verifiedAt,
-        })),
+    // Archive + create + copy classifications atomically
+    const newDoc = await db.$transaction(async (tx) => {
+      await tx.document.update({
+        where: { id: parentId },
+        data: { status: "ARCHIVED" },
       })
-    }
+
+      const created = await tx.document.create({
+        data: {
+          title: values.title || parent.title,
+          description: values.description || parent.description,
+          status: "DRAFT",
+          fileUrl: values.fileUrl,
+          fileType: values.fileType,
+          fileSize: values.fileSize,
+          projectId: parent.projectId,
+          expiresAt: parent.expiresAt,
+          uploadedById: dbUserId,
+          organizationId: dbOrgId,
+          version: parent.version + 1,
+          parentDocumentId: parentId,
+        },
+      })
+
+      if (parent.classifications.length > 0) {
+        await tx.documentClassification.createMany({
+          data: parent.classifications.map((c) => ({
+            documentId: created.id,
+            standardClauseId: c.standardClauseId,
+            confidence: c.confidence,
+            isVerified: c.isVerified,
+            verifiedById: c.verifiedById,
+            verifiedAt: c.verifiedAt,
+          })),
+        })
+      }
+
+      return created
+    })
 
     logAuditEvent({
       action: "NEW_VERSION",
@@ -297,7 +301,7 @@ export async function bulkCreateDocuments(
       }
     }
 
-    const docs = await Promise.all(
+    const docs = await db.$transaction(
       files.map((f) =>
         db.document.create({
           data: {
@@ -575,9 +579,12 @@ export async function verifyClassification(documentId: string, classificationId:
 }
 
 export async function getStandardsWithClauses() {
-  await getAuthContext()
+  const { dbOrgId } = await getAuthContext()
+  const { getActiveStandardIds } = await import("@/lib/standards")
+  const activeIds = await getActiveStandardIds(dbOrgId)
+
   return db.standard.findMany({
-    where: { isActive: true },
+    where: { id: { in: activeIds } },
     include: {
       clauses: {
         orderBy: { clauseNumber: "asc" },

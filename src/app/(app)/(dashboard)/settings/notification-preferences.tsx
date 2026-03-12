@@ -81,6 +81,7 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
   },
 }
 
+// Must match NOTIFICATION_TYPES in notification-actions.ts
 const TYPES: NotificationType[] = [
   "DOCUMENT_EXPIRY",
   "CAPA_DUE",
@@ -91,6 +92,10 @@ const TYPES: NotificationType[] = [
   "CERT_UPLOAD",
   "CHECKLIST_DUE",
   "TEAM_INVITATION",
+  "INCIDENT_REPORTED",
+  "OBJECTIVE_DUE",
+  "MANAGEMENT_REVIEW_DUE",
+  "PERMIT_EXPIRING",
 ]
 
 interface Props {

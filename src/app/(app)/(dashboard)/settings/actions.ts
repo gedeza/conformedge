@@ -72,6 +72,9 @@ export async function getMembers() {
   return getOrgMembers(dbOrgId)
 }
 
+const ASSIGNABLE_ROLES = ["ADMIN", "MANAGER", "AUDITOR", "VIEWER"] as const
+type AssignableRole = (typeof ASSIGNABLE_ROLES)[number]
+
 export async function updateMemberRole(userId: string, role: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role: callerRole } = await getAuthContext()
@@ -80,11 +83,26 @@ export async function updateMemberRole(userId: string, role: string): Promise<Ac
       return { success: false, error: "Insufficient permissions" }
     }
 
+    // Validate role — OWNER can never be assigned via this action
+    if (!ASSIGNABLE_ROLES.includes(role as AssignableRole)) {
+      return { success: false, error: "Invalid role" }
+    }
+
+    // Prevent self-role change
+    if (userId === dbUserId) {
+      return { success: false, error: "Cannot change your own role" }
+    }
+
     const membership = await db.organizationUser.findFirst({
       where: { userId, organizationId: dbOrgId },
     })
 
     if (!membership) return { success: false, error: "Member not found" }
+
+    // Prevent modifying the OWNER's role
+    if (membership.role === "OWNER") {
+      return { success: false, error: "Cannot modify the organization owner's role" }
+    }
 
     await db.organizationUser.update({
       where: {
@@ -94,7 +112,7 @@ export async function updateMemberRole(userId: string, role: string): Promise<Ac
         },
       },
       data: {
-        role: role as "OWNER" | "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
+        role: role as AssignableRole,
       },
     })
 
@@ -193,11 +211,27 @@ export async function removeMember(userId: string): Promise<ActionResult> {
 }
 
 export async function getStandardsList() {
-  await getAuthContext()
-  return db.standard.findMany({
-    select: { id: true, code: true, name: true, version: true, isActive: true },
-    orderBy: { code: "asc" },
-  })
+  const { dbOrgId } = await getAuthContext()
+
+  // Get all standards + org-specific activation state
+  const [allStandards, orgStandards] = await Promise.all([
+    db.standard.findMany({
+      select: { id: true, code: true, name: true, version: true, isActive: true },
+      orderBy: { code: "asc" },
+    }),
+    db.organizationStandard.findMany({
+      where: { organizationId: dbOrgId },
+      select: { standardId: true, isActive: true },
+    }),
+  ])
+
+  // If org has no OrganizationStandard rows yet, use global defaults
+  const orgMap = new Map(orgStandards.map((os) => [os.standardId, os.isActive]))
+
+  return allStandards.map((s) => ({
+    ...s,
+    isActive: orgMap.has(s.id) ? orgMap.get(s.id)! : s.isActive,
+  }))
 }
 
 export async function toggleStandardActive(standardId: string, isActive: boolean): Promise<ActionResult> {
@@ -208,17 +242,29 @@ export async function toggleStandardActive(standardId: string, isActive: boolean
       return { success: false, error: "Insufficient permissions" }
     }
 
-    // Billing: check standards limit when activating
+    // Billing: check standards limit when activating (org-scoped count)
     if (isActive) {
-      const activeCount = await db.standard.count({ where: { isActive: true } })
+      const { getActiveStandardCount } = await import("@/lib/standards")
+      const activeCount = await getActiveStandardCount(dbOrgId)
       const billing = await getBillingContext(dbOrgId)
       const stdCheck = checkStandardsLimit(billing, activeCount)
       if (!stdCheck.allowed) return { success: false, error: stdCheck.reason }
     }
 
-    await db.standard.update({
-      where: { id: standardId },
-      data: { isActive },
+    // Upsert org-specific activation (never modifies global Standard table)
+    await db.organizationStandard.upsert({
+      where: {
+        organizationId_standardId: {
+          organizationId: dbOrgId,
+          standardId,
+        },
+      },
+      create: {
+        organizationId: dbOrgId,
+        standardId,
+        isActive,
+      },
+      update: { isActive },
     })
 
     logAuditEvent({

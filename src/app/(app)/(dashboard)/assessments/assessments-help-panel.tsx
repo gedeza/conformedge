@@ -16,11 +16,11 @@ export function AssessmentsHelpPanel() {
       ]}
       expandLabel="How to assess"
       tips={[
-        "Choose a <strong>standard</strong> (e.g. ISO 9001) and a <strong>project</strong> to scope the assessment",
-        "For each clause, select <strong>Compliant</strong>, <strong>Partial</strong>, or <strong>Non-Compliant</strong>",
-        "Add <strong>findings and evidence</strong> notes to support your ratings",
-        "Low-scoring assessments automatically trigger <strong>gap analysis alerts</strong>",
-        "Create <strong>CAPAs</strong> directly from assessment findings to track remediation",
+        "Choose a standard (e.g. ISO 9001) and a project to scope the assessment",
+        "For each clause, select Compliant, Partial, or Non-Compliant",
+        "Add findings and evidence notes to support your ratings",
+        "Low-scoring assessments automatically trigger gap analysis alerts",
+        "Create CAPAs directly from assessment findings to track remediation",
       ]}
     />
   )

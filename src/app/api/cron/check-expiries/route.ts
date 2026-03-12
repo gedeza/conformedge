@@ -24,12 +24,16 @@ const CRON_SECRET = process.env.CRON_SECRET
  * Secured by CRON_SECRET header.
  */
 export async function GET(request: NextRequest) {
-  // Verify cron secret (skip in dev if not set)
-  if (CRON_SECRET) {
-    const auth = request.headers.get("authorization")
-    if (auth !== `Bearer ${CRON_SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  // Verify cron secret — fail closed if not configured
+  if (!CRON_SECRET) {
+    return NextResponse.json(
+      { error: "Server misconfiguration: CRON_SECRET is not set" },
+      { status: 503 }
+    )
+  }
+  const auth = request.headers.get("authorization")
+  if (auth !== `Bearer ${CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const checkInId = Sentry.captureCheckIn({
@@ -72,13 +76,14 @@ export async function GET(request: NextRequest) {
       else if (isWithin14) urgency = "expires within 14 days"
       else urgency = "expires within 30 days"
 
-      // Only notify document uploader (avoid spamming entire org)
+      // Only notify document uploader — dedup per document per day
       const existing = await db.notification.findFirst({
         where: {
           userId: doc.uploadedById,
           organizationId: doc.organizationId,
           type: "DOCUMENT_EXPIRY",
-          createdAt: { gte: addDays(now, -1) }, // Dedupe: 1 per day
+          entityId: doc.id,
+          createdAt: { gte: addDays(now, -1) },
         },
       })
       if (existing) continue
@@ -97,6 +102,7 @@ export async function GET(request: NextRequest) {
             title,
             message,
             type: "DOCUMENT_EXPIRY",
+            entityId: doc.id,
             userId: doc.uploadedById,
             organizationId: doc.organizationId,
           },
@@ -215,6 +221,7 @@ export async function GET(request: NextRequest) {
           userId: targetUserId,
           organizationId: capa.organizationId,
           type: "CAPA_DUE",
+          entityId: capa.id,
           createdAt: { gte: addDays(now, -1) },
         },
       })
@@ -234,6 +241,7 @@ export async function GET(request: NextRequest) {
             title: overdueTitle,
             message: overdueMsg,
             type: "CAPA_DUE",
+            entityId: capa.id,
             userId: targetUserId,
             organizationId: capa.organizationId,
           },
@@ -274,6 +282,7 @@ export async function GET(request: NextRequest) {
           userId: targetUserId,
           organizationId: capa.organizationId,
           type: "CAPA_DUE",
+          entityId: capa.id,
           createdAt: { gte: addDays(now, -1) },
         },
       })
@@ -293,6 +302,7 @@ export async function GET(request: NextRequest) {
             title: soonTitle,
             message: soonMsg,
             type: "CAPA_DUE",
+            entityId: capa.id,
             userId: targetUserId,
             organizationId: capa.organizationId,
           },

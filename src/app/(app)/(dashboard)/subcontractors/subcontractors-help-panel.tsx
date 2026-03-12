@@ -16,11 +16,11 @@ export function SubcontractorsHelpPanel() {
       ]}
       expandLabel="Portal & tips"
       tips={[
-        "Click <strong>Invite to Portal</strong> on a subcontractor's detail page to generate a share link",
-        "Subcontractors can upload new or renewed certs — uploads are <strong>Pending Review</strong> until you approve",
-        "Expiring certifications trigger <strong>automatic notifications</strong> so nothing lapses",
-        "BEE level and safety rating determine the subcontractor's <strong>tier</strong> (Platinum, Gold, Silver)",
-        "Use the detail page to <strong>approve or reject</strong> uploaded certificates",
+        "Click Invite to Portal on a subcontractor's detail page to generate a share link",
+        "Subcontractors can upload new or renewed certs — uploads are Pending Review until you approve",
+        "Expiring certifications trigger automatic notifications so nothing lapses",
+        "BEE level and safety rating determine the subcontractor's tier (Platinum, Gold, Silver)",
+        "Use the detail page to approve or reject uploaded certificates",
       ]}
     />
   )

@@ -15,9 +15,9 @@ export function NotificationsHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Click a notification to <strong>navigate directly</strong> to the relevant item",
-        "Use <strong>Mark all as read</strong> to clear your unread count",
-        "Go to <strong>Settings → Notifications</strong> to toggle specific notification types on/off",
+        "Click a notification to navigate directly to the relevant item",
+        "Use Mark all as read to clear your unread count",
+        "Go to Settings → Notifications to toggle specific notification types on/off",
         "Notification types: Document Expiry, CAPA Due, Assessment Scheduled, Cert Expiry, Approval Request, Cert Upload",
       ]}
     />

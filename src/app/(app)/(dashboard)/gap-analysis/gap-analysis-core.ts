@@ -68,10 +68,14 @@ export async function getGapAnalysisInternal(
   standardCode?: string,
   projectId?: string
 ): Promise<GapAnalysisSummary> {
-  // Build filter conditions
+  // Get org-specific active standard IDs for scoping
+  const { getActiveStandardIds } = await import("@/lib/standards")
+  const activeIds = await getActiveStandardIds(orgId)
+
+  // Build filter conditions (org-scoped)
   const standardWhere = standardCode
-    ? { isActive: true, code: standardCode }
-    : { isActive: true }
+    ? { id: { in: activeIds }, code: standardCode }
+    : { id: { in: activeIds } }
 
   const docWhere: Record<string, unknown> = {
     organizationId: orgId,

@@ -17,10 +17,10 @@ export function DocumentsHelpPanel() {
       ]}
       expandLabel="Statuses & tips"
       tips={[
-        "Use <strong>Bulk Upload</strong> to upload multiple files at once — they'll all be auto-classified",
-        "Documents move through: <strong>Draft → Pending Review → Approved</strong> (or Rejected)",
-        "Set an <strong>expiry date</strong> to get notified before a document lapses",
-        "Use the <strong>project filter</strong> in the table to focus on a specific initiative",
+        "Use Bulk Upload to upload multiple files at once — they'll all be auto-classified",
+        "Documents move through: Draft → Pending Review → Approved (or Rejected)",
+        "Set an expiry date to get notified before a document lapses",
+        "Use the project filter in the table to focus on a specific initiative",
         "AI classification confidence is shown as a percentage — verify low-confidence matches manually",
       ]}
     />

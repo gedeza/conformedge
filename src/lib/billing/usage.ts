@@ -162,10 +162,11 @@ export async function snapshotResourceCounts(
   periodStart: Date,
   periodEnd: Date
 ): Promise<void> {
+  const { getActiveStandardCount } = await import("@/lib/standards")
   const [documentsCount, usersCount, standardsCount] = await Promise.all([
     db.document.count({ where: { organizationId: dbOrgId } }),
     db.organizationUser.count({ where: { organizationId: dbOrgId, isActive: true } }),
-    db.standard.count({ where: { isActive: true } }),
+    getActiveStandardCount(dbOrgId),
   ])
 
   await db.usageRecord.upsert({

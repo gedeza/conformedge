@@ -35,6 +35,23 @@ export default hasClerkKey
       }
     })
   : function noopMiddleware() {
+      // Fail closed — block all protected routes when Clerk is not configured
+      const url = new URL("/", "http://localhost:3000")
+      const pathname = arguments[0]?.nextUrl?.pathname || ""
+      const isProtected = [
+        "/dashboard", "/projects", "/documents", "/assessments", "/capas",
+        "/incidents", "/objectives", "/checklists", "/subcontractors",
+        "/audit-packs", "/audit-trail", "/reports", "/gap-analysis",
+        "/settings", "/billing", "/notifications", "/calendar", "/ims",
+        "/cross-references", "/management-reviews", "/permits", "/api/download",
+      ].some((p) => pathname.startsWith(p))
+
+      if (isProtected) {
+        return NextResponse.json(
+          { error: "Service unavailable: authentication not configured" },
+          { status: 503 }
+        )
+      }
       return NextResponse.next()
     }
 

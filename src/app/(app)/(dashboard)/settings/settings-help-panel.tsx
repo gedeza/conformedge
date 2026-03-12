@@ -16,11 +16,11 @@ export function SettingsHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Toggle <strong>ISO standards</strong> on/off to control which appear in assessments and checklists",
-        "Set up <strong>approval workflows</strong> to require sign-off before documents are approved",
-        "Enable <strong>auto-classify</strong> in organisation settings to automatically classify uploaded documents",
-        "Share links can be <strong>revoked</strong> at any time and have optional expiry dates",
-        "Only <strong>Owners and Admins</strong> can manage settings",
+        "Toggle ISO standards on/off to control which appear in assessments and checklists",
+        "Set up approval workflows to require sign-off before documents are approved",
+        "Enable auto-classify in organisation settings to automatically classify uploaded documents",
+        "Share links can be revoked at any time and have optional expiry dates",
+        "Only Owners and Admins can manage settings",
       ]}
     />
   )

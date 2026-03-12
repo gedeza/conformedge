@@ -15,10 +15,10 @@ export function AuditTrailHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Every create, update, delete, and approval is <strong>automatically logged</strong>",
-        "Logs are <strong>immutable</strong> — they cannot be edited or deleted by anyone",
-        "Use during <strong>external audits</strong> to demonstrate change control compliance",
-        "Filter by <strong>user</strong> to review a team member's actions",
+        "Every create, update, delete, and approval is automatically logged",
+        "Logs are immutable — they cannot be edited or deleted by anyone",
+        "Use during external audits to demonstrate change control compliance",
+        "Filter by user to review a team member's actions",
         "Subcontractor portal uploads are also logged (marked as 'via subcontractor portal')",
       ]}
     />

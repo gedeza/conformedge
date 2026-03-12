@@ -17,11 +17,11 @@ export function PermitsHelpPanel() {
       ]}
       expandLabel="Types & tips"
       tips={[
-        "Workflow: <strong>Draft -> Pending Approval -> Approved -> Active -> Closed</strong>",
-        "Permits auto-expire when the <strong>Valid To</strong> date passes",
+        "Workflow: Draft -> Pending Approval -> Approved -> Active -> Closed",
+        "Permits auto-expire when the Valid To date passes",
         "Request extensions for active permits — requires manager approval",
-        "<strong>Suspended</strong> permits can be resumed or closed",
-        "All transitions are logged in the <strong>Audit Trail</strong>",
+        "Suspended permits can be resumed or closed",
+        "All transitions are logged in the Audit Trail",
       ]}
     />
   )

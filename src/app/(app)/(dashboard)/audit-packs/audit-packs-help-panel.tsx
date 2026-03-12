@@ -16,10 +16,10 @@ export function AuditPacksHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Link an audit pack to a <strong>project</strong> to automatically include its related evidence",
-        "Use the <strong>email</strong> feature to send the PDF directly to external auditors",
-        "Create <strong>share links</strong> in Settings to give clients read-only access to audit packs",
-        "Generate packs <strong>before</strong> surveillance audits to have evidence ready",
+        "Link an audit pack to a project to automatically include its related evidence",
+        "Use the email feature to send the PDF directly to external auditors",
+        "Create share links in Settings to give clients read-only access to audit packs",
+        "Generate packs before surveillance audits to have evidence ready",
       ]}
     />
   )

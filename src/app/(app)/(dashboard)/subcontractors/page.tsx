@@ -8,14 +8,15 @@ import { SubcontractorsHelpPanel } from "./subcontractors-help-panel"
 import { getAuthContext } from "@/lib/auth"
 
 export default async function SubcontractorsPage() {
-  let subcontractors: Awaited<ReturnType<typeof getSubcontractors>> = []
+  let subcontractors: Awaited<ReturnType<typeof getSubcontractors>>["subcontractors"] = []
   let role = "VIEWER"
   let authError = false
 
   try {
     const ctx = await getAuthContext()
     role = ctx.role
-    subcontractors = await getSubcontractors()
+    const result = await getSubcontractors()
+    subcontractors = result.subcontractors
   } catch {
     authError = true
   }

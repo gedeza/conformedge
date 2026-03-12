@@ -81,9 +81,12 @@ export async function POST(
       )
     }
 
-    // Fetch standards with clauses (including description and parentId)
+    // Fetch org-specific active standards with clauses
+    const { getActiveStandardIds } = await import("@/lib/standards")
+    const activeIds = await getActiveStandardIds(dbOrgId)
+
     const standards = await db.standard.findMany({
-      where: { isActive: true },
+      where: { id: { in: activeIds } },
       include: {
         clauses: {
           orderBy: { clauseNumber: "asc" },

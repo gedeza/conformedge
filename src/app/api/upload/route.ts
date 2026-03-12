@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import path from "path"
 import { getAuthContext } from "@/lib/auth"
-import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/lib/constants"
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE, MIME_TO_EXT } from "@/lib/constants"
 import { uploadToR2 } from "@/lib/r2"
 import { captureError } from "@/lib/error-tracking"
 
@@ -27,7 +26,7 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    const ext = path.extname(file.name)
+    const ext = MIME_TO_EXT[file.type] ?? ".bin"
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
     const key = `${dbOrgId}/${safeName}`
 

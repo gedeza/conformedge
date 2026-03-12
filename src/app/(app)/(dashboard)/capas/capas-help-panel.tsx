@@ -16,11 +16,11 @@ export function CapasHelpPanel() {
       ]}
       expandLabel="Priorities & tips"
       tips={[
-        "Set <strong>priority</strong> (Low / Medium / High / Critical) based on risk severity",
-        "Overdue CAPAs appear on the <strong>dashboard</strong> and trigger <strong>notifications</strong>",
-        "Link CAPAs to a <strong>project</strong> to track them alongside related assessments",
-        "Use the <strong>root cause</strong> field to document why the issue occurred",
-        "CAPAs can span <strong>multiple standards</strong> — use cross-standard linking for shared gaps",
+        "Set priority (Low / Medium / High / Critical) based on risk severity",
+        "Overdue CAPAs appear on the dashboard and trigger notifications",
+        "Link CAPAs to a project to track them alongside related assessments",
+        "Use the root cause field to document why the issue occurred",
+        "CAPAs can span multiple standards — use cross-standard linking for shared gaps",
       ]}
     />
   )

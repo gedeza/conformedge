@@ -54,8 +54,11 @@ export const getCrossReferenceMatrix = cache(async (): Promise<CrossReferenceMat
   const gate = checkFeatureAccess(billing, "ims")
   if (!gate.allowed) return null
 
+  const { getActiveStandardIds } = await import("@/lib/standards")
+  const activeIds = await getActiveStandardIds(dbOrgId)
+
   const standards = await db.standard.findMany({
-    where: { isActive: true },
+    where: { id: { in: activeIds } },
     select: { id: true, code: true, name: true },
     orderBy: { code: "asc" },
   })
@@ -119,10 +122,13 @@ export const getCrossReferenceMatrix = cache(async (): Promise<CrossReferenceMat
 })
 
 export const getStandardOverlapCounts = cache(async (): Promise<StandardOverlapData> => {
-  await getAuthContext()
+  const { dbOrgId } = await getAuthContext()
+
+  const { getActiveStandardIds } = await import("@/lib/standards")
+  const activeIds = await getActiveStandardIds(dbOrgId)
 
   const standards = await db.standard.findMany({
-    where: { isActive: true },
+    where: { id: { in: activeIds } },
     select: { id: true, code: true, name: true },
     orderBy: { code: "asc" },
   })

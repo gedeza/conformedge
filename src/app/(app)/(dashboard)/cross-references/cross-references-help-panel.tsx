@@ -15,10 +15,10 @@ export function CrossReferencesHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Select two standards to see their <strong>clause-by-clause mappings</strong>",
-        "Use mappings to <strong>write one procedure</strong> that satisfies multiple standards",
-        "The overlap count shows how much <strong>effort you can save</strong> through integration",
-        "This data feeds into the <strong>IMS dashboard</strong> for integration efficiency scoring",
+        "Select two standards to see their clause-by-clause mappings",
+        "Use mappings to write one procedure that satisfies multiple standards",
+        "The overlap count shows how much effort you can save through integration",
+        "This data feeds into the IMS dashboard for integration efficiency scoring",
       ]}
     />
   )

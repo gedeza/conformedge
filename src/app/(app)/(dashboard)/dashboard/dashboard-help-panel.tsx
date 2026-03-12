@@ -16,9 +16,9 @@ export function DashboardHelpPanel() {
       ]}
       expandLabel="Tips"
       tips={[
-        "Complete the <strong>onboarding checklist</strong> to set up your organisation properly",
-        "The <strong>gap coverage card</strong> shows your overall ISO clause coverage",
-        "The <strong>pending reviews</strong> widget shows documents awaiting your approval",
+        "Complete the onboarding checklist to set up your organisation properly",
+        "The gap coverage card shows your overall ISO clause coverage",
+        "The pending reviews widget shows documents awaiting your approval",
         "Click any metric card to navigate to the relevant page for details",
       ]}
     />
