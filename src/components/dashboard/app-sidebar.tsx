@@ -26,6 +26,7 @@ import {
   Target,
   ClipboardList,
   ShieldCheck,
+  Handshake,
 } from "lucide-react"
 
 import {

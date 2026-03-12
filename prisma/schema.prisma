@@ -297,6 +297,36 @@ enum InvoiceStatus {
 }
 
 // ─────────────────────────────────────────────
+// PARTNER ENUMS
+// ─────────────────────────────────────────────
+
+enum PartnerTier {
+  CONSULTING
+  WHITE_LABEL
+  REFERRAL
+}
+
+enum PartnerStatus {
+  APPLIED
+  APPROVED
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+}
+
+enum PartnerRole {
+  PARTNER_ADMIN     // Can manage partner settings, users, all client orgs
+  PARTNER_MANAGER   // Can view/edit assigned client orgs
+  PARTNER_VIEWER    // Read-only across assigned client orgs
+}
+
+enum PartnerClientSize {
+  SMALL             // ≤5 users, ≤2 standards — R1,299/mo default
+  MEDIUM            // 6-15 users, 3-5 standards — R1,899/mo default
+  LARGE             // 16+ users, all standards — R2,499/mo default
+}
+
+// ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
 
@@ -332,6 +362,7 @@ model Organization {
   managementReviews          ManagementReview[]
   workPermits                WorkPermit[]
   organizationStandards      OrganizationStandard[]
+  partnerOrganizations       PartnerOrganization[]
 
   // Billing
   subscription       Subscription?
@@ -388,6 +419,7 @@ model User {
   checkedPermitItems         WorkPermitChecklist[]     @relation("PermitChecklistChecker")
   reviewedExtensions         WorkPermitExtension[]     @relation("ExtensionReviewer")
   requestedExtensions        WorkPermitExtension[]     @relation("ExtensionRequester")
+  partnerUsers               PartnerUser[]
 
   @@map("users")
 }
@@ -1408,4 +1440,87 @@ model ManagementReviewAction {
 
   @@index([reviewId, status], map: "idx_review_action_status")
   @@map("management_review_actions")
+}
+
+// ─────────────────────────────────────────────
+// PARTNER PROGRAM
+// ─────────────────────────────────────────────
+
+model Partner {
+  id                  String        @id @default(uuid())
+  name                String                             // Partner company name
+  slug                String        @unique              // URL-safe identifier
+  tier                PartnerTier
+  status              PartnerStatus @default(APPLIED)
+  contactEmail        String        @map("contact_email")
+  contactPhone        String?       @map("contact_phone")
+  website             String?
+  registrationNumber  String?       @map("registration_number") // SA CIPC number
+  description         String?       @db.Text
+
+  // Pricing (negotiable per partner — these are defaults for new client orgs)
+  basePlatformFeeCents    Int       @map("base_platform_fee_cents")   // Monthly platform fee in cents
+  defaultSmallFeeCents    Int       @default(129900) @map("default_small_fee_cents")   // R1,299 default
+  defaultMediumFeeCents   Int       @default(189900) @map("default_medium_fee_cents")  // R1,899 default
+  defaultLargeFeeCents    Int       @default(249900) @map("default_large_fee_cents")   // R2,499 default
+  volumeDiscountPercent   Float     @default(0) @map("volume_discount_percent")        // Negotiated volume discount
+  commissionPercent       Float     @default(15) @map("commission_percent")            // Referral commission %
+
+  // Operational
+  maxClientOrgs       Int?          @map("max_client_orgs")          // null = unlimited
+  approvedAt          DateTime?     @map("approved_at")
+  terminatedAt        DateTime?     @map("terminated_at")
+  notes               String?       @db.Text                         // Internal admin notes
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  partnerUsers        PartnerUser[]
+  clientOrganizations PartnerOrganization[]
+
+  @@index([status], map: "idx_partner_status")
+  @@index([tier], map: "idx_partner_tier")
+  @@map("partners")
+}
+
+model PartnerUser {
+  id          String      @id @default(uuid())
+  partnerId   String      @map("partner_id")
+  userId      String      @map("user_id")
+  role        PartnerRole @default(PARTNER_MANAGER)
+  isActive    Boolean     @default(true) @map("is_active")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, userId])
+  @@index([userId], map: "idx_partner_user_user")
+  @@map("partner_users")
+}
+
+model PartnerOrganization {
+  id                String           @id @default(uuid())
+  partnerId         String           @map("partner_id")
+  organizationId    String           @map("organization_id")
+  clientSize        PartnerClientSize @default(SMALL) @map("client_size")
+  isActive          Boolean          @default(true) @map("is_active")
+
+  // Per-client fee override (null = use partner default for this size)
+  customFeeCents    Int?             @map("custom_fee_cents")
+
+  // Metadata
+  onboardedAt       DateTime         @default(now()) @map("onboarded_at")
+  disconnectedAt    DateTime?        @map("disconnected_at")
+  notes             String?          @db.Text
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  partner      Partner      @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, organizationId])
+  @@index([organizationId], map: "idx_partner_org_org")
+  @@map("partner_organizations")
 }

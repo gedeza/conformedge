@@ -29,6 +29,12 @@ export type ShareLinkType = "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTO
 export type CertificationStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED"
 export type ShareLinkStatus = "ACTIVE" | "EXPIRED" | "REVOKED"
 
+// Partner types
+export type PartnerTier = "CONSULTING" | "WHITE_LABEL" | "REFERRAL"
+export type PartnerStatus = "APPLIED" | "APPROVED" | "ACTIVE" | "SUSPENDED" | "TERMINATED"
+export type PartnerRole = "PARTNER_ADMIN" | "PARTNER_MANAGER" | "PARTNER_VIEWER"
+export type PartnerClientSize = "SMALL" | "MEDIUM" | "LARGE"
+
 // Billing types
 export type PlanTier = "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE"
 export type SubscriptionStatus = "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "PAUSED"

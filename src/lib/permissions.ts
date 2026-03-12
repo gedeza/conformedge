@@ -46,3 +46,32 @@ export function canConduct(role: string): boolean {
 export function canManageOrg(role: string): boolean {
   return level(role) >= ROLE_LEVEL.ADMIN
 }
+
+// ─────────────────────────────────────────────
+// PARTNER ROLE HELPERS
+// ─────────────────────────────────────────────
+
+const PARTNER_ROLE_LEVEL: Record<string, number> = {
+  PARTNER_VIEWER: 0,
+  PARTNER_MANAGER: 1,
+  PARTNER_ADMIN: 2,
+}
+
+function partnerLevel(role: string): number {
+  return PARTNER_ROLE_LEVEL[role] ?? 0
+}
+
+/** Can view client org data (all partner roles) */
+export function canPartnerRead(role: string): boolean {
+  return partnerLevel(role) >= PARTNER_ROLE_LEVEL.PARTNER_VIEWER
+}
+
+/** Can edit client org data (PARTNER_MANAGER+) */
+export function canPartnerEdit(role: string): boolean {
+  return partnerLevel(role) >= PARTNER_ROLE_LEVEL.PARTNER_MANAGER
+}
+
+/** Can manage partner settings, users, billing (PARTNER_ADMIN only) */
+export function isPartnerAdmin(role: string): boolean {
+  return partnerLevel(role) >= PARTNER_ROLE_LEVEL.PARTNER_ADMIN
+}
