@@ -3,7 +3,7 @@
 > **Date:** 11 March 2026 (Revised)
 > **Author:** ISU Technologies
 > **Status:** Final — verified by multi-agent pricing analysis
-> **Context:** 31-module AI-powered ISO compliance platform, 46 data models, 9 standards, SA market focus
+> **Context:** 34-module AI-powered ISO compliance platform, 39 data models, 11 standards (7 ISO + DMRE/MHSA + POPIA + ECSA + SACPCMP), SA market focus
 
 ---
 
@@ -1224,6 +1224,145 @@ Using Scenario B (Moderate) as the base case with 115% net revenue retention.
 | **AI credit expansion** | Document volume grows → credit purchases grow | Usage-based upside on top of subscription |
 | **Geographic expansion** | SADC region shares similar regulatory frameworks | Same product, new market |
 | **Adjacent verticals** | Mining (DMRE), manufacturing, healthcare | Standards already seeded, minimal dev needed |
+
+---
+
+## 17. Alternative Payment Methods (Added 13 March 2026)
+
+### Context
+
+SA B2B customers — especially construction, mining, and government — commonly require payment methods beyond card payments. ConformEdge now supports four payment methods to match customer procurement workflows.
+
+### Payment Methods
+
+| Method | Code | Description | Target Segment |
+|--------|------|-------------|----------------|
+| **Card (Paystack)** | `PAYSTACK` | Online card payment via Paystack (default) | SMEs, tech-savvy firms |
+| **EFT / Bank Transfer** | `EFT` | Manual bank transfer, admin marks as paid | Mid-market, construction firms |
+| **Invoice (Net Terms)** | `INVOICE` | Net-30 or Net-60 day terms, auto-generated invoices | Large firms, government |
+| **Prepaid Balance** | `PREPAID` | Pre-funded account, auto-deducted at renewal | Budget-conscious orgs, government |
+
+### How Each Method Works
+
+#### Card (Paystack) — Default
+- Customer selects plan on billing page, redirected to Paystack for payment
+- Paystack webhook processes `charge.success` events
+- Invoices auto-generated on successful payment
+- No admin intervention required
+
+#### EFT / Bank Transfer
+- Admin sets org payment method to `EFT` via admin console
+- Admin creates manual invoice (or cron auto-generates)
+- Invoice PDF includes banking details:
+  - Bank: First National Bank (FNB)
+  - Account: ISU Technologies (Pty) Ltd
+  - Reference: `INV-{shortId}`
+- Customer downloads invoice, makes EFT payment, sends POP
+- Admin verifies and marks invoice as PAID (with optional bank reference)
+- Customer billing page shows bank details + invoice download links (no Paystack plan selector)
+
+#### Invoice (Net Terms)
+- Admin sets org to `INVOICE` with payment terms (Net 30 or Net 60)
+- Cron auto-generates OPEN invoices 3 days before billing period end
+- Invoices include due date based on payment terms
+- Customer receives notification when invoice is ready
+- Customer downloads PDF with banking details
+- Admin marks as paid upon receipt
+- **Overdue handling:**
+  - 7 days past due → subscription set to PAST_DUE, notifications sent
+  - 14 days past due → invoice marked UNCOLLECTIBLE
+
+#### Prepaid Balance
+- Admin funds org's account balance via admin console (records EFT receipt)
+- At billing period renewal, cron auto-deducts plan amount from balance
+- If sufficient balance → creates PAID invoice + DEDUCT transaction automatically
+- If insufficient → creates OPEN invoice, sets PAST_DUE, notifies admins
+- Customer billing page shows current balance + transaction history
+- No self-service funding initially — admin funds on behalf of customer
+
+### Banking Details (Environment Variables)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BANK_NAME` | Bank name on invoice | First National Bank (FNB) |
+| `BANK_ACCOUNT_NAME` | Account holder name | ISU Technologies (Pty) Ltd |
+| `BANK_ACCOUNT_NUMBER` | Bank account number | *(must be set in .env)* |
+| `BANK_BRANCH_CODE` | Bank branch code | 250655 |
+
+### Admin Workflow
+
+1. **Set payment method:** Admin Console → Organizations → [Org] → Manage Subscription → Payment Method dropdown
+2. **Set terms (Invoice only):** Select Net 30 or Net 60 from Payment Terms dropdown
+3. **Fund account (Prepaid only):** Account Balance card → enter amount + description → Fund/Adjust
+4. **Create invoice (EFT/Invoice):** Generate Invoice card → Create Manual Invoice
+5. **Mark paid:** Admin Console → Invoices → Mark Paid (with optional bank reference)
+
+### Invoice Management (Admin)
+
+New admin page at `/admin/invoices` shows:
+- All invoices across organizations
+- Status badges (Open, Paid, Overdue, Uncollectible)
+- Payment method badge per invoice
+- Due date highlighting (overdue rows highlighted red)
+- "Mark Paid" action with optional bank reference dialog
+
+### Customer Experience by Payment Method
+
+| Feature | Paystack | EFT | Invoice | Prepaid |
+|---------|----------|-----|---------|---------|
+| Plan selector card | Visible | Hidden | Hidden | Hidden |
+| Credit pack purchase | Online | Contact admin | Contact admin | Contact admin |
+| Bank details card | Hidden | Visible | Visible | Hidden |
+| Account balance card | Hidden | Hidden | Hidden | Visible |
+| Invoice history | Visible | Visible | Visible | Visible |
+| Self-service payment | Yes | No | No | No |
+
+### Database Schema Additions
+
+| Model/Field | Type | Description |
+|-------------|------|-------------|
+| `PaymentMethod` enum | PAYSTACK, EFT, INVOICE, PREPAID | Payment method types |
+| `AccountTransactionType` enum | FUND, DEDUCT, REFUND, ADJUSTMENT | Transaction types for prepaid |
+| `Subscription.paymentMethod` | PaymentMethod (default PAYSTACK) | Org's payment method |
+| `Subscription.paymentTermsDays` | Int? (null, 30, 60) | Net terms for INVOICE method |
+| `Invoice.bankReference` | String? | EFT reference number |
+| `AccountBalance` model | balanceCents, lifetimeFundedCents, lifetimeDeductedCents | Monetary balance (separate from AI CreditBalance) |
+| `AccountTransaction` model | type, amountCents, balanceAfterCents, description | Transaction ledger |
+
+### Cron Automation
+
+Added to `check-expiries` cron job:
+1. **Auto-invoice generation:** Creates OPEN invoices for INVOICE-method subscriptions 3 days before period end
+2. **Overdue handling:** Marks invoices UNCOLLECTIBLE after 14 days overdue; sets subscription PAST_DUE after 7 days
+3. **Prepaid auto-deduct:** Deducts from account balance at period renewal; creates PAID invoice + DEDUCT transaction if sufficient; creates OPEN invoice + notifications if insufficient
+
+### Pricing Impact
+
+No pricing changes required. Alternative payment methods affect *how* customers pay, not *what* they pay. All tier prices, limits, and feature gates remain unchanged.
+
+### Files Added/Modified
+
+**New files:**
+- `src/app/(app)/(admin)/admin/invoices/page.tsx` — Admin invoice list
+- `src/app/(app)/(admin)/admin/invoices/actions.ts` — Invoice server actions
+- `src/app/(app)/(admin)/admin/invoices/invoice-actions.tsx` — Mark Paid dialog
+- `src/app/(app)/(dashboard)/billing/eft-bank-details-card.tsx` — Customer EFT details
+- `src/app/(app)/(dashboard)/billing/prepaid-balance-card.tsx` — Customer prepaid balance
+
+**Modified files:**
+- `prisma/schema.prisma` — +2 enums, +2 models, +3 fields
+- `src/app/(app)/(admin)/admin/actions.ts` — +adminMarkInvoicePaid, +adminCreateManualInvoice, +adminFundAccount
+- `src/app/(app)/(admin)/admin/organizations/[orgId]/org-subscription-actions.tsx` — +payment method selector, +account balance card
+- `src/components/admin/admin-sidebar.tsx` — +Invoices nav item
+- `src/lib/pdf/invoice-pdf.tsx` — +bank details section
+- `src/app/(app)/(dashboard)/billing/page.tsx` — Conditional rendering by payment method
+- `src/app/(app)/(dashboard)/billing/actions.ts` — +paymentMethod, +accountBalance, +accountTransactions
+- `src/app/(app)/(dashboard)/billing/current-plan-card.tsx` — +payment method badge
+- `src/app/(app)/(dashboard)/billing/invoice-history-card.tsx` — +due date column, +overdue highlighting
+- `src/app/api/cron/check-expiries/route.ts` — +auto-invoice, +overdue handling, +prepaid auto-deduct
+- `src/app/api/invoices/[id]/pdf/route.ts` — +bank details on PDF for EFT/Invoice methods
+- `src/lib/constants.ts` — +PAYMENT_METHOD_LABELS, +PAYMENT_TERMS_OPTIONS, +ACCOUNT_TRANSACTION_TYPES
+- `src/types/index.ts` — +PaymentMethod, +AccountTransactionType
 
 ---
 

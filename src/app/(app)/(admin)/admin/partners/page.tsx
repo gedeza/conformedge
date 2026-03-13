@@ -8,6 +8,7 @@ import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
 import { PARTNER_TIERS, PARTNER_STATUSES } from "@/lib/constants"
+import { PartnersHelpPanel } from "./partners-help-panel"
 
 export default async function AdminPartnersPage() {
   const ctx = await getSuperAdminContext()
@@ -20,7 +21,9 @@ export default async function AdminPartnersPage() {
       <PageHeader
         heading="Partners"
         description={`${partners.length} partner organizations`}
-      />
+      >
+        <PartnersHelpPanel />
+      </PageHeader>
 
       <Card>
         <CardHeader>

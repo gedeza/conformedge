@@ -15,6 +15,7 @@ interface InvoiceHistoryCardProps {
     periodStart: Date
     periodEnd: Date
     paidAt: Date | null
+    dueAt?: Date
     createdAt: Date
   }>
 }
@@ -47,6 +48,7 @@ export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
                   <th className="pb-2 font-medium">Period</th>
                   <th className="pb-2 font-medium">Amount</th>
                   <th className="pb-2 font-medium">Status</th>
+                  <th className="pb-2 font-medium">Due</th>
                   <th className="pb-2 font-medium">Paid</th>
                   <th className="pb-2 font-medium">PDF</th>
                 </tr>
@@ -56,16 +58,21 @@ export function InvoiceHistoryCard({ invoices }: InvoiceHistoryCardProps) {
                   const statusInfo =
                     INVOICE_STATUSES[inv.status as keyof typeof INVOICE_STATUSES]
 
+                  const isOverdue = inv.status === "OPEN" && inv.dueAt && new Date(inv.dueAt) < new Date()
+
                   return (
-                    <tr key={inv.id}>
+                    <tr key={inv.id} className={isOverdue ? "bg-red-50 dark:bg-red-950/20" : ""}>
                       <td className="py-2.5">
                         {formatDate(inv.periodStart)} — {formatDate(inv.periodEnd)}
                       </td>
                       <td className="py-2.5 font-medium">{formatZar(inv.totalCents)}</td>
                       <td className="py-2.5">
-                        <Badge variant="outline" className={statusInfo?.color ?? ""}>
-                          {statusInfo?.label ?? inv.status}
+                        <Badge variant="outline" className={isOverdue ? "bg-red-100 text-red-800" : statusInfo?.color ?? ""}>
+                          {isOverdue ? "Overdue" : statusInfo?.label ?? inv.status}
                         </Badge>
+                      </td>
+                      <td className="py-2.5 text-muted-foreground">
+                        {inv.dueAt ? formatDate(inv.dueAt) : "—"}
                       </td>
                       <td className="py-2.5 text-muted-foreground">
                         {inv.paidAt ? formatDate(inv.paidAt) : "—"}

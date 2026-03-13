@@ -416,6 +416,26 @@ export const MAPPING_TYPE_COLORS = {
   },
 } as const
 
+// Payment methods
+export const PAYMENT_METHOD_LABELS = {
+  PAYSTACK: { label: "Card (Paystack)", color: "bg-green-100 text-green-800" },
+  EFT: { label: "EFT / Bank Transfer", color: "bg-blue-100 text-blue-800" },
+  INVOICE: { label: "Invoice (Net Terms)", color: "bg-purple-100 text-purple-800" },
+  PREPAID: { label: "Prepaid Balance", color: "bg-amber-100 text-amber-800" },
+} as const
+
+export const PAYMENT_TERMS_OPTIONS = [
+  { value: "30", label: "Net 30 days" },
+  { value: "60", label: "Net 60 days" },
+] as const
+
+export const ACCOUNT_TRANSACTION_TYPES = {
+  FUND: { label: "Funded", color: "bg-green-100 text-green-800" },
+  DEDUCT: { label: "Deducted", color: "bg-red-100 text-red-800" },
+  REFUND: { label: "Refund", color: "bg-purple-100 text-purple-800" },
+  ADJUSTMENT: { label: "Adjustment", color: "bg-yellow-100 text-yellow-800" },
+} as const
+
 // Terms version statuses
 export const TERMS_VERSION_STATUSES = {
   DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },

@@ -45,6 +45,8 @@ export type SubscriptionStatus = "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED
 export type BillingCycle = "MONTHLY" | "ANNUAL"
 export type CreditTransactionType = "PURCHASE" | "USAGE" | "ADJUSTMENT" | "REFUND"
 export type InvoiceStatus = "DRAFT" | "OPEN" | "PAID" | "VOID" | "UNCOLLECTIBLE"
+export type PaymentMethod = "PAYSTACK" | "EFT" | "INVOICE" | "PREPAID"
+export type AccountTransactionType = "FUND" | "DEDUCT" | "REFUND" | "ADJUSTMENT"
 
 export interface BillingContext {
   subscription: {

@@ -26,6 +26,8 @@ export async function getBillingPageData(): Promise<{
   orgName: string
   orgEmail: string
   paystackPublicKey: string | null
+  paymentMethod: string
+  accountBalanceCents: number
   creditTransactions: Array<{
     id: string
     type: string
@@ -41,12 +43,21 @@ export async function getBillingPageData(): Promise<{
     periodStart: Date
     periodEnd: Date
     paidAt: Date | null
+    dueAt: Date
+    createdAt: Date
+  }>
+  accountTransactions: Array<{
+    id: string
+    type: string
+    amountCents: number
+    balanceAfterCents: number
+    description: string
     createdAt: Date
   }>
 }> {
   const { dbOrgId, dbUserId } = await getAuthContext()
 
-  const [billing, org, user, creditTransactions, invoices] = await Promise.all([
+  const [billing, org, user, creditTransactions, invoices, subscription, accountBalance, accountTransactions] = await Promise.all([
     getBillingContext(dbOrgId),
     db.organization.findUnique({
       where: { id: dbOrgId },
@@ -80,6 +91,28 @@ export async function getBillingPageData(): Promise<{
         periodStart: true,
         periodEnd: true,
         paidAt: true,
+        dueAt: true,
+        createdAt: true,
+      },
+    }),
+    db.subscription.findUnique({
+      where: { organizationId: dbOrgId },
+      select: { paymentMethod: true },
+    }),
+    db.accountBalance.findUnique({
+      where: { organizationId: dbOrgId },
+      select: { balanceCents: true },
+    }),
+    db.accountTransaction.findMany({
+      where: { organizationId: dbOrgId },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        type: true,
+        amountCents: true,
+        balanceAfterCents: true,
+        description: true,
         createdAt: true,
       },
     }),
@@ -90,8 +123,11 @@ export async function getBillingPageData(): Promise<{
     orgName: org?.name ?? "Organization",
     orgEmail: user?.email ?? "",
     paystackPublicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ?? null,
+    paymentMethod: subscription?.paymentMethod ?? "PAYSTACK",
+    accountBalanceCents: accountBalance?.balanceCents ?? 0,
     creditTransactions,
     invoices,
+    accountTransactions,
   }
 }
 

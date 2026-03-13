@@ -10,6 +10,7 @@ import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminOrganizations } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
+import { OrganizationsHelpPanel } from "./organizations-help-panel"
 
 const PLAN_COLORS: Record<string, string> = {
   STARTER: "bg-gray-100 text-gray-800",
@@ -53,7 +54,9 @@ export default async function AdminOrganizationsPage({
         <PageHeader
           heading="Organizations"
           description={`${filtered.length} of ${orgs.length} organizations`}
-        />
+        >
+          <OrganizationsHelpPanel />
+        </PageHeader>
         <CsvExportButton type="organizations" />
       </div>
 

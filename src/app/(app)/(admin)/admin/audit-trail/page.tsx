@@ -7,6 +7,7 @@ import { getAdminAuditTrail } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { AdminSearch } from "@/components/admin/admin-search"
+import { AuditTrailHelpPanel } from "./audit-trail-help-panel"
 
 export default async function AdminAuditTrailPage({
   searchParams,
@@ -29,7 +30,9 @@ export default async function AdminAuditTrailPage({
       <PageHeader
         heading="Audit Trail"
         description={`${total} events across all organizations`}
-      />
+      >
+        <AuditTrailHelpPanel />
+      </PageHeader>
 
       <Suspense fallback={null}>
         <AdminSearch placeholder="Search events, users, actions..." />

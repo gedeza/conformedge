@@ -8,6 +8,7 @@ import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getTermsVersions } from "./actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
+import { TermsHelpPanel } from "./terms-help-panel"
 
 const STATUS_COLORS: Record<string, string> = {
   DRAFT: "bg-yellow-100 text-yellow-800",
@@ -27,7 +28,9 @@ export default async function AdminTermsPage() {
         <PageHeader
           heading="Terms Management"
           description={`${versions.length} terms version${versions.length !== 1 ? "s" : ""}`}
-        />
+        >
+          <TermsHelpPanel />
+        </PageHeader>
         <Button asChild>
           <Link href="/admin/terms/new">
             <Plus className="mr-2 h-4 w-4" />

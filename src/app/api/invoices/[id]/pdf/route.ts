@@ -24,7 +24,12 @@ export async function GET(
     const invoice = await db.invoice.findFirst({
       where: { id, organizationId: dbOrgId },
       include: {
-        organization: { select: { name: true } },
+        organization: {
+          select: {
+            name: true,
+            subscription: { select: { paymentMethod: true } },
+          },
+        },
       },
     })
 
@@ -33,6 +38,19 @@ export async function GET(
     }
 
     const lineItems = (invoice.lineItems as unknown as InvoiceLineItem[]) ?? []
+
+    // Include bank details for EFT/Invoice payment methods
+    const paymentMethod = invoice.organization.subscription?.paymentMethod
+    const showBankDetails = paymentMethod === "EFT" || paymentMethod === "INVOICE"
+    const bankDetails = showBankDetails && process.env.BANK_ACCOUNT_NUMBER
+      ? {
+          bankName: process.env.BANK_NAME ?? "First National Bank (FNB)",
+          accountName: process.env.BANK_ACCOUNT_NAME ?? "ISU Technologies (Pty) Ltd",
+          accountNumber: process.env.BANK_ACCOUNT_NUMBER,
+          branchCode: process.env.BANK_BRANCH_CODE ?? "250655",
+          reference: `INV-${invoice.id.slice(0, 8).toUpperCase()}`,
+        }
+      : undefined
 
     const pdfElement = React.createElement(InvoicePDF, {
       invoiceId: invoice.id,
@@ -48,7 +66,8 @@ export async function GET(
       vatCents: invoice.vatCents,
       totalCents: invoice.totalCents,
       vatRate: VAT_RATE,
-      paymentReference: invoice.externalPaymentId ?? undefined,
+      paymentReference: invoice.externalPaymentId ?? invoice.bankReference ?? undefined,
+      bankDetails,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

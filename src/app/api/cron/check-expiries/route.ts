@@ -5,7 +5,7 @@ import { db } from "@/lib/db"
 import { sendNotificationEmail } from "@/lib/email"
 import { isNotificationEnabled, filterEnabledUsers } from "@/lib/notification-preferences"
 import { captureError } from "@/lib/error-tracking"
-import { PLAN_DEFINITIONS, QUOTA_WARNING_THRESHOLD } from "@/lib/billing/plans"
+import { PLAN_DEFINITIONS, QUOTA_WARNING_THRESHOLD, VAT_RATE } from "@/lib/billing/plans"
 import { snapshotResourceCounts } from "@/lib/billing/usage"
 import type { PlanTier } from "@/types"
 
@@ -1282,6 +1282,350 @@ export async function GET(request: NextRequest) {
       captureError(err, { source: "cron.billingLifecycle" })
     }
 
+    // ── 11. Auto-generate invoices for INVOICE-method subscriptions ──────
+    let invoicesGenerated = 0
+    let overdueInvoices = 0
+    let prepaidDeductions = 0
+
+    try {
+      const in3DaysBilling = addDays(now, 3)
+
+      // 11a. Generate invoices for INVOICE-method subs approaching period end
+      const invoiceSubs = await db.subscription.findMany({
+        where: {
+          status: "ACTIVE",
+          paymentMethod: "INVOICE",
+          currentPeriodEnd: { lte: in3DaysBilling },
+        },
+        select: {
+          id: true,
+          plan: true,
+          billingCycle: true,
+          paymentTermsDays: true,
+          currentPeriodStart: true,
+          currentPeriodEnd: true,
+          organizationId: true,
+        },
+      })
+
+      for (const sub of invoiceSubs) {
+        // Check if invoice already exists for this period
+        const existingInvoice = await db.invoice.findFirst({
+          where: {
+            organizationId: sub.organizationId,
+            periodStart: sub.currentPeriodStart,
+            status: { in: ["OPEN", "PAID", "DRAFT"] },
+          },
+        })
+        if (existingInvoice) continue
+
+        const plan = PLAN_DEFINITIONS[sub.plan as PlanTier]
+        if (!plan?.monthlyPriceZar) continue
+
+        const totalCents = plan.monthlyPriceZar
+        const netCents = Math.round(totalCents / (1 + VAT_RATE))
+        const vatCents = totalCents - netCents
+        const termsDays = sub.paymentTermsDays ?? 30
+        const dueAt = addDays(sub.currentPeriodStart, termsDays)
+
+        await db.invoice.create({
+          data: {
+            amountCents: netCents,
+            vatCents,
+            totalCents,
+            status: "OPEN",
+            billingCycle: sub.billingCycle,
+            periodStart: sub.currentPeriodStart,
+            periodEnd: sub.currentPeriodEnd,
+            dueAt,
+            lineItems: [
+              {
+                description: `${plan.name} Plan — ${sub.billingCycle === "ANNUAL" ? "Annual" : "Monthly"}`,
+                quantity: 1,
+                unitPriceCents: netCents,
+                totalCents: netCents,
+              },
+              {
+                description: `VAT (${Math.round(VAT_RATE * 100)}%)`,
+                quantity: 1,
+                unitPriceCents: vatCents,
+                totalCents: vatCents,
+              },
+            ],
+            organizationId: sub.organizationId,
+          },
+        })
+        invoicesGenerated++
+
+        // Notify org admins
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: sub.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const enabledIds = await filterEnabledUsers(mgrIds, "SYSTEM", "IN_APP")
+        const emailIds = await filterEnabledUsers(mgrIds, "SYSTEM", "EMAIL")
+
+        const invTitle = "Invoice ready"
+        const invMsg = `Your invoice for the current billing period is ready. Due by ${dueAt.toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })}.`
+
+        for (const userId of enabledIds) {
+          await db.notification.create({
+            data: {
+              title: invTitle,
+              message: invMsg,
+              type: "SYSTEM",
+              userId,
+              organizationId: sub.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+
+        for (const userId of emailIds) {
+          sendNotificationEmail({ userId, title: invTitle, message: invMsg, type: "SYSTEM" })
+        }
+      }
+
+      // 11b. Overdue invoice handling (14 days past due → UNCOLLECTIBLE)
+      const graceDays = 14
+      const overdueThreshold = addDays(now, -graceDays)
+
+      const overdueOpenInvoices = await db.invoice.findMany({
+        where: {
+          status: "OPEN",
+          dueAt: { lt: overdueThreshold },
+        },
+        select: { id: true, organizationId: true, dueAt: true },
+      })
+
+      for (const inv of overdueOpenInvoices) {
+        await db.invoice.update({
+          where: { id: inv.id },
+          data: { status: "UNCOLLECTIBLE" },
+        })
+        overdueInvoices++
+      }
+
+      // Overdue warning (7 days past due → set subscription to PAST_DUE)
+      const overdueWarningThreshold = addDays(now, -7)
+      const overdueWarningInvoices = await db.invoice.findMany({
+        where: {
+          status: "OPEN",
+          dueAt: { lt: overdueWarningThreshold, gte: overdueThreshold },
+          organization: {
+            subscription: {
+              paymentMethod: { in: ["EFT", "INVOICE"] },
+              status: "ACTIVE",
+            },
+          },
+        },
+        select: { organizationId: true },
+      })
+
+      for (const inv of overdueWarningInvoices) {
+        await db.subscription.update({
+          where: { organizationId: inv.organizationId },
+          data: { status: "PAST_DUE", gracePeriodEndsAt: addDays(now, 7) },
+        })
+
+        const orgManagers = await db.organizationUser.findMany({
+          where: {
+            organizationId: inv.organizationId,
+            isActive: true,
+            role: { in: ["OWNER", "ADMIN"] },
+          },
+          select: { userId: true },
+        })
+
+        const mgrIds = orgManagers.map((m) => m.userId)
+        const enabledIds = await filterEnabledUsers(mgrIds, "SUBSCRIPTION_PAYMENT_FAILED", "IN_APP")
+
+        for (const userId of enabledIds) {
+          const existing = await db.notification.findFirst({
+            where: {
+              userId,
+              organizationId: inv.organizationId,
+              type: "SUBSCRIPTION_PAYMENT_FAILED",
+              createdAt: { gte: addDays(now, -1) },
+            },
+          })
+          if (existing) continue
+
+          await db.notification.create({
+            data: {
+              title: "Invoice overdue",
+              message: "Your invoice is overdue. Please settle to avoid service interruption.",
+              type: "SUBSCRIPTION_PAYMENT_FAILED",
+              userId,
+              organizationId: inv.organizationId,
+            },
+          })
+          created++
+          billingNotifications++
+        }
+      }
+
+      // 11c. Prepaid auto-deduct at period renewal
+      const prepaidRenewals = await db.subscription.findMany({
+        where: {
+          status: "ACTIVE",
+          paymentMethod: "PREPAID",
+          currentPeriodEnd: { lt: now },
+        },
+        select: {
+          id: true,
+          plan: true,
+          billingCycle: true,
+          currentPeriodEnd: true,
+          organizationId: true,
+        },
+      })
+
+      for (const sub of prepaidRenewals) {
+        const plan = PLAN_DEFINITIONS[sub.plan as PlanTier]
+        if (!plan?.monthlyPriceZar) continue
+
+        const totalCents = plan.monthlyPriceZar
+        const netCents = Math.round(totalCents / (1 + VAT_RATE))
+        const vatCents = totalCents - netCents
+
+        const accountBalance = await db.accountBalance.findUnique({
+          where: { organizationId: sub.organizationId },
+        })
+
+        const balanceCents = accountBalance?.balanceCents ?? 0
+
+        if (balanceCents >= totalCents) {
+          // Sufficient balance — deduct and create PAID invoice
+          await db.$transaction(async (tx) => {
+            const invoice = await tx.invoice.create({
+              data: {
+                amountCents: netCents,
+                vatCents,
+                totalCents,
+                status: "PAID",
+                billingCycle: sub.billingCycle,
+                periodStart: sub.currentPeriodEnd,
+                periodEnd: sub.billingCycle === "ANNUAL"
+                  ? addDays(sub.currentPeriodEnd, 365)
+                  : addDays(sub.currentPeriodEnd, 30),
+                dueAt: sub.currentPeriodEnd,
+                paidAt: now,
+                organizationId: sub.organizationId,
+                lineItems: [
+                  {
+                    description: `${plan.name} Plan — ${sub.billingCycle === "ANNUAL" ? "Annual" : "Monthly"} (auto-deducted)`,
+                    quantity: 1,
+                    unitPriceCents: netCents,
+                    totalCents: netCents,
+                  },
+                  {
+                    description: `VAT (${Math.round(VAT_RATE * 100)}%)`,
+                    quantity: 1,
+                    unitPriceCents: vatCents,
+                    totalCents: vatCents,
+                  },
+                ],
+              },
+            })
+
+            const updatedBalance = await tx.accountBalance.update({
+              where: { organizationId: sub.organizationId },
+              data: {
+                balanceCents: { decrement: totalCents },
+                lifetimeDeductedCents: { increment: totalCents },
+              },
+            })
+
+            await tx.accountTransaction.create({
+              data: {
+                type: "DEDUCT",
+                amountCents: -totalCents,
+                balanceAfterCents: updatedBalance.balanceCents,
+                description: `Auto-deducted for ${plan.name} Plan — ${sub.billingCycle === "ANNUAL" ? "Annual" : "Monthly"}`,
+                invoiceId: invoice.id,
+                organizationId: sub.organizationId,
+              },
+            })
+          })
+
+          prepaidDeductions++
+        } else {
+          // Insufficient balance — create OPEN invoice and notify
+          await db.invoice.create({
+            data: {
+              amountCents: netCents,
+              vatCents,
+              totalCents,
+              status: "OPEN",
+              billingCycle: sub.billingCycle,
+              periodStart: sub.currentPeriodEnd,
+              periodEnd: sub.billingCycle === "ANNUAL"
+                ? addDays(sub.currentPeriodEnd, 365)
+                : addDays(sub.currentPeriodEnd, 30),
+              dueAt: addDays(now, 7),
+              organizationId: sub.organizationId,
+              lineItems: [
+                {
+                  description: `${plan.name} Plan — ${sub.billingCycle === "ANNUAL" ? "Annual" : "Monthly"}`,
+                  quantity: 1,
+                  unitPriceCents: netCents,
+                  totalCents: netCents,
+                },
+                {
+                  description: `VAT (${Math.round(VAT_RATE * 100)}%)`,
+                  quantity: 1,
+                  unitPriceCents: vatCents,
+                  totalCents: vatCents,
+                },
+              ],
+            },
+          })
+
+          // Set to PAST_DUE after grace
+          await db.subscription.update({
+            where: { id: sub.id },
+            data: { status: "PAST_DUE", gracePeriodEndsAt: addDays(now, 7) },
+          })
+
+          const orgManagers = await db.organizationUser.findMany({
+            where: {
+              organizationId: sub.organizationId,
+              isActive: true,
+              role: { in: ["OWNER", "ADMIN"] },
+            },
+            select: { userId: true },
+          })
+
+          const mgrIds = orgManagers.map((m) => m.userId)
+          const enabledIds = await filterEnabledUsers(mgrIds, "SUBSCRIPTION_PAYMENT_FAILED", "IN_APP")
+
+          for (const userId of enabledIds) {
+            await db.notification.create({
+              data: {
+                title: "Insufficient prepaid balance",
+                message: "Your account balance is insufficient for the subscription renewal. Please fund your account to avoid service interruption.",
+                type: "SUBSCRIPTION_PAYMENT_FAILED",
+                userId,
+                organizationId: sub.organizationId,
+              },
+            })
+            created++
+            billingNotifications++
+          }
+        }
+      }
+    } catch (err) {
+      captureError(err, { source: "cron.alternativePayments" })
+    }
+
     // ── 10. Work Permit auto-expiry & expiry warnings ──────
     let permitsExpired = 0
     let permitsWarned = 0
@@ -1424,6 +1768,9 @@ export async function GET(request: NextRequest) {
         gracePeriodsCancelled,
         periodsReset,
         billingNotifications,
+        invoicesGenerated,
+        overdueInvoices,
+        prepaidDeductions,
       },
       timestamp: now.toISOString(),
     })

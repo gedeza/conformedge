@@ -14,6 +14,7 @@ import {
   FileText,
   DollarSign,
   ScrollText,
+  Receipt,
 } from "lucide-react"
 
 import {
@@ -35,6 +36,7 @@ const adminItems = [
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
   { title: "Revenue", href: "/admin/revenue", icon: DollarSign },
+  { title: "Invoices", href: "/admin/invoices", icon: Receipt },
   { title: "Partners", href: "/admin/partners", icon: Handshake },
   { title: "Terms", href: "/admin/terms", icon: FileText },
   { title: "Audit Trail", href: "/admin/audit-trail", icon: ScrollText },

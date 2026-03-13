@@ -145,6 +145,7 @@ export async function getAdminOrgDetail(orgId: string) {
     include: {
       subscription: true,
       creditBalance: true,
+      accountBalance: true,
       members: {
         where: { isActive: true },
         include: {
@@ -200,6 +201,8 @@ const updateSubscriptionSchema = z.object({
   orgId: z.string().uuid(),
   plan: z.enum(["STARTER", "PROFESSIONAL", "BUSINESS", "ENTERPRISE"]).optional(),
   status: z.enum(["TRIALING", "ACTIVE", "PAST_DUE", "CANCELLED", "PAUSED"]).optional(),
+  paymentMethod: z.enum(["PAYSTACK", "EFT", "INVOICE", "PREPAID"]).optional(),
+  paymentTermsDays: z.number().int().nullable().optional(),
 })
 
 export async function adminUpdateSubscription(
@@ -221,6 +224,8 @@ export async function adminUpdateSubscription(
       data: {
         ...(parsed.plan && { plan: parsed.plan }),
         ...(parsed.status && { status: parsed.status }),
+        ...(parsed.paymentMethod && { paymentMethod: parsed.paymentMethod }),
+        ...(parsed.paymentTermsDays !== undefined && { paymentTermsDays: parsed.paymentTermsDays }),
       },
     })
 
@@ -232,6 +237,8 @@ export async function adminUpdateSubscription(
       metadata: {
         plan: parsed.plan ?? "unchanged",
         status: parsed.status ?? "unchanged",
+        paymentMethod: parsed.paymentMethod ?? "unchanged",
+        paymentTermsDays: parsed.paymentTermsDays ?? "unchanged",
       },
       organizationId: parsed.orgId,
     })
@@ -243,6 +250,202 @@ export async function adminUpdateSubscription(
     console.error("adminUpdateSubscription error:", err)
     return { success: false, error: "Failed to update subscription" }
   }
+}
+
+// ─────────────────────────────────────────────
+// INVOICE MANAGEMENT (EFT / INVOICE payments)
+// ─────────────────────────────────────────────
+
+export async function adminMarkInvoicePaid(
+  invoiceId: string,
+  bankReference?: string
+): Promise<ActionResult> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    const invoice = await db.invoice.findUnique({
+      where: { id: invoiceId },
+      select: { id: true, status: true, organizationId: true, totalCents: true },
+    })
+    if (!invoice) return { success: false, error: "Invoice not found" }
+    if (invoice.status === "PAID") return { success: false, error: "Invoice is already paid" }
+
+    await db.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+        ...(bankReference && { bankReference }),
+      },
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "MARK_INVOICE_PAID",
+      targetType: "Invoice",
+      targetId: invoiceId,
+      metadata: { bankReference: bankReference ?? null, totalCents: invoice.totalCents },
+      organizationId: invoice.organizationId,
+    })
+
+    revalidatePath(`/admin/organizations/${invoice.organizationId}`)
+    revalidatePath("/admin/invoices")
+    return { success: true }
+  } catch (err) {
+    console.error("adminMarkInvoicePaid error:", err)
+    return { success: false, error: "Failed to mark invoice as paid" }
+  }
+}
+
+export async function adminCreateManualInvoice(orgId: string): Promise<ActionResult> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    const sub = await db.subscription.findUnique({
+      where: { organizationId: orgId },
+      include: { organization: { select: { name: true } } },
+    })
+    if (!sub) return { success: false, error: "No subscription found" }
+
+    const { PLAN_DEFINITIONS, VAT_RATE } = await import("@/lib/billing/plans")
+    const plan = PLAN_DEFINITIONS[sub.plan as keyof typeof PLAN_DEFINITIONS]
+    if (!plan?.monthlyPriceZar) return { success: false, error: "Cannot generate invoice for Enterprise plan (custom pricing)" }
+
+    const totalCents = plan.monthlyPriceZar
+    const netCents = Math.round(totalCents / (1 + VAT_RATE))
+    const vatCents = totalCents - netCents
+
+    const dueAt = sub.paymentTermsDays
+      ? new Date(Date.now() + sub.paymentTermsDays * 24 * 60 * 60 * 1000)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Default 7 days for EFT
+
+    const invoice = await db.invoice.create({
+      data: {
+        amountCents: netCents,
+        vatCents,
+        totalCents,
+        status: "OPEN",
+        billingCycle: sub.billingCycle,
+        periodStart: sub.currentPeriodStart,
+        periodEnd: sub.currentPeriodEnd,
+        dueAt,
+        lineItems: [
+          {
+            description: `${plan.name} Plan — ${sub.billingCycle === "ANNUAL" ? "Annual" : "Monthly"}`,
+            quantity: 1,
+            unitPriceCents: netCents,
+            totalCents: netCents,
+          },
+          {
+            description: `VAT (${Math.round(VAT_RATE * 100)}%)`,
+            quantity: 1,
+            unitPriceCents: vatCents,
+            totalCents: vatCents,
+          },
+        ],
+        organizationId: orgId,
+      },
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "CREATE_MANUAL_INVOICE",
+      targetType: "Invoice",
+      targetId: invoice.id,
+      metadata: { totalCents, plan: sub.plan },
+      organizationId: orgId,
+    })
+
+    revalidatePath(`/admin/organizations/${orgId}`)
+    revalidatePath("/admin/invoices")
+    return { success: true }
+  } catch (err) {
+    console.error("adminCreateManualInvoice error:", err)
+    return { success: false, error: "Failed to create invoice" }
+  }
+}
+
+// ─────────────────────────────────────────────
+// ACCOUNT BALANCE (Prepaid)
+// ─────────────────────────────────────────────
+
+export async function adminFundAccount(
+  orgId: string,
+  amountCents: number,
+  description: string
+): Promise<ActionResult> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    if (amountCents === 0) return { success: false, error: "Amount cannot be zero" }
+    if (!description.trim()) return { success: false, error: "Description is required" }
+
+    const isFunding = amountCents > 0
+    const type = isFunding ? "FUND" : "ADJUSTMENT"
+
+    await db.$transaction(async (tx) => {
+      const balance = await tx.accountBalance.upsert({
+        where: { organizationId: orgId },
+        update: {
+          balanceCents: { increment: amountCents },
+          ...(isFunding && { lifetimeFundedCents: { increment: amountCents } }),
+          ...(!isFunding && { lifetimeDeductedCents: { increment: Math.abs(amountCents) } }),
+        },
+        create: {
+          organizationId: orgId,
+          balanceCents: amountCents,
+          lifetimeFundedCents: isFunding ? amountCents : 0,
+          lifetimeDeductedCents: isFunding ? 0 : Math.abs(amountCents),
+        },
+      })
+
+      await tx.accountTransaction.create({
+        data: {
+          type: type as "FUND" | "ADJUSTMENT",
+          amountCents,
+          balanceAfterCents: balance.balanceCents,
+          description: `[Admin] ${description.trim()}`,
+          performedById: ctx.dbUserId,
+          organizationId: orgId,
+        },
+      })
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "FUND_ACCOUNT",
+      targetType: "Organization",
+      targetId: orgId,
+      metadata: { amountCents, description },
+      organizationId: orgId,
+    })
+
+    revalidatePath(`/admin/organizations/${orgId}`)
+    return { success: true }
+  } catch (err) {
+    console.error("adminFundAccount error:", err)
+    return { success: false, error: "Failed to fund account" }
+  }
+}
+
+export async function getAccountBalance(orgId: string) {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return null
+
+  const balance = await db.accountBalance.findUnique({
+    where: { organizationId: orgId },
+  })
+
+  const transactions = await db.accountTransaction.findMany({
+    where: { organizationId: orgId },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  })
+
+  return { balance, transactions }
 }
 
 const adjustCreditsSchema = z.object({

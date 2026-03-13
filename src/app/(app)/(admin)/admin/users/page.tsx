@@ -9,6 +9,7 @@ import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { SuperAdminToggle } from "./super-admin-toggle"
 import { CsvExportButton } from "@/components/admin/csv-export-button"
+import { UsersHelpPanel } from "./users-help-panel"
 
 export default async function AdminUsersPage({
   searchParams,
@@ -38,7 +39,9 @@ export default async function AdminUsersPage({
         <PageHeader
           heading="Users"
           description={`${filtered.length} of ${users.length} users`}
-        />
+        >
+          <UsersHelpPanel />
+        </PageHeader>
         <CsvExportButton type="users" />
       </div>
 

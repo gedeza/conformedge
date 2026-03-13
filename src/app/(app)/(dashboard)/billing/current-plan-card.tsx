@@ -4,18 +4,21 @@ import { AlertTriangle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PLAN_DEFINITIONS, formatZar, getMonthlyPriceZar } from "@/lib/billing/plans"
-import { SUBSCRIPTION_STATUSES, PLAN_TIERS } from "@/lib/constants"
+import { SUBSCRIPTION_STATUSES, PLAN_TIERS, PAYMENT_METHOD_LABELS } from "@/lib/constants"
 import type { BillingContext } from "@/types"
 
 interface CurrentPlanCardProps {
   billing: BillingContext
+  paymentMethod?: string
 }
 
-export function CurrentPlanCard({ billing }: CurrentPlanCardProps) {
+export function CurrentPlanCard({ billing, paymentMethod }: CurrentPlanCardProps) {
   const plan = PLAN_DEFINITIONS[billing.subscription.plan]
   const statusInfo = SUBSCRIPTION_STATUSES[billing.subscription.status]
   const tierInfo = PLAN_TIERS[billing.subscription.plan]
   const monthlyPrice = getMonthlyPriceZar(billing.subscription.plan, billing.subscription.billingCycle)
+  const pmKey = (paymentMethod ?? "PAYSTACK") as keyof typeof PAYMENT_METHOD_LABELS
+  const pmInfo = PAYMENT_METHOD_LABELS[pmKey]
 
   const trialDaysRemaining = billing.subscription.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(billing.subscription.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
@@ -40,6 +43,11 @@ export function CurrentPlanCard({ billing }: CurrentPlanCardProps) {
             <Badge variant="outline" className={statusInfo.color}>
               {statusInfo.label}
             </Badge>
+            {pmInfo && pmKey !== "PAYSTACK" && (
+              <Badge variant="outline" className={pmInfo.color}>
+                {pmInfo.label}
+              </Badge>
+            )}
           </div>
         </div>
       </CardHeader>

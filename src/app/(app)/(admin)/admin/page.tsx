@@ -14,6 +14,7 @@ import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminOverview } from "./actions"
 import { redirect } from "next/navigation"
 import { formatZar } from "@/lib/billing/plans"
+import { AdminOverviewHelpPanel } from "./admin-overview-help-panel"
 
 export default async function AdminOverviewPage() {
   const ctx = await getSuperAdminContext()
@@ -27,7 +28,9 @@ export default async function AdminOverviewPage() {
       <PageHeader
         heading="Platform Admin"
         description={`Welcome back, ${ctx.firstName}. Here's your platform overview.`}
-      />
+      >
+        <AdminOverviewHelpPanel />
+      </PageHeader>
 
       {/* Key Metrics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

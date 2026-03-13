@@ -98,11 +98,13 @@ User clicks "Classify"
 
 ### New Enums
 ```
-SubscriptionStatus: TRIALING | ACTIVE | PAST_DUE | CANCELLED | PAUSED
-BillingCycle:       MONTHLY | ANNUAL
-PlanTier:           STARTER | PROFESSIONAL | BUSINESS | ENTERPRISE
-CreditTransactionType: PURCHASE | USAGE | ADJUSTMENT | REFUND
-InvoiceStatus:      DRAFT | OPEN | PAID | VOID | UNCOLLECTIBLE
+SubscriptionStatus:     TRIALING | ACTIVE | PAST_DUE | CANCELLED | PAUSED
+BillingCycle:           MONTHLY | ANNUAL
+PlanTier:               STARTER | PROFESSIONAL | BUSINESS | ENTERPRISE
+CreditTransactionType:  PURCHASE | USAGE | ADJUSTMENT | REFUND
+InvoiceStatus:          DRAFT | OPEN | PAID | VOID | UNCOLLECTIBLE
+PaymentMethod:          PAYSTACK | EFT | INVOICE | PREPAID          ← Added 13 March 2026
+AccountTransactionType: FUND | DEDUCT | REFUND | ADJUSTMENT          ← Added 13 March 2026
 ```
 
 ### New Models (6)
@@ -110,10 +112,19 @@ InvoiceStatus:      DRAFT | OPEN | PAID | VOID | UNCOLLECTIBLE
 **Subscription** (1:1 with Organization)
 - plan, status, billingCycle, currentPeriodStart/End, trialEndsAt
 - cancelAtPeriodEnd, gracePeriodEndsAt, externalSubId
+- paymentMethod (PAYSTACK default), paymentTermsDays (null/30/60) ← Added 13 March 2026
 
 **Invoice**
 - amountZar (cents), status, billingCycle, periodStart/End, dueAt, paidAt
 - lineItems (JSON), externalPaymentId
+- bankReference (EFT reference number) ← Added 13 March 2026
+
+**AccountBalance** (1:1 with Organization) ← Added 13 March 2026
+- balanceCents, lifetimeFundedCents, lifetimeDeductedCents
+
+**AccountTransaction** ← Added 13 March 2026
+- type (FUND/DEDUCT/REFUND/ADJUSTMENT), amountCents, balanceAfterCents
+- description, invoiceId (nullable), performedById (nullable)
 
 **CreditBalance** (1:1 with Organization)
 - balance, lifetimeEarned, lifetimeUsed
@@ -460,3 +471,19 @@ src/app/(dashboard)/documents/approval-actions.ts — Approval actions gate
 src/app/api/reports/pdf/route.ts                 — Export gate
 src/app/api/reports/csv/route.ts                 — Export gate
 ```
+
+### Alternative Payment Methods (Added 13 March 2026)
+```
+src/app/(app)/(admin)/admin/invoices/
+├── page.tsx              — Admin invoice management list
+├── actions.ts            — Cross-org invoice queries, mark paid
+└── invoice-actions.tsx   — Mark Paid dialog component
+
+src/app/(app)/(dashboard)/billing/
+├── eft-bank-details-card.tsx     — Bank details for EFT/Invoice customers
+└── prepaid-balance-card.tsx      — Account balance + transaction history
+```
+
+**Admin workflow:** Set payment method per org → create invoices → mark paid
+**Cron automation:** Auto-invoice (INVOICE method) + overdue handling + prepaid auto-deduct
+**Full documentation:** See `DOCS/pricing-strategy/PRICING-STRATEGY-2026.md` Section 17

@@ -11,6 +11,7 @@ import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
 import { OrgSubscriptionActions } from "./org-subscription-actions"
+import { OrgDetailHelpPanel } from "./org-detail-help-panel"
 
 interface Props {
   params: Promise<{ orgId: string }>
@@ -31,7 +32,9 @@ export default async function AdminOrgDetailPage({ params }: Props) {
       <PageHeader
         heading={org.name}
         description={`Organization detail — ${org.slug}`}
-      />
+      >
+        <OrgDetailHelpPanel />
+      </PageHeader>
 
       {/* Subscription + Credits */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -48,6 +51,10 @@ export default async function AdminOrgDetailPage({ params }: Props) {
                 <Row label="Plan" value={org.subscription.plan} />
                 <Row label="Status" value={org.subscription.status} />
                 <Row label="Billing Cycle" value={org.subscription.billingCycle} />
+                <Row label="Payment Method" value={(org.subscription as { paymentMethod?: string }).paymentMethod ?? "PAYSTACK"} />
+                {(org.subscription as { paymentTermsDays?: number | null }).paymentTermsDays && (
+                  <Row label="Payment Terms" value={`Net ${(org.subscription as { paymentTermsDays: number }).paymentTermsDays} days`} />
+                )}
                 {org.subscription.trialEndsAt && (
                   <Row label="Trial Ends" value={format(org.subscription.trialEndsAt, "dd MMM yyyy")} />
                 )}
@@ -118,6 +125,9 @@ export default async function AdminOrgDetailPage({ params }: Props) {
         currentPlan={org.subscription?.plan ?? null}
         currentStatus={org.subscription?.status ?? null}
         currentBalance={org.creditBalance?.balance ?? 0}
+        currentPaymentMethod={(org.subscription as { paymentMethod?: string } | null)?.paymentMethod ?? "PAYSTACK"}
+        currentPaymentTermsDays={(org.subscription as { paymentTermsDays?: number | null } | null)?.paymentTermsDays ?? null}
+        accountBalanceCents={(org as { accountBalance?: { balanceCents: number } | null }).accountBalance?.balanceCents ?? 0}
       />
 
       {/* Team Members */}

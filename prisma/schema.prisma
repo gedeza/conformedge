@@ -296,6 +296,20 @@ enum InvoiceStatus {
   UNCOLLECTIBLE
 }
 
+enum PaymentMethod {
+  PAYSTACK    // Card via Paystack (default, existing)
+  EFT         // Manual bank transfer — admin marks paid
+  INVOICE     // Net-30/60 terms — auto-generated invoices
+  PREPAID     // Pre-funded account balance
+}
+
+enum AccountTransactionType {
+  FUND        // Money deposited (EFT/card top-up)
+  DEDUCT      // Auto-deducted for invoice payment
+  REFUND      // Partial/full refund
+  ADJUSTMENT  // Admin manual adjustment
+}
+
 // ─────────────────────────────────────────────
 // PARTNER ENUMS
 // ─────────────────────────────────────────────
@@ -372,11 +386,13 @@ model Organization {
   referrals                  Referral[]
 
   // Billing
-  subscription       Subscription?
-  creditBalance      CreditBalance?
-  invoices           Invoice[]
-  creditTransactions CreditTransaction[]
-  usageRecords       UsageRecord[]
+  subscription        Subscription?
+  creditBalance       CreditBalance?
+  invoices            Invoice[]
+  creditTransactions  CreditTransaction[]
+  usageRecords        UsageRecord[]
+  accountBalance      AccountBalance?
+  accountTransactions AccountTransaction[]
 
   @@map("organizations")
 }
@@ -1218,6 +1234,8 @@ model Subscription {
   cancelAtPeriodEnd   Boolean            @default(false) @map("cancel_at_period_end")
   gracePeriodEndsAt   DateTime?          @map("grace_period_ends_at")
   externalSubId       String?            @map("external_sub_id")
+  paymentMethod       PaymentMethod      @default(PAYSTACK) @map("payment_method")
+  paymentTermsDays    Int?               @map("payment_terms_days") // null=immediate, 30, 60
   organizationId      String             @unique @map("organization_id")
   createdAt           DateTime           @default(now()) @map("created_at")
   updatedAt           DateTime           @updatedAt @map("updated_at")
@@ -1227,6 +1245,7 @@ model Subscription {
 
   @@index([status], map: "idx_subscription_status")
   @@index([trialEndsAt], map: "idx_subscription_trial_ends")
+  @@index([paymentMethod], map: "idx_subscription_payment_method")
   @@map("subscriptions")
 }
 
@@ -1243,13 +1262,15 @@ model Invoice {
   paidAt            DateTime?     @map("paid_at")
   lineItems         Json          @map("line_items")
   externalPaymentId String?       @map("external_payment_id")
+  bankReference     String?       @map("bank_reference") // EFT reference number
   organizationId    String        @map("organization_id")
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
 
   // Relations
-  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  creditTransactions CreditTransaction[]
+  organization        Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  creditTransactions  CreditTransaction[]
+  accountTransactions AccountTransaction[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_invoice_org_created")
   @@index([status], map: "idx_invoice_status")
@@ -1310,6 +1331,42 @@ model UsageRecord {
   @@unique([organizationId, periodStart])
   @@index([organizationId, periodStart(sort: Desc)], map: "idx_usage_record_org_period")
   @@map("usage_records")
+}
+
+model AccountBalance {
+  id                    String   @id @default(uuid())
+  balanceCents          Int      @default(0) @map("balance_cents")
+  lifetimeFundedCents   Int      @default(0) @map("lifetime_funded_cents")
+  lifetimeDeductedCents Int      @default(0) @map("lifetime_deducted_cents")
+  organizationId        String   @unique @map("organization_id")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  transactions AccountTransaction[]
+
+  @@map("account_balances")
+}
+
+model AccountTransaction {
+  id                String                 @id @default(uuid())
+  type              AccountTransactionType
+  amountCents       Int                    @map("amount_cents") // positive=fund, negative=deduct
+  balanceAfterCents Int                    @map("balance_after_cents")
+  description       String
+  invoiceId         String?                @map("invoice_id")
+  performedById     String?                @map("performed_by_id")
+  organizationId    String                 @map("organization_id")
+  createdAt         DateTime               @default(now()) @map("created_at")
+
+  // Relations
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invoice        Invoice?        @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  accountBalance AccountBalance? @relation(fields: [organizationId], references: [organizationId], map: "account_tx_balance_fkey")
+
+  @@index([organizationId, createdAt(sort: Desc)], map: "idx_account_tx_org_created")
+  @@map("account_transactions")
 }
 
 // ─────────────────────────────────────────────

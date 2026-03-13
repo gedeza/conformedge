@@ -161,6 +161,36 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: "right",
   },
+  // Bank details
+  bankSection: {
+    marginTop: 25,
+    padding: 12,
+    backgroundColor: colors.bgLight,
+    borderRadius: 4,
+    border: `1px solid ${colors.border}`,
+  },
+  bankTitle: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: colors.primary,
+    textTransform: "uppercase" as const,
+    marginBottom: 6,
+    letterSpacing: 0.5,
+  },
+  bankRow: {
+    flexDirection: "row" as const,
+    marginBottom: 2,
+  },
+  bankLabel: {
+    width: 100,
+    fontSize: 9,
+    color: colors.textMuted,
+  },
+  bankValue: {
+    fontSize: 9,
+    fontWeight: "bold",
+    color: colors.textDark,
+  },
   // Footer
   footer: {
     position: "absolute",
@@ -187,6 +217,14 @@ export interface InvoiceLineItem {
   totalCents: number
 }
 
+export interface BankDetails {
+  bankName: string
+  accountName: string
+  accountNumber: string
+  branchCode: string
+  reference: string
+}
+
 export interface InvoicePDFProps {
   invoiceId: string
   organizationName: string
@@ -203,6 +241,7 @@ export interface InvoicePDFProps {
   totalCents: number
   vatRate: number
   paymentReference?: string
+  bankDetails?: BankDetails
 }
 
 function formatZar(cents: number): string {
@@ -302,6 +341,33 @@ export function InvoicePDF(props: InvoicePDFProps) {
             <Text style={styles.totalsFinalValue}>{formatZar(props.totalCents)}</Text>
           </View>
         </View>
+
+        {/* Bank Details (for EFT/Invoice payments) */}
+        {props.bankDetails && (
+          <View style={styles.bankSection}>
+            <Text style={styles.bankTitle}>Banking Details for EFT Payment</Text>
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>Bank:</Text>
+              <Text style={styles.bankValue}>{props.bankDetails.bankName}</Text>
+            </View>
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>Account Name:</Text>
+              <Text style={styles.bankValue}>{props.bankDetails.accountName}</Text>
+            </View>
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>Account No:</Text>
+              <Text style={styles.bankValue}>{props.bankDetails.accountNumber}</Text>
+            </View>
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>Branch Code:</Text>
+              <Text style={styles.bankValue}>{props.bankDetails.branchCode}</Text>
+            </View>
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>Reference:</Text>
+              <Text style={styles.bankValue}>{props.bankDetails.reference}</Text>
+            </View>
+          </View>
+        )}
 
         {/* Footer */}
         <View style={styles.footer} fixed>
