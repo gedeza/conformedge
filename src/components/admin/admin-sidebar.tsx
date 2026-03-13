@@ -12,6 +12,8 @@ import {
   ArrowLeft,
   Shield,
   FileText,
+  DollarSign,
+  ScrollText,
 } from "lucide-react"
 
 import {
@@ -32,8 +34,10 @@ const adminItems = [
   { title: "Organizations", href: "/admin/organizations", icon: Building2 },
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
+  { title: "Revenue", href: "/admin/revenue", icon: DollarSign },
   { title: "Partners", href: "/admin/partners", icon: Handshake },
   { title: "Terms", href: "/admin/terms", icon: FileText },
+  { title: "Audit Trail", href: "/admin/audit-trail", icon: ScrollText },
 ]
 
 const footerItems = [

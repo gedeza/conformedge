@@ -1,24 +1,46 @@
+import { Suspense } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
+import { AdminSearch } from "@/components/admin/admin-search"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminUsers } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { SuperAdminToggle } from "./super-admin-toggle"
 
-export default async function AdminUsersPage() {
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>
+}) {
   const ctx = await getSuperAdminContext()
   if (!ctx) redirect("/dashboard")
 
   const users = await getAdminUsers()
+  const { q } = await searchParams
+
+  let filtered = users
+  if (q) {
+    const lower = q.toLowerCase()
+    filtered = filtered.filter(
+      (u) =>
+        u.firstName?.toLowerCase().includes(lower) ||
+        u.lastName?.toLowerCase().includes(lower) ||
+        u.email.toLowerCase().includes(lower)
+    )
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
         heading="Users"
-        description={`${users.length} users on the platform`}
+        description={`${filtered.length} of ${users.length} users`}
       />
+
+      <Suspense fallback={null}>
+        <AdminSearch placeholder="Search by name or email..." />
+      </Suspense>
 
       <Card>
         <CardHeader>
@@ -26,7 +48,7 @@ export default async function AdminUsersPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {users.map((user) => (
+            {filtered.map((user) => (
               <div key={user.id} className="flex items-center justify-between rounded-lg border p-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

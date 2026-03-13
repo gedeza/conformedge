@@ -1,7 +1,9 @@
 import Link from "next/link"
+import { Suspense } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
+import { AdminSearch } from "@/components/admin/admin-search"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminSubscriptions } from "../actions"
 import { redirect } from "next/navigation"
@@ -22,11 +24,24 @@ const STATUS_COLORS: Record<string, string> = {
   PAUSED: "bg-amber-100 text-amber-800",
 }
 
-export default async function AdminSubscriptionsPage() {
+export default async function AdminSubscriptionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; plan?: string; status?: string }>
+}) {
   const ctx = await getSuperAdminContext()
   if (!ctx) redirect("/dashboard")
 
   const subscriptions = await getAdminSubscriptions()
+  const { q, plan, status } = await searchParams
+
+  let filtered = subscriptions
+  if (q) {
+    const lower = q.toLowerCase()
+    filtered = filtered.filter((s) => s.organization.name.toLowerCase().includes(lower))
+  }
+  if (plan) filtered = filtered.filter((s) => s.plan === plan)
+  if (status) filtered = filtered.filter((s) => s.status === status)
 
   const active = subscriptions.filter((s) => s.status === "ACTIVE").length
   const trialing = subscriptions.filter((s) => s.status === "TRIALING").length
@@ -36,8 +51,36 @@ export default async function AdminSubscriptionsPage() {
     <div className="space-y-6">
       <PageHeader
         heading="Subscriptions"
-        description={`${subscriptions.length} total — ${active} active, ${trialing} trialing${pastDue > 0 ? `, ${pastDue} past due` : ""}`}
+        description={`${filtered.length} of ${subscriptions.length} total — ${active} active, ${trialing} trialing${pastDue > 0 ? `, ${pastDue} past due` : ""}`}
       />
+
+      <Suspense fallback={null}>
+        <AdminSearch
+          placeholder="Search by organization..."
+          filters={[
+            {
+              key: "plan",
+              label: "Plans",
+              options: [
+                { label: "Starter", value: "STARTER" },
+                { label: "Professional", value: "PROFESSIONAL" },
+                { label: "Business", value: "BUSINESS" },
+                { label: "Enterprise", value: "ENTERPRISE" },
+              ],
+            },
+            {
+              key: "status",
+              label: "Status",
+              options: [
+                { label: "Active", value: "ACTIVE" },
+                { label: "Trialing", value: "TRIALING" },
+                { label: "Past Due", value: "PAST_DUE" },
+                { label: "Cancelled", value: "CANCELLED" },
+              ],
+            },
+          ]}
+        />
+      </Suspense>
 
       <Card>
         <CardHeader>
@@ -45,7 +88,7 @@ export default async function AdminSubscriptionsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {subscriptions.map((sub) => {
+            {filtered.map((sub) => {
               const isTrialExpiring =
                 sub.status === "TRIALING" &&
                 sub.trialEndsAt &&
@@ -80,7 +123,7 @@ export default async function AdminSubscriptionsPage() {
               )
             })}
 
-            {subscriptions.length === 0 && (
+            {filtered.length === 0 && (
               <p className="text-sm text-muted-foreground">No subscriptions yet.</p>
             )}
           </div>

@@ -6,7 +6,7 @@ export function StandardsBar() {
     <section className="border-y bg-landing-light-bg py-10">
       <div className="container mx-auto px-4 lg:px-8">
         <p className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
-          9 Compliance Frameworks &middot; 340+ Sub-Clauses &middot; Complete Coverage
+          11 Compliance Frameworks &middot; 395+ Sub-Clauses &middot; Complete Coverage
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           {ISO_STANDARDS.map((std) => (

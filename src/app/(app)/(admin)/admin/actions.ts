@@ -390,3 +390,167 @@ export async function getAdminPartners() {
     orderBy: { createdAt: "desc" },
   })
 }
+
+// ─────────────────────────────────────────────
+// REVENUE DATA
+// ─────────────────────────────────────────────
+
+export async function getAdminRevenue() {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return null
+
+  const now = new Date()
+
+  // Get all active/trialing subscriptions with plan info
+  const subscriptions = await db.subscription.findMany({
+    where: { status: { in: ["ACTIVE", "TRIALING"] } },
+    select: { plan: true, status: true, billingCycle: true, createdAt: true },
+  })
+
+  // Plan prices in cents (monthly)
+  const planPrices: Record<string, number> = {
+    STARTER: 229900,
+    PROFESSIONAL: 449900,
+    BUSINESS: 849900,
+    ENTERPRISE: 1699900,
+  }
+
+  // Calculate MRR
+  const mrrCents = subscriptions
+    .filter((s) => s.status === "ACTIVE")
+    .reduce((sum, s) => sum + (planPrices[s.plan] ?? 0), 0)
+
+  // ARR = MRR * 12
+  const arrCents = mrrCents * 12
+
+  // Plan distribution
+  const planDistribution = Object.entries(
+    subscriptions.reduce(
+      (acc, s) => {
+        acc[s.plan] = (acc[s.plan] ?? 0) + 1
+        return acc
+      },
+      {} as Record<string, number>
+    )
+  ).map(([plan, count]) => ({
+    plan,
+    count,
+    revenue: count * (planPrices[plan] ?? 0),
+  }))
+
+  // Monthly revenue trend (last 6 months) from invoices
+  const sixMonthsAgo = new Date(now)
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+  const invoices = await db.invoice.findMany({
+    where: {
+      createdAt: { gte: sixMonthsAgo },
+      status: { in: ["PAID", "OPEN"] },
+    },
+    select: { amountCents: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  })
+
+  // Group by month
+  const monthlyRevenue: { month: string; revenue: number }[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now)
+    d.setMonth(d.getMonth() - i)
+    const monthLabel = d.toLocaleDateString("en-ZA", {
+      month: "short",
+      year: "2-digit",
+    })
+    const monthInvoices = invoices.filter((inv) => {
+      const invDate = new Date(inv.createdAt)
+      return (
+        invDate.getFullYear() === d.getFullYear() &&
+        invDate.getMonth() === d.getMonth()
+      )
+    })
+    monthlyRevenue.push({
+      month: monthLabel,
+      revenue: monthInvoices.reduce((sum, inv) => sum + inv.amountCents, 0),
+    })
+  }
+
+  // Partner revenue
+  const partnerInvoices = await db.partnerInvoice.findMany({
+    where: {
+      status: { in: ["OPEN", "PAID"] },
+      periodStart: { gte: sixMonthsAgo },
+    },
+    select: { totalCents: true, createdAt: true },
+  })
+  const partnerMrrCents = partnerInvoices.reduce(
+    (sum, i) => sum + i.totalCents,
+    0
+  )
+
+  // Churn: cancelled in last 30 days
+  const thirtyDaysAgo = new Date(now)
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+  const cancelledCount = await db.subscription.count({
+    where: { status: "CANCELLED", updatedAt: { gte: thirtyDaysAgo } },
+  })
+  const totalActive = subscriptions.filter((s) => s.status === "ACTIVE").length
+  const churnRate =
+    totalActive > 0
+      ? (cancelledCount / (totalActive + cancelledCount)) * 100
+      : 0
+
+  return {
+    mrrCents,
+    arrCents,
+    partnerMrrCents,
+    totalMrrCents: mrrCents + partnerMrrCents,
+    planDistribution,
+    monthlyRevenue,
+    churnRate: Math.round(churnRate * 10) / 10,
+    totalActive,
+    totalTrialing: subscriptions.filter((s) => s.status === "TRIALING").length,
+    cancelledCount,
+  }
+}
+
+// ─────────────────────────────────────────────
+// CROSS-ORG AUDIT TRAIL
+// ─────────────────────────────────────────────
+
+export async function getAdminAuditTrail(params: {
+  q?: string
+  limit?: number
+  offset?: number
+}) {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { events: [], total: 0 }
+
+  const limit = params.limit ?? 50
+  const offset = params.offset ?? 0
+
+  const where: Record<string, unknown> = {}
+  if (params.q) {
+    where.OR = [
+      { action: { contains: params.q, mode: "insensitive" } },
+      { entityType: { contains: params.q, mode: "insensitive" } },
+      { user: { email: { contains: params.q, mode: "insensitive" } } },
+    ]
+  }
+
+  const [events, total] = await Promise.all([
+    db.auditTrailEvent.findMany({
+      where,
+      include: {
+        user: {
+          select: { firstName: true, lastName: true, email: true },
+        },
+        organization: { select: { name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: offset,
+    }),
+    db.auditTrailEvent.count({ where }),
+  ])
+
+  return { events, total }
+}

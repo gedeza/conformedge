@@ -27,6 +27,8 @@ export const ISO_STANDARDS = [
   { code: "ISO 44001", name: "Collaborative Business", clauses: 22 },
   { code: "DMRE/MHSA", name: "Mine Health & Safety", clauses: 33 },
   { code: "POPIA", name: "Data Protection", clauses: 40 },
+  { code: "ECSA", name: "Engineering Council", clauses: 28 },
+  { code: "SACPCMP", name: "Construction Management", clauses: 25 },
 ] as const
 
 export const PAIN_POINTS = [
@@ -135,7 +137,7 @@ export const FEATURE_DETAILS = [
   {
     title: "Integrated Management System",
     subtitle: "Multi-Standard Compliance",
-    description: "Manage ISO 9001, 14001, 45001, 27001, DMRE/MHSA, POPIA, and more from a single dashboard. Our IMS engine identifies equivalent requirements across standards, so one document can satisfy multiple clauses.",
+    description: "Manage ISO 9001, 14001, 45001, 27001, DMRE/MHSA, POPIA, ECSA, SACPCMP, and more from a single dashboard. Our IMS engine identifies equivalent requirements across standards, so one document can satisfy multiple clauses.",
     bullets: [
       "Cross-standard requirement mapping",
       "Shared compliance evidence across standards",
@@ -147,10 +149,10 @@ export const FEATURE_DETAILS = [
 ] as const
 
 export const METRICS = [
-  { value: 9, suffix: "", label: "Compliance Frameworks", prefix: "" },
-  { value: 340, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
+  { value: 11, suffix: "", label: "Compliance Frameworks", prefix: "" },
+  { value: 395, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
   { value: 85, suffix: "%", label: "Faster Audit Prep", prefix: "" },
-  { value: 31, suffix: "", label: "Integrated Modules", prefix: "" },
+  { value: 34, suffix: "", label: "Integrated Modules", prefix: "" },
 ] as const
 
 // Billing constants
@@ -210,7 +212,7 @@ export const PRICING_TIERS: PricingTier[] = [
     description: "For multi-site firms with SA regulatory compliance needs.",
     features: [
       "Up to 25 users (+R199/user)",
-      "All 9 frameworks (incl. DMRE & POPIA)",
+      "All 11 frameworks (incl. DMRE, POPIA, ECSA & SACPCMP)",
       "500 AI classifications/month",
       "SA statutory forms (W.Cl.2, SAPS 277)",
       "Work permits (all 7 types)",

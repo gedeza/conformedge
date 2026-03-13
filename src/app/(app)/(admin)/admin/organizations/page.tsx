@@ -1,7 +1,9 @@
 import Link from "next/link"
+import { Suspense } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
+import { AdminSearch } from "@/components/admin/admin-search"
 import { Building2, Users, FileText, AlertTriangle, Handshake } from "lucide-react"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminOrganizations } from "../actions"
@@ -23,18 +25,61 @@ const STATUS_COLORS: Record<string, string> = {
   PAUSED: "bg-amber-100 text-amber-800",
 }
 
-export default async function AdminOrganizationsPage() {
+export default async function AdminOrganizationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; plan?: string; status?: string }>
+}) {
   const ctx = await getSuperAdminContext()
   if (!ctx) redirect("/dashboard")
 
   const orgs = await getAdminOrganizations()
+  const { q, plan, status } = await searchParams
+
+  let filtered = orgs
+  if (q) {
+    const lower = q.toLowerCase()
+    filtered = filtered.filter(
+      (o) => o.name.toLowerCase().includes(lower) || o.industry?.toLowerCase().includes(lower)
+    )
+  }
+  if (plan) filtered = filtered.filter((o) => o.subscription?.plan === plan)
+  if (status) filtered = filtered.filter((o) => o.subscription?.status === status)
 
   return (
     <div className="space-y-6">
       <PageHeader
         heading="Organizations"
-        description={`${orgs.length} organizations on the platform`}
+        description={`${filtered.length} of ${orgs.length} organizations`}
       />
+
+      <Suspense fallback={null}>
+        <AdminSearch
+          placeholder="Search organizations..."
+          filters={[
+            {
+              key: "plan",
+              label: "Plans",
+              options: [
+                { label: "Starter", value: "STARTER" },
+                { label: "Professional", value: "PROFESSIONAL" },
+                { label: "Business", value: "BUSINESS" },
+                { label: "Enterprise", value: "ENTERPRISE" },
+              ],
+            },
+            {
+              key: "status",
+              label: "Status",
+              options: [
+                { label: "Active", value: "ACTIVE" },
+                { label: "Trialing", value: "TRIALING" },
+                { label: "Past Due", value: "PAST_DUE" },
+                { label: "Cancelled", value: "CANCELLED" },
+              ],
+            },
+          ]}
+        />
+      </Suspense>
 
       <Card>
         <CardHeader>
@@ -42,7 +87,7 @@ export default async function AdminOrganizationsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {orgs.map((org) => {
+            {filtered.map((org) => {
               const partner = org.partnerOrganizations[0]?.partner
               return (
                 <Link
@@ -94,7 +139,7 @@ export default async function AdminOrganizationsPage() {
               )
             })}
 
-            {orgs.length === 0 && (
+            {filtered.length === 0 && (
               <p className="text-sm text-muted-foreground">No organizations yet.</p>
             )}
           </div>
