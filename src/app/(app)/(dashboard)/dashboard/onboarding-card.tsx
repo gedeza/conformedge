@@ -1,17 +1,15 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { CheckCircle2, Circle, ArrowRight, X, Rocket, Loader2 } from "lucide-react"
+import { CheckCircle2, Circle, ArrowRight, X, Rocket } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
 import { INDUSTRIES } from "@/lib/constants"
 import { dismissOnboarding, setOrgIndustry, type OnboardingStep } from "./actions"
-import { sendInvitation } from "@/app/(app)/(dashboard)/settings/invitation-actions"
 
 interface OnboardingCardProps {
   steps: OnboardingStep[]
@@ -21,9 +19,6 @@ interface OnboardingCardProps {
 
 export function OnboardingCard({ steps, completedCount, totalSteps }: OnboardingCardProps) {
   const [isPending, startTransition] = useTransition()
-  const [inviteEmail, setInviteEmail] = useState("")
-  const [isInviting, setIsInviting] = useState(false)
-  const [inviteRole, setInviteRole] = useState("VIEWER")
   const progress = (completedCount / totalSteps) * 100
 
   function handleDismiss() {
@@ -46,28 +41,6 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
         toast.error(result.error)
       }
     })
-  }
-
-  async function handleInvite() {
-    if (!inviteEmail.trim()) return
-
-    setIsInviting(true)
-    try {
-      const result = await sendInvitation({
-        email: inviteEmail.trim(),
-        role: inviteRole as "ADMIN" | "MANAGER" | "AUDITOR" | "VIEWER",
-      })
-      if (result.success) {
-        toast.success(`Invitation sent to ${inviteEmail}`)
-        setInviteEmail("")
-      } else {
-        toast.error(result.error ?? "Failed to send invitation")
-      }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to send invitation")
-    } finally {
-      setIsInviting(false)
-    }
   }
 
   function renderStepContent(step: OnboardingStep) {
@@ -95,58 +68,7 @@ export function OnboardingCard({ steps, completedCount, totalSteps }: Onboarding
       )
     }
 
-    if (step.id === "team" && !step.completed) {
-      return (
-        <div className="flex items-center gap-3 rounded-md p-2.5 bg-muted/50">
-          <Circle className="h-5 w-5 text-muted-foreground shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium">{step.title}</p>
-            <p className="text-xs text-muted-foreground mb-2">{step.description}</p>
-            <div className="flex gap-2 max-w-sm">
-              <Input
-                type="email"
-                placeholder="colleague@company.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    handleInvite()
-                  }
-                }}
-                className="h-8 text-xs flex-1"
-                disabled={isInviting}
-              />
-              <Select value={inviteRole} onValueChange={setInviteRole}>
-                <SelectTrigger className="w-24 h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="MANAGER">Manager</SelectItem>
-                  <SelectItem value="AUDITOR">Auditor</SelectItem>
-                  <SelectItem value="VIEWER">Viewer</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                size="sm"
-                className="h-8 text-xs shrink-0"
-                onClick={handleInvite}
-                disabled={isInviting || !inviteEmail.trim()}
-              >
-                {isInviting ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  "Invite"
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    // Default: link-based step (for project, document, checklist, or completed steps)
+    // Default: link-based step (for project, document, checklist, team, or completed steps)
     return (
       <Link
         href={step.href}

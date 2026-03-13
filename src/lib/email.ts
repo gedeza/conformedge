@@ -1,7 +1,7 @@
 import React from "react"
 import { resend } from "@/lib/resend"
 import { db } from "@/lib/db"
-import { NotificationEmail, AuditPackEmail, InvitationEmail } from "@/lib/email-templates"
+import { NotificationEmail, AuditPackEmail } from "@/lib/email-templates"
 import { captureError } from "@/lib/error-tracking"
 import type { NotificationType } from "@/types"
 
@@ -75,55 +75,6 @@ export function sendNotificationEmailBulk({
   for (const userId of userIds) {
     sendNotificationEmail({ userId, title, message, type })
   }
-}
-
-/**
- * Send a team invitation email (fire-and-forget).
- * Sends directly to the provided email address.
- */
-export function sendInvitationEmail({
-  toEmail,
-  organizationName,
-  inviterName,
-  role,
-  customMessage,
-  acceptUrl,
-  expiresAt,
-}: {
-  toEmail: string
-  organizationName: string
-  inviterName: string
-  role: string
-  customMessage?: string | null
-  acceptUrl: string
-  expiresAt: Date
-}) {
-  renderHtml(
-    React.createElement(InvitationEmail, {
-      organizationName,
-      inviterName,
-      role,
-      customMessage,
-      acceptUrl,
-      expiresAt,
-    })
-  )
-    .then((html) =>
-      resend.emails.send({
-        from: FROM_ADDRESS,
-        to: toEmail,
-        subject: `You've been invited to join ${organizationName} on ConformEdge`,
-        html,
-      })
-    )
-    .then((result) => {
-      if (result && "error" in result && result.error) {
-        captureError(new Error(result.error.message), { source: "email.invitation", metadata: { toEmail } })
-      }
-    })
-    .catch((err) => {
-      captureError(err, { source: "email.invitation", metadata: { toEmail } })
-    })
 }
 
 /**

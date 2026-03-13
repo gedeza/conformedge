@@ -886,16 +886,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 8. Auto-expire invitations ──────────────────────
-    const expiredInvitations = await db.invitation.updateMany({
-      where: {
-        status: "PENDING",
-        expiresAt: { lt: now },
-      },
-      data: { status: "EXPIRED" },
-    })
-
-    // ── 9. Auto-expire share links ──────────────────────
+    // ── 8. Auto-expire share links ──────────────────────
     const expiredLinks = await db.shareLink.updateMany({
       where: {
         status: "ACTIVE",
@@ -1427,7 +1418,6 @@ export async function GET(request: NextRequest) {
       checklistsGenerated,
       permitsExpired,
       permitsWarned,
-      invitationsExpired: expiredInvitations.count,
       shareLinksExpired: expiredLinks.count,
       billing: {
         trialsExpired,
