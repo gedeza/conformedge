@@ -28,12 +28,31 @@ const isProtectedRoute = createRouteMatcher([
   "/api/download(.*)",
 ])
 
+const isTermsRoute = createRouteMatcher(["/terms(.*)"])
+
 const hasClerkKey = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
 export default hasClerkKey
   ? clerkMiddleware(async (auth, req) => {
       if (isProtectedRoute(req)) {
-        await auth.protect()
+        const { userId, sessionClaims } = await auth.protect()
+
+        // Check terms acceptance via Clerk publicMetadata (fast path — no DB call)
+        // Requires Clerk session token customization: { "metadata": "{{user.public_metadata}}" }
+        // If "metadata" key doesn't exist in claims, session token isn't configured yet — skip check
+        if ("metadata" in (sessionClaims ?? {})) {
+          const metadata = sessionClaims?.metadata as
+            | Record<string, unknown>
+            | undefined
+          const termsAcceptedAt = metadata?.termsAcceptedAt
+
+          const isApiRoute = req.nextUrl.pathname.startsWith("/api/")
+          if (!termsAcceptedAt && !isTermsRoute(req) && !isApiRoute) {
+            const termsUrl = new URL("/terms", req.url)
+            termsUrl.searchParams.set("next", req.nextUrl.pathname)
+            return NextResponse.redirect(termsUrl)
+          }
+        }
       }
     })
   : function noopMiddleware() {

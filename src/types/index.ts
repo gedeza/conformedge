@@ -36,6 +36,9 @@ export type PartnerRole = "PARTNER_ADMIN" | "PARTNER_MANAGER" | "PARTNER_VIEWER"
 export type PartnerClientSize = "SMALL" | "MEDIUM" | "LARGE"
 export type ReferralStatus = "PENDING" | "CLICKED" | "SIGNED_UP" | "CONVERTED" | "EXPIRED" | "CANCELLED"
 
+// Legal / Terms types
+export type TermsVersionStatus = "DRAFT" | "ACTIVE" | "SUPERSEDED"
+
 // Billing types
 export type PlanTier = "STARTER" | "PROFESSIONAL" | "BUSINESS" | "ENTERPRISE"
 export type SubscriptionStatus = "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "PAUSED"

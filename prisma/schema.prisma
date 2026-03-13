@@ -326,6 +326,12 @@ enum PartnerClientSize {
   LARGE             // 16+ users, all standards — R2,499/mo default
 }
 
+enum TermsVersionStatus {
+  DRAFT
+  ACTIVE
+  SUPERSEDED
+}
+
 // ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
@@ -422,6 +428,7 @@ model User {
   reviewedExtensions         WorkPermitExtension[]     @relation("ExtensionReviewer")
   requestedExtensions        WorkPermitExtension[]     @relation("ExtensionRequester")
   partnerUsers               PartnerUser[]
+  termsAcceptances           TermsAcceptance[]
 
   @@map("users")
 }
@@ -1617,4 +1624,43 @@ model Referral {
 
   @@index([partnerId, status], map: "idx_referral_partner_status")
   @@map("referrals")
+}
+
+// ─────────────────────────────────────────────
+// LEGAL — TERMS & AGREEMENTS
+// ─────────────────────────────────────────────
+
+model TermsVersion {
+  id          String             @id @default(uuid())
+  version     String             @unique              // e.g. "1.0", "1.1", "2.0"
+  title       String                                  // e.g. "Terms of Service & Privacy Policy"
+  content     String             @db.Text             // Full legal text (markdown)
+  summary     String?            @db.Text             // Change summary for re-acceptance
+  status      TermsVersionStatus @default(DRAFT)
+  effectiveAt DateTime           @map("effective_at")
+  publishedAt DateTime?          @map("published_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  acceptances TermsAcceptance[]
+
+  @@index([status], map: "idx_terms_version_status")
+  @@map("terms_versions")
+}
+
+model TermsAcceptance {
+  id         String   @id @default(uuid())
+  versionId  String   @map("version_id")
+  userId     String   @map("user_id")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent") @db.Text
+  acceptedAt DateTime @default(now()) @map("accepted_at")
+
+  version TermsVersion @relation(fields: [versionId], references: [id])
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, versionId])
+  @@index([userId, acceptedAt(sort: Desc)], map: "idx_terms_acceptance_user")
+  @@index([versionId], map: "idx_terms_acceptance_version")
+  @@map("terms_acceptances")
 }
