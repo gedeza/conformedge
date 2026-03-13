@@ -12,10 +12,7 @@ import { getAdminRevenue } from "../actions"
 import { redirect } from "next/navigation"
 import { RevenueChart } from "./revenue-chart"
 import { RevenueHelpPanel } from "./revenue-help-panel"
-
-function formatZar(cents: number) {
-  return `R${(cents / 100).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-}
+import { formatZar } from "@/lib/billing/plans"
 
 export default async function AdminRevenuePage() {
   const ctx = await getSuperAdminContext()

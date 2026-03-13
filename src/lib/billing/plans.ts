@@ -225,7 +225,8 @@ export function getMonthlyPriceZar(tier: PlanTier, cycle: BillingCycle): number 
 }
 
 export function formatZar(cents: number): string {
-  return `R${(cents / 100).toLocaleString("en-ZA", { minimumFractionDigits: 0 })}`
+  if (cents == null || isNaN(cents)) return "R0.00"
+  return `R${(cents / 100).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 /** Minimum tier required for a feature */

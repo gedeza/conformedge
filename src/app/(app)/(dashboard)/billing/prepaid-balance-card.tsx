@@ -4,6 +4,7 @@ import { Wallet } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ACCOUNT_TRANSACTION_TYPES } from "@/lib/constants"
+import { formatZar } from "@/lib/billing/plans"
 
 interface PrepaidBalanceCardProps {
   balanceCents: number
@@ -15,10 +16,6 @@ interface PrepaidBalanceCardProps {
     description: string
     createdAt: Date
   }>
-}
-
-function formatZar(cents: number): string {
-  return `R${(cents / 100).toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 function formatDate(date: Date): string {

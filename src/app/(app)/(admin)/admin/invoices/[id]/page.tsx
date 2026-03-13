@@ -39,7 +39,8 @@ export default async function AdminInvoiceDetailPage({ params }: Props) {
 
   const lineItems = invoice.lineItems as Array<{
     description: string
-    amountCents: number
+    unitPriceCents: number
+    totalCents: number
     quantity?: number
   }> | null
 
@@ -228,7 +229,7 @@ export default async function AdminInvoiceDetailPage({ params }: Props) {
                   <tr key={i}>
                     <td className="py-2">{item.description}</td>
                     <td className="py-2 text-right text-muted-foreground">{item.quantity ?? 1}</td>
-                    <td className="py-2 text-right font-medium">{formatZar(item.amountCents)}</td>
+                    <td className="py-2 text-right font-medium">{formatZar(item.totalCents)}</td>
                   </tr>
                 ))}
               </tbody>
