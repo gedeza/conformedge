@@ -8,6 +8,8 @@ import { ISO37001_SUB_CLAUSES } from "./seed-data/iso37001-subclauses"
 import { ISO39001_SUB_CLAUSES } from "./seed-data/iso39001-subclauses"
 import { DMRE_MHSA_SUB_CLAUSES } from "./seed-data/dmre-mhsa-subclauses"
 import { POPIA_SUB_CLAUSES } from "./seed-data/popia-subclauses"
+import { ECSA_SUB_CLAUSES } from "./seed-data/ecsa-subclauses"
+import { SACPCMP_SUB_CLAUSES } from "./seed-data/sacpcmp-subclauses"
 import { generateHLSCrossReferences, DOMAIN_CROSS_REFERENCES } from "./seed-data/cross-references"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
@@ -92,6 +94,18 @@ const STANDARDS: StandardSeed[] = [
     name: "POPIA (Act 4 of 2013)",
     description: "Protection of Personal Information Act — South African data protection legislation for lawful processing of personal information",
     version: "2013",
+  },
+  {
+    code: "ECSA",
+    name: "ECSA (Act 46 of 2000)",
+    description: "Engineering Council of South Africa — Professional regulatory framework for registration, conduct, and practice standards of engineering practitioners",
+    version: "2000",
+  },
+  {
+    code: "SACPCMP",
+    name: "SACPCMP (Act 48 of 2000)",
+    description: "South African Council for Project and Construction Management Professions — Regulatory framework for project and construction management practitioners",
+    version: "2000",
   },
 ]
 
@@ -468,6 +482,82 @@ const STANDARD_CLAUSES: Record<string, ClauseData[]> = {
       description: "Criminal offences, penalties up to R10 million or 10 years imprisonment, civil remedies for data subjects, and operator liability.",
     },
   ],
+
+  ECSA: [
+    {
+      clauseNumber: "1",
+      title: "Registration Categories",
+      description: "Categories of professional registration including Professional Engineer, Professional Engineering Technologist, Professional Certificated Engineer, Professional Engineering Technician, and candidate categories.",
+    },
+    {
+      clauseNumber: "2",
+      title: "CPD Requirements",
+      description: "Continuing Professional Development requirements for maintaining registration, including credit systems, approved activities, record keeping, and compliance auditing.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Rules of Conduct",
+      description: "Rules governing the professional conduct of registered persons including competence, integrity, public interest, and professional relationships.",
+    },
+    {
+      clauseNumber: "4",
+      title: "Code of Professional Practice",
+      description: "Standards of professional practice including responsibilities, fees, advertising, professional indemnity, and general professional obligations.",
+    },
+    {
+      clauseNumber: "5",
+      title: "Disciplinary Procedures",
+      description: "Processes for investigating complaints, conducting disciplinary hearings, and imposing penalties for improper conduct by registered persons.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Practice Standards",
+      description: "Technical practice standards for engineering work including design documentation, construction monitoring, risk management, and environmental sustainability.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Identification of Engineering Work",
+      description: "Regulations identifying categories of engineering work reserved for registered persons, supervision requirements, and professional responsibility for sign-off.",
+    },
+  ],
+
+  SACPCMP: [
+    {
+      clauseNumber: "1",
+      title: "Registration Categories",
+      description: "Categories of professional registration including Professional Construction Manager, Professional Construction Project Manager, Professional Construction Mentor, and candidate categories.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Practice Standards",
+      description: "Standards for construction project and management practice including project planning, contract administration, quality management, and cost management.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Health and Safety Responsibilities",
+      description: "Obligations under the Construction Regulations regarding health and safety specifications, plans, and management of high-risk activities on construction sites.",
+    },
+    {
+      clauseNumber: "4",
+      title: "Professional Conduct",
+      description: "Rules governing professional conduct including competence, integrity, public interest, and support for transformation and B-BBEE in the construction sector.",
+    },
+    {
+      clauseNumber: "5",
+      title: "CPD Requirements",
+      description: "Continuing Professional Development requirements including credit systems, approved activities, compliance monitoring, and consequences of non-compliance.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Disciplinary Procedures",
+      description: "Processes for investigating complaints, conducting disciplinary hearings, imposing penalties, and appeal procedures for registered persons.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Construction Project Management Standards",
+      description: "Standards for construction project management including stakeholder management, risk management, programme management, and project close-out and handover.",
+    },
+  ],
 }
 
 // ─────────────────────────────────────────────
@@ -774,6 +864,8 @@ async function main() {
     ISO39001: ISO39001_SUB_CLAUSES,
     DMRE_MHSA: DMRE_MHSA_SUB_CLAUSES,
     POPIA: POPIA_SUB_CLAUSES,
+    ECSA: ECSA_SUB_CLAUSES,
+    SACPCMP: SACPCMP_SUB_CLAUSES,
   }
 
   let totalSubClauses = 0
