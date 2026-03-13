@@ -70,13 +70,20 @@ export default async function AdminInvoicesPage() {
                       <tr key={inv.id} className={isOverdue ? "bg-red-50 dark:bg-red-950/20" : ""}>
                         <td className="py-2.5">
                           <Link
-                            href={`/admin/organizations/${inv.organization.id}`}
+                            href={`/admin/invoices/${inv.id}`}
                             className="font-medium text-primary hover:underline"
                           >
                             {inv.organization.name}
                           </Link>
                         </td>
-                        <td className="py-2.5 font-medium">{formatZar(inv.totalCents)}</td>
+                        <td className="py-2.5">
+                          <Link
+                            href={`/admin/invoices/${inv.id}`}
+                            className="font-medium hover:underline"
+                          >
+                            {formatZar(inv.totalCents)}
+                          </Link>
+                        </td>
                         <td className="py-2.5">
                           <Badge variant="outline" className={statusInfo?.color ?? ""}>
                             {isOverdue ? "Overdue" : statusInfo?.label ?? inv.status}

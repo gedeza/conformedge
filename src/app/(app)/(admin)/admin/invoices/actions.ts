@@ -47,6 +47,32 @@ export async function getAdminInvoices(params?: {
   })
 }
 
+export async function getAdminInvoiceDetail(invoiceId: string) {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return null
+
+  return db.invoice.findUnique({
+    where: { id: invoiceId },
+    include: {
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          subscription: {
+            select: { plan: true, billingCycle: true, paymentMethod: true, paymentTermsDays: true },
+          },
+        },
+      },
+      accountTransactions: {
+        select: { id: true, type: true, amountCents: true, description: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      },
+    },
+  })
+}
+
 export async function adminMarkInvoicePaid(
   invoiceId: string,
   bankReference?: string
