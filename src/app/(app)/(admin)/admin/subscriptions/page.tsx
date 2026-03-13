@@ -8,6 +8,7 @@ import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminSubscriptions } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
+import { CsvExportButton } from "@/components/admin/csv-export-button"
 
 const PLAN_COLORS: Record<string, string> = {
   STARTER: "bg-gray-100 text-gray-800",
@@ -49,10 +50,13 @@ export default async function AdminSubscriptionsPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        heading="Subscriptions"
-        description={`${filtered.length} of ${subscriptions.length} total — ${active} active, ${trialing} trialing${pastDue > 0 ? `, ${pastDue} past due` : ""}`}
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          heading="Subscriptions"
+          description={`${filtered.length} of ${subscriptions.length} total — ${active} active, ${trialing} trialing${pastDue > 0 ? `, ${pastDue} past due` : ""}`}
+        />
+        <CsvExportButton type="subscriptions" />
+      </div>
 
       <Suspense fallback={null}>
         <AdminSearch

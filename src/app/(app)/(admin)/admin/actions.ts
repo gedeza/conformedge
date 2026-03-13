@@ -5,6 +5,7 @@ import { z } from "zod/v4"
 import { db } from "@/lib/db"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import type { ActionResult } from "@/types"
+import { logAdminAction } from "@/lib/admin-audit"
 
 // ─────────────────────────────────────────────
 // OVERVIEW METRICS
@@ -223,6 +224,18 @@ export async function adminUpdateSubscription(
       },
     })
 
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "UPDATE_SUBSCRIPTION",
+      targetType: "Organization",
+      targetId: parsed.orgId,
+      metadata: {
+        plan: parsed.plan ?? "unchanged",
+        status: parsed.status ?? "unchanged",
+      },
+      organizationId: parsed.orgId,
+    })
+
     revalidatePath(`/admin/organizations/${parsed.orgId}`)
     revalidatePath("/admin/subscriptions")
     return { success: true }
@@ -272,11 +285,74 @@ export async function adminAdjustCredits(
       })
     })
 
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "ADJUST_CREDITS",
+      targetType: "Organization",
+      targetId: parsed.orgId,
+      metadata: { amount: parsed.amount, description: parsed.description },
+      organizationId: parsed.orgId,
+    })
+
     revalidatePath(`/admin/organizations/${parsed.orgId}`)
     return { success: true }
   } catch (err) {
     console.error("adminAdjustCredits error:", err)
     return { success: false, error: "Failed to adjust credits" }
+  }
+}
+
+// ─────────────────────────────────────────────
+// SUSPEND / REACTIVATE ORGANIZATION
+// ─────────────────────────────────────────────
+
+export async function adminSuspendOrganization(
+  orgId: string,
+  suspend: boolean
+): Promise<ActionResult> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    const org = await db.organization.findUnique({
+      where: { id: orgId },
+      select: { id: true, subscription: { select: { id: true, status: true } } },
+    })
+    if (!org) return { success: false, error: "Organization not found" }
+
+    if (suspend) {
+      // Suspend: set subscription to PAUSED
+      if (org.subscription) {
+        await db.subscription.update({
+          where: { id: org.subscription.id },
+          data: { status: "PAUSED" },
+        })
+      }
+    } else {
+      // Reactivate: set subscription to ACTIVE
+      if (org.subscription) {
+        await db.subscription.update({
+          where: { id: org.subscription.id },
+          data: { status: "ACTIVE" },
+        })
+      }
+    }
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: suspend ? "SUSPEND_ORGANIZATION" : "REACTIVATE_ORGANIZATION",
+      targetType: "Organization",
+      targetId: orgId,
+      organizationId: orgId,
+    })
+
+    revalidatePath(`/admin/organizations/${orgId}`)
+    revalidatePath("/admin/organizations")
+    revalidatePath("/admin/subscriptions")
+    return { success: true }
+  } catch (err) {
+    console.error("adminSuspendOrganization error:", err)
+    return { success: false, error: `Failed to ${suspend ? "suspend" : "reactivate"} organization` }
   }
 }
 
@@ -332,6 +408,13 @@ export async function adminToggleSuperAdmin(
     await db.user.update({
       where: { id: userId },
       data: { isSuperAdmin },
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: isSuperAdmin ? "GRANT_SUPER_ADMIN" : "REVOKE_SUPER_ADMIN",
+      targetType: "User",
+      targetId: userId,
     })
 
     revalidatePath("/admin/users")

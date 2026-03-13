@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { AdminSearch } from "@/components/admin/admin-search"
 import { Building2, Users, FileText, AlertTriangle, Handshake } from "lucide-react"
+import { CsvExportButton } from "@/components/admin/csv-export-button"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import { getAdminOrganizations } from "../actions"
 import { redirect } from "next/navigation"
@@ -48,10 +49,13 @@ export default async function AdminOrganizationsPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        heading="Organizations"
-        description={`${filtered.length} of ${orgs.length} organizations`}
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          heading="Organizations"
+          description={`${filtered.length} of ${orgs.length} organizations`}
+        />
+        <CsvExportButton type="organizations" />
+      </div>
 
       <Suspense fallback={null}>
         <AdminSearch

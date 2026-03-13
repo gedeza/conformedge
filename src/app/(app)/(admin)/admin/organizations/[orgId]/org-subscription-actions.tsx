@@ -13,8 +13,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Settings, Coins } from "lucide-react"
-import { adminUpdateSubscription, adminAdjustCredits } from "../../actions"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Settings, Coins, Ban, CheckCircle2 } from "lucide-react"
+import { adminUpdateSubscription, adminAdjustCredits, adminSuspendOrganization } from "../../actions"
 
 interface Props {
   orgId: string
@@ -33,6 +44,8 @@ export function OrgSubscriptionActions({ orgId, currentPlan, currentStatus, curr
   const [status, setStatus] = useState<"TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "PAUSED">(
     (currentStatus as "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | "PAUSED") ?? "TRIALING"
   )
+
+  const isSuspended = currentStatus === "PAUSED"
 
   // Credits
   const [creditAmount, setCreditAmount] = useState("")
@@ -77,7 +90,7 @@ export function OrgSubscriptionActions({ orgId, currentPlan, currentStatus, curr
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-3">
       {/* Subscription Management */}
       <Card>
         <CardHeader>
@@ -160,6 +173,64 @@ export function OrgSubscriptionActions({ orgId, currentPlan, currentStatus, curr
           <Button onClick={handleAdjustCredits} disabled={pending} className="w-full">
             {pending ? "Adjusting..." : "Adjust Credits"}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Suspend / Reactivate */}
+      <Card className={isSuspended ? "border-green-200" : "border-red-200"}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            {isSuspended ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <Ban className="h-4 w-4 text-red-600" />}
+            {isSuspended ? "Reactivate Organization" : "Suspend Organization"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {isSuspended
+              ? "This organization is currently suspended. Reactivating will restore access and set the subscription to Active."
+              : "Suspending will pause the organization\u2019s subscription. Users will lose access to platform features."}
+          </p>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant={isSuspended ? "default" : "destructive"}
+                className={isSuspended ? "w-full bg-green-600 hover:bg-green-700" : "w-full"}
+                disabled={pending}
+              >
+                {isSuspended ? "Reactivate Organization" : "Suspend Organization"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {isSuspended ? "Reactivate this organization?" : "Suspend this organization?"}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {isSuspended
+                    ? "The subscription will be set to Active and all users will regain access."
+                    : "The subscription will be paused and users will lose access to platform features. You can reactivate at any time."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    startTransition(async () => {
+                      const result = await adminSuspendOrganization(orgId, !isSuspended)
+                      if (result.success) {
+                        toast.success(isSuspended ? "Organization reactivated" : "Organization suspended")
+                      } else {
+                        toast.error(result.error)
+                      }
+                    })
+                  }}
+                  className={isSuspended ? "bg-green-600 hover:bg-green-700" : ""}
+                >
+                  {pending ? "Processing..." : isSuspended ? "Confirm Reactivate" : "Confirm Suspend"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

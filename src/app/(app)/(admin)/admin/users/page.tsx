@@ -8,6 +8,7 @@ import { getAdminUsers } from "../actions"
 import { redirect } from "next/navigation"
 import { format } from "date-fns"
 import { SuperAdminToggle } from "./super-admin-toggle"
+import { CsvExportButton } from "@/components/admin/csv-export-button"
 
 export default async function AdminUsersPage({
   searchParams,
@@ -33,10 +34,13 @@ export default async function AdminUsersPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        heading="Users"
-        description={`${filtered.length} of ${users.length} users`}
-      />
+      <div className="flex items-center justify-between">
+        <PageHeader
+          heading="Users"
+          description={`${filtered.length} of ${users.length} users`}
+        />
+        <CsvExportButton type="users" />
+      </div>
 
       <Suspense fallback={null}>
         <AdminSearch placeholder="Search by name or email..." />
