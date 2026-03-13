@@ -160,12 +160,6 @@ enum ShareLinkStatus {
   REVOKED
 }
 
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  EXPIRED
-  REVOKED
-}
 
 enum ManagementReviewStatus {
   PLANNED
@@ -376,7 +370,7 @@ model Organization {
   approvalWorkflowTemplates  ApprovalWorkflowTemplate[]
   approvalRequests           ApprovalRequest[]
   shareLinks                 ShareLink[]
-  invitations                Invitation[]
+
   incidents                  Incident[]
   objectives                 Objective[]
   managementReviews          ManagementReview[]
@@ -429,7 +423,7 @@ model User {
   createdWorkflowTemplates   ApprovalWorkflowTemplate[] @relation("WorkflowTemplateCreator")
   createdShareLinks          ShareLink[]                @relation("ShareLinkCreator")
   defaultAssigneeTemplates   ChecklistTemplate[]        @relation("TemplateDefaultAssignee")
-  sentInvitations            Invitation[]               @relation("InvitationInviter")
+
   reportedIncidents          Incident[]                 @relation("IncidentReporter")
   investigatedIncidents      Incident[]                 @relation("IncidentInvestigator")
   ownedObjectives            Objective[]                @relation("ObjectiveOwner")
@@ -1068,29 +1062,6 @@ model ShareLinkAccess {
 // TEAM INVITATIONS
 // ─────────────────────────────────────────────
 
-model Invitation {
-  id              String           @id @default(uuid())
-  invitationCode  String           @unique @map("invitation_code")
-  email           String
-  role            UserRole         @default(VIEWER)
-  customMessage   String?          @map("custom_message")
-  status          InvitationStatus @default(PENDING)
-  expiresAt       DateTime         @map("expires_at")
-  acceptedAt      DateTime?        @map("accepted_at")
-  revokedAt       DateTime?        @map("revoked_at")
-  organizationId  String           @map("organization_id")
-  invitedById     String           @map("invited_by_id")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-
-  // Relations
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  invitedBy    User         @relation("InvitationInviter", fields: [invitedById], references: [id])
-
-  @@index([organizationId, createdAt(sort: Desc)], map: "idx_invitation_org_created")
-  @@index([email, organizationId, status], map: "idx_invitation_email_org_status")
-  @@map("invitations")
-}
 
 // ─────────────────────────────────────────────
 // INCIDENT & NEAR-MISS MANAGEMENT

@@ -19,7 +19,7 @@ export type ObjectiveStatus = "DRAFT" | "ACTIVE" | "ON_TRACK" | "AT_RISK" | "BEH
 export type MeasurementFrequency = "WEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUALLY"
 export type IncidentStatus = "REPORTED" | "INVESTIGATING" | "CORRECTIVE_ACTION" | "CLOSED"
 export type IncidentType = "NEAR_MISS" | "FIRST_AID" | "MEDICAL" | "LOST_TIME" | "FATALITY" | "ENVIRONMENTAL" | "PROPERTY_DAMAGE"
-export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED"
+
 export type RecurrenceFrequency = "WEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUALLY" | "CUSTOM"
 export type ApprovalStepStatus = "PENDING" | "APPROVED" | "REJECTED" | "SKIPPED"
 export type ApprovalRequestStatus = "IN_PROGRESS" | "APPROVED" | "REJECTED" | "CANCELLED"

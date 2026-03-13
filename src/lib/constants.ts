@@ -234,13 +234,6 @@ export const CERTIFICATION_STATUSES = {
   REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
 } as const
 
-export const INVITATION_STATUSES = {
-  PENDING: { label: "Pending", color: "bg-blue-100 text-blue-800" },
-  ACCEPTED: { label: "Accepted", color: "bg-green-100 text-green-800" },
-  EXPIRED: { label: "Expired", color: "bg-orange-100 text-orange-800" },
-  REVOKED: { label: "Revoked", color: "bg-red-100 text-red-800" },
-} as const
-
 export const INDUSTRIES = [
   "General Building",
   "Civil Engineering",

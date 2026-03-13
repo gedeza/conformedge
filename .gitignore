@@ -46,13 +46,10 @@ yarn-error.log*
 # Local upload directory (production uses R2)
 public/uploads/
 
-# Ad-hoc screenshots
-conformedge-live.png
-dashboard.png
-github-login.png
-landing-page.png
-reports-page.png
-sidebar-check.png
+# Ad-hoc screenshots, mockups, and temp files in repo root
+/*.png
+/*.ics
+/demo-verification/
 
 # typescript
 *.tsbuildinfo
