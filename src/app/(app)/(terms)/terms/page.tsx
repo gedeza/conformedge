@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
 import { getActiveTermsVersion, checkUserHasAccepted } from "./actions"
 import { TermsAcceptanceForm } from "./terms-acceptance-form"
+import { Card, CardContent } from "@/components/ui/card"
+import { AlertCircle } from "lucide-react"
 
 interface TermsPageProps {
   searchParams: Promise<{ next?: string }>
@@ -11,8 +13,15 @@ export default async function TermsPage({ searchParams }: TermsPageProps) {
   const version = await getActiveTermsVersion()
 
   if (!version) {
-    // No active terms — allow through
-    redirect(next || "/dashboard")
+    // No active terms version — show a message instead of redirecting (avoids loop)
+    return (
+      <Card>
+        <CardContent className="flex items-center gap-3 py-8 text-muted-foreground">
+          <AlertCircle className="h-5 w-5" />
+          <p>Terms of service are being prepared. Please try again shortly.</p>
+        </CardContent>
+      </Card>
+    )
   }
 
   const hasAccepted = await checkUserHasAccepted(version.id)
