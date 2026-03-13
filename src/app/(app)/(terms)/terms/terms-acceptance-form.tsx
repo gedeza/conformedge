@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { FileText, Shield, AlertCircle } from "lucide-react"
 import { acceptTerms } from "./actions"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface TermsAcceptanceFormProps {
   versionId: string
@@ -75,8 +76,8 @@ export function TermsAcceptanceForm({
 
       <CardContent>
         <ScrollArea className="h-[400px] rounded-md border bg-muted/20 p-6">
-          <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:text-base prose-headings:font-semibold prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
-            <ReactMarkdown>{content}</ReactMarkdown>
+          <div className="prose prose-sm max-w-none dark:prose-invert prose-headings:text-base prose-headings:font-semibold prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground prose-table:w-full prose-table:border-collapse prose-th:border prose-th:border-border prose-th:bg-muted prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:text-xs prose-th:font-medium prose-td:border prose-td:border-border prose-td:px-3 prose-td:py-2 prose-td:text-xs">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
           </div>
         </ScrollArea>
       </CardContent>
