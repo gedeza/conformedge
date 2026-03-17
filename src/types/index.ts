@@ -101,6 +101,28 @@ export interface SelectResponse { value: string }
 
 export type FieldResponse = BooleanResponse | NumberResponse | RatingResponse | SelectResponse
 
+export type TreatmentType = "NONE" | "FIRST_AID" | "MEDICAL" | "HOSPITALIZED"
+
+export interface WitnessRecord {
+  id: string
+  name: string
+  contactNumber: string | null
+  email: string | null
+  statement: string | null
+  createdAt: Date
+}
+
+export interface EvidenceRecord {
+  id: string
+  fileKey: string
+  fileName: string
+  fileType: string
+  fileSize: number
+  caption: string | null
+  uploadedBy: { id: string; firstName: string; lastName: string } | null
+  createdAt: Date
+}
+
 export interface RootCauseWhy {
   question: string;  // "Why did X happen?"
   answer: string;    // The answer

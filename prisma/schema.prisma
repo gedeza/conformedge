@@ -426,6 +426,7 @@ model User {
 
   reportedIncidents          Incident[]                 @relation("IncidentReporter")
   investigatedIncidents      Incident[]                 @relation("IncidentInvestigator")
+  uploadedEvidence           IncidentEvidence[]         @relation("EvidenceUploader")
   ownedObjectives            Objective[]                @relation("ObjectiveOwner")
   recordedMeasurements       ObjectiveMeasurement[]     @relation("MeasurementRecorder")
   facilitatedReviews         ManagementReview[]         @relation("ReviewFacilitator")
@@ -1075,14 +1076,28 @@ model Incident {
   status           IncidentStatus @default(REPORTED) @map("status")
   severity         RiskLevel      @default(MEDIUM)
   incidentDate     DateTime       @map("incident_date")
+  incidentTime     String?        @map("incident_time") // HH:mm format
   location         String?
   injuredParty     String?        @map("injured_party")
-  witnesses        String?
+  witnesses        String?        // Legacy free-text field (kept for backward compat)
   immediateAction  String?        @map("immediate_action")
   rootCause        String?        @map("root_cause")
   rootCauseData    Json?          @map("root_cause_data")
   investigationDue DateTime?      @map("investigation_due")
   closedDate       DateTime?      @map("closed_date")
+
+  // COIDA / Safety fields
+  lostDays            Int?       @map("lost_days")
+  bodyPartInjured     String?    @map("body_part_injured")
+  natureOfInjury      String?    @map("nature_of_injury")
+  treatmentType       String?    @map("treatment_type") // NONE, FIRST_AID, MEDICAL, HOSPITALIZED
+  contributingFactors Json?      @map("contributing_factors") // string[]
+  isReportable        Boolean    @default(false) @map("is_reportable")
+  reportingDeadline   DateTime?  @map("reporting_deadline")
+  statutoryReportedAt DateTime?  @map("statutory_reported_at")
+  statutoryRefNumber  String?    @map("statutory_ref_number")
+  mhsaSection         String?    @map("mhsa_section") // "11", "23", "24"
+
   organizationId   String         @map("organization_id")
   projectId        String?        @map("project_id")
   reportedById     String         @map("reported_by_id")
@@ -1097,6 +1112,8 @@ model Incident {
   reportedBy   User         @relation("IncidentReporter", fields: [reportedById], references: [id])
   investigator User?        @relation("IncidentInvestigator", fields: [investigatorId], references: [id])
   capa         Capa?        @relation(fields: [capaId], references: [id], onDelete: SetNull)
+  evidence     IncidentEvidence[]
+  witnessRecords IncidentWitness[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_incident_org_created")
   @@index([organizationId, status], map: "idx_incident_org_status")
@@ -1104,6 +1121,39 @@ model Incident {
   @@index([organizationId, incidentDate(sort: Desc)], map: "idx_incident_org_date")
   @@index([projectId], map: "idx_incident_project")
   @@map("incidents")
+}
+
+model IncidentEvidence {
+  id           String   @id @default(uuid())
+  incidentId   String   @map("incident_id")
+  fileKey      String   @map("file_key")
+  fileName     String   @map("file_name")
+  fileType     String   @map("file_type")
+  fileSize     Int      @map("file_size")
+  caption      String?
+  uploadedById String   @map("uploaded_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  uploadedBy User     @relation("EvidenceUploader", fields: [uploadedById], references: [id])
+
+  @@index([incidentId], map: "idx_incident_evidence_incident")
+  @@map("incident_evidence")
+}
+
+model IncidentWitness {
+  id            String   @id @default(uuid())
+  incidentId    String   @map("incident_id")
+  name          String
+  contactNumber String?  @map("contact_number")
+  email         String?
+  statement     String?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId], map: "idx_incident_witness_incident")
+  @@map("incident_witnesses")
 }
 
 // ─────────────────────────────────────────────

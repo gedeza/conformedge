@@ -24,7 +24,8 @@ export interface FeatureGates {
   auditPackGeneration: boolean
   approvalWorkflows: boolean
   customStandards: boolean
-  incidentManagement: boolean
+  incidentManagement: boolean              // Basic: create, track, close incidents
+  advancedIncidentManagement: boolean      // Statutory forms, evidence, MHSA, LTIFR, witnesses
   objectivesTracking: boolean
   permitToWork: boolean
   apiAccess: boolean
@@ -65,7 +66,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       auditPackGeneration: false,
       approvalWorkflows: false,
       customStandards: false,
-      incidentManagement: false,
+      incidentManagement: true,              // Basic incident reporting
+      advancedIncidentManagement: false,     // Pro+ only
       objectivesTracking: false,
       permitToWork: false,
       apiAccess: false,
@@ -75,8 +77,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
   PROFESSIONAL: {
     tier: "PROFESSIONAL",
     name: "Professional",
-    monthlyPriceZar: 4_499_00,     // R4,499 in cents
-    description: "For growing companies managing multiple standards.",
+    monthlyPriceZar: 5_499_00,     // R5,499 in cents (Safety-grade incident management)
+    description: "For safety-conscious companies managing compliance and incidents.",
     limits: {
       maxUsers: 10,
       maxStandards: 5,
@@ -97,6 +99,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       approvalWorkflows: true,
       customStandards: false,
       incidentManagement: true,
+      advancedIncidentManagement: true,     // Statutory forms, evidence, MHSA, LTIFR, witnesses
       objectivesTracking: true,
       permitToWork: true,
       apiAccess: false,
@@ -128,6 +131,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       approvalWorkflows: true,
       customStandards: true,
       incidentManagement: true,
+      advancedIncidentManagement: true,
       objectivesTracking: true,
       permitToWork: true,
       apiAccess: true,
@@ -159,6 +163,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       approvalWorkflows: true,
       customStandards: true,
       incidentManagement: true,
+      advancedIncidentManagement: true,
       objectivesTracking: true,
       permitToWork: true,
       apiAccess: true,

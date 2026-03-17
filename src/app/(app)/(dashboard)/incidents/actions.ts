@@ -7,6 +7,7 @@ import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import { notifyOrgMembers } from "@/lib/notifications"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { Prisma } from "@/generated/prisma/client"
 import type { ActionResult, RootCauseData } from "@/types"
 
@@ -31,6 +32,15 @@ const incidentSchema = z.object({
   investigationDue: z.coerce.date().optional(),
   projectId: z.string().optional(),
   investigatorId: z.string().optional(),
+  incidentTime: z.string().max(5).optional(), // HH:mm
+  lostDays: z.coerce.number().int().min(0).optional(),
+  bodyPartInjured: z.string().max(200).optional(),
+  natureOfInjury: z.string().max(200).optional(),
+  treatmentType: z.enum(["NONE", "FIRST_AID", "MEDICAL", "HOSPITALIZED"]).optional(),
+  contributingFactors: z.array(z.string()).optional(),
+  isReportable: z.boolean().default(false),
+  reportingDeadline: z.coerce.date().optional(),
+  mhsaSection: z.enum(["11", "23", "24"]).optional(),
 })
 
 export type IncidentFormValues = z.infer<typeof incidentSchema>
@@ -83,6 +93,11 @@ export async function getIncident(id: string) {
       reportedBy: { select: { id: true, firstName: true, lastName: true } },
       investigator: { select: { id: true, firstName: true, lastName: true } },
       capa: { select: { id: true, title: true, status: true } },
+      evidence: {
+        include: { uploadedBy: { select: { id: true, firstName: true, lastName: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+      witnessRecords: { orderBy: { createdAt: "asc" } },
     },
   })
 }
@@ -95,6 +110,12 @@ export async function createIncident(values: IncidentFormValues): Promise<Action
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing gate — basic incident management
+    const billing = await getBillingContext(dbOrgId)
+    const access = checkFeatureAccess(billing, "incidentManagement")
+    if (!access.allowed) return { success: false, error: access.reason ?? "Incident management requires an active subscription." }
+
     const parsed = incidentSchema.parse(values)
 
     const rootCauseData = parsed.rootCauseData as RootCauseData | undefined
@@ -115,6 +136,15 @@ export async function createIncident(values: IncidentFormValues): Promise<Action
         investigationDue: parsed.investigationDue || null,
         projectId: parsed.projectId || null,
         investigatorId: parsed.investigatorId || null,
+        incidentTime: parsed.incidentTime || null,
+        lostDays: parsed.lostDays ?? null,
+        bodyPartInjured: parsed.bodyPartInjured || null,
+        natureOfInjury: parsed.natureOfInjury || null,
+        treatmentType: parsed.treatmentType || null,
+        contributingFactors: parsed.contributingFactors ? (parsed.contributingFactors as unknown as Prisma.InputJsonValue) : undefined,
+        isReportable: parsed.isReportable,
+        reportingDeadline: parsed.reportingDeadline || null,
+        mhsaSection: parsed.mhsaSection || null,
         reportedById: dbUserId,
         organizationId: dbOrgId,
       },
@@ -204,6 +234,15 @@ export async function updateIncident(id: string, values: IncidentFormValues): Pr
         investigationDue: parsed.investigationDue || null,
         projectId: parsed.projectId || null,
         investigatorId: parsed.investigatorId || null,
+        incidentTime: parsed.incidentTime || null,
+        lostDays: parsed.lostDays ?? null,
+        bodyPartInjured: parsed.bodyPartInjured || null,
+        natureOfInjury: parsed.natureOfInjury || null,
+        treatmentType: parsed.treatmentType || null,
+        contributingFactors: parsed.contributingFactors ? (parsed.contributingFactors as unknown as Prisma.InputJsonValue) : undefined,
+        isReportable: parsed.isReportable,
+        reportingDeadline: parsed.reportingDeadline || null,
+        mhsaSection: parsed.mhsaSection || null,
       },
     })
 
@@ -378,7 +417,7 @@ export async function unlinkIncidentFromCapa(incidentId: string): Promise<Action
 export async function getOpenIncidentsSummary() {
   const { dbOrgId } = await getAuthContext()
 
-  const [total, byType, ltiCount] = await Promise.all([
+  const [total, byType, ltiCount, lostDaysResult] = await Promise.all([
     db.incident.count({
       where: { organizationId: dbOrgId, status: { not: "CLOSED" } },
     }),
@@ -390,12 +429,17 @@ export async function getOpenIncidentsSummary() {
     db.incident.count({
       where: { organizationId: dbOrgId, incidentType: "LOST_TIME", status: { not: "CLOSED" } },
     }),
+    db.incident.aggregate({
+      where: { organizationId: dbOrgId, status: { not: "CLOSED" } },
+      _sum: { lostDays: true },
+    }),
   ])
 
   return {
     total,
     byType: byType.map((r) => ({ type: r.incidentType, count: r._count._all })),
     ltiCount,
+    totalLostDays: lostDaysResult._sum.lostDays ?? 0,
   }
 }
 
@@ -427,4 +471,191 @@ export async function getCapaOptions() {
     select: { id: true, title: true, status: true },
     orderBy: { createdAt: "desc" },
   })
+}
+
+// ─────────────────────────────────────────────
+// EVIDENCE MANAGEMENT
+// ─────────────────────────────────────────────
+
+export async function addEvidence(incidentId: string, fileKey: string, fileName: string, fileType: string, fileSize: number, caption?: string): Promise<ActionResult<{ id: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Advanced feature gate
+    const billing = await getBillingContext(dbOrgId)
+    const access = checkFeatureAccess(billing, "advancedIncidentManagement")
+    if (!access.allowed) return { success: false, error: access.reason ?? "Evidence uploads require a Professional plan or higher." }
+
+    const incident = await db.incident.findFirst({ where: { id: incidentId, organizationId: dbOrgId } })
+    if (!incident) return { success: false, error: "Incident not found" }
+
+    const evidence = await db.incidentEvidence.create({
+      data: { incidentId, fileKey, fileName, fileType, fileSize, caption: caption || null, uploadedById: dbUserId },
+    })
+
+    logAuditEvent({
+      action: "CREATE",
+      entityType: "IncidentEvidence",
+      entityId: evidence.id,
+      metadata: { incidentId, fileName },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${incidentId}`)
+    return { success: true, data: { id: evidence.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to add evidence" }
+  }
+}
+
+export async function removeEvidence(evidenceId: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
+
+    const evidence = await db.incidentEvidence.findFirst({
+      where: { id: evidenceId },
+      include: { incident: { select: { id: true, organizationId: true } } },
+    })
+    if (!evidence || evidence.incident.organizationId !== dbOrgId) return { success: false, error: "Evidence not found" }
+
+    await db.incidentEvidence.delete({ where: { id: evidenceId } })
+
+    logAuditEvent({
+      action: "DELETE",
+      entityType: "IncidentEvidence",
+      entityId: evidenceId,
+      metadata: { incidentId: evidence.incidentId, fileName: evidence.fileName },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${evidence.incidentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to remove evidence" }
+  }
+}
+
+// ─────────────────────────────────────────────
+// WITNESS MANAGEMENT
+// ─────────────────────────────────────────────
+
+const witnessSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200),
+  contactNumber: z.string().max(20).optional(),
+  email: z.string().email().max(200).optional().or(z.literal("")),
+  statement: z.string().max(5000).optional(),
+})
+
+export type WitnessFormValues = z.infer<typeof witnessSchema>
+
+export async function addWitness(incidentId: string, values: WitnessFormValues): Promise<ActionResult<{ id: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Advanced feature gate
+    const billing = await getBillingContext(dbOrgId)
+    const access = checkFeatureAccess(billing, "advancedIncidentManagement")
+    if (!access.allowed) return { success: false, error: access.reason ?? "Witness statements require a Professional plan or higher." }
+
+    const parsed = witnessSchema.parse(values)
+
+    const incident = await db.incident.findFirst({ where: { id: incidentId, organizationId: dbOrgId } })
+    if (!incident) return { success: false, error: "Incident not found" }
+
+    const witness = await db.incidentWitness.create({
+      data: {
+        incidentId,
+        name: parsed.name,
+        contactNumber: parsed.contactNumber || null,
+        email: parsed.email || null,
+        statement: parsed.statement || null,
+      },
+    })
+
+    logAuditEvent({
+      action: "CREATE",
+      entityType: "IncidentWitness",
+      entityId: witness.id,
+      metadata: { incidentId, witnessName: witness.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${incidentId}`)
+    return { success: true, data: { id: witness.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to add witness" }
+  }
+}
+
+export async function updateWitness(witnessId: string, values: WitnessFormValues): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+    const parsed = witnessSchema.parse(values)
+
+    const witness = await db.incidentWitness.findFirst({
+      where: { id: witnessId },
+      include: { incident: { select: { id: true, organizationId: true } } },
+    })
+    if (!witness || witness.incident.organizationId !== dbOrgId) return { success: false, error: "Witness not found" }
+
+    await db.incidentWitness.update({
+      where: { id: witnessId },
+      data: {
+        name: parsed.name,
+        contactNumber: parsed.contactNumber || null,
+        email: parsed.email || null,
+        statement: parsed.statement || null,
+      },
+    })
+
+    logAuditEvent({
+      action: "UPDATE",
+      entityType: "IncidentWitness",
+      entityId: witnessId,
+      metadata: { incidentId: witness.incidentId, witnessName: parsed.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${witness.incidentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update witness" }
+  }
+}
+
+export async function removeWitness(witnessId: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canDelete(role)) return { success: false, error: "Insufficient permissions" }
+
+    const witness = await db.incidentWitness.findFirst({
+      where: { id: witnessId },
+      include: { incident: { select: { id: true, organizationId: true } } },
+    })
+    if (!witness || witness.incident.organizationId !== dbOrgId) return { success: false, error: "Witness not found" }
+
+    await db.incidentWitness.delete({ where: { id: witnessId } })
+
+    logAuditEvent({
+      action: "DELETE",
+      entityType: "IncidentWitness",
+      entityId: witnessId,
+      metadata: { incidentId: witness.incidentId, witnessName: witness.name },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${witness.incidentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to remove witness" }
+  }
 }

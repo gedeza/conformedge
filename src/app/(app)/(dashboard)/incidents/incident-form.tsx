@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/shared/date-picker"
-import { INCIDENT_TYPES, RISK_LEVELS } from "@/lib/constants"
+import { INCIDENT_TYPES, RISK_LEVELS, TREATMENT_TYPES, CONTRIBUTING_FACTORS, MHSA_SECTIONS, BODY_PARTS, NATURE_OF_INJURIES } from "@/lib/constants"
 import { createIncident, updateIncident, type IncidentFormValues } from "./actions"
 import type { RootCauseData, RootCauseWhy } from "@/types"
 
@@ -36,6 +36,14 @@ const formSchema = z.object({
   immediateAction: z.string().max(2000).optional(),
   rootCause: z.string().max(2000).optional(),
   rootCauseData: z.any().optional(),
+  incidentTime: z.string().max(5).optional(),
+  lostDays: z.coerce.number().int().min(0).optional(),
+  bodyPartInjured: z.string().max(200).optional(),
+  natureOfInjury: z.string().max(200).optional(),
+  treatmentType: z.enum(["NONE", "FIRST_AID", "MEDICAL", "HOSPITALIZED"]).optional(),
+  contributingFactors: z.array(z.string()).optional(),
+  isReportable: z.boolean().default(false),
+  mhsaSection: z.enum(["11", "23", "24"]).optional(),
   investigationDue: z.coerce.date().optional(),
   projectId: z.string().optional(),
   investigatorId: z.string().optional(),
@@ -72,6 +80,14 @@ interface IncidentFormProps {
     immediateAction: string | null
     rootCause: string | null
     rootCauseData?: RootCauseData | null
+    incidentTime: string | null
+    lostDays: number | null
+    bodyPartInjured: string | null
+    natureOfInjury: string | null
+    treatmentType: string | null
+    contributingFactors: unknown // Json
+    isReportable: boolean
+    mhsaSection: string | null
     investigationDue: Date | null
     projectId: string | null
     investigatorId: string | null
@@ -114,6 +130,9 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
   const [containmentAction, setContainmentAction] = useState(
     existingData?.containmentAction ?? ""
   )
+  const [selectedFactors, setSelectedFactors] = useState<string[]>(
+    (incident?.contributingFactors as string[]) ?? []
+  )
 
   const form = useForm<z.infer<typeof formSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,6 +148,13 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       witnesses: incident?.witnesses ?? "",
       immediateAction: incident?.immediateAction ?? "",
       rootCause: incident?.rootCause ?? "",
+      incidentTime: incident?.incidentTime ?? "",
+      lostDays: incident?.lostDays ?? undefined,
+      bodyPartInjured: incident?.bodyPartInjured ?? "",
+      natureOfInjury: incident?.natureOfInjury ?? "",
+      treatmentType: (incident?.treatmentType as "NONE" | "FIRST_AID" | "MEDICAL" | "HOSPITALIZED") ?? undefined,
+      isReportable: incident?.isReportable ?? false,
+      mhsaSection: (incident?.mhsaSection as "11" | "23" | "24") ?? undefined,
       investigationDue: incident?.investigationDue ?? undefined,
       projectId: incident?.projectId ?? undefined,
       investigatorId: incident?.investigatorId ?? undefined,
@@ -148,6 +174,13 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         witnesses: incident.witnesses ?? "",
         immediateAction: incident.immediateAction ?? "",
         rootCause: incident.rootCause ?? "",
+        incidentTime: incident.incidentTime ?? "",
+        lostDays: incident.lostDays ?? undefined,
+        bodyPartInjured: incident.bodyPartInjured ?? "",
+        natureOfInjury: incident.natureOfInjury ?? "",
+        treatmentType: (incident.treatmentType as "NONE" | "FIRST_AID" | "MEDICAL" | "HOSPITALIZED") ?? undefined,
+        isReportable: incident.isReportable ?? false,
+        mhsaSection: (incident.mhsaSection as "11" | "23" | "24") ?? undefined,
         investigationDue: incident.investigationDue ?? undefined,
         projectId: incident.projectId ?? undefined,
         investigatorId: incident.investigatorId ?? undefined,
@@ -158,6 +191,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       setWhys(data?.method === "5-whys" && data.whys.length > 0 ? data.whys : [createEmptyWhy(0)])
       setFiveWhysRootCause(data?.method === "5-whys" ? data.rootCause : "")
       setContainmentAction(data?.containmentAction ?? "")
+      setSelectedFactors((incident.contributingFactors as string[]) ?? [])
     } else {
       form.reset({
         title: "",
@@ -170,6 +204,13 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         witnesses: "",
         immediateAction: "",
         rootCause: "",
+        incidentTime: "",
+        lostDays: undefined,
+        bodyPartInjured: "",
+        natureOfInjury: "",
+        treatmentType: undefined,
+        isReportable: false,
+        mhsaSection: undefined,
         investigationDue: undefined,
         projectId: undefined,
         investigatorId: undefined,
@@ -179,6 +220,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       setWhys([createEmptyWhy(0)])
       setFiveWhysRootCause("")
       setContainmentAction("")
+      setSelectedFactors([])
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incident])
@@ -199,7 +241,10 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      let submitValues = { ...values }
+      let submitValues = {
+        ...values,
+        contributingFactors: selectedFactors.length > 0 ? selectedFactors : undefined,
+      }
 
       if (rcMethod === "simple") {
         submitValues.rootCauseData = {
@@ -216,7 +261,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
           containmentAction: containmentAction || undefined,
         }
         submitValues = {
-          ...values,
+          ...submitValues,
           rootCauseData,
         }
       }
@@ -234,6 +279,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         setWhys([createEmptyWhy(0)])
         setFiveWhysRootCause("")
         setContainmentAction("")
+        setSelectedFactors([])
       } else {
         toast.error(result.error)
       }
@@ -242,7 +288,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-lg overflow-y-auto">
+      <SheetContent className="sm:max-w-xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{isEditing ? "Edit Incident" : "Report Incident"}</SheetTitle>
         </SheetHeader>
@@ -323,7 +369,18 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="incidentTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time of Incident</FormLabel>
+                    <FormControl><Input type="time" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="location"
@@ -346,6 +403,104 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Injury Details Section */}
+            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
+              <Label className="text-sm font-medium">Injury Details</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <FormField control={form.control} name="bodyPartInjured" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Body Part Injured</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        {BODY_PARTS.map(bp => <SelectItem key={bp} value={bp}>{bp}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="natureOfInjury" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Nature of Injury</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        {NATURE_OF_INJURIES.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="treatmentType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Treatment Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        {Object.entries(TREATMENT_TYPES).map(([v, c]) => <SelectItem key={v} value={v}>{c.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="lostDays" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Lost Days</FormLabel>
+                    <FormControl><Input type="number" min={0} placeholder="0" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </div>
+
+            {/* Contributing Factors */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Contributing Factors</Label>
+              <div className="grid grid-cols-2 gap-1.5 rounded-md border p-3 bg-muted/30 max-h-[200px] overflow-y-auto">
+                {CONTRIBUTING_FACTORS.map(factor => (
+                  <label key={factor} className="flex items-center gap-1.5 text-xs cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedFactors.includes(factor)}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedFactors([...selectedFactors, factor])
+                        else setSelectedFactors(selectedFactors.filter(f => f !== factor))
+                      }}
+                      className="rounded border-gray-300 h-3.5 w-3.5"
+                    />
+                    {factor}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Regulatory Reporting */}
+            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
+              <Label className="text-sm font-medium">Regulatory Reporting</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <FormField control={form.control} name="isReportable" render={({ field }) => (
+                  <FormItem className="flex items-center gap-2">
+                    <FormControl>
+                      <input type="checkbox" checked={field.value} onChange={field.onChange} className="rounded border-gray-300 h-4 w-4" />
+                    </FormControl>
+                    <FormLabel className="text-xs !mt-0">Reportable to Regulator</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="mhsaSection" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">MHSA Section</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Not applicable" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        {Object.entries(MHSA_SECTIONS).map(([v, c]) => <SelectItem key={v} value={v}>{c.label}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
             </div>
 
             <FormField

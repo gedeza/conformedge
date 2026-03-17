@@ -1,16 +1,19 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { ArrowLeft, Shield } from "lucide-react"
+import { ArrowLeft, Shield, AlertTriangle, Clock, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getAuthContext } from "@/lib/auth"
+import { TREATMENT_TYPES, MHSA_SECTIONS } from "@/lib/constants"
 import { getIncident, getCapaOptions } from "../actions"
 import { IncidentActionsPanel } from "./incident-actions-panel"
 import { StatutoryFormButton } from "./statutory-form-button"
+import { EvidenceGallery } from "./evidence-gallery"
+import { WitnessList } from "./witness-list"
 import type { RootCauseData } from "@/types"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -136,6 +139,32 @@ export default async function IncidentDetailPage({
         </div>
       </PageHeader>
 
+      {/* Reporting deadline / MHSA banner */}
+      {incident.isReportable && incident.reportingDeadline && new Date(incident.reportingDeadline) > new Date() && (
+        <div className="rounded-md border border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/30 p-3 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-orange-600 dark:text-orange-400 shrink-0" />
+          <div className="text-sm">
+            <span className="font-medium text-orange-700 dark:text-orange-300">Reportable Incident</span>
+            {" — "}
+            Statutory reporting deadline: <span className="font-medium">{format(incident.reportingDeadline, "PPP")}</span>
+            {incident.mhsaSection && (
+              <span className="ml-1">
+                ({MHSA_SECTIONS[incident.mhsaSection as keyof typeof MHSA_SECTIONS]?.label ?? `Section ${incident.mhsaSection}`})
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {incident.isReportable && incident.reportingDeadline && new Date(incident.reportingDeadline) <= new Date() && !incident.statutoryReportedAt && (
+        <div className="rounded-md border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/30 p-3 flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+          <span className="text-sm font-medium text-red-700 dark:text-red-300">
+            OVERDUE: Statutory reporting deadline was {format(incident.reportingDeadline, "PPP")}. Report immediately.
+          </span>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-4">
@@ -153,7 +182,14 @@ export default async function IncidentDetailPage({
                 </div>
                 <div>
                   <span className="text-muted-foreground">Date of Incident</span>
-                  <p className="mt-1 font-medium">{format(incident.incidentDate, "PPP")}</p>
+                  <p className="mt-1 font-medium">
+                    {format(incident.incidentDate, "PPP")}
+                    {incident.incidentTime && (
+                      <span className="ml-1 text-muted-foreground">
+                        <Clock className="inline h-3 w-3 mr-0.5" />{incident.incidentTime}
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Status</span>
@@ -207,15 +243,117 @@ export default async function IncidentDetailPage({
             </CardContent>
           </Card>
 
-          {/* Witnesses */}
-          {incident.witnesses && (
+          {/* Injury Details */}
+          {(incident.bodyPartInjured || incident.natureOfInjury || incident.treatmentType || incident.lostDays != null) && (
             <Card className="border-border/50 transition-all hover:shadow-md">
-              <CardHeader><CardTitle>Witnesses</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Injury Details</CardTitle></CardHeader>
               <CardContent>
-                <p className="text-sm whitespace-pre-wrap">{incident.witnesses}</p>
+                <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                  {incident.bodyPartInjured && (
+                    <div>
+                      <span className="text-muted-foreground">Body Part Injured</span>
+                      <p className="mt-1 font-medium">{incident.bodyPartInjured}</p>
+                    </div>
+                  )}
+                  {incident.natureOfInjury && (
+                    <div>
+                      <span className="text-muted-foreground">Nature of Injury</span>
+                      <p className="mt-1 font-medium">{incident.natureOfInjury}</p>
+                    </div>
+                  )}
+                  {incident.treatmentType && (
+                    <div>
+                      <span className="text-muted-foreground">Treatment</span>
+                      <p className="mt-1 font-medium">
+                        {TREATMENT_TYPES[incident.treatmentType as keyof typeof TREATMENT_TYPES]?.label ?? incident.treatmentType}
+                      </p>
+                    </div>
+                  )}
+                  {incident.lostDays != null && (
+                    <div>
+                      <span className="text-muted-foreground">Lost Days</span>
+                      <p className="mt-1 font-medium">{incident.lostDays} {incident.lostDays === 1 ? "day" : "days"}</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           )}
+
+          {/* Contributing Factors */}
+          {incident.contributingFactors && Array.isArray(incident.contributingFactors) && (incident.contributingFactors as string[]).length > 0 && (
+            <Card className="border-border/50 transition-all hover:shadow-md">
+              <CardHeader><CardTitle>Contributing Factors</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {(incident.contributingFactors as string[]).map((factor) => (
+                    <Badge key={factor} variant="outline" className="text-xs">
+                      {factor}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Regulatory Reporting */}
+          {(incident.isReportable || incident.mhsaSection || incident.statutoryRefNumber) && (
+            <Card className="border-border/50 transition-all hover:shadow-md">
+              <CardHeader><CardTitle>Regulatory Reporting</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                  <div>
+                    <span className="text-muted-foreground">Reportable</span>
+                    <p className="mt-1 font-medium">{incident.isReportable ? "Yes" : "No"}</p>
+                  </div>
+                  {incident.mhsaSection && (
+                    <div>
+                      <span className="text-muted-foreground">MHSA Section</span>
+                      <p className="mt-1 font-medium">
+                        {MHSA_SECTIONS[incident.mhsaSection as keyof typeof MHSA_SECTIONS]?.label ?? `Section ${incident.mhsaSection}`}
+                      </p>
+                    </div>
+                  )}
+                  {incident.reportingDeadline && (
+                    <div>
+                      <span className="text-muted-foreground">Reporting Deadline</span>
+                      <p className="mt-1 font-medium flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {format(incident.reportingDeadline, "PPP")}
+                      </p>
+                    </div>
+                  )}
+                  {incident.statutoryReportedAt && (
+                    <div>
+                      <span className="text-muted-foreground">Reported to Regulator</span>
+                      <p className="mt-1 font-medium">{format(incident.statutoryReportedAt, "PPP")}</p>
+                    </div>
+                  )}
+                  {incident.statutoryRefNumber && (
+                    <div>
+                      <span className="text-muted-foreground">Reference Number</span>
+                      <p className="mt-1 font-medium">{incident.statutoryRefNumber}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Evidence Gallery */}
+          <EvidenceGallery
+            incidentId={incident.id}
+            evidence={(incident as Record<string, unknown>).evidence as [] ?? []}
+            role={role}
+          />
+
+          {/* Witness Statements */}
+          <WitnessList
+            incidentId={incident.id}
+            witnesses={(incident as Record<string, unknown>).witnessRecords as [] ?? []}
+            legacyWitnesses={incident.witnesses}
+            role={role}
+          />
 
           {/* Immediate Action */}
           {incident.immediateAction && (

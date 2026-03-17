@@ -25,6 +25,14 @@ export type IncidentRow = {
   immediateAction: string | null
   rootCause: string | null
   rootCauseData: unknown
+  incidentTime: string | null
+  lostDays: number | null
+  bodyPartInjured: string | null
+  natureOfInjury: string | null
+  treatmentType: string | null
+  contributingFactors: unknown
+  isReportable: boolean
+  mhsaSection: string | null
   investigationDue: Date | null
   createdAt: Date
   project: { id: string; name: string } | null

@@ -262,6 +262,7 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     approvalWorkflows: "Approval Workflows",
     customStandards: "Custom Standards",
     incidentManagement: "Incident & Near-Miss Management",
+    advancedIncidentManagement: "Advanced Incident Management (Statutory Forms, Evidence, MHSA)",
     objectivesTracking: "Objectives & KPI Tracking",
     permitToWork: "Permit to Work",
     apiAccess: "API Access",

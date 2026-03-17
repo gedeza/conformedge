@@ -58,6 +58,72 @@ export const INCIDENT_TYPES = {
   PROPERTY_DAMAGE: { label: "Property Damage",   color: "bg-amber-100 text-amber-800" },
 } as const
 
+export const TREATMENT_TYPES = {
+  NONE:         { label: "No Treatment",      color: "bg-gray-100 text-gray-800" },
+  FIRST_AID:    { label: "First Aid",         color: "bg-yellow-100 text-yellow-800" },
+  MEDICAL:      { label: "Medical Treatment", color: "bg-orange-100 text-orange-800" },
+  HOSPITALIZED: { label: "Hospitalized",      color: "bg-red-100 text-red-800" },
+} as const
+
+export const CONTRIBUTING_FACTORS = [
+  "Inadequate training",
+  "PPE failure/not worn",
+  "Fatigue/overwork",
+  "Equipment malfunction",
+  "Poor housekeeping",
+  "Inadequate supervision",
+  "Communication failure",
+  "Unsafe work procedure",
+  "Environmental conditions",
+  "Human error",
+  "Substance impairment",
+  "Inadequate maintenance",
+  "Design/engineering deficiency",
+  "Management system failure",
+  "Third-party action",
+] as const
+
+export const MHSA_SECTIONS = {
+  "11": { label: "Section 11 — Serious Accident",      deadline: "24 hours" },
+  "23": { label: "Section 23 — Dangerous Occurrence",   deadline: "24 hours" },
+  "24": { label: "Section 24 — Occupational Disease",   deadline: "14 days" },
+} as const
+
+export const BODY_PARTS = [
+  "Head", "Face", "Eyes", "Ears", "Neck",
+  "Shoulder (L)", "Shoulder (R)", "Upper Arm (L)", "Upper Arm (R)",
+  "Elbow (L)", "Elbow (R)", "Forearm (L)", "Forearm (R)",
+  "Wrist (L)", "Wrist (R)", "Hand (L)", "Hand (R)", "Fingers (L)", "Fingers (R)",
+  "Chest", "Upper Back", "Lower Back", "Abdomen", "Pelvis",
+  "Hip (L)", "Hip (R)", "Thigh (L)", "Thigh (R)",
+  "Knee (L)", "Knee (R)", "Lower Leg (L)", "Lower Leg (R)",
+  "Ankle (L)", "Ankle (R)", "Foot (L)", "Foot (R)", "Toes (L)", "Toes (R)",
+  "Multiple Body Parts", "Internal Organs",
+] as const
+
+export const NATURE_OF_INJURIES = [
+  "Laceration/Cut",
+  "Fracture",
+  "Burn (thermal)",
+  "Burn (chemical)",
+  "Crush injury",
+  "Sprain/Strain",
+  "Contusion/Bruise",
+  "Amputation",
+  "Electric shock",
+  "Inhalation/Poisoning",
+  "Foreign body",
+  "Hearing loss",
+  "Eye injury",
+  "Dislocation",
+  "Abrasion",
+  "Puncture wound",
+  "Heat stroke/exhaustion",
+  "Suffocation/Asphyxiation",
+  "Multiple injuries",
+  "Other",
+] as const
+
 export const OBJECTIVE_STATUSES = {
   DRAFT:     { label: "Draft",     color: "bg-gray-100 text-gray-800" },
   ACTIVE:    { label: "Active",    color: "bg-blue-100 text-blue-800" },
