@@ -164,7 +164,7 @@ PayFast: 3.5% + R2.00 per transaction
 |---|---|---|---|
 | Starter | R699 | R26.47 | **R672.53** |
 | Professional | R1,999 | R71.97 | **R1,927.03** |
-| Business | R4,499 | R159.47 | **R4,339.53** |
+| Business | R5,499 | R159.47 | **R4,339.53** |
 | Enterprise | R10,000 | R352.00 | **R9,648.00** |
 
 ### 3.2 Variable Cost Per Customer
@@ -459,7 +459,7 @@ Support is the largest per-customer cost. Self-service options reduce it dramati
 |---|---|---|---|---|
 | Starter | R699 | R559 | R339 | Yes (margin 60.7%) |
 | Professional | R1,999 | R1,599 | R958 | Yes (margin 59.9%) |
-| Business | R4,499 | R3,599 | R1,614 | Yes (margin 44.8%) |
+| Business | R5,499 | R3,599 | R1,614 | Yes (margin 44.8%) |
 
 **Verdict:** Even 20% lower pricing maintains 45-61% margins. Room to offer early-adopter discounts.
 
@@ -475,7 +475,7 @@ The 4-tier structure is financially sound:
 |---|---|---|---|---|
 | Starter R699 | R699/mo | R480 | 68.7% | **Go** — accessible entry point |
 | Professional R1,999 | R1,999/mo | R1,344 | 67.2% | **Go** — best margin/volume balance |
-| Business R4,499 | R4,499/mo | R2,415 | 53.7% | **Go** — support cost is manageable |
+| Business R5,499 | R5,499/mo | R2,415 | 53.7% | **Go** — support cost is manageable |
 | Enterprise Custom | R10K+ | R5,694+ | 57%+ | **Go** — high-touch, high-value |
 
 ### 8.2 Revenue Milestones

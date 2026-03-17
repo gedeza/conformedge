@@ -180,7 +180,7 @@ export function OrgSubscriptionActions({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="STARTER">Starter — R2,299/mo</SelectItem>
-                  <SelectItem value="PROFESSIONAL">Professional — R4,499/mo</SelectItem>
+                  <SelectItem value="PROFESSIONAL">Professional — R5,499/mo</SelectItem>
                   <SelectItem value="BUSINESS">Business — R8,499/mo</SelectItem>
                   <SelectItem value="ENTERPRISE">Enterprise — R16,999+/mo</SelectItem>
                 </SelectContent>

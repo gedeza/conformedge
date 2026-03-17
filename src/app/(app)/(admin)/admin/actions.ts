@@ -58,7 +58,7 @@ export async function getAdminOverview() {
   // Plan prices in cents
   const planPrices: Record<string, number> = {
     STARTER: 229900,
-    PROFESSIONAL: 449900,
+    PROFESSIONAL: 549900,
     BUSINESS: 849900,
     ENTERPRISE: 1699900,
   }
@@ -696,7 +696,7 @@ export async function getAdminRevenue() {
   // Plan prices in cents (monthly)
   const planPrices: Record<string, number> = {
     STARTER: 229900,
-    PROFESSIONAL: 449900,
+    PROFESSIONAL: 549900,
     BUSINESS: 849900,
     ENTERPRISE: 1699900,
   }

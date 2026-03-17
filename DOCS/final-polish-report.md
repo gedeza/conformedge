@@ -71,7 +71,7 @@ The 5/15/50/Unlimited progression was derived from competitor research and SA ma
 | Proposed | Impact | Verdict |
 |----------|--------|---------|
 | Starter at 3 | Pushes 4-person firms to R1,999/mo — kills the deal | **Bad** |
-| Professional at 10 | 11-14 person firms forced to Business at R4,499 | **Bad** |
+| Professional at 10 | 11-14 person firms forced to Business at R5,499 | **Bad** |
 | Business at 30 | 31-49 user firms pushed to Enterprise sales process | **Bad** |
 
 ### Recommendations for Tier Gaps
@@ -148,7 +148,7 @@ Every core engine — AI classification, gap detection, IMS, CAPAs, checklists, 
 |--------------|-------------|-----------|----------------|
 | Solo plumber (CIDB 1-2) | 1-3 people | Starter (R699) | Good fit. Needs ISO 9001 only. 2-standard limit perfect. |
 | Small electrical (CIDB 3-5) | 5-15 people | Starter → Professional | Starter works until team hits 6. Professional at R1,999 is the right next step. |
-| Medium construction (CIDB 6-7) | 20-50 people | Business (R4,499) | Sweet spot. Needs subcontractor management, audit packs, multiple ISOs. |
+| Medium construction (CIDB 6-7) | 20-50 people | Business (R5,499) | Sweet spot. Needs subcontractor management, audit packs, multiple ISOs. |
 | Large contractor (CIDB 8-9) | 50-200+ people | Enterprise | Full compliance department. Needs unlimited everything. |
 
 ### Why Small SA Companies Buy ISO Software
@@ -163,7 +163,7 @@ The primary driver is **NOT quality improvement** — it's:
 
 ### The Affordability Advantage
 
-Traditional ISO certification costs R100,000-R400,000+ in year one (audit fees + consultant fees). ConformEdge at R699-R4,499/month replaces the consultant cost while automating gap analysis and audit preparation. The ROI pitch: **"Win bigger tenders for less than 5% of what a compliance consultant charges."**
+Traditional ISO certification costs R100,000-R400,000+ in year one (audit fees + consultant fees). ConformEdge at R699-R5,499/month replaces the consultant cost while automating gap analysis and audit preparation. The ROI pitch: **"Win bigger tenders for less than 5% of what a compliance consultant charges."**
 
 ### UX Gap for Small Trades
 

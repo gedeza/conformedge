@@ -17,7 +17,7 @@ Transform ConformEdge from an open-access platform into a monetised SaaS with 4-
 ### What Exists
 | Item | Status |
 |------|--------|
-| Landing page pricing (R699/R1,999/R4,499/Custom) | Shipped — annual toggle + AI credit packs |
+| Landing page pricing (R699/R1,999/R5,499/Custom) | Shipped — annual toggle + AI credit packs |
 | `Organization.subscriptionTier` column | Exists in schema, never read or written |
 | `Organization.settings` JSON | Stores only `autoClassifyOnUpload` |
 | AI classify route with rate limiter | In-memory 10/60s — no monthly quota |

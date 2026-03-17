@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | **Starter** | R699 | Small contractors starting ISO compliance | 5 users | 50 |
 | **Professional** | R1,999 | Growing companies, multiple standards | 15 users | 200 |
-| **Business** | R4,499 | Multi-site firms, advanced compliance | 50 users | 500 |
+| **Business** | R5,499 | Multi-site firms, advanced compliance | 50 users | 500 |
 | **Enterprise** | Custom (R10K+) | Large organisations, full control & scale | Unlimited | Unlimited |
 
 ---
@@ -24,7 +24,7 @@
 
 | | Starter | Professional | Business | Enterprise |
 |---|---|---|---|---|
-| **Gross revenue** | R699 | R1,999 | R4,499 | R10,000+ |
+| **Gross revenue** | R699 | R1,999 | R5,499 | R10,000+ |
 | Payment processing (PayFast 3.5%+R2) | -R26.47 | -R71.97 | -R159.47 | -R352.00 |
 | **Net revenue** | R672.53 | R1,927.03 | R4,339.53 | R9,648.00 |
 | AI classification (Claude Haiku) | -R4.14 | -R16.56 | -R41.40 | -R165.60 |
@@ -53,7 +53,7 @@
 - IMS cross-standard mapping and recurring checklists justify the price jump from Starter
 - Support cost (R563) is 29% of net revenue — acceptable for the feature set
 
-**Business (R4,499) — GO**
+**Business (R5,499) — GO**
 - 53.7% margin — the lowest, but still above industry median (~50% for vertical SaaS)
 - Support is the primary cost driver (R1,875 = 43% of net revenue)
 - Mitigated by: self-service knowledge base, AI chatbot (planned), in-app help panels (built)
@@ -161,7 +161,7 @@
 | isoTracker | Basic (5 users) | ~R950/mo | R699 (Starter) | **26% cheaper** |
 | Mango QHSE | Standard | ~R1,850/mo | R1,999 (Professional) | **At market** |
 | Effivity | Professional | ~R2,400/mo | R1,999 (Professional) | **17% cheaper** |
-| Qualio | Scale (25 users) | ~R4,200/mo | R4,499 (Business, 50 users) | **At market, 2x users** |
+| Qualio | Scale (25 users) | ~R4,200/mo | R5,499 (Business, 50 users) | **At market, 2x users** |
 | SafetyCulture | Premium (unlimited) | ~R1,840/mo | R1,999 (Professional) | **At market** |
 
 **Verdict:** ConformEdge is priced at or below market while offering more users per tier and AI-powered features competitors lack.

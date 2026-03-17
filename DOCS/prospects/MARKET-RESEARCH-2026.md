@@ -113,7 +113,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 
 | Platform | Monthly Cost | AI | SA Regulatory | Standards |
 |----------|-------------|-----|---------------|-----------|
-| **ConformEdge Professional** | **R4,499** | **Yes** | **11 frameworks** | **5 (up to 11)** |
+| **ConformEdge Professional** | **R5,499** | **Yes** | **11 frameworks** | **5 (up to 11)** |
 | Effivity | R450–R4,800 | No | No | Basic |
 | SHEQX | R5,000 | No | Partial | SHEQ only |
 | SafetyCulture | R5,250 | Template only | No | Inspections only |
@@ -133,7 +133,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 6. **Construction/infrastructure gap** — Most global platforms target pharma/life sciences
 
 ### Primary Sales Narrative
-> "The capability of R18,500/mo enterprise platforms, at R4,499/mo, with AI that no competitor offers."
+> "The capability of R18,500/mo enterprise platforms, at R5,499/mo, with AI that no competitor offers."
 
 ### Switchable Customer Signals
 - **Qualio**: 46+ G2 reviews cite document management limitations
@@ -174,7 +174,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 
 | Profile | Description | Tier |
 |---------|------------|------|
-| Mid-size construction (20-100 staff) | Holds 9001+45001+14001, SHEQ manager uses spreadsheets | Professional R4,499/mo |
+| Mid-size construction (20-100 staff) | Holds 9001+45001+14001, SHEQ manager uses spreadsheets | Professional R5,499/mo |
 | ISO consulting firm (5-15 consultants) | Manages 10-30 clients with Word/Excel | Consulting Partner R8,999/mo |
 | Mining SHEQ department | DMRE pressure, multiple sites, subcontractors | Business R8,499/mo |
 | Solo SHEQ consultant | SAIOSH registered, 3-8 SME clients | Referral Partner (15% commission) |

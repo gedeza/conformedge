@@ -13,16 +13,25 @@ ConformEdge is a **category-defining platform** — no competitor in SA or globa
 
 **Pricing revision (11 March 2026):** Following a comprehensive 4-agent analysis covering competitor pricing (15+ platforms), value-based economics, feature density audit, and SA market price sensitivity, all tiers have been increased to better capture the value delivered — while remaining well below competitor per-user costs and capturing under 9% of delivered economic value.
 
-**Current pricing (effective 11 March 2026):**
+**Current pricing (effective 17 March 2026):**
 
 | Tier | Monthly | Annual (eff/mo) | Per-User Cost |
 |------|---------|----------------|---------------|
 | **Essentials** | R2,299 | R1,916 | R460/user |
-| **Professional** | R4,499 | R3,749 | R450/user |
+| **Professional** | R5,499 | R4,583 | R550/user |
 | **Business** | R8,499 | R7,083 | R340/user |
 | **Enterprise** | From R16,999 | Negotiated | Negotiated |
 
-**Tier step-up ratios:** 1.96x → 1.89x → 2.0x (clean, consistent ~2x ladder)
+**Implementation fees (once-off):**
+
+| Package | Fee | Tier |
+|---------|-----|------|
+| Self-serve | R0 | Essentials |
+| Guided setup | R7,499 | Professional |
+| Full implementation | R24,499 | Business |
+| Enterprise onboarding | R49,499+ | Enterprise |
+
+**Tier step-up ratios:** 2.39x → 1.55x → 2.0x
 
 ---
 
@@ -70,7 +79,7 @@ No platform in SA or globally combines:
 
 | Check | ConformEdge (Professional) | SHEQX (10 users) | IsoMetrix (10 users) |
 |-------|---------------------------|-------------------|---------------------|
-| Monthly cost | R4,499 | R5,000 | R18,500 |
+| Monthly cost | R5,499 | R5,000 | R18,500 |
 | Per-user | R450 | R500 | R1,850 |
 | AI classification | Yes | No | No |
 | IMS engine | Yes (Union-Find) | No | Manual |
@@ -115,7 +124,7 @@ No platform in SA or globally combines:
 | Segment | Monthly Value Delivered | Current Price | Value Capture % |
 |---------|----------------------|---------------|-----------------|
 | Small company (Essentials) | R26,250–R57,500 | R2,299 | 4.0–8.8% |
-| Mid-size company (Professional) | R82,500–R195,000 | R4,499 | 2.3–5.5% |
+| Mid-size company (Professional) | R82,500–R195,000 | R5,499 | 2.3–5.5% |
 | Large company (Business) | R200,000–R470,000 | R8,499 | 1.8–4.2% |
 | Enterprise | R400,000–R1,000,000 | R16,999 | 1.7–4.2% |
 
@@ -202,9 +211,9 @@ Our AI document classification alone saves 15-30 minutes per document. A company
 
 ---
 
-### Tier 2: Professional — R4,499/mo (Most Popular)
+### Tier 2: Professional — R5,499/mo (Most Popular)
 
-*For growing companies managing multiple standards*
+*For safety-conscious companies managing compliance and incidents*
 
 | Dimension | Limit |
 |-----------|-------|
@@ -216,9 +225,9 @@ Our AI document classification alone saves 15-30 minutes per document. A company
 | Projects | 15 |
 | Subcontractors | 25 |
 
-**Everything in Essentials PLUS (24 modules):**
+**Everything in Essentials PLUS (26 modules):**
+- **Full incident management** — COIDA forms (W.Cl.2), evidence/photo uploads, structured witness statements, MHSA Section 11/23/24 classification, contributing factors, lost days/LTIFR tracking, regulatory deadline alerts
 - IMS engine (cross-standard mapping)
-- Incident management
 - Objectives & KPI tracking
 - Work permits (3 types: general, hot work, confined space)
 - Custom form builder (5 field types)
@@ -229,11 +238,11 @@ Our AI document classification alone saves 15-30 minutes per document. A company
 - Management reviews
 - Email notifications
 - Report export (CSV/PDF)
-- Onboarding call included
+- Guided setup onboarding (R7,499)
 
-**Not included:** Full work permits (all 7 types), SA statutory forms, DMRE/MHSA module, POPIA module, subcontractor portal, API access, SSO
+**Not included:** Full work permits (all 7 types), DMRE/MHSA module, POPIA module, subcontractor portal, API access, SSO
 
-**Why R4,499:** The IMS engine, incident management, and work permits justify the jump. At R450/user (10 users), we match SafetyCulture ($24/seat) but include AI classification, IMS, incident management, work permits, and objectives tracking — features SafetyCulture doesn't have. The gap from R2,299 to R4,499 (R2,200/mo, 1.96x) is easily justified when a single undocumented incident can result in R50,000+ fines.
+**Why R5,499:** The safety-grade incident management with statutory forms, evidence management, and MHSA compliance is a decisive differentiator — no SA competitor offers COIDA W.Cl.2 form auto-generation. At R550/user (10 users), we match SafetyCulture ($24/seat ≈ R450) but include AI classification, IMS, full incident investigation workflow, work permits, and objectives tracking — features SafetyCulture doesn't have. The gap from R2,299 to R5,499 (R3,200/mo, 2.39x) is easily justified when a single unreported incident can result in R50,000+ fines under COIDA/MHSA.
 
 ---
 
@@ -300,7 +309,7 @@ Our AI document classification alone saves 15-30 minutes per document. A company
 
 | | Essentials | Professional | Business | Enterprise |
 |--|-----------|-------------|----------|------------|
-| **Monthly** | R2,299 | R4,499 | R8,499 | From R16,999 |
+| **Monthly** | R2,299 | R5,499 | R8,499 | From R16,999 |
 | **Annual (per month)** | R1,916 | R3,749 | R7,083 | Negotiated |
 | **Annual total** | R22,992 | R44,988 | R84,996 | Negotiated |
 | **Included users** | 5 | 10 | 25 | Unlimited |
@@ -359,7 +368,7 @@ Credits never expire. Used when monthly allocation is exhausted.
 
 ### Example: Consulting Firm Managing 12 Clients
 - Platform: R4,999 + (12 x R899) = **R15,787/mo**
-- vs 12 clients buying Professional individually: 12 x R4,499 = R53,988/mo
+- vs 12 clients buying Professional individually: 12 x R5,499 = R53,988/mo
 - Consultant saves clients 71%, takes margin on their consulting service
 - ConformEdge gets R15,787 MRR from one partner (vs hoping 12 SMEs convert individually)
 
@@ -467,8 +476,8 @@ With seat expansion (20-30% annual growth within accounts), net revenue retentio
 | Tier | Original (Jan 2026) | Revision 1 (10 Mar) | Revision 2 (11 Mar) | Total Change |
 |------|---------------------|---------------------|---------------------|-------------|
 | Starter → Essentials | R699/mo | R1,299/mo | **R2,299/mo** | +229% |
-| Professional | R1,999/mo | R2,999/mo | **R4,499/mo** | +125% |
-| Business | R4,499/mo | R5,999/mo | **R8,499/mo** | +89% |
+| Professional | R1,999/mo | R2,999/mo | **R5,499/mo** | +125% |
+| Business | R5,499/mo | R5,999/mo | **R8,499/mo** | +89% |
 | Enterprise | Custom | From R12,000/mo | **From R16,999/mo** | Floor set |
 
 ### Revision 2 Justification (11 March 2026)
@@ -504,7 +513,7 @@ R8,499   ┤ ═══ BUSINESS ═══  ← SA regulatory + subcontractor por
          │
 R5,000   ┤ SafetyCulture (15 users @ R350/user)
          │   SHEQX (10 users @ R500/user)
-R4,499   ┤ ═══ PROFESSIONAL ═══  ← IMS + incidents + permits + AI (10% below SHEQX)
+R5,499   ┤ ═══ PROFESSIONAL ═══  ← IMS + incidents + permits + AI (10% below SHEQX)
          │
 R2,500   ┤ Mango QHSE (unlimited users, no AI)
 R2,299   ┤ ═══ ESSENTIALS ═══  ← AI-powered, modern UX (8% below SHEQX per-user)
@@ -584,7 +593,7 @@ Every customer pays a platform fee regardless of usage:
 | Tier | Monthly | What They're Paying For |
 |------|---------|------------------------|
 | Essentials | R2,299 | The compliance system — documents, checklists, CAPAs, gap analysis |
-| Professional | R4,499 | + Intelligence layer (IMS, incidents, permits, objectives, audit packs) |
+| Professional | R5,499 | + Intelligence layer (IMS, incidents, permits, objectives, audit packs) |
 | Business | R8,499 | + SA regulatory automation (statutory forms, DMRE, POPIA, subcontractor network) |
 | Enterprise | R16,999+ | + Scale, security, SSO, API, dedicated support |
 
@@ -670,7 +679,7 @@ Customer signs up (Essentials R2,299)
     ↓
 Uploads documents → AI classifies → sees value immediately
     ↓
-Hits 2-standard limit → upgrades to Professional (R4,499)
+Hits 2-standard limit → upgrades to Professional (R5,499)
     ↓
 Adds incident management → logs incidents → needs statutory forms
     ↓
@@ -931,7 +940,7 @@ This section supports the motivation document required for government procuremen
 | Fixed costs | R1,800/mo |
 |-------------|-----------|
 | Customers needed (Essentials @ R2,299) | **1 customer** |
-| Customers needed (Professional @ R4,499) | **1 customer** |
+| Customers needed (Professional @ R5,499) | **1 customer** |
 
 **ConformEdge breaks even on infrastructure with just 1 paying customer.**
 
@@ -1366,4 +1375,77 @@ No pricing changes required. Alternative payment methods affect *how* customers 
 
 ---
 
-*This document should be reviewed and approved by ISU Technologies leadership before external distribution. Pricing is effective as of 11 March 2026. Projections are estimates based on market research and industry benchmarks — actual results will vary based on execution.*
+## 18. Implementation Fees
+
+> **Added:** 17 March 2026
+> **Context:** First client engagement revealed that professional implementation is a revenue stream and a qualification filter. Clients who won't pay for implementation are unlikely to sustain subscription payments.
+
+### Implementation Tiers
+
+| Package | Fee (once-off) | Target Tier | Scope | Hours |
+|---------|---------------|-------------|-------|-------|
+| **Self-serve** | R0 | Essentials | Client sets up themselves via trial → subscribe flow | 0 |
+| **Guided setup** | R7,499 | Professional | Light-touch onboarding, 1 training session, basic document upload | 3–5 |
+| **Full implementation** | R24,499 | Business | White-glove setup, full document migration, custom checklists, team training, go-live support | 10–15 |
+| **Enterprise onboarding** | R49,499+ | Enterprise | Multi-site deployment, data migration, custom integrations, on-site training | 20–40 |
+
+### Payment Terms
+
+- **50% deposit** required before implementation begins
+- **50% balance** due on go-live date
+- Implementation fee is **non-refundable** once work begins
+- Subscription billing starts on **go-live date**, not before
+
+### What Implementation Includes
+
+**Guided Setup (R7,499):**
+- Organization and user account setup
+- Standard activation and configuration
+- Initial document upload (up to 100 documents)
+- 1x training session (1 hour, virtual)
+- Go-live checklist review
+
+**Full Implementation (R24,499):**
+- Everything in Guided Setup
+- Full document migration from existing systems (spreadsheets, shared drives, email)
+- Custom checklist template creation for client's industry
+- Incident report workflow configuration (COIDA, MHSA as applicable)
+- Subcontractor onboarding and certification upload
+- 2x training sessions (team + management)
+- 2 weeks post-go-live support
+- Quarterly business review (first quarter)
+
+**Enterprise Onboarding (R49,499+):**
+- Everything in Full Implementation
+- Multi-site/branch setup with project hierarchy
+- Data migration from legacy compliance systems
+- Custom API integrations
+- On-site training (travel costs additional)
+- Dedicated account manager for first 90 days
+- Monthly business reviews (first 6 months)
+
+### Annual Subscription Incentive
+
+Clients who pay their annual subscription upfront receive **2 months free** (pay 10 months for 12 = ~17% discount). This incentive applies to all tiers:
+
+| Tier | Monthly | Annual (upfront) | Annual Saving |
+|------|---------|-----------------|---------------|
+| Essentials | R2,299/mo × 12 = R27,588 | R2,299 × 10 = R22,990 | R4,598 |
+| Professional | R5,499/mo × 12 = R65,988 | R5,499 × 10 = R54,990 | R10,998 |
+| Business | R8,499/mo × 12 = R101,988 | R8,499 × 10 = R84,990 | R16,998 |
+
+### Revenue Impact
+
+Implementation fees serve three purposes:
+1. **Qualification filter** — Serious buyers pay upfront; tyre-kickers self-select out
+2. **Cash flow** — Covers ISU Tech's implementation cost before subscription revenue flows
+3. **Revenue stream** — At scale, implementation fees contribute 5–10% of first-year revenue per client
+
+**Example (Business client):**
+- Implementation: R24,499
+- Annual subscription: R84,990 (annual upfront) or R101,988 (monthly)
+- **First-year revenue: R109,489–R126,487**
+
+---
+
+*This document should be reviewed and approved by ISU Technologies leadership before external distribution. Pricing is effective as of 17 March 2026. Projections are estimates based on market research and industry benchmarks — actual results will vary based on execution.*

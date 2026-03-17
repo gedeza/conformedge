@@ -49,10 +49,10 @@ ConformEdge is an AI-powered ISO Compliance Management platform built for South 
 SHEQ consultancies in South Africa typically manage ISO compliance for 10–30 client companies. Today, each client would need their own ConformEdge subscription:
 
 - **Essentials:** R2,299/mo per client
-- **Professional:** R4,499/mo per client
+- **Professional:** R5,499/mo per client
 - **Business:** R8,499/mo per client
 
-A firm managing 15 clients on Professional tier: **15 x R4,499 = R67,485/mo**
+A firm managing 15 clients on Professional tier: **15 x R5,499 = R82,485/mo**
 
 This creates two problems:
 1. **Clients won't buy it themselves** — they're paying the consultant to handle compliance
@@ -103,12 +103,12 @@ For independent consultants, industry associations, and professionals who recomm
 | Client Plan | Monthly | Your Annual Commission (15%) |
 |-------------|---------|------------------------------|
 | Essentials (R2,299/mo) | R2,299 | R4,138 per client |
-| Professional (R4,499/mo) | R4,499 | R8,098 per client |
+| Professional (R5,499/mo) | R5,499 | R9,898 per client |
 | Business (R8,499/mo) | R8,499 | R15,298 per client |
 
 ### Example
 Refer 5 clients who sign up for Professional:
-- 5 x R4,499 x 12 months x 15% = **R40,491/year commission**
+- 5 x R5,499 x 12 months x 15% = **R49,491/year commission**
 - No ongoing management required
 
 ### Requirements

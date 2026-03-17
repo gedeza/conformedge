@@ -348,7 +348,7 @@
 | **Monthly Total** | | | **R18,163** |
 | **Annual (17% discount)** | | | **R15,075/mo (R180,900/yr)** |
 
-> "Compare that to 12 clients each buying Professional at R4,499 — that's R53,988/mo. You're saving over 66%.
+> "Compare that to 12 clients each buying Professional at R5,499 — that's R53,988/mo. You're saving over 66%.
 >
 > And here's the business model: you charge your clients R4,000-R7,000/mo for compliance management services. Your platform cost per client is R899 plus maybe R200 for extra users. Your margin per client is R3,000-R6,000/mo. The platform pays for itself many times over."
 
@@ -387,7 +387,7 @@
 | Tier | Monthly | Users | Standards | AI Credits |
 |---|---|---|---|---|
 | Essentials | R2,299 | 5 | 2 | 50/mo |
-| Professional | R4,499 | 10 | 5 | 200/mo |
+| Professional | R5,499 | 10 | 5 | 200/mo |
 | Business | R8,499 | 25 | All 9 | 500/mo |
 | Enterprise | From R16,999 | Unlimited | All 9 + custom | Unlimited |
 
