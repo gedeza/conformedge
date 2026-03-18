@@ -9,6 +9,7 @@
 > **Enterprise Type:** Private Company
 > **Registration Date:** 21 July 2020
 > **Industry:** Safety Services
+> **Platform:** ConformEdge ISO Compliance Platform
 > **Status:** Founding Client — First ConformEdge customer
 > **Prepared by:** ISU Technologies
 
@@ -16,7 +17,7 @@
 
 ## 1. Client Profile
 
-AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, seeking a technology solution for incident reporting and compliance management. Simon Moletsane, Director, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
+AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, seeking the **ConformEdge ISO Compliance Platform** as their technology solution for incident reporting and compliance management. Simon Moletsane, Director, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
 
 **Directors:**
 - Sachache Simon Moletsane — Director (appointed 21/07/2020)
@@ -31,12 +32,13 @@ AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, se
 
 ---
 
-## 2. Commercial Terms
+## 2. Commercial Terms — ConformEdge ISO Compliance Platform
 
 ### Subscription
 
 | Item | Detail |
 |------|--------|
+| **Platform** | ConformEdge ISO Compliance Platform |
 | **Tier** | Business |
 | **Monthly price** | R8,499/mo |
 | **Contract term** | 12 months |
@@ -62,7 +64,7 @@ AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, se
 
 ---
 
-## 3. What AE SHEQ Gets (Business Tier)
+## 3. What AE SHEQ Gets — ConformEdge Business Tier
 
 ### Core Platform
 - Up to 25 users (+R199/user beyond)
@@ -107,12 +109,12 @@ AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, se
 
 ---
 
-## 4. Implementation Scope
+## 4. ConformEdge Implementation Scope
 
 **Package:** Full Implementation (R24,499)
 
 ### Phase 1 — Setup (Week 1)
-- [ ] Organization and user account creation
+- [ ] Organization and user account creation on ConformEdge platform
 - [ ] Standard activation (select applicable frameworks for AE SHEQ)
 - [ ] Team member invitations and role assignment
 - [ ] Organization settings (COIDA registration number, company address, logo)
@@ -145,7 +147,7 @@ AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, se
 
 ## 5. Founding Client Benefits
 
-As the first ConformEdge client, AE SHEQ (PTY) LTD receives:
+As the first client on the ConformEdge ISO Compliance Platform, AE SHEQ (PTY) LTD receives:
 
 1. **Priority feature requests** — Direct input into product roadmap
 2. **Case study opportunity** — Featured testimonial on ConformEdge website (with permission)
@@ -167,4 +169,4 @@ As the first ConformEdge client, AE SHEQ (PTY) LTD receives:
 
 ---
 
-*Prepared by ISU Technologies for AE SHEQ (PTY) LTD. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
+*Prepared by ISU Technologies for AE SHEQ (PTY) LTD. ConformEdge ISO Compliance Platform. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
