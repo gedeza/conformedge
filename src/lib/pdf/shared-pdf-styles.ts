@@ -1,4 +1,7 @@
+import path from "path"
 import { StyleSheet } from "@react-pdf/renderer"
+
+export const LOGO_PATH = path.join(process.cwd(), "public/images/logo-icon.png")
 
 export const colors = {
   primary: "#1e3a5f",
@@ -24,6 +27,15 @@ export const sharedStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 30,
+  },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logo: {
+    width: 40,
+    height: 40,
   },
   brandName: {
     fontSize: 20,

@@ -1,9 +1,10 @@
 import React from "react"
-import { Document, Page, Text, View } from "@react-pdf/renderer"
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer"
 import {
   sharedStyles as s,
   colors,
   formatZarPdf,
+  LOGO_PATH,
   type LineItem,
   type BankDetailsInfo,
 } from "./shared-pdf-styles"
@@ -41,9 +42,12 @@ export function ProformaInvoicePDF(props: ProformaInvoicePDFProps) {
       <Page size="A4" style={s.page}>
         {/* Header */}
         <View style={s.header}>
-          <View>
-            <Text style={s.brandName}>ConformEdge</Text>
-            <Text style={s.brandTag}>AI-Powered ISO Compliance Management</Text>
+          <View style={s.brandRow}>
+            <Image src={LOGO_PATH} style={s.logo} />
+            <View>
+              <Text style={s.brandName}>ConformEdge</Text>
+              <Text style={s.brandTag}>AI-Powered ISO Compliance Management</Text>
+            </View>
           </View>
           <View>
             <Text style={s.docLabel}>PROFORMA INVOICE</Text>

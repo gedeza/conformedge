@@ -1,5 +1,8 @@
 import React from "react"
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
+import path from "path"
+import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer"
+
+const LOGO_PATH = path.join(process.cwd(), "public/images/logo-icon.png")
 
 // ── Brand colors ──────────────────────────────
 const colors = {
@@ -27,6 +30,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 30,
+  },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  logo: {
+    width: 40,
+    height: 40,
   },
   brandName: {
     fontSize: 20,
@@ -262,9 +274,12 @@ export function InvoicePDF(props: InvoicePDFProps) {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.brandName}>ConformEdge</Text>
-            <Text style={styles.brandTag}>AI-Powered ISO Compliance Management</Text>
+          <View style={styles.brandRow}>
+            <Image src={LOGO_PATH} style={styles.logo} />
+            <View>
+              <Text style={styles.brandName}>ConformEdge</Text>
+              <Text style={styles.brandTag}>AI-Powered ISO Compliance Management</Text>
+            </View>
           </View>
           <View>
             <Text style={styles.invoiceLabel}>TAX INVOICE</Text>
