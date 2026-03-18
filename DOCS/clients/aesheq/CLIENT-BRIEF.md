@@ -1,10 +1,13 @@
-# Client Brief — AESHEQ (PTY) LTD
+# Client Brief — AE SHEQ (PTY) LTD
 
 > **Date:** 18 March 2026
-> **Client Contact:** Simon Moletsane, Managing Director
-> **Company:** AESHEQ (PTY) LTD
-> **Registration No.:** [YYYY/NNNNNN/07]
-> **Address:** [Physical Address, City, Province, Postal Code]
+> **Client Contact:** Sachache Simon Moletsane, Director
+> **Company:** AE SHEQ (PTY) LTD
+> **Registration No.:** 2020/574070/07
+> **Tax Number:** 9164348253
+> **Registered Address:** House No 1136 Morula Street, Mokopane, Mahwelereng Zone 1, Limpopo, 0626
+> **Enterprise Type:** Private Company
+> **Registration Date:** 21 July 2020
 > **Industry:** Safety Services
 > **Status:** Founding Client — First ConformEdge customer
 > **Prepared by:** ISU Technologies
@@ -13,7 +16,11 @@
 
 ## 1. Client Profile
 
-AESHEQ (PTY) LTD is a safety services company seeking a technology solution for incident reporting and compliance management. Simon Moletsane, Managing Director, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
+AE SHEQ (PTY) LTD is a private safety services company registered in Limpopo, seeking a technology solution for incident reporting and compliance management. Simon Moletsane, Director, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
+
+**Directors:**
+- Sachache Simon Moletsane — Director (appointed 21/07/2020)
+- Phasomane Elijah Moletsane — Director (appointed 22/08/2021)
 
 **Key requirements identified:**
 - Incident report tool (primary driver)
@@ -55,7 +62,7 @@ AESHEQ (PTY) LTD is a safety services company seeking a technology solution for 
 
 ---
 
-## 3. What AESHEQ Gets (Business Tier)
+## 3. What AE SHEQ Gets (Business Tier)
 
 ### Core Platform
 - Up to 25 users (+R199/user beyond)
@@ -106,7 +113,7 @@ AESHEQ (PTY) LTD is a safety services company seeking a technology solution for 
 
 ### Phase 1 — Setup (Week 1)
 - [ ] Organization and user account creation
-- [ ] Standard activation (select applicable frameworks for AESHEQ)
+- [ ] Standard activation (select applicable frameworks for AE SHEQ)
 - [ ] Team member invitations and role assignment
 - [ ] Organization settings (COIDA registration number, company address, logo)
 
@@ -117,7 +124,7 @@ AESHEQ (PTY) LTD is a safety services company seeking a technology solution for 
 - [ ] Project setup (active sites/contracts)
 
 ### Phase 3 — Configuration (Week 3)
-- [ ] Custom checklist templates for AESHEQ's safety workflows
+- [ ] Custom checklist templates for AE SHEQ's safety workflows
 - [ ] Incident report workflow configuration
 - [ ] Recurring checklist schedules (weekly/monthly inspections)
 - [ ] Notification preferences for team members
@@ -138,7 +145,7 @@ AESHEQ (PTY) LTD is a safety services company seeking a technology solution for 
 
 ## 5. Founding Client Benefits
 
-As the first ConformEdge client, AESHEQ (PTY) LTD receives:
+As the first ConformEdge client, AE SHEQ (PTY) LTD receives:
 
 1. **Priority feature requests** — Direct input into product roadmap
 2. **Case study opportunity** — Featured testimonial on ConformEdge website (with permission)
@@ -160,4 +167,4 @@ As the first ConformEdge client, AESHEQ (PTY) LTD receives:
 
 ---
 
-*Prepared by ISU Technologies for AESHEQ (PTY) LTD. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
+*Prepared by ISU Technologies for AE SHEQ (PTY) LTD. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
