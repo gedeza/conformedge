@@ -90,7 +90,7 @@ export const MHSA_SECTIONS = {
 } as const
 
 export const BODY_PARTS = [
-  "Head", "Face", "Eyes", "Ears", "Neck",
+  "Head", "Face", "Eye (L)", "Eye (R)", "Ear (L)", "Ear (R)", "Neck",
   "Shoulder (L)", "Shoulder (R)", "Upper Arm (L)", "Upper Arm (R)",
   "Elbow (L)", "Elbow (R)", "Forearm (L)", "Forearm (R)",
   "Wrist (L)", "Wrist (R)", "Hand (L)", "Hand (R)", "Fingers (L)", "Fingers (R)",
