@@ -514,7 +514,7 @@ export const ISU_TECH_DETAILS = {
   regNumber: process.env.COMPANY_REG_NUMBER ?? "TBD",
   address: process.env.COMPANY_ADDRESS ?? "South Africa",
   email: process.env.COMPANY_EMAIL ?? "nhlanhla@isutech.co.za",
-  phone: process.env.COMPANY_PHONE ?? "+27 68 127 6710",
+  phone: process.env.COMPANY_PHONE ?? "WhatsApp: +27 68 127 6710",
 } as const
 
 // Terms version statuses
