@@ -44,10 +44,10 @@ export async function GET(
     const showBankDetails = paymentMethod === "EFT" || paymentMethod === "INVOICE"
     const bankDetails = showBankDetails && process.env.BANK_ACCOUNT_NUMBER
       ? {
-          bankName: process.env.BANK_NAME ?? "First National Bank (FNB)",
-          accountName: process.env.BANK_ACCOUNT_NAME ?? "ISU Technologies (Pty) Ltd",
+          bankName: process.env.BANK_NAME ?? "Capitec Business",
+          accountName: process.env.BANK_ACCOUNT_NAME ?? "TICAMARK PTY LTD",
           accountNumber: process.env.BANK_ACCOUNT_NUMBER,
-          branchCode: process.env.BANK_BRANCH_CODE ?? "250655",
+          branchCode: process.env.BANK_BRANCH_CODE ?? "450105",
           reference: `INV-${invoice.id.slice(0, 8).toUpperCase()}`,
         }
       : undefined

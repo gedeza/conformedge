@@ -509,11 +509,11 @@ export const QUOTATION_STATUSES = {
 } as const
 
 export const ISU_TECH_DETAILS = {
-  companyName: process.env.COMPANY_NAME ?? "ISU Technologies (Pty) Ltd",
+  companyName: process.env.COMPANY_NAME ?? "TICAMARK PTY LTD",
   vatNumber: process.env.COMPANY_VAT_NUMBER ?? "TBD",
   regNumber: process.env.COMPANY_REG_NUMBER ?? "TBD",
   address: process.env.COMPANY_ADDRESS ?? "South Africa",
-  email: process.env.COMPANY_EMAIL ?? "info@isutech.co.za",
+  email: process.env.COMPANY_EMAIL ?? "nhlanhla@isutech.co.za",
   phone: process.env.COMPANY_PHONE ?? "+27 00 000 0000",
 } as const
 

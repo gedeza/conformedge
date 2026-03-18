@@ -33,10 +33,10 @@ export async function GET(
     // Bank details from env
     const bankDetails = process.env.BANK_ACCOUNT_NUMBER
       ? {
-          bankName: process.env.BANK_NAME ?? "First National Bank (FNB)",
-          accountName: process.env.BANK_ACCOUNT_NAME ?? company.companyName,
+          bankName: process.env.BANK_NAME ?? "Capitec Business",
+          accountName: process.env.BANK_ACCOUNT_NAME ?? "TICAMARK PTY LTD",
           accountNumber: process.env.BANK_ACCOUNT_NUMBER,
-          branchCode: process.env.BANK_BRANCH_CODE ?? "250655",
+          branchCode: process.env.BANK_BRANCH_CODE ?? "450105",
           reference: quotation.invoiceNumber ?? quotation.quotationNumber,
         }
       : undefined
