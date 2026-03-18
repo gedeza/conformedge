@@ -36,13 +36,16 @@ export type QuotationFormData = z.infer<typeof quotationFormSchema>
 
 // ── Helpers ────────────────────────────────────
 
+// Starting offset — numbers begin at 0110
+const SEQUENCE_OFFSET = 109
+
 async function generateQuotationNumber(): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `QT-${year}-`
   const count = await db.quotation.count({
     where: { quotationNumber: { startsWith: prefix } },
   })
-  return `${prefix}${String(count + 1).padStart(4, "0")}`
+  return `${prefix}${String(count + 1 + SEQUENCE_OFFSET).padStart(4, "0")}`
 }
 
 async function generateInvoiceNumber(): Promise<string> {
@@ -51,7 +54,7 @@ async function generateInvoiceNumber(): Promise<string> {
   const count = await db.quotation.count({
     where: { invoiceNumber: { startsWith: prefix } },
   })
-  return `${prefix}${String(count + 1).padStart(4, "0")}`
+  return `${prefix}${String(count + 1 + SEQUENCE_OFFSET).padStart(4, "0")}`
 }
 
 function calculateTotals(lineItems: { totalCents: number }[], depositPercent?: number) {
