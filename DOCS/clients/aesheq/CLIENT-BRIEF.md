@@ -1,8 +1,10 @@
-# Client Brief — SafeCo Solutions
+# Client Brief — AESHEQ (PTY) LTD
 
-> **Date:** 17 March 2026
-> **Client Contact:** Simon
-> **Company:** SafeCo Solutions
+> **Date:** 18 March 2026
+> **Client Contact:** Simon Moletsane, Managing Director
+> **Company:** AESHEQ (PTY) LTD
+> **Registration No.:** [YYYY/NNNNNN/07]
+> **Address:** [Physical Address, City, Province, Postal Code]
 > **Industry:** Safety Services
 > **Status:** Founding Client — First ConformEdge customer
 > **Prepared by:** ISU Technologies
@@ -11,7 +13,7 @@
 
 ## 1. Client Profile
 
-SafeCo Solutions is a safety services company seeking a technology solution for incident reporting and compliance management. Simon, the principal, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
+AESHEQ (PTY) LTD is a safety services company seeking a technology solution for incident reporting and compliance management. Simon Moletsane, Managing Director, is a young entrepreneur focused on technology adoption to differentiate his business in the safety industry.
 
 **Key requirements identified:**
 - Incident report tool (primary driver)
@@ -53,7 +55,7 @@ SafeCo Solutions is a safety services company seeking a technology solution for 
 
 ---
 
-## 3. What SafeCo Gets (Business Tier)
+## 3. What AESHEQ Gets (Business Tier)
 
 ### Core Platform
 - Up to 25 users (+R199/user beyond)
@@ -104,7 +106,7 @@ SafeCo Solutions is a safety services company seeking a technology solution for 
 
 ### Phase 1 — Setup (Week 1)
 - [ ] Organization and user account creation
-- [ ] Standard activation (select applicable frameworks for SafeCo)
+- [ ] Standard activation (select applicable frameworks for AESHEQ)
 - [ ] Team member invitations and role assignment
 - [ ] Organization settings (COIDA registration number, company address, logo)
 
@@ -115,7 +117,7 @@ SafeCo Solutions is a safety services company seeking a technology solution for 
 - [ ] Project setup (active sites/contracts)
 
 ### Phase 3 — Configuration (Week 3)
-- [ ] Custom checklist templates for SafeCo's safety workflows
+- [ ] Custom checklist templates for AESHEQ's safety workflows
 - [ ] Incident report workflow configuration
 - [ ] Recurring checklist schedules (weekly/monthly inspections)
 - [ ] Notification preferences for team members
@@ -136,7 +138,7 @@ SafeCo Solutions is a safety services company seeking a technology solution for 
 
 ## 5. Founding Client Benefits
 
-As the first ConformEdge client, SafeCo Solutions receives:
+As the first ConformEdge client, AESHEQ (PTY) LTD receives:
 
 1. **Priority feature requests** — Direct input into product roadmap
 2. **Case study opportunity** — Featured testimonial on ConformEdge website (with permission)
@@ -149,8 +151,8 @@ As the first ConformEdge client, SafeCo Solutions receives:
 
 | Step | Action | Owner | Target Date |
 |------|--------|-------|-------------|
-| 1 | Confirm subscription tier and contract terms | Simon | TBD |
-| 2 | Sign contract and pay implementation deposit (R12,249.50) | Simon | TBD |
+| 1 | Confirm subscription tier and contract terms | Simon Moletsane | TBD |
+| 2 | Sign contract and pay implementation deposit (R12,249.50) | Simon Moletsane | TBD |
 | 3 | Schedule kickoff call | ISU Tech | Within 2 days of deposit |
 | 4 | Phase 1–3 implementation | ISU Tech | 3 weeks |
 | 5 | Training and go-live | Joint | Week 4 |
@@ -158,4 +160,4 @@ As the first ConformEdge client, SafeCo Solutions receives:
 
 ---
 
-*Prepared by ISU Technologies for SafeCo Solutions. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
+*Prepared by ISU Technologies for AESHEQ (PTY) LTD. All pricing is exclusive of VAT (15%). Contract terms subject to standard ConformEdge Terms of Service.*
