@@ -408,6 +408,58 @@ export async function deleteQuotation(id: string): Promise<ActionResult> {
   }
 }
 
+export async function cloneQuotation(id: string): Promise<ActionResult & { id?: string }> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    const source = await db.quotation.findUnique({ where: { id } })
+    if (!source) return { success: false, error: "Quotation not found" }
+
+    const quotationNumber = await generateQuotationNumber()
+    const validUntil = new Date()
+    validUntil.setDate(validUntil.getDate() + 30)
+
+    const clone = await db.quotation.create({
+      data: {
+        quotationNumber,
+        status: "DRAFT",
+        clientName: source.clientName,
+        clientCompany: source.clientCompany,
+        clientEmail: source.clientEmail,
+        clientPhone: source.clientPhone,
+        clientAddress: source.clientAddress,
+        clientVatNumber: source.clientVatNumber,
+        clientRegNumber: source.clientRegNumber,
+        subtotalCents: source.subtotalCents,
+        vatCents: source.vatCents,
+        totalCents: source.totalCents,
+        depositPercent: source.depositPercent,
+        depositCents: source.depositCents,
+        lineItems: source.lineItems as object,
+        validUntil,
+        notes: source.notes,
+        terms: source.terms,
+        createdById: ctx.dbUserId,
+      },
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "CLONE_QUOTATION",
+      targetType: "Quotation",
+      targetId: clone.id,
+      metadata: { clonedFrom: source.quotationNumber, newNumber: quotationNumber },
+    })
+
+    revalidatePath("/admin/quotations")
+    return { success: true, id: clone.id }
+  } catch (err) {
+    console.error("cloneQuotation error:", err)
+    return { success: false, error: "Failed to clone quotation" }
+  }
+}
+
 // Re-export types used by UI
 export type QuotationListItem = Awaited<ReturnType<typeof getAdminQuotations>>[number]
 export type QuotationDetail = NonNullable<Awaited<ReturnType<typeof getAdminQuotationDetail>>>

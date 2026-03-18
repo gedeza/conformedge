@@ -24,6 +24,7 @@ import {
   Banknote,
   Trash2,
   Loader2,
+  Copy,
 } from "lucide-react"
 import {
   sendQuotation,
@@ -32,6 +33,7 @@ import {
   convertToInvoice,
   markQuotationPaid,
   deleteQuotation,
+  cloneQuotation,
 } from "./actions"
 import type { QuotationStatus } from "@/generated/prisma/client"
 import { toast } from "sonner"
@@ -253,6 +255,46 @@ export function QuotationActions({ quotationId, status }: QuotationActionsProps)
           </AlertDialogContent>
         </AlertDialog>
       )}
+
+      {/* Clone — available on any status */}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <Copy className="h-3.5 w-3.5" />
+            Clone
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clone Quotation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will create a new draft quotation with the same client details, line items, notes, and terms. A new quotation number will be assigned.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  const result = await cloneQuotation(quotationId)
+                  if (!result.success) {
+                    toast.error(result.error ?? "Failed to clone")
+                    return
+                  }
+                  toast.success("Quotation cloned")
+                  if (result.id) {
+                    router.push(`/admin/quotations/${result.id}`)
+                  }
+                  router.refresh()
+                })
+              }}
+            >
+              Clone
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete */}
       {status === "DRAFT" && (
