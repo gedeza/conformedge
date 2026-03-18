@@ -423,18 +423,39 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
 
                 {/* Right side — dropdowns and inputs */}
                 <div className="grid grid-cols-1 gap-3">
-                  <FormField control={form.control} name="bodyPartInjured" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Body Part Injured</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select or click body map..." /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {BODY_PARTS.map(bp => <SelectItem key={bp} value={bp}>{bp}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+                  <FormField control={form.control} name="bodyPartInjured" render={({ field }) => {
+                    const selected = (field.value || "").split(",").map((s: string) => s.trim()).filter(Boolean)
+                    function togglePart(bp: string) {
+                      const updated = selected.includes(bp)
+                        ? selected.filter((p: string) => p !== bp)
+                        : [...selected, bp]
+                      field.onChange(updated.join(", "))
+                    }
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-xs">
+                          Body Parts Injured
+                          {selected.length > 0 && (
+                            <span className="ml-1 text-red-600">({selected.length} selected)</span>
+                          )}
+                        </FormLabel>
+                        <div className="grid grid-cols-2 gap-1 rounded-md border p-2 bg-background max-h-[160px] overflow-y-auto">
+                          {BODY_PARTS.map(bp => (
+                            <label key={bp} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5">
+                              <input
+                                type="checkbox"
+                                checked={selected.includes(bp)}
+                                onChange={() => togglePart(bp)}
+                                className="rounded border-gray-300 h-3 w-3"
+                              />
+                              {bp}
+                            </label>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )
+                  }} />
                   <FormField control={form.control} name="natureOfInjury" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-xs">Nature of Injury</FormLabel>

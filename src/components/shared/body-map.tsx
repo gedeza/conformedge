@@ -409,11 +409,20 @@ const BODY_OUTLINE = `
   M 128,168 C 130,174 128,182 122,190 L 124,200 C 120,204 112,208 102,208 L 102,206 C 104,224 106,248 108,268 C 119,268 119,276 118,290 L 108,290 C 108,314 108,342 107,364 L 115,364 C 116,374 116,378 115,382 L 122,390 C 124,392 127,388 127,394 C 127,398 122,400 115,400 L 107,398 C 106,392 106,382 107,382 L 107,364 L 115,364
 `
 
+// ── Helper: parse comma-separated string to array ───────────────────────────
+
+function parseSelectedParts(value?: string): string[] {
+  if (!value) return []
+  return value.split(",").map(s => s.trim()).filter(Boolean)
+}
+
 // ── Main component ──────────────────────────────────────────────────────────
 
 interface BodyMapProps {
+  /** Comma-separated body parts (e.g. "Head, Chest, Hand (L)") */
   value?: string
-  onChange?: (bodyPart: string) => void
+  /** Returns updated comma-separated string */
+  onChange?: (bodyParts: string) => void
   readOnly?: boolean
   className?: string
 }
@@ -423,14 +432,24 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
 
   const regions = activeView === "front" ? FRONT_REGIONS : BACK_REGIONS
+  const selectedParts = parseSelectedParts(value)
 
   function handleClick(region: BodyRegion) {
     if (readOnly) return
-    onChange?.(region.bodyPart)
+    const part = region.bodyPart
+    let updated: string[]
+    if (selectedParts.includes(part)) {
+      // Deselect
+      updated = selectedParts.filter(p => p !== part)
+    } else {
+      // Select
+      updated = [...selectedParts, part]
+    }
+    onChange?.(updated.join(", "))
   }
 
   function isSelected(region: BodyRegion) {
-    return value === region.bodyPart
+    return selectedParts.includes(region.bodyPart)
   }
 
   return (
@@ -464,13 +483,20 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
       </div>
 
       {/* Label */}
-      <div className="h-5 text-xs font-medium text-center">
+      <div className="min-h-5 text-xs font-medium text-center max-w-[220px]">
         {hoveredRegion ? (
-          <span className="text-primary">{hoveredRegion}</span>
-        ) : value ? (
-          <span className="text-red-600">{value}</span>
+          <span className="text-primary">
+            {hoveredRegion}
+            {selectedParts.includes(hoveredRegion) ? " (click to deselect)" : ""}
+          </span>
+        ) : selectedParts.length > 0 ? (
+          <span className="text-red-600">
+            {selectedParts.length === 1
+              ? selectedParts[0]
+              : `${selectedParts.length} areas selected`}
+          </span>
         ) : !readOnly ? (
-          <span className="text-muted-foreground">Click to select injured area</span>
+          <span className="text-muted-foreground">Click to select injured areas</span>
         ) : null}
       </div>
 

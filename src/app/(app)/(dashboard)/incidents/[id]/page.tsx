@@ -264,9 +264,15 @@ export default async function IncidentDetailPage({
                   {/* Text details */}
                   <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                     {incident.bodyPartInjured && (
-                      <div>
-                        <span className="text-muted-foreground">Body Part Injured</span>
-                        <p className="mt-1 font-medium">{incident.bodyPartInjured}</p>
+                      <div className="sm:col-span-2">
+                        <span className="text-muted-foreground">Body Parts Injured</span>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {incident.bodyPartInjured.split(",").map((part: string) => part.trim()).filter(Boolean).map((part: string) => (
+                            <Badge key={part} variant="outline" className="bg-red-50 text-red-800 border-red-200 text-xs">
+                              {part}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     )}
                     {incident.natureOfInjury && (
