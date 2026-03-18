@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getAuthContext } from "@/lib/auth"
 import { TREATMENT_TYPES, MHSA_SECTIONS } from "@/lib/constants"
+import { BodyMap } from "@/components/shared/body-map"
 import { getIncident, getCapaOptions } from "../actions"
 import { IncidentActionsPanel } from "./incident-actions-panel"
 import { StatutoryFormButton } from "./statutory-form-button"
@@ -248,33 +249,47 @@ export default async function IncidentDetailPage({
             <Card className="border-border/50 transition-all hover:shadow-md">
               <CardHeader><CardTitle>Injury Details</CardTitle></CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-6">
+                  {/* Body Map — read-only visual */}
                   {incident.bodyPartInjured && (
-                    <div>
-                      <span className="text-muted-foreground">Body Part Injured</span>
-                      <p className="mt-1 font-medium">{incident.bodyPartInjured}</p>
+                    <div className="flex justify-center">
+                      <BodyMap
+                        value={incident.bodyPartInjured}
+                        readOnly
+                        className="w-full max-w-[180px]"
+                      />
                     </div>
                   )}
-                  {incident.natureOfInjury && (
-                    <div>
-                      <span className="text-muted-foreground">Nature of Injury</span>
-                      <p className="mt-1 font-medium">{incident.natureOfInjury}</p>
-                    </div>
-                  )}
-                  {incident.treatmentType && (
-                    <div>
-                      <span className="text-muted-foreground">Treatment</span>
-                      <p className="mt-1 font-medium">
-                        {TREATMENT_TYPES[incident.treatmentType as keyof typeof TREATMENT_TYPES]?.label ?? incident.treatmentType}
-                      </p>
-                    </div>
-                  )}
-                  {incident.lostDays != null && (
-                    <div>
-                      <span className="text-muted-foreground">Lost Days</span>
-                      <p className="mt-1 font-medium">{incident.lostDays} {incident.lostDays === 1 ? "day" : "days"}</p>
-                    </div>
-                  )}
+
+                  {/* Text details */}
+                  <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                    {incident.bodyPartInjured && (
+                      <div>
+                        <span className="text-muted-foreground">Body Part Injured</span>
+                        <p className="mt-1 font-medium">{incident.bodyPartInjured}</p>
+                      </div>
+                    )}
+                    {incident.natureOfInjury && (
+                      <div>
+                        <span className="text-muted-foreground">Nature of Injury</span>
+                        <p className="mt-1 font-medium">{incident.natureOfInjury}</p>
+                      </div>
+                    )}
+                    {incident.treatmentType && (
+                      <div>
+                        <span className="text-muted-foreground">Treatment</span>
+                        <p className="mt-1 font-medium">
+                          {TREATMENT_TYPES[incident.treatmentType as keyof typeof TREATMENT_TYPES]?.label ?? incident.treatmentType}
+                        </p>
+                      </div>
+                    )}
+                    {incident.lostDays != null && (
+                      <div>
+                        <span className="text-muted-foreground">Lost Days</span>
+                        <p className="mt-1 font-medium">{incident.lostDays} {incident.lostDays === 1 ? "day" : "days"}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

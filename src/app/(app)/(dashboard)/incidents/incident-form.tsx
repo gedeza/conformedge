@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/shared/date-picker"
 import { INCIDENT_TYPES, RISK_LEVELS, TREATMENT_TYPES, CONTRIBUTING_FACTORS, MHSA_SECTIONS, BODY_PARTS, NATURE_OF_INJURIES } from "@/lib/constants"
+import { BodyMap } from "@/components/shared/body-map"
 import { createIncident, updateIncident, type IncidentFormValues } from "./actions"
 import type { RootCauseData, RootCauseWhy } from "@/types"
 
@@ -408,50 +409,64 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
             {/* Injury Details Section */}
             <div className="space-y-3 rounded-md border p-3 bg-muted/30">
               <Label className="text-sm font-medium">Injury Details</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4">
+                {/* Body Map — visual selector */}
                 <FormField control={form.control} name="bodyPartInjured" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Body Part Injured</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {BODY_PARTS.map(bp => <SelectItem key={bp} value={bp}>{bp}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+                  <div className="flex justify-center">
+                    <BodyMap
+                      value={field.value || undefined}
+                      onChange={field.onChange}
+                      className="w-full max-w-[220px]"
+                    />
+                  </div>
                 )} />
-                <FormField control={form.control} name="natureOfInjury" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Nature of Injury</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {NATURE_OF_INJURIES.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="treatmentType" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Treatment Type</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {Object.entries(TREATMENT_TYPES).map(([v, c]) => <SelectItem key={v} value={v}>{c.label}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="lostDays" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">Lost Days</FormLabel>
-                    <FormControl><Input type="number" min={0} placeholder="0" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+
+                {/* Right side — dropdowns and inputs */}
+                <div className="grid grid-cols-1 gap-3">
+                  <FormField control={form.control} name="bodyPartInjured" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Body Part Injured</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select or click body map..." /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {BODY_PARTS.map(bp => <SelectItem key={bp} value={bp}>{bp}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="natureOfInjury" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Nature of Injury</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {NATURE_OF_INJURIES.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="treatmentType" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Treatment Type</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                        <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                        <SelectContent>
+                          {Object.entries(TREATMENT_TYPES).map(([v, c]) => <SelectItem key={v} value={v}>{c.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="lostDays" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Lost Days</FormLabel>
+                      <FormControl><Input type="number" min={0} placeholder="0" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                </div>
               </div>
             </div>
 
