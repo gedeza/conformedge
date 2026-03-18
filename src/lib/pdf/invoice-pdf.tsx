@@ -387,7 +387,7 @@ export function InvoicePDF(props: InvoicePDFProps) {
         {/* Footer */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerText}>
-            Ticamark (PTY) LTD t/a iSu Technologies | VAT: 4110288871 | ConformEdge Platform
+            Ticamark (PTY) LTD t/a iSu Technologies | VAT: 4110288877 | ConformEdge Platform
           </Text>
           <Text style={styles.footerText}>
             Generated {new Date().toLocaleDateString("en-ZA")}
