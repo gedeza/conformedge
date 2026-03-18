@@ -22,6 +22,9 @@ export interface ProformaInvoicePDFProps {
   invoicedDate: string
   lineItems: LineItem[]
   subtotalCents: number
+  discountLabel?: string
+  discountPercent?: number
+  discountCents?: number
   vatCents: number
   totalCents: number
   vatRate: number
@@ -114,9 +117,19 @@ export function ProformaInvoicePDF(props: ProformaInvoicePDFProps) {
         {/* Totals */}
         <View style={s.totalsSection}>
           <View style={s.totalsRow}>
-            <Text style={s.totalsLabel}>Subtotal (excl. VAT)</Text>
+            <Text style={s.totalsLabel}>Subtotal</Text>
             <Text style={s.totalsValue}>{formatZarPdf(props.subtotalCents)}</Text>
           </View>
+          {props.discountPercent && props.discountCents ? (
+            <View style={s.totalsRow}>
+              <Text style={[s.totalsLabel, { color: colors.green }]}>
+                {props.discountLabel || `Discount (${props.discountPercent}%)`}
+              </Text>
+              <Text style={[s.totalsValue, { color: colors.green }]}>
+                -{formatZarPdf(props.discountCents)}
+              </Text>
+            </View>
+          ) : null}
           <View style={s.totalsRow}>
             <Text style={s.totalsLabel}>VAT ({Math.round(props.vatRate * 100)}%)</Text>
             <Text style={s.totalsValue}>{formatZarPdf(props.vatCents)}</Text>

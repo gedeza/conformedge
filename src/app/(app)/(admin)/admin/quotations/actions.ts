@@ -26,6 +26,8 @@ const quotationFormSchema = z.object({
   clientVatNumber: z.string().optional(),
   clientRegNumber: z.string().optional(),
   lineItems: z.array(lineItemSchema).min(1, "At least one line item is required"),
+  discountLabel: z.string().optional(),
+  discountPercent: z.coerce.number().int().min(0).max(100).optional(),
   depositPercent: z.coerce.number().int().min(0).max(100).optional(),
   validityDays: z.coerce.number().int().min(1).default(30),
   notes: z.string().optional(),
@@ -57,14 +59,22 @@ async function generateInvoiceNumber(): Promise<string> {
   return `${prefix}${String(count + 1 + SEQUENCE_OFFSET).padStart(4, "0")}`
 }
 
-function calculateTotals(lineItems: { totalCents: number }[], depositPercent?: number) {
+function calculateTotals(
+  lineItems: { totalCents: number }[],
+  discountPercent?: number,
+  depositPercent?: number,
+) {
   const subtotalCents = lineItems.reduce((sum, item) => sum + item.totalCents, 0)
-  const vatCents = Math.round(subtotalCents * VAT_RATE)
-  const totalCents = subtotalCents + vatCents
+  const discountCents = discountPercent
+    ? Math.round(subtotalCents * (discountPercent / 100))
+    : undefined
+  const afterDiscount = subtotalCents - (discountCents ?? 0)
+  const vatCents = Math.round(afterDiscount * VAT_RATE)
+  const totalCents = afterDiscount + vatCents
   const depositCents = depositPercent
     ? Math.round(totalCents * (depositPercent / 100))
     : undefined
-  return { subtotalCents, vatCents, totalCents, depositCents }
+  return { subtotalCents, discountCents, vatCents, totalCents, depositCents }
 }
 
 // ── Actions ────────────────────────────────────
@@ -108,12 +118,12 @@ export async function createQuotation(data: QuotationFormData): Promise<ActionRe
       return { success: false, error: parsed.error.issues[0].message }
     }
 
-    const { lineItems, depositPercent, validityDays, ...rest } = parsed.data
+    const { lineItems, discountLabel, discountPercent, depositPercent, validityDays, ...rest } = parsed.data
     const computedItems = lineItems.map((item) => ({
       ...item,
       totalCents: item.quantity * item.unitPriceCents,
     }))
-    const { subtotalCents, vatCents, totalCents, depositCents } = calculateTotals(computedItems, depositPercent)
+    const { subtotalCents, discountCents, vatCents, totalCents, depositCents } = calculateTotals(computedItems, discountPercent, depositPercent)
     const quotationNumber = await generateQuotationNumber()
 
     const validUntil = new Date()
@@ -130,6 +140,9 @@ export async function createQuotation(data: QuotationFormData): Promise<ActionRe
         clientVatNumber: rest.clientVatNumber || null,
         clientRegNumber: rest.clientRegNumber || null,
         subtotalCents,
+        discountLabel: discountLabel || null,
+        discountPercent: discountPercent ?? null,
+        discountCents: discountCents ?? null,
         vatCents,
         totalCents,
         depositPercent: depositPercent ?? null,
@@ -175,12 +188,12 @@ export async function updateQuotation(
       return { success: false, error: parsed.error.issues[0].message }
     }
 
-    const { lineItems, depositPercent, validityDays, ...rest } = parsed.data
+    const { lineItems, discountLabel, discountPercent, depositPercent, validityDays, ...rest } = parsed.data
     const computedItems = lineItems.map((item) => ({
       ...item,
       totalCents: item.quantity * item.unitPriceCents,
     }))
-    const { subtotalCents, vatCents, totalCents, depositCents } = calculateTotals(computedItems, depositPercent)
+    const { subtotalCents, discountCents, vatCents, totalCents, depositCents } = calculateTotals(computedItems, discountPercent, depositPercent)
 
     const validUntil = new Date()
     validUntil.setDate(validUntil.getDate() + validityDays)
@@ -196,6 +209,9 @@ export async function updateQuotation(
         clientVatNumber: rest.clientVatNumber || null,
         clientRegNumber: rest.clientRegNumber || null,
         subtotalCents,
+        discountLabel: discountLabel || null,
+        discountPercent: discountPercent ?? null,
+        discountCents: discountCents ?? null,
         vatCents,
         totalCents,
         depositPercent: depositPercent ?? null,
@@ -432,6 +448,9 @@ export async function cloneQuotation(id: string): Promise<ActionResult & { id?: 
         clientVatNumber: source.clientVatNumber,
         clientRegNumber: source.clientRegNumber,
         subtotalCents: source.subtotalCents,
+        discountLabel: source.discountLabel,
+        discountPercent: source.discountPercent,
+        discountCents: source.discountCents,
         vatCents: source.vatCents,
         totalCents: source.totalCents,
         depositPercent: source.depositPercent,

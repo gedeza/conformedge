@@ -1774,6 +1774,9 @@ model Quotation {
 
   // Amounts in cents
   subtotalCents    Int             @map("subtotal_cents")
+  discountLabel    String?         @map("discount_label")              // e.g. "Annual upfront — 2 months free"
+  discountPercent  Int?            @map("discount_percent")            // e.g. 17
+  discountCents    Int?            @map("discount_cents")
   vatCents         Int             @map("vat_cents")
   totalCents       Int             @map("total_cents")
   depositPercent   Int?            @map("deposit_percent")            // e.g. 50

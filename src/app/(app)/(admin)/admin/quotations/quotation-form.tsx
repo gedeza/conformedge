@@ -32,6 +32,8 @@ const formSchema = z.object({
   clientVatNumber: z.string().optional(),
   clientRegNumber: z.string().optional(),
   lineItems: z.array(lineItemSchema).min(1, "At least one line item"),
+  discountLabel: z.string().optional(),
+  discountPercent: z.number().int().min(0).max(100).optional(),
   depositPercent: z.number().int().min(0).max(100).optional(),
   validityDays: z.number().int().min(1).default(30),
   notes: z.string().optional(),
@@ -87,6 +89,8 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
       clientVatNumber: quotation?.clientVatNumber ?? "",
       clientRegNumber: quotation?.clientRegNumber ?? "",
       lineItems: existingLineItems ?? [{ description: "", quantity: 1, unitPriceRands: 0 }],
+      discountLabel: quotation?.discountLabel ?? "",
+      discountPercent: quotation?.discountPercent ?? undefined,
       depositPercent: quotation?.depositPercent ?? undefined,
       validityDays: 30,
       notes: quotation?.notes ?? "",
@@ -105,8 +109,13 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
     (sum, item) => sum + (item.quantity || 0) * (item.unitPriceRands || 0),
     0
   )
-  const vatRands = Math.round(subtotalRands * 0.15 * 100) / 100
-  const totalRands = Math.round((subtotalRands + vatRands) * 100) / 100
+  const discountPercent = form.watch("discountPercent")
+  const discountRands = discountPercent
+    ? Math.round(subtotalRands * (discountPercent / 100) * 100) / 100
+    : 0
+  const afterDiscountRands = subtotalRands - discountRands
+  const vatRands = Math.round(afterDiscountRands * 0.15 * 100) / 100
+  const totalRands = Math.round((afterDiscountRands + vatRands) * 100) / 100
   const depositPercent = form.watch("depositPercent")
   const depositRands = depositPercent
     ? Math.round(totalRands * (depositPercent / 100) * 100) / 100
@@ -273,9 +282,15 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
           {/* Totals */}
           <div className="mt-6 flex flex-col items-end space-y-1 border-t pt-4">
             <div className="flex w-72 justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal (excl. VAT):</span>
+              <span className="text-muted-foreground">Subtotal:</span>
               <span>{formatRands(subtotalRands)}</span>
             </div>
+            {discountPercent && discountPercent > 0 && (
+              <div className="flex w-72 justify-between text-sm text-green-700">
+                <span>Discount ({discountPercent}%):</span>
+                <span>-{formatRands(discountRands)}</span>
+              </div>
+            )}
             <div className="flex w-72 justify-between text-sm">
               <span className="text-muted-foreground">VAT (15%):</span>
               <span>{formatRands(vatRands)}</span>
@@ -300,6 +315,25 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
           <CardTitle className="text-base">Options</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="discountPercent">Discount %</Label>
+            <Input
+              id="discountPercent"
+              type="number"
+              min={0}
+              max={100}
+              placeholder="e.g. 17"
+              {...form.register("discountPercent", { valueAsNumber: true })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="discountLabel">Discount Label</Label>
+            <Input
+              id="discountLabel"
+              placeholder="e.g. Annual upfront — 2 months free"
+              {...form.register("discountLabel")}
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="depositPercent">Deposit %</Label>
             <Input
