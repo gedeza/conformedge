@@ -15,11 +15,12 @@ import { createQuotation, updateQuotation } from "./actions"
 import type { QuotationDetail } from "./actions"
 import { toast } from "sonner"
 
+// ── Form schema — all prices in RANDS (user-friendly) ──
+
 const lineItemSchema = z.object({
   description: z.string().min(1, "Required"),
   quantity: z.number().int().min(1, "Min 1"),
-  unitPriceCents: z.number().int().min(0),
-  totalCents: z.number().int().min(0),
+  unitPriceRands: z.number().min(0, "Must be 0 or more"),
 })
 
 const formSchema = z.object({
@@ -43,14 +44,19 @@ interface QuotationFormProps {
   quotation?: QuotationDetail
 }
 
-// Convert cents to rands for display
-function centsToRands(cents: number) {
-  return (cents / 100).toFixed(2)
+/** Format number as R XX,XXX.XX */
+function formatRands(rands: number): string {
+  return `R${rands.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
-// Convert rands input to cents
-function randsToCents(rands: string) {
-  return Math.round(parseFloat(rands || "0") * 100)
+/** Convert cents (from DB) to rands (for form) */
+function centsToRands(cents: number): number {
+  return cents / 100
+}
+
+/** Convert rands (from form) to cents (for DB) */
+function randsToCents(rands: number): number {
+  return Math.round(rands * 100)
 }
 
 export function QuotationForm({ quotation }: QuotationFormProps) {
@@ -58,8 +64,15 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
+  // Convert existing line items from cents (DB) to rands (form)
   const existingLineItems = quotation
-    ? (quotation.lineItems as Array<{ description: string; quantity: number; unitPriceCents: number; totalCents: number }>)
+    ? (quotation.lineItems as Array<{ description: string; quantity: number; unitPriceCents: number; totalCents: number }>).map(
+        (item) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPriceRands: centsToRands(item.unitPriceCents),
+        })
+      )
     : undefined
 
   const form = useForm<FormValues>({
@@ -73,7 +86,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
       clientAddress: quotation?.clientAddress ?? "",
       clientVatNumber: quotation?.clientVatNumber ?? "",
       clientRegNumber: quotation?.clientRegNumber ?? "",
-      lineItems: existingLineItems ?? [{ description: "", quantity: 1, unitPriceCents: 0, totalCents: 0 }],
+      lineItems: existingLineItems ?? [{ description: "", quantity: 1, unitPriceRands: 0 }],
       depositPercent: quotation?.depositPercent ?? undefined,
       validityDays: 30,
       notes: quotation?.notes ?? "",
@@ -86,26 +99,30 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
     name: "lineItems",
   })
 
+  // Live calculations — all in Rands
   const watchLineItems = form.watch("lineItems")
-  const subtotalCents = watchLineItems.reduce(
-    (sum, item) => sum + (item.quantity || 0) * (item.unitPriceCents || 0),
+  const subtotalRands = watchLineItems.reduce(
+    (sum, item) => sum + (item.quantity || 0) * (item.unitPriceRands || 0),
     0
   )
-  const vatCents = Math.round(subtotalCents * 0.15)
-  const totalCents = subtotalCents + vatCents
+  const vatRands = Math.round(subtotalRands * 0.15 * 100) / 100
+  const totalRands = Math.round((subtotalRands + vatRands) * 100) / 100
   const depositPercent = form.watch("depositPercent")
-  const depositCents = depositPercent
-    ? Math.round(totalCents * (depositPercent / 100))
+  const depositRands = depositPercent
+    ? Math.round(totalRands * (depositPercent / 100) * 100) / 100
     : 0
 
   function onSubmit(values: FormValues) {
     setError(null)
-    // Recompute totalCents for each line item before submit
+
+    // Convert Rands → Cents for the server action (DB stores cents)
     const data = {
       ...values,
       lineItems: values.lineItems.map((item) => ({
-        ...item,
-        totalCents: item.quantity * item.unitPriceCents,
+        description: item.description,
+        quantity: item.quantity,
+        unitPriceCents: randsToCents(item.unitPriceRands),
+        totalCents: randsToCents(item.quantity * item.unitPriceRands),
       })),
     }
 
@@ -187,7 +204,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => append({ description: "", quantity: 1, unitPriceCents: 0, totalCents: 0 })}
+              onClick={() => append({ description: "", quantity: 1, unitPriceRands: 0 })}
             >
               <Plus className="mr-1 h-3.5 w-3.5" />
               Add Item
@@ -206,7 +223,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
             </div>
             {fields.map((field, index) => {
               const qty = watchLineItems[index]?.quantity || 0
-              const unitPrice = watchLineItems[index]?.unitPriceCents || 0
+              const unitPrice = watchLineItems[index]?.unitPriceRands || 0
               const lineTotal = qty * unitPrice
               return (
                 <div key={field.id} className="grid sm:grid-cols-12 gap-2 items-start">
@@ -228,16 +245,13 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
                     <Input
                       type="number"
                       min={0}
-                      step={1}
-                      placeholder="Price in cents"
-                      {...form.register(`lineItems.${index}.unitPriceCents`, { valueAsNumber: true })}
+                      step={0.01}
+                      placeholder="e.g. 84990"
+                      {...form.register(`lineItems.${index}.unitPriceRands`, { valueAsNumber: true })}
                     />
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      = R{centsToRands(unitPrice)}
-                    </p>
                   </div>
                   <div className="sm:col-span-2 flex items-center justify-end text-sm font-medium pt-2">
-                    R{centsToRands(lineTotal)}
+                    {formatRands(lineTotal)}
                   </div>
                   <div className="sm:col-span-1 flex items-center justify-end pt-1">
                     <Button
@@ -258,22 +272,22 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
 
           {/* Totals */}
           <div className="mt-6 flex flex-col items-end space-y-1 border-t pt-4">
-            <div className="flex w-64 justify-between text-sm">
-              <span className="text-muted-foreground">Subtotal:</span>
-              <span>R{centsToRands(subtotalCents)}</span>
+            <div className="flex w-72 justify-between text-sm">
+              <span className="text-muted-foreground">Subtotal (excl. VAT):</span>
+              <span>{formatRands(subtotalRands)}</span>
             </div>
-            <div className="flex w-64 justify-between text-sm">
+            <div className="flex w-72 justify-between text-sm">
               <span className="text-muted-foreground">VAT (15%):</span>
-              <span>R{centsToRands(vatCents)}</span>
+              <span>{formatRands(vatRands)}</span>
             </div>
-            <div className="flex w-64 justify-between text-sm font-bold border-t pt-1">
+            <div className="flex w-72 justify-between text-sm font-bold border-t pt-1">
               <span>Total (incl. VAT):</span>
-              <span>R{centsToRands(totalCents)}</span>
+              <span>{formatRands(totalRands)}</span>
             </div>
             {depositPercent && depositPercent > 0 && (
-              <div className="flex w-64 justify-between text-sm font-medium text-amber-700 pt-1">
+              <div className="flex w-72 justify-between text-sm font-medium text-amber-700 pt-1">
                 <span>Deposit ({depositPercent}%):</span>
-                <span>R{centsToRands(depositCents)}</span>
+                <span>{formatRands(depositRands)}</span>
               </div>
             )}
           </div>
