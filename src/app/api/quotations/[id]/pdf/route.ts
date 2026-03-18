@@ -34,7 +34,7 @@ export async function GET(
     const bankDetails = process.env.BANK_ACCOUNT_NUMBER
       ? {
           bankName: process.env.BANK_NAME ?? "Capitec Business",
-          accountName: process.env.BANK_ACCOUNT_NAME ?? "TICAMARK PTY LTD",
+          accountName: process.env.BANK_ACCOUNT_NAME ?? "Ticamark (PTY) LTD t/a iSu Technologies",
           accountNumber: process.env.BANK_ACCOUNT_NUMBER,
           branchCode: process.env.BANK_BRANCH_CODE ?? "450105",
           reference: quotation.invoiceNumber ?? quotation.quotationNumber,
