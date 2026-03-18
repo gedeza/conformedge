@@ -495,6 +495,28 @@ export const ACCOUNT_TRANSACTION_TYPES = {
   ADJUSTMENT: { label: "Adjustment", color: "bg-yellow-100 text-yellow-800" },
 } as const
 
+// ─────────────────────────────────────────────
+// QUOTATION CONSTANTS
+// ─────────────────────────────────────────────
+
+export const QUOTATION_STATUSES = {
+  DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },
+  SENT: { label: "Sent", color: "bg-blue-100 text-blue-800" },
+  ACCEPTED: { label: "Accepted", color: "bg-green-100 text-green-800" },
+  DECLINED: { label: "Declined", color: "bg-red-100 text-red-800" },
+  EXPIRED: { label: "Expired", color: "bg-orange-100 text-orange-800" },
+  INVOICED: { label: "Invoiced", color: "bg-purple-100 text-purple-800" },
+} as const
+
+export const ISU_TECH_DETAILS = {
+  companyName: process.env.COMPANY_NAME ?? "ISU Technologies (Pty) Ltd",
+  vatNumber: process.env.COMPANY_VAT_NUMBER ?? "TBD",
+  regNumber: process.env.COMPANY_REG_NUMBER ?? "TBD",
+  address: process.env.COMPANY_ADDRESS ?? "South Africa",
+  email: process.env.COMPANY_EMAIL ?? "info@isutech.co.za",
+  phone: process.env.COMPANY_PHONE ?? "+27 00 000 0000",
+} as const
+
 // Terms version statuses
 export const TERMS_VERSION_STATUSES = {
   DRAFT: { label: "Draft", color: "bg-gray-100 text-gray-800" },

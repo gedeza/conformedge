@@ -334,6 +334,15 @@ enum PartnerClientSize {
   LARGE             // 16+ users, all standards — R2,499/mo default
 }
 
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  INVOICED
+}
+
 enum TermsVersionStatus {
   DRAFT
   ACTIVE
@@ -440,6 +449,7 @@ model User {
   requestedExtensions        WorkPermitExtension[]     @relation("ExtensionRequester")
   partnerUsers               PartnerUser[]
   termsAcceptances           TermsAcceptance[]
+  quotations                 Quotation[]
 
   @@map("users")
 }
@@ -1741,4 +1751,57 @@ model TermsAcceptance {
   @@index([userId, acceptedAt(sort: Desc)], map: "idx_terms_acceptance_user")
   @@index([versionId], map: "idx_terms_acceptance_version")
   @@map("terms_acceptances")
+}
+
+// ─────────────────────────────────────────────
+// QUOTATIONS & PROFORMA INVOICES
+// ─────────────────────────────────────────────
+
+model Quotation {
+  id               String          @id @default(uuid())
+  quotationNumber  String          @unique @map("quotation_number")   // QT-YYYY-NNNN
+  invoiceNumber    String?         @unique @map("invoice_number")     // INV-YYYY-NNNN (set on conversion)
+  status           QuotationStatus @default(DRAFT)
+
+  // Client details (not org-scoped — external clients)
+  clientName       String          @map("client_name")
+  clientCompany    String?         @map("client_company")
+  clientEmail      String?         @map("client_email")
+  clientPhone      String?         @map("client_phone")
+  clientAddress    String?         @map("client_address") @db.Text
+  clientVatNumber  String?         @map("client_vat_number")
+  clientRegNumber  String?         @map("client_reg_number")
+
+  // Amounts in cents
+  subtotalCents    Int             @map("subtotal_cents")
+  vatCents         Int             @map("vat_cents")
+  totalCents       Int             @map("total_cents")
+  depositPercent   Int?            @map("deposit_percent")            // e.g. 50
+  depositCents     Int?            @map("deposit_cents")
+
+  // Line items as JSON: { description, quantity, unitPriceCents, totalCents }[]
+  lineItems        Json            @map("line_items")
+
+  // Dates
+  issuedAt         DateTime        @default(now()) @map("issued_at")
+  validUntil       DateTime        @map("valid_until")
+  sentAt           DateTime?       @map("sent_at")
+  acceptedAt       DateTime?       @map("accepted_at")
+  declinedAt       DateTime?       @map("declined_at")
+  invoicedAt       DateTime?       @map("invoiced_at")
+  paidAt           DateTime?       @map("paid_at")
+
+  bankReference    String?         @map("bank_reference")
+  notes            String?         @db.Text
+  terms            String?         @db.Text
+
+  createdById      String          @map("created_by_id")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  createdBy        User            @relation(fields: [createdById], references: [id])
+
+  @@index([status], map: "idx_quotation_status")
+  @@index([createdById], map: "idx_quotation_created_by")
+  @@map("quotations")
 }
