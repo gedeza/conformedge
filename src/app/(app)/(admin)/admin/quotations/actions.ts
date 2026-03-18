@@ -303,7 +303,7 @@ export async function declineQuotation(id: string): Promise<ActionResult> {
   }
 }
 
-export async function convertToInvoice(id: string): Promise<ActionResult> {
+export async function convertToInvoice(id: string, customInvoiceNumber?: string): Promise<ActionResult> {
   try {
     const ctx = await getSuperAdminContext()
     if (!ctx) return { success: false, error: "Unauthorized" }
@@ -312,7 +312,16 @@ export async function convertToInvoice(id: string): Promise<ActionResult> {
     if (!q) return { success: false, error: "Quotation not found" }
     if (q.status !== "ACCEPTED") return { success: false, error: "Only accepted quotations can be converted to invoices" }
 
-    const invoiceNumber = await generateInvoiceNumber()
+    // Use custom invoice number if provided, otherwise auto-generate
+    let invoiceNumber: string
+    if (customInvoiceNumber && customInvoiceNumber.trim()) {
+      // Check uniqueness
+      const existing = await db.quotation.findUnique({ where: { invoiceNumber: customInvoiceNumber.trim() } })
+      if (existing) return { success: false, error: `Invoice number ${customInvoiceNumber.trim()} already exists` }
+      invoiceNumber = customInvoiceNumber.trim()
+    } else {
+      invoiceNumber = await generateInvoiceNumber()
+    }
 
     await db.quotation.update({
       where: { id },

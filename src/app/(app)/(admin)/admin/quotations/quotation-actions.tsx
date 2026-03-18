@@ -45,6 +45,7 @@ export function QuotationActions({ quotationId, status }: QuotationActionsProps)
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [bankRef, setBankRef] = useState("")
+  const [customInvNumber, setCustomInvNumber] = useState("")
 
   function handleAction(
     action: () => Promise<{ success: boolean; error?: string }>,
@@ -178,13 +179,26 @@ export function QuotationActions({ quotationId, status }: QuotationActionsProps)
                 This will assign an invoice number and change the status to Invoiced. A proforma invoice PDF will become available.
               </AlertDialogDescription>
             </AlertDialogHeader>
+            <div className="py-2">
+              <Label htmlFor="customInvNumber">Invoice Number</Label>
+              <Input
+                id="customInvNumber"
+                className="mt-1"
+                value={customInvNumber}
+                onChange={(e) => setCustomInvNumber(e.target.value)}
+                placeholder="Leave blank to auto-generate (e.g. INV-2026-0001)"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Auto-generated if left blank.
+              </p>
+            </div>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 disabled={isPending}
                 onClick={() =>
                   handleAction(
-                    () => convertToInvoice(quotationId),
+                    () => convertToInvoice(quotationId, customInvNumber || undefined),
                     "Converted to proforma invoice"
                   )
                 }
