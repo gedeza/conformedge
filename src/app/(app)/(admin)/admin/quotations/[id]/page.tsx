@@ -250,10 +250,10 @@ export default async function QuotationDetailPage({ params }: Props) {
                 <td colSpan={3} className="py-2 text-right text-muted-foreground">Subtotal</td>
                 <td className="py-2 text-right font-medium">{formatZar(quotation.subtotalCents)}</td>
               </tr>
-              {quotation.discountPercent && quotation.discountCents ? (
+              {quotation.discountCents ? (
                 <tr>
                   <td colSpan={3} className="py-1 text-right text-green-700">
-                    {quotation.discountLabel || `Discount (${quotation.discountPercent}%)`}
+                    {quotation.discountLabel || "Discount"}
                   </td>
                   <td className="py-1 text-right text-green-700">-{formatZar(quotation.discountCents)}</td>
                 </tr>

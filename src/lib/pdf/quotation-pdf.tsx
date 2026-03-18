@@ -21,7 +21,6 @@ export interface QuotationPDFProps {
   lineItems: LineItem[]
   subtotalCents: number
   discountLabel?: string
-  discountPercent?: number
   discountCents?: number
   vatCents: number
   totalCents: number
@@ -115,10 +114,10 @@ export function QuotationPDF(props: QuotationPDFProps) {
             <Text style={s.totalsLabel}>Subtotal</Text>
             <Text style={s.totalsValue}>{formatZarPdf(props.subtotalCents)}</Text>
           </View>
-          {props.discountPercent && props.discountCents ? (
+          {props.discountCents ? (
             <View style={s.totalsRow}>
               <Text style={[s.totalsLabel, { color: colors.green }]}>
-                {props.discountLabel || `Discount (${props.discountPercent}%)`}
+                {props.discountLabel || "Discount"}
               </Text>
               <Text style={[s.totalsValue, { color: colors.green }]}>
                 -{formatZarPdf(props.discountCents)}

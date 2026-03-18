@@ -33,7 +33,7 @@ const formSchema = z.object({
   clientRegNumber: z.string().optional(),
   lineItems: z.array(lineItemSchema).min(1, "At least one line item"),
   discountLabel: z.string().optional(),
-  discountPercent: z.number().int().min(0).max(100).optional(),
+  discountRands: z.number().min(0).optional(),
   depositPercent: z.number().int().min(0).max(100).optional(),
   validityDays: z.number().int().min(1).default(30),
   notes: z.string().optional(),
@@ -90,7 +90,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
       clientRegNumber: quotation?.clientRegNumber ?? "",
       lineItems: existingLineItems ?? [{ description: "", quantity: 1, unitPriceRands: 0 }],
       discountLabel: quotation?.discountLabel ?? "",
-      discountPercent: quotation?.discountPercent ?? undefined,
+      discountRands: quotation?.discountCents ? centsToRands(quotation.discountCents) : undefined,
       depositPercent: quotation?.depositPercent ?? undefined,
       validityDays: 30,
       notes: quotation?.notes ?? "",
@@ -109,10 +109,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
     (sum, item) => sum + (item.quantity || 0) * (item.unitPriceRands || 0),
     0
   )
-  const discountPercent = form.watch("discountPercent")
-  const discountRands = discountPercent
-    ? Math.round(subtotalRands * (discountPercent / 100) * 100) / 100
-    : 0
+  const discountRands = form.watch("discountRands") || 0
   const afterDiscountRands = subtotalRands - discountRands
   const vatRands = Math.round(afterDiscountRands * 0.15 * 100) / 100
   const totalRands = Math.round((afterDiscountRands + vatRands) * 100) / 100
@@ -127,6 +124,7 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
     // Convert Rands → Cents for the server action (DB stores cents)
     const data = {
       ...values,
+      discountCents: values.discountRands ? randsToCents(values.discountRands) : undefined,
       lineItems: values.lineItems.map((item) => ({
         description: item.description,
         quantity: item.quantity,
@@ -285,9 +283,9 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
               <span className="text-muted-foreground">Subtotal:</span>
               <span>{formatRands(subtotalRands)}</span>
             </div>
-            {discountPercent && discountPercent > 0 && (
+            {discountRands > 0 && (
               <div className="flex w-72 justify-between text-sm text-green-700">
-                <span>Discount ({discountPercent}%):</span>
+                <span>Discount:</span>
                 <span>-{formatRands(discountRands)}</span>
               </div>
             )}
@@ -316,14 +314,14 @@ export function QuotationForm({ quotation }: QuotationFormProps) {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="discountPercent">Discount %</Label>
+            <Label htmlFor="discountRands">Discount Amount (R)</Label>
             <Input
-              id="discountPercent"
+              id="discountRands"
               type="number"
               min={0}
-              max={100}
-              placeholder="e.g. 17"
-              {...form.register("discountPercent", { valueAsNumber: true })}
+              step={0.01}
+              placeholder="e.g. 16998"
+              {...form.register("discountRands", { valueAsNumber: true })}
             />
           </div>
           <div className="space-y-2">
