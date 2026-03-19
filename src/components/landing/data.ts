@@ -173,7 +173,7 @@ export const PRICING_TIERS: PricingTier[] = [
     monthlyPrice: 2299,
     description: "For small businesses getting started with ISO compliance.",
     features: [
-      "Up to 5 users (+R149/user)",
+      "3 users included (+R399/additional user)",
       "2 compliance frameworks",
       "1,000 documents",
       "50 AI classifications/month",
@@ -191,7 +191,7 @@ export const PRICING_TIERS: PricingTier[] = [
     monthlyPrice: 5499,
     description: "For safety-conscious companies managing compliance and incidents.",
     features: [
-      "Up to 10 users (+R149/user)",
+      "5 users included (+R449/additional user)",
       "5 compliance frameworks",
       "Unlimited documents",
       "200 AI classifications/month",
@@ -215,7 +215,7 @@ export const PRICING_TIERS: PricingTier[] = [
     monthlyPrice: 8499,
     description: "For multi-site firms with SA regulatory compliance needs.",
     features: [
-      "Up to 25 users (+R199/user)",
+      "10 users included (+R349/additional user)",
       "All 11 frameworks (incl. DMRE, POPIA, ECSA & SACPCMP)",
       "500 AI classifications/month",
       "Everything in Professional",
@@ -234,7 +234,7 @@ export const PRICING_TIERS: PricingTier[] = [
     monthlyPrice: null,
     description: "For large organisations needing full control and scale.",
     features: [
-      "Unlimited users",
+      "25 users included (+R299/additional user)",
       "Unlimited AI classifications",
       "SSO & advanced security",
       "Full API access (read/write)",

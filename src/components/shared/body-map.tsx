@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { X } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 // ── Body region definitions ─────────────────────────────────────────────────
 // viewBox: "30 5 140 400" — body centered at x=100
@@ -13,6 +15,8 @@ interface BodyRegion {
   bodyPart: string
   d: string
   view: "front" | "back"
+  /** Expanded hit area for small touch targets (eyes, ears, toes, etc.) */
+  hitD?: string
 }
 
 // ── FRONT VIEW REGIONS ──────────────────────────────────────────────────────
@@ -24,17 +28,21 @@ const FRONT_REGIONS: BodyRegion[] = [
   { id: "face-f", label: "Face", bodyPart: "Face", view: "front",
     d: "M 84,26 C 84,20 91,14 100,14 C 109,14 116,20 116,26 L 116,46 C 116,54 109,60 100,60 C 91,60 84,54 84,46 Z" },
 
-  // EYES — separate L/R
+  // EYES — separate L/R with expanded hit targets
   { id: "eye-l-f", label: "Eye (L)", bodyPart: "Eye (L)", view: "front",
-    d: "M 103,29 C 105,27 111,27 113,30 C 111,34 105,34 103,31 Z" },
+    d: "M 103,29 C 105,27 111,27 113,30 C 111,34 105,34 103,31 Z",
+    hitD: "M 101,25 L 115,25 L 115,36 L 101,36 Z" },
   { id: "eye-r-f", label: "Eye (R)", bodyPart: "Eye (R)", view: "front",
-    d: "M 87,30 C 89,27 95,27 97,29 C 95,34 89,34 87,31 Z" },
+    d: "M 87,30 C 89,27 95,27 97,29 C 95,34 89,34 87,31 Z",
+    hitD: "M 85,25 L 99,25 L 99,36 L 85,36 Z" },
 
-  // EARS — separate L/R
+  // EARS — separate L/R with expanded hit targets
   { id: "ear-l-f", label: "Ear (L)", bodyPart: "Ear (L)", view: "front",
-    d: "M 116,28 C 120,26 123,29 123,34 C 123,39 121,43 118,44 C 117,44.5 116,44 116,43 L 116,28 Z" },
+    d: "M 116,28 C 120,26 123,29 123,34 C 123,39 121,43 118,44 C 117,44.5 116,44 116,43 L 116,28 Z",
+    hitD: "M 115,24 L 126,24 L 126,47 L 115,47 Z" },
   { id: "ear-r-f", label: "Ear (R)", bodyPart: "Ear (R)", view: "front",
-    d: "M 84,28 C 80,26 77,29 77,34 C 77,39 79,43 82,44 C 83,44.5 84,44 84,43 L 84,28 Z" },
+    d: "M 84,28 C 80,26 77,29 77,34 C 77,39 79,43 82,44 C 83,44.5 84,44 84,43 L 84,28 Z",
+    hitD: "M 74,24 L 85,24 L 85,47 L 74,47 Z" },
 
   // NECK
   { id: "neck-f", label: "Neck", bodyPart: "Neck", view: "front",
@@ -58,7 +66,8 @@ const FRONT_REGIONS: BodyRegion[] = [
   { id: "forearm-l-f", label: "Forearm (L)", bodyPart: "Forearm (L)", view: "front",
     d: "M 141,140 C 145,140 149,142 153,146 L 156,186 C 152,184 148,183 144,183 Z" },
   { id: "wrist-l-f", label: "Wrist (L)", bodyPart: "Wrist (L)", view: "front",
-    d: "M 144,183 C 148,183 152,184 156,186 L 157,196 C 153,194 149,193 145,193 Z" },
+    d: "M 144,183 C 148,183 152,184 156,186 L 157,196 C 153,194 149,193 145,193 Z",
+    hitD: "M 142,180 L 160,180 L 160,199 L 142,199 Z" },
   { id: "hand-l-f", label: "Hand (L)", bodyPart: "Hand (L)", view: "front",
     d: "M 145,193 C 149,193 153,194 157,196 L 159,210 C 155,208 151,207 147,207 Z" },
   { id: "fingers-l-f", label: "Fingers (L)", bodyPart: "Fingers (L)", view: "front",
@@ -74,7 +83,8 @@ const FRONT_REGIONS: BodyRegion[] = [
   { id: "forearm-r-f", label: "Forearm (R)", bodyPart: "Forearm (R)", view: "front",
     d: "M 59,140 C 55,140 51,142 47,146 L 44,186 C 48,184 52,183 56,183 Z" },
   { id: "wrist-r-f", label: "Wrist (R)", bodyPart: "Wrist (R)", view: "front",
-    d: "M 56,183 C 52,183 48,184 44,186 L 43,196 C 47,194 51,193 55,193 Z" },
+    d: "M 56,183 C 52,183 48,184 44,186 L 43,196 C 47,194 51,193 55,193 Z",
+    hitD: "M 40,180 L 58,180 L 58,199 L 40,199 Z" },
   { id: "hand-r-f", label: "Hand (R)", bodyPart: "Hand (R)", view: "front",
     d: "M 55,193 C 51,193 47,194 43,196 L 41,210 C 45,208 49,207 53,207 Z" },
   { id: "fingers-r-f", label: "Fingers (R)", bodyPart: "Fingers (R)", view: "front",
@@ -90,11 +100,13 @@ const FRONT_REGIONS: BodyRegion[] = [
   { id: "lower-leg-l-f", label: "Lower Leg (L)", bodyPart: "Lower Leg (L)", view: "front",
     d: "M 108,290 L 118,290 C 117,314 116,342 115,364 L 107,364 C 107,342 107,314 108,290 Z" },
   { id: "ankle-l-f", label: "Ankle (L)", bodyPart: "Ankle (L)", view: "front",
-    d: "M 107,364 L 115,364 C 116,374 116,378 115,382 L 107,382 C 106,378 106,374 107,364 Z" },
+    d: "M 107,364 L 115,364 C 116,374 116,378 115,382 L 107,382 C 106,378 106,374 107,364 Z",
+    hitD: "M 105,361 L 118,361 L 118,385 L 105,385 Z" },
   { id: "foot-l-f", label: "Foot (L)", bodyPart: "Foot (L)", view: "front",
     d: "M 107,382 L 115,382 C 117,386 120,388 122,390 L 122,394 C 118,396 110,396 107,394 C 106,391 106,386 107,382 Z" },
   { id: "toes-l-f", label: "Toes (L)", bodyPart: "Toes (L)", view: "front",
-    d: "M 122,390 L 127,388 C 129,390 129,394 127,396 L 125,396 L 123,392 L 122,394 Z" },
+    d: "M 122,390 L 127,388 C 129,390 129,394 127,396 L 125,396 L 123,392 L 122,394 Z",
+    hitD: "M 120,385 L 132,385 L 132,399 L 120,399 Z" },
 
   // RIGHT LEG
   { id: "hip-r-f", label: "Hip (R)", bodyPart: "Hip (R)", view: "front",
@@ -106,11 +118,13 @@ const FRONT_REGIONS: BodyRegion[] = [
   { id: "lower-leg-r-f", label: "Lower Leg (R)", bodyPart: "Lower Leg (R)", view: "front",
     d: "M 92,290 L 82,290 C 83,314 84,342 85,364 L 93,364 C 93,342 92,314 92,290 Z" },
   { id: "ankle-r-f", label: "Ankle (R)", bodyPart: "Ankle (R)", view: "front",
-    d: "M 93,364 L 85,364 C 84,374 84,378 85,382 L 93,382 C 94,378 94,374 93,364 Z" },
+    d: "M 93,364 L 85,364 C 84,374 84,378 85,382 L 93,382 C 94,378 94,374 93,364 Z",
+    hitD: "M 82,361 L 96,361 L 96,385 L 82,385 Z" },
   { id: "foot-r-f", label: "Foot (R)", bodyPart: "Foot (R)", view: "front",
     d: "M 93,382 L 85,382 C 83,386 80,388 78,390 L 78,394 C 82,396 90,396 93,394 C 94,391 94,386 93,382 Z" },
   { id: "toes-r-f", label: "Toes (R)", bodyPart: "Toes (R)", view: "front",
-    d: "M 78,390 L 73,388 C 71,390 71,394 73,396 L 75,396 L 77,392 L 78,394 Z" },
+    d: "M 78,390 L 73,388 C 71,390 71,394 73,396 L 75,396 L 77,392 L 78,394 Z",
+    hitD: "M 68,385 L 80,385 L 80,399 L 68,399 Z" },
 ]
 
 // ── BACK VIEW REGIONS ───────────────────────────────────────────────────────
@@ -122,9 +136,11 @@ const BACK_REGIONS: BodyRegion[] = [
 
   // EARS — back view (anatomical L = viewer's L)
   { id: "ear-l-b", label: "Ear (L)", bodyPart: "Ear (L)", view: "back",
-    d: "M 75,28 C 71,26 68,29 68,34 C 68,39 70,43 73,44 C 74,44.5 75,44 75,43 L 75,28 Z" },
+    d: "M 75,28 C 71,26 68,29 68,34 C 68,39 70,43 73,44 C 74,44.5 75,44 75,43 L 75,28 Z",
+    hitD: "M 65,24 L 78,24 L 78,47 L 65,47 Z" },
   { id: "ear-r-b", label: "Ear (R)", bodyPart: "Ear (R)", view: "back",
-    d: "M 125,28 C 129,26 132,29 132,34 C 132,39 130,43 127,44 C 126,44.5 125,44 125,43 L 125,28 Z" },
+    d: "M 125,28 C 129,26 132,29 132,34 C 132,39 130,43 127,44 C 126,44.5 125,44 125,43 L 125,28 Z",
+    hitD: "M 122,24 L 135,24 L 135,47 L 122,47 Z" },
 
   // NECK
   { id: "neck-b", label: "Neck", bodyPart: "Neck", view: "back",
@@ -148,7 +164,8 @@ const BACK_REGIONS: BodyRegion[] = [
   { id: "forearm-l-b", label: "Forearm (L)", bodyPart: "Forearm (L)", view: "back",
     d: "M 59,140 C 55,140 51,142 47,146 L 44,186 C 48,184 52,183 56,183 Z" },
   { id: "wrist-l-b", label: "Wrist (L)", bodyPart: "Wrist (L)", view: "back",
-    d: "M 56,183 C 52,183 48,184 44,186 L 43,196 C 47,194 51,193 55,193 Z" },
+    d: "M 56,183 C 52,183 48,184 44,186 L 43,196 C 47,194 51,193 55,193 Z",
+    hitD: "M 40,180 L 58,180 L 58,199 L 40,199 Z" },
   { id: "hand-l-b", label: "Hand (L)", bodyPart: "Hand (L)", view: "back",
     d: "M 55,193 C 51,193 47,194 43,196 L 41,210 C 45,208 49,207 53,207 Z" },
   { id: "fingers-l-b", label: "Fingers (L)", bodyPart: "Fingers (L)", view: "back",
@@ -164,7 +181,8 @@ const BACK_REGIONS: BodyRegion[] = [
   { id: "forearm-r-b", label: "Forearm (R)", bodyPart: "Forearm (R)", view: "back",
     d: "M 141,140 C 145,140 149,142 153,146 L 156,186 C 152,184 148,183 144,183 Z" },
   { id: "wrist-r-b", label: "Wrist (R)", bodyPart: "Wrist (R)", view: "back",
-    d: "M 144,183 C 148,183 152,184 156,186 L 157,196 C 153,194 149,193 145,193 Z" },
+    d: "M 144,183 C 148,183 152,184 156,186 L 157,196 C 153,194 149,193 145,193 Z",
+    hitD: "M 142,180 L 160,180 L 160,199 L 142,199 Z" },
   { id: "hand-r-b", label: "Hand (R)", bodyPart: "Hand (R)", view: "back",
     d: "M 145,193 C 149,193 153,194 157,196 L 159,210 C 155,208 151,207 147,207 Z" },
   { id: "fingers-r-b", label: "Fingers (R)", bodyPart: "Fingers (R)", view: "back",
@@ -180,11 +198,13 @@ const BACK_REGIONS: BodyRegion[] = [
   { id: "lower-leg-l-b", label: "Lower Leg (L)", bodyPart: "Lower Leg (L)", view: "back",
     d: "M 92,290 L 82,290 C 83,314 84,342 85,364 L 93,364 C 93,342 92,314 92,290 Z" },
   { id: "ankle-l-b", label: "Ankle (L)", bodyPart: "Ankle (L)", view: "back",
-    d: "M 93,364 L 85,364 C 84,374 84,378 85,382 L 93,382 C 94,378 94,374 93,364 Z" },
+    d: "M 93,364 L 85,364 C 84,374 84,378 85,382 L 93,382 C 94,378 94,374 93,364 Z",
+    hitD: "M 82,361 L 96,361 L 96,385 L 82,385 Z" },
   { id: "foot-l-b", label: "Foot (L)", bodyPart: "Foot (L)", view: "back",
     d: "M 93,382 L 85,382 C 82,386 79,390 77,392 L 77,396 C 82,400 90,400 93,398 Z" },
   { id: "toes-l-b", label: "Toes (L)", bodyPart: "Toes (L)", view: "back",
-    d: "M 77,392 C 74,392 71,392 69,394 C 68,396 69,399 71,400 L 75,398 L 77,396 Z" },
+    d: "M 77,392 C 74,392 71,392 69,394 C 68,396 69,399 71,400 L 75,398 L 77,396 Z",
+    hitD: "M 66,389 L 80,389 L 80,403 L 66,403 Z" },
 
   // RIGHT LEG (back: R = viewer's R)
   { id: "hip-r-b", label: "Hip (R)", bodyPart: "Hip (R)", view: "back",
@@ -196,11 +216,13 @@ const BACK_REGIONS: BodyRegion[] = [
   { id: "lower-leg-r-b", label: "Lower Leg (R)", bodyPart: "Lower Leg (R)", view: "back",
     d: "M 108,290 L 118,290 C 117,314 116,342 115,364 L 107,364 C 107,342 107,314 108,290 Z" },
   { id: "ankle-r-b", label: "Ankle (R)", bodyPart: "Ankle (R)", view: "back",
-    d: "M 107,364 L 115,364 C 116,374 116,378 115,382 L 107,382 C 106,378 106,374 107,364 Z" },
+    d: "M 107,364 L 115,364 C 116,374 116,378 115,382 L 107,382 C 106,378 106,374 107,364 Z",
+    hitD: "M 104,361 L 118,361 L 118,385 L 104,385 Z" },
   { id: "foot-r-b", label: "Foot (R)", bodyPart: "Foot (R)", view: "back",
     d: "M 107,382 L 115,382 C 118,386 121,390 123,392 L 123,396 C 118,400 110,400 107,398 Z" },
   { id: "toes-r-b", label: "Toes (R)", bodyPart: "Toes (R)", view: "back",
-    d: "M 123,392 C 126,392 129,392 131,394 C 132,396 131,399 129,400 L 125,398 L 123,396 Z" },
+    d: "M 123,392 C 126,392 129,392 131,394 C 132,396 131,399 129,400 L 125,398 L 123,396 Z",
+    hitD: "M 120,389 L 134,389 L 134,403 L 120,403 Z" },
 ]
 
 // ── Anatomical detail lines ─────────────────────────────────────────────────
@@ -409,6 +431,19 @@ const BODY_OUTLINE = `
   M 128,168 C 130,174 128,182 122,190 L 124,200 C 120,204 112,208 102,208 L 102,206 C 104,224 106,248 108,268 C 119,268 119,276 118,290 L 108,290 C 108,314 108,342 107,364 L 115,364 C 116,374 116,378 115,382 L 122,390 C 124,392 127,388 127,394 C 127,398 122,400 115,400 L 107,398 C 106,392 106,382 107,382 L 107,364 L 115,364
 `
 
+// ── Severity colors ─────────────────────────────────────────────────────────
+
+type InjurySeverity = "minor" | "moderate" | "severe"
+
+const SEVERITY_COLORS: Record<InjurySeverity, { fill: string; stroke: string }> = {
+  minor:    { fill: "rgba(251, 191, 36, 0.40)", stroke: "rgba(251, 191, 36, 0.75)" },
+  moderate: { fill: "rgba(249, 115, 22, 0.45)", stroke: "rgba(249, 115, 22, 0.80)" },
+  severe:   { fill: "rgba(220, 38, 38, 0.55)", stroke: "rgba(220, 38, 38, 0.85)" },
+}
+
+const DEFAULT_SELECTED = { fill: "rgba(220, 38, 38, 0.40)", stroke: "rgba(220, 38, 38, 0.75)" }
+const HOVER_STYLE = { fill: "rgba(59, 130, 246, 0.18)", stroke: "rgba(59, 130, 246, 0.40)" }
+
 // ── Helper: parse comma-separated string to array ───────────────────────────
 
 function parseSelectedParts(value?: string): string[] {
@@ -418,69 +453,111 @@ function parseSelectedParts(value?: string): string[] {
 
 // ── Main component ──────────────────────────────────────────────────────────
 
-interface BodyMapProps {
+export interface BodyMapProps {
   /** Comma-separated body parts (e.g. "Head, Chest, Hand (L)") */
   value?: string
   /** Returns updated comma-separated string */
   onChange?: (bodyParts: string) => void
+  /** Optional severity map: bodyPart → severity level for color-coded display */
+  injurySeverity?: Record<string, InjurySeverity>
   readOnly?: boolean
+  /** Force a specific view (disables toggle) — used in dual-panel layout */
+  forcedView?: "front" | "back"
+  /** Show selected region badge chips below the map */
+  showChips?: boolean
   className?: string
 }
 
-export function BodyMap({ value, onChange, readOnly = false, className }: BodyMapProps) {
-  const [activeView, setActiveView] = useState<"front" | "back">("front")
+export function BodyMap({
+  value,
+  onChange,
+  injurySeverity,
+  readOnly = false,
+  forcedView,
+  showChips = false,
+  className,
+}: BodyMapProps) {
+  const [activeView, setActiveView] = useState<"front" | "back">(forcedView || "front")
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
 
-  const regions = activeView === "front" ? FRONT_REGIONS : BACK_REGIONS
+  const currentView = forcedView || activeView
+  const regions = currentView === "front" ? FRONT_REGIONS : BACK_REGIONS
   const selectedParts = parseSelectedParts(value)
 
-  function handleClick(region: BodyRegion) {
+  function handleToggle(part: string) {
     if (readOnly) return
-    const part = region.bodyPart
     let updated: string[]
     if (selectedParts.includes(part)) {
-      // Deselect
       updated = selectedParts.filter(p => p !== part)
     } else {
-      // Select
       updated = [...selectedParts, part]
     }
     onChange?.(updated.join(", "))
+  }
+
+  function handleClick(region: BodyRegion) {
+    handleToggle(region.bodyPart)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent, region: BodyRegion) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      handleClick(region)
+    }
   }
 
   function isSelected(region: BodyRegion) {
     return selectedParts.includes(region.bodyPart)
   }
 
+  function getRegionColors(region: BodyRegion) {
+    const selected = isSelected(region)
+    const hovered = hoveredRegion === region.label
+
+    if (selected) {
+      const severity = injurySeverity?.[region.bodyPart]
+      if (severity && SEVERITY_COLORS[severity]) {
+        return SEVERITY_COLORS[severity]
+      }
+      return DEFAULT_SELECTED
+    }
+    if (hovered && !readOnly) {
+      return HOVER_STYLE
+    }
+    return { fill: "transparent", stroke: "transparent" }
+  }
+
   return (
     <div className={cn("flex flex-col items-center gap-2", className)}>
-      {/* View Toggle */}
-      <div className="flex gap-1 rounded-lg bg-muted p-1">
-        <button
-          type="button"
-          onClick={() => setActiveView("front")}
-          className={cn(
-            "rounded-md px-3 py-1 text-xs font-medium transition-colors",
-            activeView === "front"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Front
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveView("back")}
-          className={cn(
-            "rounded-md px-3 py-1 text-xs font-medium transition-colors",
-            activeView === "back"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          Back
-        </button>
-      </div>
+      {/* View Toggle — hidden when forcedView is set */}
+      {!forcedView && (
+        <div className="flex gap-1 rounded-lg bg-muted p-1">
+          <button
+            type="button"
+            onClick={() => setActiveView("front")}
+            className={cn(
+              "rounded-md px-3 py-1 text-xs font-medium transition-colors",
+              activeView === "front"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Front
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView("back")}
+            className={cn(
+              "rounded-md px-3 py-1 text-xs font-medium transition-colors",
+              activeView === "back"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Back
+          </button>
+        </div>
+      )}
 
       {/* Label */}
       <div className="min-h-5 text-xs font-medium text-center max-w-[220px]">
@@ -505,9 +582,11 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
         viewBox="30 5 140 400"
         className="w-full max-w-[220px] h-auto"
         style={{ touchAction: "manipulation" }}
+        role="img"
+        aria-label={`Body map ${currentView} view — ${selectedParts.length} areas selected`}
       >
         <defs>
-          <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`skinGrad-${forcedView || "default"}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#e8c9a8" />
             <stop offset="30%" stopColor="#f5e0c8" />
             <stop offset="50%" stopColor="#f8e8d4" />
@@ -519,7 +598,7 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
         {/* Body silhouette */}
         <path
           d={BODY_OUTLINE}
-          fill="url(#skinGrad)"
+          fill={`url(#skinGrad-${forcedView || "default"})`}
           stroke="#c4956a"
           strokeWidth="0.8"
           strokeLinejoin="round"
@@ -528,7 +607,7 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
 
         {/* Major anatomical lines */}
         <path
-          d={activeView === "front" ? FRONT_DETAILS_MAJOR : BACK_DETAILS_MAJOR}
+          d={currentView === "front" ? FRONT_DETAILS_MAJOR : BACK_DETAILS_MAJOR}
           fill="none"
           stroke="#c4956a"
           strokeWidth="0.45"
@@ -538,7 +617,7 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
 
         {/* Minor detail lines */}
         <path
-          d={activeView === "front" ? FRONT_DETAILS_MINOR : BACK_DETAILS_MINOR}
+          d={currentView === "front" ? FRONT_DETAILS_MINOR : BACK_DETAILS_MINOR}
           fill="none"
           stroke="#c4a88a"
           strokeWidth="0.3"
@@ -547,38 +626,26 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
         />
 
         {/* Ears */}
-        {activeView === "front" ? <FrontEars /> : <BackEars />}
+        {currentView === "front" ? <FrontEars /> : <BackEars />}
 
         {/* Face (front only) */}
-        {activeView === "front" && <FacialFeatures />}
+        {currentView === "front" && <FacialFeatures />}
 
         {/* Finger/toe lines */}
-        <FingerLines view={activeView} />
-        <ToeLines view={activeView} />
+        <FingerLines view={currentView} />
+        <ToeLines view={currentView} />
 
-        {/* Interactive regions */}
+        {/* Interactive regions — visible layer */}
         {regions.map((region) => {
+          const colors = getRegionColors(region)
           const selected = isSelected(region)
-          const hovered = hoveredRegion === region.label
 
           return (
             <path
               key={region.id}
               d={region.d}
-              fill={
-                selected
-                  ? "rgba(220, 38, 38, 0.40)"
-                  : hovered && !readOnly
-                    ? "rgba(59, 130, 246, 0.18)"
-                    : "transparent"
-              }
-              stroke={
-                selected
-                  ? "rgba(220, 38, 38, 0.75)"
-                  : hovered && !readOnly
-                    ? "rgba(59, 130, 246, 0.40)"
-                    : "transparent"
-              }
+              fill={colors.fill}
+              stroke={colors.stroke}
               strokeWidth={selected ? "1.2" : "0.8"}
               className={cn(
                 "transition-all duration-150",
@@ -587,11 +654,33 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
               onClick={() => handleClick(region)}
               onMouseEnter={() => !readOnly && setHoveredRegion(region.label)}
               onMouseLeave={() => setHoveredRegion(null)}
+              role={readOnly ? undefined : "button"}
+              tabIndex={readOnly ? undefined : 0}
+              aria-pressed={selected}
+              aria-label={region.label}
+              onKeyDown={readOnly ? undefined : (e) => handleKeyDown(e, region)}
             >
               <title>{region.label}</title>
             </path>
           )
         })}
+
+        {/* Expanded touch hit targets for small zones */}
+        {!readOnly && regions.filter(r => r.hitD).map((region) => (
+          <path
+            key={`${region.id}-hit`}
+            d={region.hitD!}
+            fill="transparent"
+            stroke="none"
+            className="cursor-pointer"
+            style={{ pointerEvents: "all" }}
+            onClick={() => handleClick(region)}
+            onMouseEnter={() => setHoveredRegion(region.label)}
+            onMouseLeave={() => setHoveredRegion(null)}
+          >
+            <title>{region.label}</title>
+          </path>
+        ))}
 
         {/* View label */}
         <text
@@ -603,9 +692,35 @@ export function BodyMap({ value, onChange, readOnly = false, className }: BodyMa
           fontFamily="sans-serif"
           letterSpacing="1"
         >
-          {activeView === "front" ? "FRONT VIEW" : "BACK VIEW"}
+          {currentView === "front" ? "FRONT VIEW" : "BACK VIEW"}
         </text>
       </svg>
+
+      {/* Selected region chips */}
+      {showChips && selectedParts.length > 0 && (
+        <div className="flex flex-wrap gap-1 max-w-[240px] justify-center">
+          {selectedParts.map(part => {
+            const severity = injurySeverity?.[part]
+            return (
+              <Badge
+                key={part}
+                variant="secondary"
+                className={cn(
+                  "gap-1 text-[10px] py-0 h-5",
+                  !readOnly && "cursor-pointer hover:bg-destructive/10",
+                  severity === "severe" && "border-red-300 bg-red-50 text-red-700",
+                  severity === "moderate" && "border-orange-300 bg-orange-50 text-orange-700",
+                  severity === "minor" && "border-amber-300 bg-amber-50 text-amber-700",
+                )}
+                onClick={() => !readOnly && handleToggle(part)}
+              >
+                {part}
+                {!readOnly && <X className="h-2.5 w-2.5" />}
+              </Badge>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

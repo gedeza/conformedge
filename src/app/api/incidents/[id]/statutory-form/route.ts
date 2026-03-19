@@ -58,11 +58,25 @@ export async function GET(
 
     let pdfElement: React.ReactElement
 
+    const treatmentLabels: Record<string, string> = {
+      NONE: "None",
+      FIRST_AID: "First Aid",
+      MEDICAL: "Medical Treatment",
+      HOSPITALIZED: "Hospitalized",
+    }
+
     if (formType === "wcl2") {
       pdfElement = React.createElement(WCl2Form, {
         employerName: incident.organization.name,
         coidaRegNumber,
         employeeName: incident.injuredParty || "Not specified",
+        employeeIdNumber: incident.victimIdNumber || undefined,
+        employeeOccupation: incident.victimOccupation || undefined,
+        employeeStaffNo: incident.victimStaffNo || undefined,
+        employeeDepartment: incident.victimDepartment || undefined,
+        employeeNationality: incident.victimNationality || undefined,
+        employeeContractor: incident.victimContractor || undefined,
+        supervisorName: incident.immediateSupervisor || undefined,
         incidentTitle: incident.title,
         incidentDate: format(incident.incidentDate, "dd MMM yyyy"),
         incidentTime: incident.incidentTime || undefined,
@@ -74,8 +88,10 @@ export async function GET(
         immediateAction: incident.immediateAction || undefined,
         witnesses: incident.witnesses || undefined,
         daysAbsent: incident.lostDays != null ? String(incident.lostDays) : undefined,
-        treatingDoctor: undefined, // Will be added when medical treatment fields are added
-        hospitalClinic: undefined,
+        treatmentType: incident.treatmentType ? (treatmentLabels[incident.treatmentType] ?? incident.treatmentType) : undefined,
+        estimatedCost: incident.estimatedCost != null ? `R ${Number(incident.estimatedCost).toLocaleString("en-ZA", { minimumFractionDigits: 2 })}` : undefined,
+        returnedToWork: incident.returnedToWork != null ? (incident.returnedToWork ? "Yes" : "No — not yet returned") : undefined,
+        returnedToWorkDate: incident.returnedToWorkDate ? format(incident.returnedToWorkDate, "dd MMM yyyy") : undefined,
         reporterName,
         reportDate,
         incidentRef,
@@ -83,6 +99,8 @@ export async function GET(
     } else {
       pdfElement = React.createElement(SAPS277Form, {
         deceasedName: incident.injuredParty || "Not specified",
+        deceasedIdNumber: incident.victimIdNumber || undefined,
+        deceasedOccupation: incident.victimOccupation || undefined,
         employerName: incident.organization.name,
         incidentTitle: incident.title,
         incidentDate: format(incident.incidentDate, "dd MMM yyyy"),

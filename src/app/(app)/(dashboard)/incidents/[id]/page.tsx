@@ -9,7 +9,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getAuthContext } from "@/lib/auth"
 import { TREATMENT_TYPES, MHSA_SECTIONS } from "@/lib/constants"
-import { BodyMap } from "@/components/shared/body-map"
+import { BodyMapDual } from "@/components/shared/body-map-dual"
 import { getIncident, getCapaOptions } from "../actions"
 import { IncidentActionsPanel } from "./incident-actions-panel"
 import { StatutoryFormButton } from "./statutory-form-button"
@@ -244,46 +244,159 @@ export default async function IncidentDetailPage({
             </CardContent>
           </Card>
 
+          {/* Personnel Involved */}
+          {(incident.victimOccupation || incident.victimStaffNo || incident.victimDepartment || incident.victimIdNumber || incident.victimNationality || incident.victimContractor || incident.immediateSupervisor) && (
+            <Card className="border-border/50 transition-all hover:shadow-md">
+              <CardHeader><CardTitle>Particular of Personnel Involved</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                  {incident.victimOccupation && (
+                    <div>
+                      <span className="text-muted-foreground">Occupation</span>
+                      <p className="mt-1 font-medium">{incident.victimOccupation}</p>
+                    </div>
+                  )}
+                  {incident.victimStaffNo && (
+                    <div>
+                      <span className="text-muted-foreground">Staff / Employee No</span>
+                      <p className="mt-1 font-medium">{incident.victimStaffNo}</p>
+                    </div>
+                  )}
+                  {incident.victimDepartment && (
+                    <div>
+                      <span className="text-muted-foreground">Department</span>
+                      <p className="mt-1 font-medium">{incident.victimDepartment}</p>
+                    </div>
+                  )}
+                  {incident.victimIdNumber && (
+                    <div>
+                      <span className="text-muted-foreground">ID / Passport No</span>
+                      <p className="mt-1 font-medium">{incident.victimIdNumber}</p>
+                    </div>
+                  )}
+                  {incident.victimNationality && (
+                    <div>
+                      <span className="text-muted-foreground">Nationality</span>
+                      <p className="mt-1 font-medium">{incident.victimNationality}</p>
+                    </div>
+                  )}
+                  {incident.victimContractor && (
+                    <div>
+                      <span className="text-muted-foreground">Contractor</span>
+                      <p className="mt-1 font-medium">{incident.victimContractor}</p>
+                    </div>
+                  )}
+                  {incident.immediateSupervisor && (
+                    <div>
+                      <span className="text-muted-foreground">Immediate Supervisor</span>
+                      <p className="mt-1 font-medium">{incident.immediateSupervisor}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Consequence & Impact */}
+          {(incident.estimatedCost != null || incident.spillVolume != null || incident.nonInjuriousType || (incident.impactAreas && Array.isArray(incident.impactAreas) && (incident.impactAreas as string[]).length > 0)) && (
+            <Card className="border-border/50 transition-all hover:shadow-md">
+              <CardHeader><CardTitle>Consequence &amp; Impact</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                  {incident.estimatedCost != null && (
+                    <div>
+                      <span className="text-muted-foreground">Actual Cost</span>
+                      <p className="mt-1 font-medium">R {Number(incident.estimatedCost).toLocaleString("en-ZA", { minimumFractionDigits: 2 })}</p>
+                    </div>
+                  )}
+                  {incident.spillVolume != null && (
+                    <div>
+                      <span className="text-muted-foreground">Spill Volume</span>
+                      <p className="mt-1 font-medium">{Number(incident.spillVolume)} m&sup3;</p>
+                    </div>
+                  )}
+                  {incident.nonInjuriousType && (
+                    <div>
+                      <span className="text-muted-foreground">Non-Injurious Type</span>
+                      <p className="mt-1 font-medium">{incident.nonInjuriousType}</p>
+                    </div>
+                  )}
+                  {incident.impactAreas && Array.isArray(incident.impactAreas) && (incident.impactAreas as string[]).length > 0 && (
+                    <div className="sm:col-span-3">
+                      <span className="text-muted-foreground">Impact Areas</span>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {(incident.impactAreas as string[]).map((area: string) => (
+                          <Badge key={area} variant="outline" className="text-xs">{area}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Outcome of Injured Person */}
+          {incident.returnedToWork != null && (
+            <Card className="border-border/50 transition-all hover:shadow-md">
+              <CardHeader><CardTitle>Outcome of Injured Person</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Returned to Work</span>
+                    <p className="mt-1 font-medium">
+                      {incident.returnedToWork ? "Yes" : "No — not yet returned"}
+                    </p>
+                  </div>
+                  {incident.returnedToWork && incident.returnedToWorkDate && (
+                    <div>
+                      <span className="text-muted-foreground">Date Returned</span>
+                      <p className="mt-1 font-medium">{format(incident.returnedToWorkDate, "PPP")}</p>
+                    </div>
+                  )}
+                  {!incident.returnedToWork && (
+                    <div className="flex items-center gap-2 rounded-md bg-amber-50 dark:bg-amber-950/30 p-2 text-xs text-amber-800 dark:text-amber-200">
+                      Inform Safety &amp; Health Officer
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Injury Details */}
           {(incident.bodyPartInjured || incident.natureOfInjury || incident.treatmentType || incident.lostDays != null) && (
             <Card className="border-border/50 transition-all hover:shadow-md">
               <CardHeader><CardTitle>Injury Details</CardTitle></CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-6">
-                  {/* Body Map — read-only visual */}
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6">
+                  {/* Body Map — dual read-only visual */}
                   {incident.bodyPartInjured && (
                     <div className="flex justify-center">
-                      <BodyMap
+                      <BodyMapDual
                         value={incident.bodyPartInjured}
                         readOnly
-                        className="w-full max-w-[180px]"
                       />
                     </div>
                   )}
 
                   {/* Text details */}
-                  <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-                    {incident.bodyPartInjured && (
-                      <div className="sm:col-span-2">
-                        <span className="text-muted-foreground">Body Parts Injured</span>
+                  <div className="grid grid-cols-1 gap-4 text-sm content-start">
+                    {incident.natureOfInjury && (
+                      <div>
+                        <span className="text-muted-foreground">Nature of Injury</span>
                         <div className="mt-1 flex flex-wrap gap-1">
-                          {incident.bodyPartInjured.split(",").map((part: string) => part.trim()).filter(Boolean).map((part: string) => (
-                            <Badge key={part} variant="outline" className="bg-red-50 text-red-800 border-red-200 text-xs">
-                              {part}
+                          {incident.natureOfInjury.split(",").map((injury: string) => injury.trim()).filter(Boolean).map((injury: string) => (
+                            <Badge key={injury} variant="outline" className="bg-orange-50 text-orange-800 border-orange-200 text-xs">
+                              {injury}
                             </Badge>
                           ))}
                         </div>
                       </div>
                     )}
-                    {incident.natureOfInjury && (
-                      <div>
-                        <span className="text-muted-foreground">Nature of Injury</span>
-                        <p className="mt-1 font-medium">{incident.natureOfInjury}</p>
-                      </div>
-                    )}
                     {incident.treatmentType && (
                       <div>
-                        <span className="text-muted-foreground">Treatment</span>
+                        <span className="text-muted-foreground">Treatment Obtained</span>
                         <p className="mt-1 font-medium">
                           {TREATMENT_TYPES[incident.treatmentType as keyof typeof TREATMENT_TYPES]?.label ?? incident.treatmentType}
                         </p>
@@ -291,7 +404,7 @@ export default async function IncidentDetailPage({
                     )}
                     {incident.lostDays != null && (
                       <div>
-                        <span className="text-muted-foreground">Lost Days</span>
+                        <span className="text-muted-foreground">Work Days Lost</span>
                         <p className="mt-1 font-medium">{incident.lostDays} {incident.lostDays === 1 ? "day" : "days"}</p>
                       </div>
                     )}

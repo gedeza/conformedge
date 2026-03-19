@@ -11,6 +11,7 @@ import {
   Settings,
   ArrowLeft,
   Share2,
+  Shield,
 } from "lucide-react"
 
 import {
@@ -32,6 +33,7 @@ const partnerItems = [
   { title: "Partner Team", href: "/partner/team", icon: Users },
   { title: "Referrals", href: "/partner/referrals", icon: Share2 },
   { title: "Billing", href: "/partner/billing", icon: CreditCard },
+  { title: "Compliance Monitor", href: "/partner/insights", icon: Shield },
 ]
 
 const footerItems = [

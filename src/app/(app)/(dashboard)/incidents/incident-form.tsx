@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/shared/date-picker"
 import { INCIDENT_TYPES, RISK_LEVELS, TREATMENT_TYPES, CONTRIBUTING_FACTORS, MHSA_SECTIONS, BODY_PARTS, NATURE_OF_INJURIES } from "@/lib/constants"
-import { BodyMap } from "@/components/shared/body-map"
+import { BodyMapDual } from "@/components/shared/body-map-dual"
 import { createIncident, updateIncident, type IncidentFormValues } from "./actions"
 import type { RootCauseData, RootCauseWhy } from "@/types"
 
@@ -39,8 +39,8 @@ const formSchema = z.object({
   rootCauseData: z.any().optional(),
   incidentTime: z.string().max(5).optional(),
   lostDays: z.coerce.number().int().min(0).optional(),
-  bodyPartInjured: z.string().max(200).optional(),
-  natureOfInjury: z.string().max(200).optional(),
+  bodyPartInjured: z.string().max(500).optional(),
+  natureOfInjury: z.string().max(500).optional(),
   treatmentType: z.enum(["NONE", "FIRST_AID", "MEDICAL", "HOSPITALIZED"]).optional(),
   contributingFactors: z.array(z.string()).optional(),
   isReportable: z.boolean().default(false),
@@ -48,6 +48,22 @@ const formSchema = z.object({
   investigationDue: z.coerce.date().optional(),
   projectId: z.string().optional(),
   investigatorId: z.string().optional(),
+  // Personnel involved
+  victimOccupation: z.string().max(200).optional(),
+  victimStaffNo: z.string().max(50).optional(),
+  victimDepartment: z.string().max(200).optional(),
+  victimIdNumber: z.string().max(50).optional(),
+  victimNationality: z.string().max(100).optional(),
+  victimContractor: z.string().max(200).optional(),
+  immediateSupervisor: z.string().max(200).optional(),
+  // Consequence & Impact
+  estimatedCost: z.coerce.number().min(0).optional(),
+  spillVolume: z.coerce.number().min(0).optional(),
+  impactAreas: z.array(z.string()).optional(),
+  nonInjuriousType: z.string().max(200).optional(),
+  // Outcome
+  returnedToWork: z.boolean().optional(),
+  returnedToWorkDate: z.coerce.date().optional(),
 })
 
 const ROOT_CAUSE_CATEGORIES = [
@@ -92,6 +108,22 @@ interface IncidentFormProps {
     investigationDue: Date | null
     projectId: string | null
     investigatorId: string | null
+    // Personnel involved
+    victimOccupation: string | null
+    victimStaffNo: string | null
+    victimDepartment: string | null
+    victimIdNumber: string | null
+    victimNationality: string | null
+    victimContractor: string | null
+    immediateSupervisor: string | null
+    // Consequence & Impact
+    estimatedCost: number | null
+    spillVolume: number | null
+    impactAreas: unknown // Json
+    nonInjuriousType: string | null
+    // Outcome
+    returnedToWork: boolean | null
+    returnedToWorkDate: Date | null
   }
   projects: { id: string; name: string }[]
   members: { id: string; name: string }[]
@@ -134,6 +166,9 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
   const [selectedFactors, setSelectedFactors] = useState<string[]>(
     (incident?.contributingFactors as string[]) ?? []
   )
+  const [selectedImpactAreas, setSelectedImpactAreas] = useState<string[]>(
+    (incident?.impactAreas as string[]) ?? []
+  )
 
   const form = useForm<z.infer<typeof formSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,6 +194,21 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       investigationDue: incident?.investigationDue ?? undefined,
       projectId: incident?.projectId ?? undefined,
       investigatorId: incident?.investigatorId ?? undefined,
+      // Personnel involved
+      victimOccupation: incident?.victimOccupation ?? "",
+      victimStaffNo: incident?.victimStaffNo ?? "",
+      victimDepartment: incident?.victimDepartment ?? "",
+      victimIdNumber: incident?.victimIdNumber ?? "",
+      victimNationality: incident?.victimNationality ?? "",
+      victimContractor: incident?.victimContractor ?? "",
+      immediateSupervisor: incident?.immediateSupervisor ?? "",
+      // Consequence & Impact
+      estimatedCost: incident?.estimatedCost ?? undefined,
+      spillVolume: incident?.spillVolume ?? undefined,
+      nonInjuriousType: incident?.nonInjuriousType ?? "",
+      // Outcome
+      returnedToWork: incident?.returnedToWork ?? undefined,
+      returnedToWorkDate: incident?.returnedToWorkDate ?? undefined,
     },
   })
 
@@ -185,7 +235,20 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         investigationDue: incident.investigationDue ?? undefined,
         projectId: incident.projectId ?? undefined,
         investigatorId: incident.investigatorId ?? undefined,
+        victimOccupation: incident.victimOccupation ?? "",
+        victimStaffNo: incident.victimStaffNo ?? "",
+        victimDepartment: incident.victimDepartment ?? "",
+        victimIdNumber: incident.victimIdNumber ?? "",
+        victimNationality: incident.victimNationality ?? "",
+        victimContractor: incident.victimContractor ?? "",
+        immediateSupervisor: incident.immediateSupervisor ?? "",
+        estimatedCost: incident.estimatedCost ?? undefined,
+        spillVolume: incident.spillVolume ?? undefined,
+        nonInjuriousType: incident.nonInjuriousType ?? "",
+        returnedToWork: incident.returnedToWork ?? undefined,
+        returnedToWorkDate: incident.returnedToWorkDate ?? undefined,
       })
+      setSelectedImpactAreas((incident.impactAreas as string[]) ?? [])
       const data = parseExistingRootCauseData(incident)
       setRcMethod(data?.method ?? "simple")
       setRcCategory(data?.category ?? "")
@@ -215,6 +278,18 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         investigationDue: undefined,
         projectId: undefined,
         investigatorId: undefined,
+        victimOccupation: "",
+        victimStaffNo: "",
+        victimDepartment: "",
+        victimIdNumber: "",
+        victimNationality: "",
+        victimContractor: "",
+        immediateSupervisor: "",
+        estimatedCost: undefined,
+        spillVolume: undefined,
+        nonInjuriousType: "",
+        returnedToWork: undefined,
+        returnedToWorkDate: undefined,
       })
       setRcMethod("simple")
       setRcCategory("")
@@ -222,6 +297,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       setFiveWhysRootCause("")
       setContainmentAction("")
       setSelectedFactors([])
+      setSelectedImpactAreas([])
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incident])
@@ -245,6 +321,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       let submitValues = {
         ...values,
         contributingFactors: selectedFactors.length > 0 ? selectedFactors : undefined,
+        impactAreas: selectedImpactAreas.length > 0 ? selectedImpactAreas : undefined,
       }
 
       if (rcMethod === "simple") {
@@ -398,7 +475,7 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                 name="injuredParty"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Injured Party</FormLabel>
+                    <FormLabel>Injured Party (Victim&apos;s Name)</FormLabel>
                     <FormControl><Input placeholder="Name(s) of injured person(s)" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -406,23 +483,193 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
               />
             </div>
 
-            {/* Injury Details Section */}
+            {/* Particular of Personnel Involved */}
             <div className="space-y-3 rounded-md border p-3 bg-muted/30">
+              <Label className="text-sm font-medium">Particular of Personnel Involved</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <FormField control={form.control} name="victimOccupation" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Occupation</FormLabel>
+                    <FormControl><Input placeholder="Job title / role" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="victimStaffNo" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Staff / Employee No</FormLabel>
+                    <FormControl><Input placeholder="Employee number" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="victimDepartment" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Department</FormLabel>
+                    <FormControl><Input placeholder="Department / section" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <FormField control={form.control} name="victimIdNumber" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">ID / Passport No</FormLabel>
+                    <FormControl><Input placeholder="NRIC / Passport number" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="victimNationality" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Nationality</FormLabel>
+                    <FormControl><Input placeholder="e.g. South African" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="victimContractor" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Contractor (if applicable)</FormLabel>
+                    <FormControl><Input placeholder="Contractor company name" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <FormField control={form.control} name="immediateSupervisor" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Immediate Supervisor</FormLabel>
+                    <FormControl><Input placeholder="Supervisor name" {...field} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </div>
+
+            {/* Non-Injurious Incident Type */}
+            {(form.watch("incidentType") === "ENVIRONMENTAL" || form.watch("incidentType") === "PROPERTY_DAMAGE" || form.watch("incidentType") === "NEAR_MISS") && (
+              <div className="space-y-3 rounded-md border p-3 bg-amber-50/50 dark:bg-amber-950/20">
+                <Label className="text-sm font-medium">Non-Injurious Incident Classification</Label>
+                <FormField control={form.control} name="nonInjuriousType" render={({ field }) => {
+                  const options = [
+                    "Fire / Explosion", "Equipment Damage", "Vehicle Hazard",
+                    "Oil / Chemical Spill", "Ammonia Release", "CNG Release",
+                    "WWTP Discharge", "Public / Security", "Other",
+                  ]
+                  return (
+                    <FormItem>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 rounded-md border p-2 bg-background">
+                        {options.map(opt => (
+                          <label key={opt} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5">
+                            <input
+                              type="radio"
+                              name="nonInjuriousType"
+                              checked={field.value === opt}
+                              onChange={() => field.onChange(opt)}
+                              className="h-3 w-3 accent-amber-600"
+                            />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }} />
+              </div>
+            )}
+
+            {/* Consequence & Impact */}
+            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
+              <Label className="text-sm font-medium">Consequence &amp; Impact</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <FormField control={form.control} name="estimatedCost" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Actual Cost (R)</FormLabel>
+                    <FormControl><Input type="number" min={0} step="0.01" placeholder="0.00" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="spillVolume" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Spill Volume (m&sup3;)</FormLabel>
+                    <FormControl><Input type="number" min={0} step="0.01" placeholder="0.00" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+              <div>
+                <Label className="text-xs font-medium mb-1.5 block">Additional Significant Implication / Impact To</Label>
+                <div className="flex flex-wrap gap-3 rounded-md border p-2 bg-background">
+                  {["Health", "Safety", "Environment", "Production"].map(area => (
+                    <label key={area} className="flex items-center gap-1.5 text-xs cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedImpactAreas.includes(area)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedImpactAreas([...selectedImpactAreas, area])
+                          else setSelectedImpactAreas(selectedImpactAreas.filter(a => a !== area))
+                        }}
+                        className="rounded border-gray-300 h-3.5 w-3.5"
+                      />
+                      {area}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Injury Details Section — AE SHEQ style layout */}
+            <div className="space-y-4 rounded-md border p-3 bg-muted/30">
               <Label className="text-sm font-medium">Injury Details</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4">
-                {/* Body Map — visual selector */}
+
+              {/* Row 1: Nature of Injury checklist + Body Map (dual front/back) */}
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4">
+                {/* Left: Nature of Injury — multi-select checkboxes */}
+                <FormField control={form.control} name="natureOfInjury" render={({ field }) => {
+                  const selected = (field.value || "").split(",").map((s: string) => s.trim()).filter(Boolean)
+                  function toggleInjury(injury: string) {
+                    const updated = selected.includes(injury)
+                      ? selected.filter((i: string) => i !== injury)
+                      : [...selected, injury]
+                    field.onChange(updated.join(", "))
+                  }
+                  return (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold">
+                        Nature or Type of Injury
+                        {selected.length > 0 && (
+                          <span className="ml-1 text-red-600">({selected.length})</span>
+                        )}
+                      </FormLabel>
+                      <div className="grid grid-cols-1 gap-0.5 rounded-md border p-2 bg-background max-h-[420px] overflow-y-auto">
+                        {NATURE_OF_INJURIES.map(injury => (
+                          <label key={injury} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5">
+                            <input
+                              type="checkbox"
+                              checked={selected.includes(injury)}
+                              onChange={() => toggleInjury(injury)}
+                              className="rounded border-gray-300 h-3 w-3 accent-red-600"
+                            />
+                            {injury}
+                          </label>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }} />
+
+                {/* Center: Dual Body Map (front + back) */}
                 <FormField control={form.control} name="bodyPartInjured" render={({ field }) => (
-                  <div className="flex justify-center">
-                    <BodyMap
+                  <FormItem>
+                    <FormLabel className="text-xs font-semibold">Body Parts</FormLabel>
+                    <BodyMapDual
                       value={field.value || undefined}
                       onChange={field.onChange}
-                      className="w-full max-w-[220px]"
                     />
-                  </div>
+                  </FormItem>
                 )} />
 
-                {/* Right side — dropdowns and inputs */}
-                <div className="grid grid-cols-1 gap-3">
+                {/* Right: Injury details + Treatment + Lost Days */}
+                <div className="grid grid-cols-1 gap-3 content-start">
                   <FormField control={form.control} name="bodyPartInjured" render={({ field }) => {
                     const selected = (field.value || "").split(",").map((s: string) => s.trim()).filter(Boolean)
                     function togglePart(bp: string) {
@@ -433,20 +680,20 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                     }
                     return (
                       <FormItem>
-                        <FormLabel className="text-xs">
+                        <FormLabel className="text-xs font-semibold">
                           Body Parts Injured
                           {selected.length > 0 && (
                             <span className="ml-1 text-red-600">({selected.length} selected)</span>
                           )}
                         </FormLabel>
-                        <div className="grid grid-cols-2 gap-1 rounded-md border p-2 bg-background max-h-[160px] overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-0.5 rounded-md border p-2 bg-background max-h-[160px] overflow-y-auto">
                           {BODY_PARTS.map(bp => (
                             <label key={bp} className="flex items-center gap-1.5 text-xs cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5">
                               <input
                                 type="checkbox"
                                 checked={selected.includes(bp)}
                                 onChange={() => togglePart(bp)}
-                                className="rounded border-gray-300 h-3 w-3"
+                                className="rounded border-gray-300 h-3 w-3 accent-red-600"
                               />
                               {bp}
                             </label>
@@ -456,21 +703,10 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                       </FormItem>
                     )
                   }} />
-                  <FormField control={form.control} name="natureOfInjury" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">Nature of Injury</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                        <SelectContent>
-                          {NATURE_OF_INJURIES.map(n => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
+
                   <FormField control={form.control} name="treatmentType" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Treatment Type</FormLabel>
+                      <FormLabel className="text-xs font-semibold">Treatment Obtained</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value || ""}>
                         <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
                         <SelectContent>
@@ -480,9 +716,10 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                       <FormMessage />
                     </FormItem>
                   )} />
+
                   <FormField control={form.control} name="lostDays" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Lost Days</FormLabel>
+                      <FormLabel className="text-xs font-semibold">No. of Work Days Lost</FormLabel>
                       <FormControl><Input type="number" min={0} placeholder="0" {...field} value={field.value ?? ""} className="h-8 text-xs" /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -509,6 +746,42 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                     {factor}
                   </label>
                 ))}
+              </div>
+            </div>
+
+            {/* Outcome of Injured Person */}
+            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
+              <Label className="text-sm font-medium">Outcome of Injured Person</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <FormField control={form.control} name="returnedToWork" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Returned to Work?</FormLabel>
+                    <Select onValueChange={(v) => field.onChange(v === "true")} value={field.value === true ? "true" : field.value === false ? "false" : ""}>
+                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="true">Yes — returned to work</SelectItem>
+                        <SelectItem value="false">No — not yet returned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                {form.watch("returnedToWork") === true && (
+                  <FormField control={form.control} name="returnedToWorkDate" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs">Date Returned</FormLabel>
+                      <FormControl>
+                        <DatePicker value={field.value} onChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                )}
+                {form.watch("returnedToWork") === false && (
+                  <div className="flex items-center gap-2 rounded-md bg-amber-50 dark:bg-amber-950/30 p-2 text-xs text-amber-800 dark:text-amber-200">
+                    <span>Inform Safety &amp; Health Officer</span>
+                  </div>
+                )}
               </div>
             </div>
 

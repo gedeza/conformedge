@@ -83,6 +83,22 @@ export function IncidentTable({ data, projects, members, role }: IncidentTablePr
           investigationDue: editItem.investigationDue,
           projectId: editItem.project?.id ?? null,
           investigatorId: editItem.investigator?.id ?? null,
+          // Personnel involved
+          victimOccupation: editItem.victimOccupation ?? null,
+          victimStaffNo: editItem.victimStaffNo ?? null,
+          victimDepartment: editItem.victimDepartment ?? null,
+          victimIdNumber: editItem.victimIdNumber ?? null,
+          victimNationality: editItem.victimNationality ?? null,
+          victimContractor: editItem.victimContractor ?? null,
+          immediateSupervisor: editItem.immediateSupervisor ?? null,
+          // Consequence & Impact
+          estimatedCost: editItem.estimatedCost ? Number(editItem.estimatedCost) : null,
+          spillVolume: editItem.spillVolume ? Number(editItem.spillVolume) : null,
+          impactAreas: editItem.impactAreas,
+          nonInjuriousType: editItem.nonInjuriousType ?? null,
+          // Outcome
+          returnedToWork: editItem.returnedToWork ?? null,
+          returnedToWorkDate: editItem.returnedToWorkDate ?? null,
         } : undefined}
         projects={projects}
         members={members}

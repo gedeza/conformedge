@@ -12,6 +12,11 @@ import type { ActionResult } from "@/types"
 const auditPackSchema = z.object({
   title: z.string().min(1, "Title is required").max(200),
   description: z.string().max(2000).optional(),
+  auditType: z.string().max(50).optional(),
+  auditDateFrom: z.coerce.date().optional(),
+  auditDateTo: z.coerce.date().optional(),
+  leadAuditorId: z.string().optional(),
+  scope: z.string().max(2000).optional(),
   projectId: z.string().min(1, "Project is required"),
 })
 
@@ -65,6 +70,11 @@ export async function createAuditPack(values: AuditPackFormValues): Promise<Acti
       data: {
         title: parsed.title,
         description: parsed.description,
+        auditType: parsed.auditType || null,
+        auditDateFrom: parsed.auditDateFrom || null,
+        auditDateTo: parsed.auditDateTo || null,
+        leadAuditorId: parsed.leadAuditorId || null,
+        scope: parsed.scope || null,
         projectId: parsed.projectId,
         createdById: dbUserId,
         organizationId: dbOrgId,

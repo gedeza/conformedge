@@ -34,13 +34,29 @@ const incidentSchema = z.object({
   investigatorId: z.string().optional(),
   incidentTime: z.string().max(5).optional(), // HH:mm
   lostDays: z.coerce.number().int().min(0).optional(),
-  bodyPartInjured: z.string().max(200).optional(),
-  natureOfInjury: z.string().max(200).optional(),
+  bodyPartInjured: z.string().max(500).optional(),
+  natureOfInjury: z.string().max(500).optional(),
   treatmentType: z.enum(["NONE", "FIRST_AID", "MEDICAL", "HOSPITALIZED"]).optional(),
   contributingFactors: z.array(z.string()).optional(),
   isReportable: z.boolean().default(false),
   reportingDeadline: z.coerce.date().optional(),
   mhsaSection: z.enum(["11", "23", "24"]).optional(),
+  // Personnel involved
+  victimOccupation: z.string().max(200).optional(),
+  victimStaffNo: z.string().max(50).optional(),
+  victimDepartment: z.string().max(200).optional(),
+  victimIdNumber: z.string().max(50).optional(),
+  victimNationality: z.string().max(100).optional(),
+  victimContractor: z.string().max(200).optional(),
+  immediateSupervisor: z.string().max(200).optional(),
+  // Consequence & Impact
+  estimatedCost: z.coerce.number().min(0).optional(),
+  spillVolume: z.coerce.number().min(0).optional(),
+  impactAreas: z.array(z.string()).optional(),
+  nonInjuriousType: z.string().max(200).optional(),
+  // Outcome
+  returnedToWork: z.boolean().optional(),
+  returnedToWorkDate: z.coerce.date().optional(),
 })
 
 export type IncidentFormValues = z.infer<typeof incidentSchema>
@@ -145,6 +161,22 @@ export async function createIncident(values: IncidentFormValues): Promise<Action
         isReportable: parsed.isReportable,
         reportingDeadline: parsed.reportingDeadline || null,
         mhsaSection: parsed.mhsaSection || null,
+        // Personnel involved
+        victimOccupation: parsed.victimOccupation || null,
+        victimStaffNo: parsed.victimStaffNo || null,
+        victimDepartment: parsed.victimDepartment || null,
+        victimIdNumber: parsed.victimIdNumber || null,
+        victimNationality: parsed.victimNationality || null,
+        victimContractor: parsed.victimContractor || null,
+        immediateSupervisor: parsed.immediateSupervisor || null,
+        // Consequence & Impact
+        estimatedCost: parsed.estimatedCost ?? null,
+        spillVolume: parsed.spillVolume ?? null,
+        impactAreas: parsed.impactAreas ? (parsed.impactAreas as unknown as Prisma.InputJsonValue) : undefined,
+        nonInjuriousType: parsed.nonInjuriousType || null,
+        // Outcome
+        returnedToWork: parsed.returnedToWork ?? null,
+        returnedToWorkDate: parsed.returnedToWorkDate || null,
         reportedById: dbUserId,
         organizationId: dbOrgId,
       },
@@ -154,7 +186,14 @@ export async function createIncident(values: IncidentFormValues): Promise<Action
       action: "CREATE",
       entityType: "Incident",
       entityId: incident.id,
-      metadata: { title: incident.title, type: incident.incidentType },
+      metadata: {
+        title: incident.title,
+        type: incident.incidentType,
+        severity: incident.severity,
+        injuredParty: incident.injuredParty || undefined,
+        isReportable: parsed.isReportable || undefined,
+        estimatedCost: parsed.estimatedCost || undefined,
+      },
       userId: dbUserId,
       organizationId: dbOrgId,
     })
@@ -243,6 +282,22 @@ export async function updateIncident(id: string, values: IncidentFormValues): Pr
         isReportable: parsed.isReportable,
         reportingDeadline: parsed.reportingDeadline || null,
         mhsaSection: parsed.mhsaSection || null,
+        // Personnel involved
+        victimOccupation: parsed.victimOccupation || null,
+        victimStaffNo: parsed.victimStaffNo || null,
+        victimDepartment: parsed.victimDepartment || null,
+        victimIdNumber: parsed.victimIdNumber || null,
+        victimNationality: parsed.victimNationality || null,
+        victimContractor: parsed.victimContractor || null,
+        immediateSupervisor: parsed.immediateSupervisor || null,
+        // Consequence & Impact
+        estimatedCost: parsed.estimatedCost ?? null,
+        spillVolume: parsed.spillVolume ?? null,
+        impactAreas: parsed.impactAreas ? (parsed.impactAreas as unknown as Prisma.InputJsonValue) : undefined,
+        nonInjuriousType: parsed.nonInjuriousType || null,
+        // Outcome
+        returnedToWork: parsed.returnedToWork ?? null,
+        returnedToWorkDate: parsed.returnedToWorkDate || null,
       },
     })
 
@@ -250,7 +305,16 @@ export async function updateIncident(id: string, values: IncidentFormValues): Pr
       action: "UPDATE",
       entityType: "Incident",
       entityId: id,
-      metadata: { title: parsed.title, type: parsed.incidentType },
+      metadata: {
+        title: parsed.title,
+        type: parsed.incidentType,
+        severity: parsed.severity,
+        injuredParty: parsed.injuredParty || undefined,
+        isReportable: parsed.isReportable || undefined,
+        estimatedCost: parsed.estimatedCost || undefined,
+        returnedToWork: parsed.returnedToWork,
+        lostDays: parsed.lostDays,
+      },
       userId: dbUserId,
       organizationId: dbOrgId,
     })

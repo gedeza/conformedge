@@ -83,6 +83,13 @@ export interface WCl2Props {
   employeeIdNumber?: string
   employeeOccupation?: string
   employeeDateOfBirth?: string
+  employeeStaffNo?: string
+  employeeDepartment?: string
+  employeeNationality?: string
+  employeeContractor?: string
+
+  // Supervisor
+  supervisorName?: string
 
   // Incident
   incidentTitle: string
@@ -100,10 +107,14 @@ export interface WCl2Props {
   // Immediate action
   immediateAction?: string
 
-  // Medical
+  // Medical / Outcome
   treatingDoctor?: string
   hospitalClinic?: string
   daysAbsent?: string
+  treatmentType?: string
+  estimatedCost?: string
+  returnedToWork?: string
+  returnedToWorkDate?: string
 
   // Reporter
   reporterName: string
@@ -131,9 +142,14 @@ export function WCl2Form(props: WCl2Props) {
 
         <Section title="B. Employee / Injured Person" />
         <Field label="Full Name" value={props.employeeName} />
-        <Field label="ID Number" value={props.employeeIdNumber} />
+        <Field label="ID / Passport Number" value={props.employeeIdNumber} />
+        <Field label="Staff / Employee Number" value={props.employeeStaffNo} />
         <Field label="Date of Birth" value={props.employeeDateOfBirth} />
         <Field label="Occupation / Job Title" value={props.employeeOccupation} />
+        <Field label="Department" value={props.employeeDepartment} />
+        <Field label="Nationality" value={props.employeeNationality} />
+        <Field label="Contractor (if applicable)" value={props.employeeContractor} />
+        <Field label="Immediate Supervisor" value={props.supervisorName} />
 
         <Section title="C. Particulars of Incident" />
         <Field label="Date of Incident" value={props.incidentDate} />
@@ -148,10 +164,14 @@ export function WCl2Form(props: WCl2Props) {
         <FullField label="Immediate Action Taken" value={props.immediateAction} />
         <FullField label="Witnesses" value={props.witnesses} />
 
-        <Section title="E. Medical Treatment" />
+        <Section title="E. Medical Treatment & Outcome" />
+        <Field label="Treatment Type" value={props.treatmentType} />
         <Field label="Treating Doctor / Practitioner" value={props.treatingDoctor} />
         <Field label="Hospital / Clinic" value={props.hospitalClinic} />
         <Field label="Estimated Days Absent from Work" value={props.daysAbsent} />
+        <Field label="Estimated Cost (R)" value={props.estimatedCost} />
+        <Field label="Returned to Work" value={props.returnedToWork} />
+        <Field label="Date Returned to Work" value={props.returnedToWorkDate} />
 
         <Section title="F. Declaration" />
         <Text style={{ fontSize: 8, marginBottom: 8, color: colors.gray }}>

@@ -27,9 +27,12 @@ export function checkUserLimit(billing: BillingContext, currentUserCount: number
 
   if (currentUserCount >= plan.limits.maxUsers) {
     const upgrade = getNextTier(billing.subscription.plan)
+    const additionalFee = plan.limits.additionalUserFeeZar
+      ? ` Additional users available at R${(plan.limits.additionalUserFeeZar / 100).toFixed(0)}/user/month.`
+      : ""
     return {
       allowed: false,
-      reason: `Your ${plan.name} plan supports up to ${plan.limits.maxUsers} users.`,
+      reason: `Your ${plan.name} plan includes ${plan.limits.maxUsers} users.${additionalFee} Upgrade for more included seats.`,
       upgradeRequired: upgrade,
       current: currentUserCount,
       limit: plan.limits.maxUsers,

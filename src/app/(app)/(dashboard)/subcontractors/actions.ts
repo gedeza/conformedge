@@ -15,6 +15,15 @@ const subcontractorSchema = z.object({
   beeLevel: z.coerce.number().min(1).max(8).optional(),
   safetyRating: z.coerce.number().min(0).max(100).optional(),
   tier: z.enum(["PLATINUM", "GOLD", "SILVER", "BRONZE", "UNRATED"]).default("UNRATED"),
+  // Contact details
+  contactPerson: z.string().max(200).optional(),
+  contactEmail: z.string().email().max(200).optional().or(z.literal("")),
+  contactPhone: z.string().max(30).optional(),
+  physicalAddress: z.string().max(500).optional(),
+  // Trade & compliance
+  tradeTypes: z.array(z.string()).optional(),
+  taxClearanceExpiry: z.coerce.date().optional(),
+  liabilityExpiry: z.coerce.date().optional(),
 })
 
 export type SubcontractorFormValues = z.infer<typeof subcontractorSchema>
@@ -86,8 +95,18 @@ export async function createSubcontractor(values: SubcontractorFormValues): Prom
 
     const sub = await db.subcontractor.create({
       data: {
-        ...parsed,
+        name: parsed.name,
+        registrationNumber: parsed.registrationNumber || null,
         beeLevel: parsed.beeLevel?.toString() ?? null,
+        safetyRating: parsed.safetyRating ?? null,
+        tier: parsed.tier,
+        contactPerson: parsed.contactPerson || null,
+        contactEmail: parsed.contactEmail || null,
+        contactPhone: parsed.contactPhone || null,
+        physicalAddress: parsed.physicalAddress || null,
+        tradeTypes: parsed.tradeTypes && parsed.tradeTypes.length > 0 ? parsed.tradeTypes : undefined,
+        taxClearanceExpiry: parsed.taxClearanceExpiry || null,
+        liabilityExpiry: parsed.liabilityExpiry || null,
         organizationId: dbOrgId,
       },
     })
@@ -120,8 +139,18 @@ export async function updateSubcontractor(id: string, values: SubcontractorFormV
     await db.subcontractor.update({
       where: { id },
       data: {
-        ...parsed,
+        name: parsed.name,
+        registrationNumber: parsed.registrationNumber || null,
         beeLevel: parsed.beeLevel?.toString() ?? null,
+        safetyRating: parsed.safetyRating ?? null,
+        tier: parsed.tier,
+        contactPerson: parsed.contactPerson || null,
+        contactEmail: parsed.contactEmail || null,
+        contactPhone: parsed.contactPhone || null,
+        physicalAddress: parsed.physicalAddress || null,
+        tradeTypes: parsed.tradeTypes && parsed.tradeTypes.length > 0 ? parsed.tradeTypes : undefined,
+        taxClearanceExpiry: parsed.taxClearanceExpiry || null,
+        liabilityExpiry: parsed.liabilityExpiry || null,
       },
     })
 

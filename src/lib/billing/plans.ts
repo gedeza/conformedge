@@ -6,6 +6,7 @@ import type { PlanTier, BillingCycle } from "@/types"
 
 export interface PlanLimits {
   maxUsers: number | null          // null = unlimited
+  additionalUserFeeZar: number | null  // per-user/month fee in cents (null = not available)
   maxStandards: number | null
   maxDocuments: number | null
   maxProjects: number | null       // null = unlimited — prevents consultant abuse
@@ -48,7 +49,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     monthlyPriceZar: 2_299_00,     // R2,299 in cents
     description: "For small businesses getting started with ISO compliance.",
     limits: {
-      maxUsers: 5,
+      maxUsers: 3,
+      additionalUserFeeZar: 399_00,   // R399/additional user/month
       maxStandards: 2,
       maxDocuments: 1_000,
       maxProjects: 5,
@@ -80,7 +82,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     monthlyPriceZar: 5_499_00,     // R5,499 in cents (Safety-grade incident management)
     description: "For safety-conscious companies managing compliance and incidents.",
     limits: {
-      maxUsers: 10,
+      maxUsers: 5,
+      additionalUserFeeZar: 449_00,   // R449/additional user/month
       maxStandards: 5,
       maxDocuments: null,
       maxProjects: 15,
@@ -112,7 +115,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     monthlyPriceZar: 8_499_00,     // R8,499 in cents
     description: "For multi-site firms with SA regulatory compliance needs.",
     limits: {
-      maxUsers: 25,
+      maxUsers: 10,
+      additionalUserFeeZar: 349_00,   // R349/additional user/month (volume discount)
       maxStandards: null,
       maxDocuments: null,
       maxProjects: 30,
@@ -144,7 +148,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     monthlyPriceZar: null,
     description: "For large organisations needing full control and scale.",
     limits: {
-      maxUsers: null,
+      maxUsers: 25,
+      additionalUserFeeZar: 299_00,   // R299/additional user/month (negotiable)
       maxStandards: null,
       maxDocuments: null,
       maxProjects: null,

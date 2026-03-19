@@ -448,6 +448,7 @@ model User {
   reviewedExtensions         WorkPermitExtension[]     @relation("ExtensionReviewer")
   requestedExtensions        WorkPermitExtension[]     @relation("ExtensionRequester")
   partnerUsers               PartnerUser[]
+  resolvedPartnerAlerts      PartnerAlert[]            @relation("PartnerAlertResolver")
   termsAcceptances           TermsAcceptance[]
   quotations                 Quotation[]
 
@@ -779,6 +780,18 @@ model Subcontractor {
   beeLevel           String?           @map("bee_level")
   safetyRating       Float?            @map("safety_rating")
   tier               SubcontractorTier @default(UNRATED)
+
+  // Contact details
+  contactPerson      String?           @map("contact_person")
+  contactEmail       String?           @map("contact_email")
+  contactPhone       String?           @map("contact_phone")
+  physicalAddress    String?           @map("physical_address")
+
+  // Trade & compliance
+  tradeTypes         Json?             @map("trade_types") // string[] — Civil, Electrical, Mechanical, etc.
+  taxClearanceExpiry DateTime?         @map("tax_clearance_expiry")
+  liabilityExpiry    DateTime?         @map("liability_expiry")
+
   organizationId     String            @map("organization_id")
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
@@ -815,6 +828,11 @@ model AuditPack {
   id             String          @id @default(uuid())
   title          String
   description    String?
+  auditType      String?         @map("audit_type") // Internal, External, Surveillance, Recertification
+  auditDateFrom  DateTime?       @map("audit_date_from")
+  auditDateTo    DateTime?       @map("audit_date_to")
+  leadAuditorId  String?         @map("lead_auditor_id")
+  scope          String?
   status         AuditPackStatus @default(DRAFT)
   generatedAt    DateTime?       @map("generated_at")
   fileUrl        String?         @map("file_url")
@@ -1096,6 +1114,15 @@ model Incident {
   investigationDue DateTime?      @map("investigation_due")
   closedDate       DateTime?      @map("closed_date")
 
+  // Personnel involved (victim details)
+  victimOccupation      String?    @map("victim_occupation")
+  victimStaffNo         String?    @map("victim_staff_no")
+  victimDepartment      String?    @map("victim_department")
+  victimIdNumber        String?    @map("victim_id_number")
+  victimNationality     String?    @map("victim_nationality")
+  victimContractor      String?    @map("victim_contractor")
+  immediateSupervisor   String?    @map("immediate_supervisor")
+
   // COIDA / Safety fields
   lostDays            Int?       @map("lost_days")
   bodyPartInjured     String?    @map("body_part_injured")
@@ -1107,6 +1134,16 @@ model Incident {
   statutoryReportedAt DateTime?  @map("statutory_reported_at")
   statutoryRefNumber  String?    @map("statutory_ref_number")
   mhsaSection         String?    @map("mhsa_section") // "11", "23", "24"
+
+  // Consequence & Impact
+  estimatedCost       Decimal?   @map("estimated_cost") @db.Decimal(12, 2)
+  spillVolume         Decimal?   @map("spill_volume") @db.Decimal(10, 2)
+  impactAreas         Json?      @map("impact_areas") // ["Health", "Safety", "Environment", "Production"]
+  nonInjuriousType    String?    @map("non_injurious_type") // Fire/Explosion, Equipment Damage, etc.
+
+  // Outcome
+  returnedToWork      Boolean?   @map("returned_to_work")
+  returnedToWorkDate  DateTime?  @map("returned_to_work_date")
 
   organizationId   String         @map("organization_id")
   projectId        String?        @map("project_id")
@@ -1582,6 +1619,8 @@ model Partner {
   clientOrganizations PartnerOrganization[]
   invoices            PartnerInvoice[]
   referrals           Referral[]
+  auditScores         PartnerAuditScore[]
+  alerts              PartnerAlert[]
 
   @@index([status], map: "idx_partner_status")
   @@index([tier], map: "idx_partner_tier")
@@ -1712,6 +1751,100 @@ model Referral {
 
   @@index([partnerId, status], map: "idx_referral_partner_status")
   @@map("referrals")
+}
+
+// ─────────────────────────────────────────────
+// PARTNER AUDIT & COMPLIANCE
+// ─────────────────────────────────────────────
+
+enum PartnerRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum PartnerAlertType {
+  LOW_USER_ACTIVITY
+  GHOST_SEATS
+  USER_SPIKE
+  CLIENT_DENSITY_HIGH
+  INACTIVE_CLIENT
+  REVENUE_DECLINE
+  OVERDUE_INVOICE
+  CLIENT_CHURN
+  TERMS_EXPIRY
+  COMPLIANCE_GAP
+  STATUS_CHANGE
+  BRANDING_CHANGE
+  MAX_CLIENTS_REACHED
+}
+
+enum PartnerAlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+model PartnerAuditScore {
+  id                     String           @id @default(uuid())
+  partnerId              String           @map("partner_id")
+  periodMonth            String           @map("period_month") // "YYYY-MM" e.g. "2026-03"
+
+  // User metrics
+  totalUsers             Int              @default(0) @map("total_users")
+  activeUsers            Int              @default(0) @map("active_users")
+  activityScore          Int              @default(0) @map("activity_score") // 0-100
+
+  // Client density
+  totalClientOrgs        Int              @default(0) @map("total_client_orgs")
+  avgUsersPerClient      Float            @default(0) @map("avg_users_per_client")
+  clientDensityScore     Int              @default(0) @map("client_density_score") // 0-100
+
+  // Revenue
+  totalRevenueCents      Int              @default(0) @map("total_revenue_cents")
+  revenueGrowthPercent   Float            @default(0) @map("revenue_growth_percent")
+  revenueScore           Int              @default(0) @map("revenue_score") // 0-100
+
+  // Feature utilization
+  featureUtilizationScore Int             @default(0) @map("feature_utilization_score") // 0-100
+
+  // Composite
+  overallScore           Int              @default(0) @map("overall_score") // 0-100
+  riskLevel              PartnerRiskLevel @default(LOW) @map("risk_level")
+
+  createdAt              DateTime         @default(now()) @map("created_at")
+  updatedAt              DateTime         @updatedAt @map("updated_at")
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, periodMonth], map: "uq_partner_audit_score_period")
+  @@index([partnerId, createdAt(sort: Desc)], map: "idx_partner_audit_score_partner")
+  @@index([riskLevel], map: "idx_partner_audit_score_risk")
+  @@map("partner_audit_scores")
+}
+
+model PartnerAlert {
+  id           String             @id @default(uuid())
+  partnerId    String             @map("partner_id")
+  alertType    PartnerAlertType   @map("alert_type")
+  severity     PartnerRiskLevel
+  title        String
+  description  String?            @db.Text
+  metadata     Json?              // Supporting data (user counts, percentages, etc.)
+  status       PartnerAlertStatus @default(OPEN)
+  resolvedAt   DateTime?          @map("resolved_at")
+  resolvedById String?            @map("resolved_by_id")
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  partner    Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  resolvedBy User?   @relation("PartnerAlertResolver", fields: [resolvedById], references: [id])
+
+  @@index([partnerId, status, createdAt(sort: Desc)], map: "idx_partner_alert_partner_status")
+  @@index([severity, status], map: "idx_partner_alert_severity")
+  @@map("partner_alerts")
 }
 
 // ─────────────────────────────────────────────

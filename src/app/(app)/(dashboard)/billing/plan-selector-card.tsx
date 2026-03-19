@@ -88,7 +88,10 @@ export function PlanSelectorCard({ billing, paystackEnabled }: PlanSelectorCardP
                 <ul className="mt-4 space-y-1.5 text-xs">
                   <li className="flex items-center gap-1.5">
                     <Check className="size-3 text-primary" />
-                    {plan.limits.maxUsers === null ? "Unlimited" : `Up to ${plan.limits.maxUsers}`} users
+                    {plan.limits.maxUsers} users included
+                    {plan.limits.additionalUserFeeZar && (
+                      <span className="text-muted-foreground">(+R{(plan.limits.additionalUserFeeZar / 100).toFixed(0)}/user)</span>
+                    )}
                   </li>
                   <li className="flex items-center gap-1.5">
                     <Check className="size-3 text-primary" />

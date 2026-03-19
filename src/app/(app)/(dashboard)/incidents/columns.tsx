@@ -34,6 +34,22 @@ export type IncidentRow = {
   isReportable: boolean
   mhsaSection: string | null
   investigationDue: Date | null
+  // Personnel involved
+  victimOccupation: string | null
+  victimStaffNo: string | null
+  victimDepartment: string | null
+  victimIdNumber: string | null
+  victimNationality: string | null
+  victimContractor: string | null
+  immediateSupervisor: string | null
+  // Consequence & Impact
+  estimatedCost: unknown // Decimal
+  spillVolume: unknown // Decimal
+  impactAreas: unknown // Json
+  nonInjuriousType: string | null
+  // Outcome
+  returnedToWork: boolean | null
+  returnedToWorkDate: Date | null
   createdAt: Date
   project: { id: string; name: string } | null
   reportedBy: { id: string; firstName: string; lastName: string } | null

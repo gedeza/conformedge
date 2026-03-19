@@ -18,6 +18,13 @@ export type SubcontractorRow = {
   beeLevel: string | null
   safetyRating: number | null
   tier: string
+  contactPerson: string | null
+  contactEmail: string | null
+  contactPhone: string | null
+  physicalAddress: string | null
+  tradeTypes: unknown // Json
+  taxClearanceExpiry: Date | null
+  liabilityExpiry: Date | null
   createdAt: Date
   _count: { certifications: number }
   certifications: Array<{ id: string; expiresAt: Date | null }>
