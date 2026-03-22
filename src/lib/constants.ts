@@ -228,6 +228,10 @@ export const NOTIFICATION_TYPES = {
   QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
   TEAM_INVITATION: { label: "Team Invitation", color: "bg-blue-100 text-blue-800" },
   PERMIT_EXPIRING: { label: "Permit Expiring", color: "bg-orange-100 text-orange-800" },
+  CALIBRATION_DUE: { label: "Calibration Due", color: "bg-cyan-100 text-cyan-800" },
+  CALIBRATION_OVERDUE: { label: "Calibration Overdue", color: "bg-red-100 text-red-800" },
+  MAINTENANCE_DUE: { label: "Maintenance Due", color: "bg-teal-100 text-teal-800" },
+  EQUIPMENT_QUARANTINED: { label: "Equipment Quarantined", color: "bg-red-100 text-red-800" },
 } as const
 
 export const WORK_PERMIT_STATUSES = {
@@ -255,6 +259,55 @@ export const EXTENSION_STATUSES = {
   PENDING:  { label: "Pending",  color: "bg-yellow-100 text-yellow-800" },
   APPROVED: { label: "Approved", color: "bg-green-100 text-green-800" },
   REJECTED: { label: "Rejected", color: "bg-red-100 text-red-800" },
+} as const
+
+export const EQUIPMENT_STATUSES = {
+  ACTIVE:         { label: "Active",         color: "bg-green-100 text-green-800" },
+  INACTIVE:       { label: "Inactive",       color: "bg-gray-100 text-gray-600" },
+  UNDER_REPAIR:   { label: "Under Repair",   color: "bg-orange-100 text-orange-800" },
+  DECOMMISSIONED: { label: "Decommissioned", color: "bg-gray-100 text-gray-800" },
+  QUARANTINED:    { label: "Quarantined",    color: "bg-red-100 text-red-800" },
+} as const
+
+export const EQUIPMENT_CATEGORIES = [
+  "Lifting Accessories",
+  "Lifting Machines",
+  "NDT Equipment",
+  "Drilling Equipment",
+  "Safety Equipment",
+  "Measurement Instruments",
+  "Vehicles",
+  "PPE",
+  "Fire Equipment",
+  "Electrical Equipment",
+  "General",
+] as const
+
+export const CALIBRATION_RESULTS = {
+  PASS:        { label: "Pass",        color: "bg-green-100 text-green-800" },
+  FAIL:        { label: "Fail",        color: "bg-red-100 text-red-800" },
+  CONDITIONAL: { label: "Conditional", color: "bg-yellow-100 text-yellow-800" },
+} as const
+
+export const MAINTENANCE_STATUSES = {
+  SCHEDULED: { label: "Scheduled", color: "bg-blue-100 text-blue-800" },
+  COMPLETE:  { label: "Complete",  color: "bg-green-100 text-green-800" },
+  POSTPONED: { label: "Postponed", color: "bg-yellow-100 text-yellow-800" },
+  CANCELLED: { label: "Cancelled", color: "bg-gray-100 text-gray-600" },
+} as const
+
+export const MAINTENANCE_TYPES = [
+  "Routine",
+  "Preventive",
+  "Corrective",
+  "Overhaul",
+] as const
+
+export const REPAIR_PRIORITIES = {
+  LOW:       { label: "Low",       color: "bg-green-100 text-green-800" },
+  MEDIUM:    { label: "Medium",    color: "bg-yellow-100 text-yellow-800" },
+  HIGH:      { label: "High",      color: "bg-orange-100 text-orange-800" },
+  EMERGENCY: { label: "Emergency", color: "bg-red-100 text-red-800" },
 } as const
 
 export const RECURRENCE_FREQUENCIES = {
@@ -359,6 +412,7 @@ export const NAV_ITEMS = [
   { title: "Incidents", href: "/incidents", icon: "Siren" },
   { title: "Objectives", href: "/objectives", icon: "Target" },
   { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
+  { title: "Equipment", href: "/equipment", icon: "Wrench" },
   { title: "Subcontractors", href: "/subcontractors", icon: "Building2" },
   { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
   { title: "Audit Trail", href: "/audit-trail", icon: "ScrollText" },

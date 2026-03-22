@@ -29,6 +29,7 @@ export interface FeatureGates {
   advancedIncidentManagement: boolean      // Statutory forms, evidence, MHSA, LTIFR, witnesses
   objectivesTracking: boolean
   permitToWork: boolean
+  equipmentManagement: boolean
   apiAccess: boolean
   sso: boolean
 }
@@ -72,6 +73,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       advancedIncidentManagement: false,     // Pro+ only
       objectivesTracking: false,
       permitToWork: false,
+      equipmentManagement: false,
       apiAccess: false,
       sso: false,
     },
@@ -105,6 +107,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       advancedIncidentManagement: true,     // Statutory forms, evidence, MHSA, LTIFR, witnesses
       objectivesTracking: true,
       permitToWork: true,
+      equipmentManagement: true,
       apiAccess: false,
       sso: false,
     },
@@ -138,6 +141,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       advancedIncidentManagement: true,
       objectivesTracking: true,
       permitToWork: true,
+      equipmentManagement: true,
       apiAccess: true,
       sso: false,
     },
@@ -171,6 +175,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       advancedIncidentManagement: true,
       objectivesTracking: true,
       permitToWork: true,
+      equipmentManagement: true,
       apiAccess: true,
       sso: true,
     },

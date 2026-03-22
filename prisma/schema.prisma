@@ -100,6 +100,10 @@ enum NotificationType {
   OBJECTIVE_DUE
   MANAGEMENT_REVIEW_DUE
   PERMIT_EXPIRING
+  CALIBRATION_DUE
+  CALIBRATION_OVERDUE
+  MAINTENANCE_DUE
+  EQUIPMENT_QUARANTINED
   SUBSCRIPTION_TRIAL_ENDING
   SUBSCRIPTION_PAYMENT_FAILED
   SUBSCRIPTION_CANCELLED
@@ -350,6 +354,38 @@ enum TermsVersionStatus {
 }
 
 // ─────────────────────────────────────────────
+// EQUIPMENT ENUMS
+// ─────────────────────────────────────────────
+
+enum EquipmentStatus {
+  ACTIVE
+  INACTIVE
+  UNDER_REPAIR
+  DECOMMISSIONED
+  QUARANTINED
+}
+
+enum CalibrationResult {
+  PASS
+  FAIL
+  CONDITIONAL
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  COMPLETE
+  POSTPONED
+  CANCELLED
+}
+
+enum RepairPriority {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+// ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
 
@@ -387,6 +423,7 @@ model Organization {
   organizationStandards      OrganizationStandard[]
   partnerOrganizations       PartnerOrganization[]
   referrals                  Referral[]
+  equipment                  Equipment[]
 
   // Billing
   subscription        Subscription?
@@ -451,6 +488,9 @@ model User {
   resolvedPartnerAlerts      PartnerAlert[]            @relation("PartnerAlertResolver")
   termsAcceptances           TermsAcceptance[]
   quotations                 Quotation[]
+  recordedCalibrations       CalibrationRecord[]      @relation("CalibrationRecorder")
+  recordedMaintenance        MaintenanceRecord[]      @relation("MaintenanceRecorder")
+  recordedRepairs            RepairRecord[]           @relation("RepairRecorder")
 
   @@map("users")
 }
@@ -493,6 +533,7 @@ model Project {
   checklistTemplates ChecklistTemplate[]   @relation("TemplateDefaultProject")
   incidents          Incident[]
   workPermits        WorkPermit[]
+  equipment          Equipment[]
 
   @@map("projects")
 }
@@ -697,6 +738,7 @@ model Capa {
   linkedItems      ChecklistItem[]
   standardClauses  CapaStandardClause[]
   incidents        Incident[]
+  repairRecords    RepairRecord[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_capa_org_created")
   @@index([organizationId, status], map: "idx_capa_org_status")
@@ -1939,4 +1981,129 @@ model Quotation {
   @@index([status], map: "idx_quotation_status")
   @@index([createdById], map: "idx_quotation_created_by")
   @@map("quotations")
+}
+
+// ─────────────────────────────────────────────
+// EQUIPMENT / ASSET MANAGEMENT
+// ─────────────────────────────────────────────
+
+model Equipment {
+  id               String          @id @default(uuid())
+  assetNumber      String          @map("asset_number")
+  name             String
+  description      String?         @db.Text
+  category         String
+  manufacturer     String?
+  model            String?
+  serialNumber     String?         @map("serial_number")
+  status           EquipmentStatus @default(ACTIVE)
+  location         String?
+  swl              String?                          // Safe Working Load (e.g. "5 tonnes")
+  ceMarking        Boolean         @default(false)  @map("ce_marking")
+  purchaseDate     DateTime?       @map("purchase_date")
+  commissionDate   DateTime?       @map("commission_date")
+  decommissionDate DateTime?       @map("decommission_date")
+  warrantyExpiry   DateTime?       @map("warranty_expiry")
+  specifications   Json?                            // Flexible key/value: proof load, legislation, exam interval
+  notes            String?         @db.Text
+  nextCalibrationDue DateTime?     @map("next_calibration_due")
+
+  organizationId   String          @map("organization_id")
+  projectId        String?         @map("project_id")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project          Project?        @relation(fields: [projectId], references: [id])
+
+  calibrationRecords CalibrationRecord[]
+  maintenanceRecords MaintenanceRecord[]
+  repairRecords      RepairRecord[]
+
+  @@unique([organizationId, assetNumber])
+  @@index([organizationId, status], map: "idx_equipment_org_status")
+  @@index([organizationId, category], map: "idx_equipment_org_category")
+  @@index([organizationId, nextCalibrationDue], map: "idx_equipment_org_calibration_due")
+  @@map("equipment")
+}
+
+model CalibrationRecord {
+  id                String          @id @default(uuid())
+  equipmentId       String          @map("equipment_id")
+  calibrationDate   DateTime        @map("calibration_date")
+  nextDueDate       DateTime        @map("next_due_date")
+  certificateNumber String?         @map("certificate_number")
+  certificateFileKey String?        @map("certificate_file_key")
+  certificateFileName String?       @map("certificate_file_name")
+  calibratedBy      String          @map("calibrated_by")
+  result            CalibrationResult
+  deviation         String?
+  notes             String?         @db.Text
+
+  organizationId    String          @map("organization_id")
+  recordedById      String          @map("recorded_by_id")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  equipment         Equipment       @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  recordedBy        User            @relation("CalibrationRecorder", fields: [recordedById], references: [id])
+
+  @@index([equipmentId, nextDueDate], map: "idx_calibration_equipment_due")
+  @@index([organizationId, nextDueDate], map: "idx_calibration_org_due")
+  @@map("calibration_records")
+}
+
+model MaintenanceRecord {
+  id              String            @id @default(uuid())
+  equipmentId     String            @map("equipment_id")
+  scheduledDate   DateTime          @map("scheduled_date")
+  completedDate   DateTime?         @map("completed_date")
+  status          MaintenanceStatus @default(SCHEDULED)
+  maintenanceType String            @map("maintenance_type")  // Routine, Preventive, Corrective, Overhaul
+  description     String            @db.Text
+  performedBy     String?           @map("performed_by")
+  cost            Decimal?          @db.Decimal(12, 2)
+  notes           String?           @db.Text
+
+  organizationId  String            @map("organization_id")
+  recordedById    String            @map("recorded_by_id")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  equipment       Equipment         @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  recordedBy      User              @relation("MaintenanceRecorder", fields: [recordedById], references: [id])
+
+  @@index([equipmentId, scheduledDate], map: "idx_maintenance_equipment_date")
+  @@index([organizationId, status, scheduledDate], map: "idx_maintenance_org_status_date")
+  @@map("maintenance_records")
+}
+
+model RepairRecord {
+  id                String         @id @default(uuid())
+  equipmentId       String         @map("equipment_id")
+  repairDate        DateTime       @map("repair_date")
+  description       String         @db.Text
+  supplierName      String         @map("supplier_name")
+  supplierReference String?        @map("supplier_reference")
+  priority          RepairPriority @default(MEDIUM)
+  cost              Decimal?       @db.Decimal(12, 2)
+  partsUsed         Json?          @map("parts_used")
+  verificationDate  DateTime?      @map("verification_date")
+  verifiedBy        String?        @map("verified_by")
+  verificationNotes String?        @map("verification_notes") @db.Text
+  returnToServiceDate DateTime?    @map("return_to_service_date")
+  capaId            String?        @map("capa_id")
+
+  organizationId    String         @map("organization_id")
+  recordedById      String         @map("recorded_by_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  equipment         Equipment      @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  recordedBy        User           @relation("RepairRecorder", fields: [recordedById], references: [id])
+  capa              Capa?          @relation(fields: [capaId], references: [id])
+
+  @@index([equipmentId, repairDate], map: "idx_repair_equipment_date")
+  @@index([organizationId, createdAt], map: "idx_repair_org_created")
+  @@map("repair_records")
 }

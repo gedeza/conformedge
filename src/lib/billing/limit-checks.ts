@@ -268,6 +268,7 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     advancedIncidentManagement: "Advanced Incident Management (Statutory Forms, Evidence, MHSA)",
     objectivesTracking: "Objectives & KPI Tracking",
     permitToWork: "Permit to Work",
+    equipmentManagement: "Equipment & Asset Management",
     apiAccess: "API Access",
     sso: "Single Sign-On",
   }

@@ -24,6 +24,11 @@ import {
   WORK_PERMIT_STATUSES,
   WORK_PERMIT_TYPES,
   EXTENSION_STATUSES,
+
+  EQUIPMENT_STATUSES,
+  CALIBRATION_RESULTS,
+  MAINTENANCE_STATUSES,
+  REPAIR_PRIORITIES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -52,6 +57,11 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   permit: WORK_PERMIT_STATUSES,
   permitType: WORK_PERMIT_TYPES,
   extension: EXTENSION_STATUSES,
+
+  equipment: EQUIPMENT_STATUSES,
+  calibration: CALIBRATION_RESULTS,
+  maintenance: MAINTENANCE_STATUSES,
+  repairPriority: REPAIR_PRIORITIES,
 }
 
 interface StatusBadgeProps {
