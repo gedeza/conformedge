@@ -6,7 +6,7 @@ import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -23,8 +23,8 @@ import {
 import { DatePicker } from "@/components/shared/date-picker"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
-import { canCreate, canDelete } from "@/lib/permissions"
-import { addRepairRecord, deleteRepairRecord, type RepairFormValues } from "../actions"
+import { canCreate, canEdit, canDelete } from "@/lib/permissions"
+import { addRepairRecord, deleteRepairRecord, escalateRepairToCapa, type RepairFormValues } from "../actions"
 
 const formSchema = z.object({
   repairDate: z.coerce.date(),
@@ -92,6 +92,17 @@ export function RepairTab({ equipmentId, records, role }: Props) {
     })
   }
 
+  function handleEscalate(repairId: string) {
+    startTransition(async () => {
+      const result = await escalateRepairToCapa(repairId)
+      if (result.success) {
+        toast.success("Escalated to CAPA")
+      } else {
+        toast.error(result.error)
+      }
+    })
+  }
+
   async function handleDelete() {
     if (!deleteTarget) return
     setDeleting(true)
@@ -149,11 +160,18 @@ export function RepairTab({ equipmentId, records, role }: Props) {
                     </p>
                   )}
                 </div>
-                {canDelete(role) && (
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteTarget(record.id)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                )}
+                <div className="flex items-center gap-1">
+                  {!record.capa && canEdit(role) && (
+                    <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => handleEscalate(record.id)} disabled={isPending} title="Escalate to CAPA">
+                      <ArrowUpRight className="mr-1 h-3 w-3" /> CAPA
+                    </Button>
+                  )}
+                  {canDelete(role) && (
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setDeleteTarget(record.id)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

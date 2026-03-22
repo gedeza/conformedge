@@ -349,6 +349,8 @@ const calibrationSchema = z.object({
   calibrationDate: z.coerce.date(),
   nextDueDate: z.coerce.date(),
   certificateNumber: z.string().max(200).optional(),
+  certificateFileKey: z.string().max(500).optional(),
+  certificateFileName: z.string().max(500).optional(),
   calibratedBy: z.string().min(1, "Calibrated by is required").max(200),
   result: z.enum(["PASS", "FAIL", "CONDITIONAL"]),
   deviation: z.string().max(500).optional(),
@@ -373,6 +375,8 @@ export async function addCalibrationRecord(equipmentId: string, values: Calibrat
         calibrationDate: parsed.calibrationDate,
         nextDueDate: parsed.nextDueDate,
         certificateNumber: parsed.certificateNumber || null,
+        certificateFileKey: parsed.certificateFileKey || null,
+        certificateFileName: parsed.certificateFileName || null,
         calibratedBy: parsed.calibratedBy,
         result: parsed.result,
         deviation: parsed.deviation || null,
@@ -637,6 +641,55 @@ export async function deleteRepairRecord(id: string): Promise<ActionResult> {
     return { success: true }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to delete repair record" }
+  }
+}
+
+// ─────────────────────────────────────────────
+// CAPA ESCALATION
+// ─────────────────────────────────────────────
+
+export async function escalateRepairToCapa(repairId: string): Promise<ActionResult<{ capaId: string }>> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    const repair = await db.repairRecord.findFirst({
+      where: { id: repairId, organizationId: dbOrgId },
+      include: { equipment: { select: { id: true, name: true, assetNumber: true } } },
+    })
+    if (!repair) return { success: false, error: "Repair record not found" }
+    if (repair.capaId) return { success: false, error: "Already linked to a CAPA" }
+
+    const capa = await db.capa.create({
+      data: {
+        title: `Equipment defect: ${repair.equipment.name} (${repair.equipment.assetNumber})`,
+        description: `Escalated from repair record.\n\nEquipment: ${repair.equipment.name} (${repair.equipment.assetNumber})\nRepair Date: ${repair.repairDate.toISOString().split("T")[0]}\nSupplier: ${repair.supplierName}\nPriority: ${repair.priority}\n\nDescription:\n${repair.description}`,
+        type: "CORRECTIVE",
+        priority: repair.priority === "EMERGENCY" ? "CRITICAL" : repair.priority === "HIGH" ? "HIGH" : "MEDIUM",
+        raisedById: dbUserId,
+        organizationId: dbOrgId,
+      },
+    })
+
+    await db.repairRecord.update({
+      where: { id: repairId },
+      data: { capaId: capa.id },
+    })
+
+    logAuditEvent({
+      action: "ESCALATE",
+      entityType: "RepairRecord",
+      entityId: repairId,
+      metadata: { equipmentName: repair.equipment.name, capaTitle: capa.title, capaId: capa.id },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/equipment/${repair.equipmentId}`)
+    revalidatePath("/capas")
+    return { success: true, data: { capaId: capa.id } }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to escalate to CAPA" }
   }
 }
 

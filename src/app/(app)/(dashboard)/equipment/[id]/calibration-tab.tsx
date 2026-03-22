@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2, Upload, FileText, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -41,6 +42,8 @@ interface CalibrationRecord {
   calibrationDate: Date
   nextDueDate: Date
   certificateNumber: string | null
+  certificateFileKey: string | null
+  certificateFileName: string | null
   calibratedBy: string
   result: string
   deviation: string | null
@@ -60,6 +63,10 @@ export function CalibrationTab({ equipmentId, records, role }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [deleting, setDeleting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState<{ key: string; name: string } | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema) as any,
@@ -73,12 +80,44 @@ export function CalibrationTab({ equipmentId, records, role }: Props) {
     },
   })
 
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: formData })
+      if (!res.ok) {
+        const err = await res.json()
+        toast.error(err.error || "Upload failed")
+        return
+      }
+      const { fileUrl, fileName } = await res.json()
+      setUploadedFile({ key: fileUrl, name: fileName })
+      toast.success(`${fileName} uploaded`)
+    } catch {
+      toast.error("Upload failed")
+    } finally {
+      setIsUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }
+
   function handleSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
-      const result = await addCalibrationRecord(equipmentId, values as CalibrationFormValues)
+      const submitValues: CalibrationFormValues & { certificateFileKey?: string; certificateFileName?: string } = {
+        ...values,
+      }
+      if (uploadedFile) {
+        submitValues.certificateFileKey = uploadedFile.key
+        submitValues.certificateFileName = uploadedFile.name
+      }
+      const result = await addCalibrationRecord(equipmentId, submitValues as CalibrationFormValues)
       if (result.success) {
         toast.success("Calibration record added")
         setShowForm(false)
+        setUploadedFile(null)
         form.reset()
       } else {
         toast.error(result.error)
@@ -128,6 +167,9 @@ export function CalibrationTab({ equipmentId, records, role }: Props) {
                   </div>
                   <p className="text-sm text-muted-foreground">
                     By: {record.calibratedBy} — Next due: {format(new Date(record.nextDueDate), "MMM d, yyyy")}
+                    {record.certificateFileKey && (
+                      <> — <a href={`/api/download/${record.certificateFileKey}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1"><FileText className="h-3 w-3" />Certificate</a></>
+                    )}
                   </p>
                   {record.deviation && (
                     <p className="text-xs text-muted-foreground">Deviation: {record.deviation}</p>
@@ -201,6 +243,37 @@ export function CalibrationTab({ equipmentId, records, role }: Props) {
                     <FormMessage />
                   </FormItem>
                 )} />
+              </div>
+              {/* Certificate Upload */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Certificate (PDF/Image)</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="application/pdf,image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Uploading...</>
+                    ) : (
+                      <><Upload className="mr-2 h-4 w-4" />Upload Certificate</>
+                    )}
+                  </Button>
+                  {uploadedFile && (
+                    <span className="text-sm text-muted-foreground flex items-center gap-1">
+                      <FileText className="h-3 w-3" /> {uploadedFile.name}
+                    </span>
+                  )}
+                </div>
               </div>
               <FormField control={form.control} name="deviation" render={({ field }) => (
                 <FormItem>

@@ -22,7 +22,9 @@ import { OpenIncidentsWidget } from "@/components/dashboard/open-incidents-widge
 import { ObjectivesWidget } from "@/components/dashboard/objectives-widget"
 import { ManagementReviewsWidget } from "@/components/dashboard/management-reviews-widget"
 import { WorkPermitsWidget } from "@/components/dashboard/work-permits-widget"
+import { EquipmentWidget } from "@/components/dashboard/equipment-widget"
 import { getActivePermitsSummary } from "../permits/actions"
+import { getEquipmentMetrics } from "../equipment/actions"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
 
 const ACTION_LABELS: Record<string, string> = {
@@ -105,6 +107,10 @@ const ENTITY_LABELS: Record<string, string> = {
   ManagementReview: "management review",
   WorkPermit: "work permit",
   WorkPermitExtension: "permit extension",
+  Equipment: "equipment",
+  CalibrationRecord: "calibration record",
+  MaintenanceRecord: "maintenance record",
+  RepairRecord: "repair record",
 }
 
 function humanizeActivity(action: string, entityType: string, metadata: Record<string, unknown> | null): string {
@@ -131,13 +137,15 @@ export default async function DashboardPage() {
   let onboarding: Awaited<ReturnType<typeof getOnboardingStatus>> | null = null
   let classificationStats: Awaited<ReturnType<typeof getClassificationStats>> | null = null
   let permitsSummary: Awaited<ReturnType<typeof getActivePermitsSummary>> = null
+  let equipmentMetrics: Awaited<ReturnType<typeof getEquipmentMetrics>> | null = null
 
   try {
-    ;[metrics, onboarding, classificationStats, permitsSummary] = await Promise.all([
+    ;[metrics, onboarding, classificationStats, permitsSummary, equipmentMetrics] = await Promise.all([
       getDashboardMetrics(),
       getOnboardingStatus(),
       getClassificationStats(),
       getActivePermitsSummary(),
+      getEquipmentMetrics().catch(() => null),
     ])
   } catch {
     // Auth error — show empty state
@@ -303,6 +311,8 @@ export default async function DashboardPage() {
         <ManagementReviewsWidget />
 
         <WorkPermitsWidget data={permitsSummary} />
+
+        <EquipmentWidget data={equipmentMetrics} />
 
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>
