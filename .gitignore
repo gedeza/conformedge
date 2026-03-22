@@ -46,6 +46,14 @@ yarn-error.log*
 # Local upload directory (production uses R2)
 public/uploads/
 
+# Reference documents (third-party QMS docs — not our IP)
+DOCS/Reference-Docs/1. Cover pages and Index/
+DOCS/Reference-Docs/2. Policies/
+DOCS/Reference-Docs/3. Flow Diagrams/
+DOCS/Reference-Docs/4. Work Instructions/
+DOCS/Reference-Docs/5. Forms/
+DOCS/My-ISO/
+
 # Ad-hoc screenshots, mockups, and temp files in repo root
 /*.png
 /*.ics

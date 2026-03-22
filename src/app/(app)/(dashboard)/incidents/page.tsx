@@ -15,6 +15,10 @@ interface Props {
 export default async function IncidentsPage({ searchParams }: Props) {
   const params = await searchParams
   const page = Math.max(1, Number(params.page) || 1)
+  const statusFilter = typeof params.status === "string" ? params.status : undefined
+  const typeFilter = typeof params.type === "string" ? params.type : undefined
+  const severityFilter = typeof params.severity === "string" ? params.severity : undefined
+  const projectFilter = typeof params.projectId === "string" ? params.projectId : undefined
 
   let incidents: Awaited<ReturnType<typeof getIncidents>>["incidents"] = []
   let pagination = { page: 1, pageSize: 50, total: 0, totalPages: 0 }
@@ -27,7 +31,8 @@ export default async function IncidentsPage({ searchParams }: Props) {
     const ctx = await getAuthContext()
     role = ctx.role
     const [result, projList, memberList] = await Promise.all([
-      getIncidents(page), getProjectOptions(), getMembers(),
+      getIncidents(page, { status: statusFilter, type: typeFilter, severity: severityFilter, projectId: projectFilter }),
+      getProjectOptions(), getMembers(),
     ])
     incidents = result.incidents
     pagination = result.pagination

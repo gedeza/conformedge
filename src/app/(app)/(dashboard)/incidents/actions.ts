@@ -71,10 +71,17 @@ const PAGE_SIZE = 50
 // READ
 // ─────────────────────────────────────────────
 
-export async function getIncidents(page = 1) {
+export async function getIncidents(
+  page = 1,
+  filters?: { status?: string; type?: string; severity?: string; projectId?: string }
+) {
   const { dbOrgId } = await getAuthContext()
 
-  const where = { organizationId: dbOrgId }
+  const where: Record<string, unknown> = { organizationId: dbOrgId }
+  if (filters?.status) where.status = filters.status
+  if (filters?.type) where.incidentType = filters.type
+  if (filters?.severity) where.severity = filters.severity
+  if (filters?.projectId) where.projectId = filters.projectId
 
   const [incidents, total] = await Promise.all([
     db.incident.findMany({
@@ -113,6 +120,10 @@ export async function getIncident(id: string) {
       reportedBy: { select: { id: true, firstName: true, lastName: true } },
       investigator: { select: { id: true, firstName: true, lastName: true } },
       capa: { select: { id: true, title: true, status: true } },
+      incidentCapas: {
+        include: { capa: { select: { id: true, title: true, status: true, type: true, priority: true } } },
+        orderBy: { createdAt: "desc" },
+      },
       evidence: {
         include: { uploadedBy: { select: { id: true, firstName: true, lastName: true } } },
         orderBy: { createdAt: "desc" },
@@ -436,10 +447,18 @@ export async function linkIncidentToCapa(incidentId: string, capaId: string): Pr
     if (!incident) return { success: false, error: "Incident not found" }
     if (!capa) return { success: false, error: "CAPA not found" }
 
-    await db.incident.update({
-      where: { id: incidentId },
-      data: { capaId },
-    })
+    // Update legacy FK and create junction record
+    await db.$transaction([
+      db.incident.update({
+        where: { id: incidentId },
+        data: { capaId },
+      }),
+      db.incidentCapa.upsert({
+        where: { incidentId_capaId: { incidentId, capaId } },
+        create: { incidentId, capaId },
+        update: {},
+      }),
+    ])
 
     logAuditEvent({
       action: "UPDATE",
@@ -484,6 +503,28 @@ export async function unlinkIncidentFromCapa(incidentId: string): Promise<Action
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to unlink CAPA" }
   }
+}
+
+export async function getLinkedCapas(incidentId: string) {
+  const { dbOrgId } = await getAuthContext()
+
+  const incident = await db.incident.findFirst({
+    where: { id: incidentId, organizationId: dbOrgId },
+    select: { id: true },
+  })
+  if (!incident) return []
+
+  const links = await db.incidentCapa.findMany({
+    where: { incidentId },
+    include: {
+      capa: {
+        select: { id: true, title: true, status: true, type: true, priority: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  return links.map((link) => link.capa)
 }
 
 // ─────────────────────────────────────────────
