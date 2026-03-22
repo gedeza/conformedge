@@ -27,6 +27,7 @@ import {
   ClipboardList,
   ShieldCheck,
   Handshake,
+  Wrench,
 } from "lucide-react"
 
 import {
@@ -55,6 +56,7 @@ const coreItems = [
   { title: "Mgmt Reviews", href: "/management-reviews", icon: ClipboardList },
   { title: "Work Permits", href: "/permits", icon: ShieldCheck },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
+  { title: "Equipment", href: "/equipment", icon: Wrench },
   { title: "Subcontractors", href: "/subcontractors", icon: Building2 },
 ]
 
