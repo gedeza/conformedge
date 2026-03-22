@@ -8,6 +8,12 @@ import {
   Brain,
   BarChart3,
   Shield,
+  Siren,
+  ShieldCheck,
+  Wrench,
+  Target,
+  ClipboardList,
+  Smartphone,
   type LucideIcon,
 } from "lucide-react"
 
@@ -119,6 +125,36 @@ export const FEATURES: FeatureItem[] = [
     description: "Compliance trends, risk heatmaps, and exportable reports for management review.",
     icon: BarChart3,
   },
+  {
+    title: "Incident Management",
+    description: "Full lifecycle incident tracking with COIDA W.Cl.2, SAPS 277, MHSA Section 11/23/24 statutory forms. Includes 5-Whys root cause analysis, fishbone diagrams, LTIFR calculation, and investigation sign-off workflow.",
+    icon: Siren,
+  },
+  {
+    title: "Work Permits (PTW)",
+    description: "7 permit types (Hot Work, Confined Space, Heights, Electrical, Excavation, Lifting, General) with state machine workflow, extensions, and auto-expiry notifications.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Equipment & Asset Management",
+    description: "Track equipment lifecycle with calibration schedules, maintenance planning, repair history, and Work Record Card templates. Automated overdue calibration alerts.",
+    icon: Wrench,
+  },
+  {
+    title: "Objectives & KPI Tracking",
+    description: "Set measurable quality and safety objectives linked to ISO clauses. Track KPIs with automated measurement schedules and trend analysis.",
+    icon: Target,
+  },
+  {
+    title: "Management Reviews",
+    description: "Structured management review meetings with 12-item agenda templates, action tracking, attendee management, and auto-generated meeting minutes.",
+    icon: ClipboardList,
+  },
+  {
+    title: "Mobile & Offline (PWA)",
+    description: "Progressive web app with offline sync, camera integration for evidence capture, and digital signatures. Works on any device without app store downloads.",
+    icon: Smartphone,
+  },
 ] as const
 
 export const FEATURE_DETAILS = [
@@ -146,13 +182,58 @@ export const FEATURE_DETAILS = [
     ],
     imageAlt: "IMS dashboard with cross-standard mapping",
   },
+  {
+    title: "Advanced Incident & Safety Management",
+    subtitle: "SA Regulatory Compliance",
+    description: "Complete SHEQ incident lifecycle from reporting through investigation to closure — built for SA regulatory compliance.",
+    bullets: [
+      "COIDA W.Cl.2 and SAPS 277 statutory PDFs pre-filled from incident data",
+      "MHSA Section 11, 23, 24 forms for mine-regulated companies",
+      "Interactive fishbone (Ishikawa) root cause analysis diagrams",
+      "LTIFR calculation with monthly trend charts",
+      "Investigation sign-off workflow for serious incidents",
+      "Multiple CAPA linking per incident with junction tracking",
+      "Witness statements, evidence gallery with R2 storage",
+      "COIDA CSV export for annual returns",
+    ],
+    imageAlt: "Incident management dashboard",
+  },
+  {
+    title: "Work Permits & Equipment Lifecycle",
+    subtitle: "Operational Safety",
+    description: "Manage permit-to-work processes and equipment assets from a single platform.",
+    bullets: [
+      "7 permit types with configurable checklists and approval workflows",
+      "Equipment register with auto-generated asset numbers (EQ-001)",
+      "Calibration tracking with certificate upload and overdue alerts",
+      "Maintenance scheduling — routine, preventive, corrective, overhaul",
+      "Repair history with supplier tracking and CAPA escalation",
+      "13 pre-built Work Record Card templates for lifting equipment",
+      "Equipment dashboard widget with real-time status overview",
+    ],
+    imageAlt: "Work permits and equipment management",
+  },
+  {
+    title: "Partner Program & White-Label",
+    subtitle: "Scale Your Practice",
+    description: "Scale your ISO consulting practice with ConformEdge as your technology platform.",
+    bullets: [
+      "Consulting Partner: Manage multiple client organisations from one dashboard",
+      "White-Label Partner: Your branding, your domain, our technology",
+      "Referral Partner: Earn 15% recurring commission on referred clients",
+      "Per-client billing with volume discounts at 10+ and 20+ clients",
+      "Cross-org insights and compliance benchmarking",
+      "Dedicated partner support and co-marketing opportunities",
+    ],
+    imageAlt: "Partner program dashboard",
+  },
 ] as const
 
 export const METRICS = [
   { value: 11, suffix: "", label: "Compliance Frameworks", prefix: "" },
   { value: 395, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
   { value: 85, suffix: "%", label: "Faster Audit Prep", prefix: "" },
-  { value: 34, suffix: "", label: "Integrated Modules", prefix: "" },
+  { value: 36, suffix: "", label: "Integrated Modules", prefix: "" },
 ] as const
 
 // Billing constants
@@ -201,7 +282,12 @@ export const PRICING_TIERS: PricingTier[] = [
       "Witness statements & LTIFR",
       "IMS cross-standard mapping",
       "Objectives & KPI tracking",
-      "Work permits (3 types)",
+      "Work permits (all 7 types)",
+      "Equipment & asset management",
+      "Custom form builder",
+      "Management reviews",
+      "Investigation sign-off workflow",
+      "COIDA / MHSA statutory forms",
       "Audit packs & approval workflows",
       "Client portal sharing",
       "Report export (CSV/PDF)",
@@ -219,6 +305,9 @@ export const PRICING_TIERS: PricingTier[] = [
       "All 11 frameworks (incl. DMRE, POPIA, ECSA & SACPCMP)",
       "500 AI classifications/month",
       "Everything in Professional",
+      "Equipment & asset management",
+      "Custom form builder",
+      "Management reviews",
       "SA statutory forms (W.Cl.2, SAPS 277)",
       "Work permits (all 7 types)",
       "Subcontractor compliance portal",
@@ -236,6 +325,7 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       "25 users included (+R299/additional user)",
       "Unlimited AI classifications",
+      "Equipment & asset management",
       "SSO & advanced security",
       "Full API access (read/write)",
       "Custom integrations",
@@ -259,6 +349,7 @@ export const AI_CREDIT_PACKS: AiCreditPack[] = [
   { credits: 100, price: 25, perCredit: 0.25 },
   { credits: 500, price: 99, perCredit: 0.198, popular: true },
   { credits: 1000, price: 179, perCredit: 0.179 },
+  { credits: 5000, price: 749, perCredit: 0.1498 },
 ]
 
 export const FOOTER_LINKS = {

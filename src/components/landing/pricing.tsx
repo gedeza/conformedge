@@ -165,7 +165,7 @@ export function Pricing() {
             Top up with credit packs. Credits never expire.
           </p>
 
-          <div className="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 grid-cols-2 sm:grid-cols-4">
             {AI_CREDIT_PACKS.map((pack) => (
               <Card
                 key={pack.credits}

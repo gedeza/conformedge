@@ -1,7 +1,7 @@
-import { Check, Brain, Layers, FileText, Shield, BarChart3, Link2, ArrowRight } from "lucide-react"
+import { Check, Brain, Layers, Siren, Wrench, Handshake, FileText, Shield, BarChart3, Link2, ArrowRight } from "lucide-react"
 import { FEATURE_DETAILS } from "./data"
 
-const icons = [Brain, Layers]
+const icons = [Brain, Layers, Siren, Wrench, Handshake]
 
 function AiDocumentMockup() {
   return (
@@ -202,7 +202,7 @@ function ImsMockup() {
   )
 }
 
-const mockups = [AiDocumentMockup, ImsMockup]
+const mockups: ((() => React.JSX.Element) | null)[] = [AiDocumentMockup, ImsMockup, null, null, null]
 
 export function FeatureDetails() {
   return (
@@ -219,18 +219,20 @@ export function FeatureDetails() {
 
         <div className="mt-16 space-y-24">
           {FEATURE_DETAILS.map((detail, idx) => {
-            const Icon = icons[idx]
+            const Icon = icons[idx] ?? Brain
             const Mockup = mockups[idx]
             const isReversed = idx % 2 === 1
             return (
               <div
                 key={detail.title}
-                className={`grid items-center gap-12 lg:grid-cols-2 lg:gap-16 ${
-                  isReversed ? "lg:[direction:rtl]" : ""
+                className={`grid items-center gap-12 ${
+                  Mockup ? "lg:grid-cols-2" : "lg:grid-cols-1 max-w-4xl mx-auto"
+                } lg:gap-16 ${
+                  isReversed && Mockup ? "lg:[direction:rtl]" : ""
                 }`}
               >
                 {/* Text */}
-                <div className={isReversed ? "lg:[direction:ltr]" : ""}>
+                <div className={isReversed && Mockup ? "lg:[direction:ltr]" : ""}>
                   <div className="flex items-center gap-3">
                     <div className="flex size-10 items-center justify-center rounded-xl bg-landing-accent/10">
                       <Icon className="size-5 text-landing-accent" />
@@ -245,9 +247,9 @@ export function FeatureDetails() {
                   <p className="mt-4 text-base leading-relaxed text-muted-foreground">
                     {detail.description}
                   </p>
-                  <ul className="mt-6 space-y-3">
+                  <ul className={`mt-6 space-y-3 ${!Mockup ? "sm:columns-2 sm:gap-x-8" : ""}`}>
                     {detail.bullets.map((bullet) => (
-                      <li key={bullet} className="flex items-start gap-3">
+                      <li key={bullet} className="flex items-start gap-3 break-inside-avoid">
                         <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-landing-cta/10">
                           <Check className="size-3 text-landing-cta" />
                         </div>
@@ -258,9 +260,11 @@ export function FeatureDetails() {
                 </div>
 
                 {/* Feature mockup */}
-                <div className={isReversed ? "lg:[direction:ltr]" : ""}>
-                  <Mockup />
-                </div>
+                {Mockup && (
+                  <div className={isReversed ? "lg:[direction:ltr]" : ""}>
+                    <Mockup />
+                  </div>
+                )}
               </div>
             )
           })}

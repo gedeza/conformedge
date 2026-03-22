@@ -15,7 +15,7 @@ export function Hero() {
           <div className="lg:col-span-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-landing-accent/30 bg-landing-accent/10 px-4 py-1.5 text-xs font-medium text-landing-accent">
               <span className="size-1.5 rounded-full bg-landing-accent animate-pulse" />
-              AI-Powered ISO Compliance Management
+              AI-Powered Compliance Management for SA Industry
             </span>
 
             <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
@@ -26,7 +26,7 @@ export function Hero() {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-              Manage ISO 9001, 14001, 45001, 27001 and more from a single platform.
+              Manage ISO 9001, 14001, 45001 and SA regulatory frameworks (MHSA, POPIA, ECSA) from a single platform.
               AI classifies documents, detects gaps, and generates audit packs —
               so your team can focus on delivering projects, not chasing paperwork.
             </p>
