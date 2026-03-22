@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { ArrowRight, Link2, Unlink } from "lucide-react"
+import { ArrowRight, Link2, Unlink, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -12,7 +12,8 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { canEdit } from "@/lib/permissions"
-import { transitionIncident, linkIncidentToCapa, unlinkIncidentFromCapa } from "../actions"
+import { Textarea } from "@/components/ui/textarea"
+import { transitionIncident, linkIncidentToCapa, unlinkIncidentFromCapa, signOffInvestigation } from "../actions"
 
 const VALID_TRANSITIONS: Record<string, { target: string; label: string }[]> = {
   REPORTED: [
@@ -32,6 +33,11 @@ const VALID_TRANSITIONS: Record<string, { target: string; label: string }[]> = {
 interface IncidentActionsPanelProps {
   incidentId: string
   currentStatus: string
+  incidentType: string
+  severity: string
+  isSignedOff: boolean
+  signedOffBy?: string
+  signedOffAt?: Date
   linkedCapa: { id: string; title: string; status: string } | null
   capaOptions: { id: string; title: string; status: string }[]
   role: string
@@ -40,6 +46,11 @@ interface IncidentActionsPanelProps {
 export function IncidentActionsPanel({
   incidentId,
   currentStatus,
+  incidentType,
+  severity,
+  isSignedOff,
+  signedOffBy,
+  signedOffAt,
   linkedCapa,
   capaOptions,
   role,
@@ -48,6 +59,10 @@ export function IncidentActionsPanel({
   const [isPending, startTransition] = useTransition()
   const [confirmTransition, setConfirmTransition] = useState<string | null>(null)
   const [selectedCapaId, setSelectedCapaId] = useState("")
+  const [showSignOff, setShowSignOff] = useState(false)
+  const [signOffNotes, setSignOffNotes] = useState("")
+
+  const requiresSignOff = incidentType === "FATALITY" || (incidentType === "LOST_TIME" && ["HIGH", "CRITICAL"].includes(severity))
 
   const transitions = VALID_TRANSITIONS[currentStatus] ?? []
 
@@ -90,10 +105,83 @@ export function IncidentActionsPanel({
     })
   }
 
+  function handleSignOff() {
+    startTransition(async () => {
+      const result = await signOffInvestigation(incidentId, signOffNotes || undefined)
+      if (result.success) {
+        toast.success("Investigation signed off")
+        setShowSignOff(false)
+        setSignOffNotes("")
+        router.refresh()
+      } else {
+        toast.error(result.error)
+      }
+    })
+  }
+
   if (!canEdit(role)) return null
 
   return (
     <div className="space-y-4">
+      {/* Investigation Sign-off */}
+      {requiresSignOff && !isSignedOff && ["INVESTIGATING", "CORRECTIVE_ACTION"].includes(currentStatus) && (
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-amber-600" />
+              Sign-off Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-xs text-muted-foreground">
+              This {incidentType === "FATALITY" ? "fatality" : "serious lost-time"} incident requires management sign-off before closure.
+            </p>
+            {["OWNER", "ADMIN", "MANAGER"].includes(role) ? (
+              showSignOff ? (
+                <div className="space-y-2">
+                  <Textarea
+                    placeholder="Sign-off notes (optional)"
+                    value={signOffNotes}
+                    onChange={(e) => setSignOffNotes(e.target.value)}
+                    rows={2}
+                    className="text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleSignOff} disabled={isPending} className="flex-1">
+                      {isPending ? "Signing..." : "Confirm Sign-off"}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setShowSignOff(false)}>Cancel</Button>
+                  </div>
+                </div>
+              ) : (
+                <Button size="sm" variant="default" className="w-full" onClick={() => setShowSignOff(true)}>
+                  <ShieldCheck className="mr-2 h-4 w-4" /> Sign Off Investigation
+                </Button>
+              )
+            ) : (
+              <p className="text-xs text-amber-700">A manager must sign off before this incident can be closed.</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {requiresSignOff && isSignedOff && (
+        <Card className="border-green-200 bg-green-50/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-green-600" />
+              Investigation Signed Off
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              {signedOffBy && `Signed off by ${signedOffBy}`}
+              {signedOffAt && ` on ${new Date(signedOffAt).toLocaleDateString()}`}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Status Transitions */}
       {transitions.length > 0 && (
         <Card className="border-border/50">

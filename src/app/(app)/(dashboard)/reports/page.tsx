@@ -21,6 +21,7 @@ import { ReportExportButtons } from "./report-export-buttons"
 import { ReportsHelpPanel } from "./reports-help-panel"
 import { IncidentTrendChart } from "@/components/dashboard/incident-trend-chart"
 import { LtifrChart } from "@/components/dashboard/ltifr-chart"
+import { IncidentExportButton } from "@/components/dashboard/incident-export-button"
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -187,6 +188,14 @@ export default async function ReportsPage({ searchParams }: Props) {
       <IncidentTrendChart data={incidentTrend} />
 
       <LtifrChart data={ltifrData} />
+
+      {/* ── COIDA Export ── */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight">COIDA Export</h2>
+        <p className="text-sm text-muted-foreground">Export incident data for W.Cl.2 annual returns and statutory reporting</p>
+      </div>
+
+      <IncidentExportButton />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import React from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
-import { WCl2Form, SAPS277Form } from "@/lib/pdf/statutory-forms"
+import { WCl2Form, SAPS277Form, MHSA11Form, MHSA23Form, MHSA24Form } from "@/lib/pdf/statutory-forms"
 import { captureError } from "@/lib/error-tracking"
 
 /**
@@ -29,8 +29,8 @@ export async function GET(
       return NextResponse.json({ error: access.reason ?? "Statutory forms require a Professional plan or higher." }, { status: 403 })
     }
 
-    if (!formType || !["wcl2", "saps277"].includes(formType)) {
-      return NextResponse.json({ error: "Invalid form type. Use ?type=wcl2 or ?type=saps277" }, { status: 400 })
+    if (!formType || !["wcl2", "saps277", "mhsa11", "mhsa23", "mhsa24"].includes(formType)) {
+      return NextResponse.json({ error: "Invalid form type. Use ?type=wcl2, saps277, mhsa11, mhsa23, or mhsa24" }, { status: 400 })
     }
 
     const incident = await db.incident.findFirst({
@@ -50,6 +50,8 @@ export async function GET(
     const orgSettings = (incident.organization.settings as Record<string, unknown>) || {}
     const coidaRegNumber = (orgSettings.coidaRegNumber as string) || undefined
     const employerAddress = (orgSettings.companyAddress as string) || undefined
+    const mineRegistrationNumber = (orgSettings.mineRegistrationNumber as string) || undefined
+    const chiefInspectorContact = (orgSettings.chiefInspectorContact as string) || undefined
 
     const reporterName = incident.reportedBy
       ? `${incident.reportedBy.firstName} ${incident.reportedBy.lastName}`
@@ -101,7 +103,7 @@ export async function GET(
         reportDate,
         incidentRef,
       })
-    } else {
+    } else if (formType === "saps277") {
       pdfElement = React.createElement(SAPS277Form, {
         deceasedName: incident.injuredParty || "Not specified",
         deceasedIdNumber: incident.victimIdNumber || undefined,
@@ -119,6 +121,83 @@ export async function GET(
         reportDate,
         incidentRef,
       })
+    } else if (formType === "mhsa11") {
+      const investigatorName = incident.investigator
+        ? `${incident.investigator.firstName} ${incident.investigator.lastName}`
+        : undefined
+      pdfElement = React.createElement(MHSA11Form, {
+        employerName: incident.organization.name,
+        mineRegistrationNumber,
+        employerAddress,
+        chiefInspectorContact,
+        employeeName: incident.injuredParty || "Not specified",
+        employeeIdNumber: incident.victimIdNumber || undefined,
+        employeeOccupation: incident.victimOccupation || undefined,
+        employeeDateOfBirth: incident.victimDateOfBirth ? format(incident.victimDateOfBirth, "dd MMM yyyy") : undefined,
+        employeeContractor: incident.victimContractor || undefined,
+        incidentTitle: incident.title,
+        incidentDate: format(incident.incidentDate, "dd MMM yyyy"),
+        incidentTime: incident.incidentTime || undefined,
+        location: incident.location || "Not specified",
+        description: incident.description || incident.title,
+        bodyPartInjured: incident.bodyPartInjured || undefined,
+        natureOfInjury: incident.natureOfInjury || undefined,
+        treatmentType: incident.treatmentType ? (treatmentLabels[incident.treatmentType] ?? incident.treatmentType) : undefined,
+        immediateAction: incident.immediateAction || undefined,
+        witnesses: incident.witnesses || undefined,
+        preliminaryCause: incident.rootCause || undefined,
+        notificationDateTime: incident.statutoryReportedAt ? format(incident.statutoryReportedAt, "dd MMM yyyy HH:mm") : undefined,
+        reporterName,
+        safetyOfficerName: investigatorName,
+        reportDate,
+        incidentRef,
+      })
+    } else if (formType === "mhsa23") {
+      const investigatorName = incident.investigator
+        ? `${incident.investigator.firstName} ${incident.investigator.lastName}`
+        : undefined
+      pdfElement = React.createElement(MHSA23Form, {
+        employerName: incident.organization.name,
+        mineRegistrationNumber,
+        employerAddress,
+        chiefInspectorContact,
+        incidentTitle: incident.title,
+        incidentDate: format(incident.incidentDate, "dd MMM yyyy"),
+        incidentTime: incident.incidentTime || undefined,
+        location: incident.location || "Not specified",
+        category: incident.nonInjuriousType || undefined,
+        description: incident.description || incident.title,
+        propertyDamage: incident.estimatedCost != null ? `Estimated R ${Number(incident.estimatedCost).toLocaleString("en-ZA", { minimumFractionDigits: 2 })}` : undefined,
+        immediateAction: incident.immediateAction || undefined,
+        preliminaryCause: incident.rootCause || undefined,
+        correctiveActions: undefined, // filled post-investigation
+        reporterName,
+        safetyOfficerName: investigatorName,
+        reportDate,
+        incidentRef,
+      })
+    } else {
+      // mhsa24
+      const investigatorName = incident.investigator
+        ? `${incident.investigator.firstName} ${incident.investigator.lastName}`
+        : undefined
+      pdfElement = React.createElement(MHSA24Form, {
+        employerName: incident.organization.name,
+        mineRegistrationNumber,
+        employerAddress,
+        chiefInspectorContact,
+        employeeName: incident.injuredParty || "Not specified",
+        employeeIdNumber: incident.victimIdNumber || undefined,
+        employeeOccupation: incident.victimOccupation || undefined,
+        employeeDateOfBirth: incident.victimDateOfBirth ? format(incident.victimDateOfBirth, "dd MMM yyyy") : undefined,
+        diseaseClassification: incident.natureOfInjury || undefined,
+        currentHealthStatus: incident.description || undefined,
+        treatmentDetails: incident.treatmentType ? (treatmentLabels[incident.treatmentType] ?? incident.treatmentType) : undefined,
+        reporterName,
+        safetyOfficerName: investigatorName,
+        reportDate,
+        incidentRef,
+      })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,7 +205,14 @@ export async function GET(
     const uint8 = new Uint8Array(buffer)
 
     const dateStr = format(incident.incidentDate, "yyyy-MM-dd")
-    const formLabel = formType === "wcl2" ? "WCl2-IOD" : "SAPS277-Fatality"
+    const formLabels: Record<string, string> = {
+      wcl2: "WCl2-IOD",
+      saps277: "SAPS277-Fatality",
+      mhsa11: "MHSA-S11-Accident",
+      mhsa23: "MHSA-S23-DangerousOccurrence",
+      mhsa24: "MHSA-S24-OccupationalDisease",
+    }
+    const formLabel = formLabels[formType] || formType
     const filename = `${formLabel}-${incidentRef}-${dateStr}.pdf`
 
     return new NextResponse(uint8, {

@@ -474,6 +474,7 @@ model User {
 
   reportedIncidents          Incident[]                 @relation("IncidentReporter")
   investigatedIncidents      Incident[]                 @relation("IncidentInvestigator")
+  signedOffIncidents         Incident[]                 @relation("IncidentSignOff")
   uploadedEvidence           IncidentEvidence[]         @relation("EvidenceUploader")
   ownedObjectives            Objective[]                @relation("ObjectiveOwner")
   recordedMeasurements       ObjectiveMeasurement[]     @relation("MeasurementRecorder")
@@ -1191,6 +1192,11 @@ model Incident {
   impactAreas         Json?      @map("impact_areas") // ["Health", "Safety", "Environment", "Production"]
   nonInjuriousType    String?    @map("non_injurious_type") // Fire/Explosion, Equipment Damage, etc.
 
+  // Investigation sign-off
+  investigationSignedOffById String?    @map("investigation_signed_off_by_id")
+  investigationSignedOffAt   DateTime?  @map("investigation_signed_off_at")
+  investigationSignOffNotes  String?    @map("investigation_sign_off_notes") @db.Text
+
   // Outcome
   returnedToWork      Boolean?   @map("returned_to_work")
   returnedToWorkDate  DateTime?  @map("returned_to_work_date")
@@ -1209,6 +1215,7 @@ model Incident {
   reportedBy   User         @relation("IncidentReporter", fields: [reportedById], references: [id])
   investigator User?        @relation("IncidentInvestigator", fields: [investigatorId], references: [id])
   capa         Capa?        @relation(fields: [capaId], references: [id], onDelete: SetNull)
+  investigationSignedOffBy User? @relation("IncidentSignOff", fields: [investigationSignedOffById], references: [id])
   evidence       IncidentEvidence[]
   witnessRecords IncidentWitness[]
   incidentCapas  IncidentCapa[]

@@ -119,6 +119,7 @@ export async function getIncident(id: string) {
       project: { select: { id: true, name: true } },
       reportedBy: { select: { id: true, firstName: true, lastName: true } },
       investigator: { select: { id: true, firstName: true, lastName: true } },
+      investigationSignedOffBy: { select: { id: true, firstName: true, lastName: true } },
       capa: { select: { id: true, title: true, status: true } },
       incidentCapas: {
         include: { capa: { select: { id: true, title: true, status: true, type: true, priority: true } } },
@@ -405,6 +406,13 @@ export async function transitionIncident(id: string, newStatus: string): Promise
       return { success: false, error: `Cannot transition from ${existing.status} to ${newStatus}` }
     }
 
+    // Require sign-off before closing serious incidents (FATALITY, LOST_TIME with HIGH+ severity)
+    const requiresSignOff = newStatus === "CLOSED" &&
+      (existing.incidentType === "FATALITY" || (existing.incidentType === "LOST_TIME" && ["HIGH", "CRITICAL"].includes(existing.severity)))
+    if (requiresSignOff && !existing.investigationSignedOffAt) {
+      return { success: false, error: "Investigation sign-off is required before closing this incident. A manager must sign off the investigation first." }
+    }
+
     const data: Record<string, unknown> = { status: newStatus }
     if (newStatus === "CLOSED") {
       data.closedDate = new Date()
@@ -427,6 +435,47 @@ export async function transitionIncident(id: string, newStatus: string): Promise
     return { success: true }
   } catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to transition incident" }
+  }
+}
+
+// ─────────────────────────────────────────────
+// INVESTIGATION SIGN-OFF
+// ─────────────────────────────────────────────
+
+export async function signOffInvestigation(incidentId: string, notes?: string): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    // Only OWNER, ADMIN, MANAGER can sign off
+    if (!["OWNER", "ADMIN", "MANAGER"].includes(role)) {
+      return { success: false, error: "Only managers and above can sign off investigations" }
+    }
+
+    const existing = await db.incident.findFirst({ where: { id: incidentId, organizationId: dbOrgId } })
+    if (!existing) return { success: false, error: "Incident not found" }
+    if (existing.investigationSignedOffAt) return { success: false, error: "Investigation already signed off" }
+
+    await db.incident.update({
+      where: { id: incidentId },
+      data: {
+        investigationSignedOffById: dbUserId,
+        investigationSignedOffAt: new Date(),
+        investigationSignOffNotes: notes || null,
+      },
+    })
+
+    logAuditEvent({
+      action: "UPDATE",
+      entityType: "Incident",
+      entityId: incidentId,
+      metadata: { title: existing.title, action: "Investigation signed off" },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/incidents/${incidentId}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to sign off investigation" }
   }
 }
 

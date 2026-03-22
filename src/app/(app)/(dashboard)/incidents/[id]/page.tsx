@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/shared/page-header"
 import { getAuthContext } from "@/lib/auth"
 import { TREATMENT_TYPES, MHSA_SECTIONS } from "@/lib/constants"
 import { BodyMapDual } from "@/components/shared/body-map-dual"
+import { FishboneDiagram } from "@/components/shared/fishbone-diagram"
 import { getIncident, getCapaOptions } from "../actions"
 import { IncidentActionsPanel } from "./incident-actions-panel"
 import { StatutoryFormButton } from "./statutory-form-button"
@@ -133,7 +134,7 @@ export default async function IncidentDetailPage({
 
       <PageHeader heading={incident.title} description={incident.description ?? undefined}>
         <div className="flex items-center gap-2">
-          <StatutoryFormButton incidentId={incident.id} incidentType={incident.incidentType} />
+          <StatutoryFormButton incidentId={incident.id} incidentType={incident.incidentType} mhsaSection={incident.mhsaSection ?? undefined} isReportable={incident.isReportable} />
           <StatusBadge type="incident" value={incident.status} />
           <StatusBadge type="incidentType" value={incident.incidentType} />
           <StatusBadge type="risk" value={incident.severity} />
@@ -512,6 +513,22 @@ export default async function IncidentDetailPage({
             </Card>
           )}
 
+          {/* Fishbone (Ishikawa) Diagram */}
+          {(() => {
+            if (!incident.rootCauseData || typeof incident.rootCauseData !== "object") return null
+            const rcd = incident.rootCauseData as unknown as RootCauseData
+            if (rcd.method !== "5-whys" && rcd.method !== "simple") return null
+            if (!rcd.rootCause) return null
+            return (
+              <FishboneDiagram
+                rootCause={rcd.rootCause}
+                category={rcd.category}
+                whys={rcd.whys}
+                containmentAction={rcd.containmentAction}
+              />
+            )
+          })()}
+
           {/* Linked CAPAs (read-only display) */}
           {(() => {
             const incidentCapas = (incident as Record<string, unknown>).incidentCapas as Array<{
@@ -554,6 +571,11 @@ export default async function IncidentDetailPage({
           <IncidentActionsPanel
             incidentId={incident.id}
             currentStatus={incident.status}
+            incidentType={incident.incidentType}
+            severity={incident.severity}
+            isSignedOff={!!incident.investigationSignedOffAt}
+            signedOffBy={(incident as Record<string, unknown>).investigationSignedOffBy ? `${((incident as Record<string, unknown>).investigationSignedOffBy as { firstName: string; lastName: string }).firstName} ${((incident as Record<string, unknown>).investigationSignedOffBy as { firstName: string; lastName: string }).lastName}` : undefined}
+            signedOffAt={incident.investigationSignedOffAt ?? undefined}
             linkedCapa={incident.capa}
             capaOptions={capaOptions}
             role={role}
