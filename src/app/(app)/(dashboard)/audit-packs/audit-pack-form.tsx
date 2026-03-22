@@ -5,9 +5,10 @@ import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { ClipboardCheck } from "lucide-react"
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle,
-} from "@/components/ui/sheet"
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form"
@@ -54,14 +55,9 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      title: "",
-      description: "",
-      auditType: "",
-      scope: "",
-      projectId: "",
-      leadAuditorId: undefined,
-      auditDateFrom: undefined,
-      auditDateTo: undefined,
+      title: "", description: "", auditType: "", scope: "",
+      projectId: "", leadAuditorId: undefined,
+      auditDateFrom: undefined, auditDateTo: undefined,
     },
   })
 
@@ -79,34 +75,38 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>New Audit Pack</SheetTitle>
-        </SheetHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ClipboardCheck className="h-5 w-5" />
+            New Audit Pack
+          </DialogTitle>
+          <DialogDescription>
+            Create a new audit pack to organise assessments, findings, and evidence.
+          </DialogDescription>
+        </DialogHeader>
 
-            {/* Section 1: Audit Details */}
-            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
-              <Label className="text-sm font-medium">Audit Details</Label>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Audit Details */}
+            <div className="space-y-4 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">Audit Details</Label>
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Title</FormLabel>
-                  <FormControl><Input placeholder="e.g. Q1 2026 ISO 45001 Surveillance Audit" {...field} className="h-8 text-xs" /></FormControl>
+                  <FormLabel>Title *</FormLabel>
+                  <FormControl><Input placeholder="e.g. Q1 2026 ISO 45001 Surveillance Audit" {...field} className="h-10" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="auditType" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Audit Type</FormLabel>
+                    <FormLabel>Audit Type</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select type..." /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className="h-10"><SelectValue placeholder="Select type..." /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {AUDIT_TYPES.map(t => (
-                          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                        ))}
+                        {AUDIT_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -114,13 +114,11 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
                 )} />
                 <FormField control={form.control} name="projectId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Project</FormLabel>
+                    <FormLabel>Project *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select project..." /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className="h-10"><SelectValue placeholder="Select project..." /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {projects.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                        ))}
+                        {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -129,27 +127,27 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
               </div>
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs">Description</FormLabel>
-                  <FormControl><Textarea placeholder="Purpose and objectives of this audit..." rows={2} className="text-xs" {...field} /></FormControl>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl><Textarea placeholder="Purpose and objectives of this audit..." rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
             </div>
 
-            {/* Section 2: Schedule & Assignment */}
-            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
-              <Label className="text-sm font-medium">Schedule &amp; Assignment</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Schedule & Assignment */}
+            <div className="space-y-4 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">Schedule & Assignment</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="auditDateFrom" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Audit Start Date</FormLabel>
+                    <FormLabel>Audit Start Date</FormLabel>
                     <FormControl><DatePicker value={field.value} onChange={field.onChange} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form.control} name="auditDateTo" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Audit End Date</FormLabel>
+                    <FormLabel>Audit End Date</FormLabel>
                     <FormControl><DatePicker value={field.value} onChange={field.onChange} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,13 +156,11 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
               {members.length > 0 && (
                 <FormField control={form.control} name="leadAuditorId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">Lead Auditor</FormLabel>
+                    <FormLabel>Lead Auditor</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select lead auditor..." /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className="h-10"><SelectValue placeholder="Select lead auditor..." /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {members.map((m) => (
-                          <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                        ))}
+                        {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -173,27 +169,26 @@ export function AuditPackForm({ open, onOpenChange, projects, members = [] }: Au
               )}
             </div>
 
-            {/* Section 3: Scope */}
-            <div className="space-y-3 rounded-md border p-3 bg-muted/30">
-              <Label className="text-sm font-medium">Audit Scope</Label>
-              <FormField control={form.control} name="scope" render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs">Scope Description</FormLabel>
-                  <FormControl><Textarea placeholder="Define the scope of the audit — standards, clauses, processes, departments, sites to be audited..." rows={3} className="text-xs" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-            </div>
+            {/* Scope */}
+            <FormField control={form.control} name="scope" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Audit Scope</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Define the scope — standards, clauses, processes, departments, sites to be audited..." rows={4} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
 
-            <div className="flex justify-end gap-2 pt-4">
+            <DialogFooter className="pt-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={isPending}>
                 {isPending ? "Creating..." : "Create Audit Pack"}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         </Form>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }
