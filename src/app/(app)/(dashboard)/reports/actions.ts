@@ -337,3 +337,148 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
 })
 
 export type ReportData = Awaited<ReturnType<typeof getReportData>>
+
+// ── Incident trend data (monthly breakdown by type) ────────────────────
+
+export type IncidentTrendRow = {
+  month: string
+  nearMiss: number
+  firstAid: number
+  medical: number
+  lostTime: number
+  fatality: number
+  environmental: number
+  propertyDamage: number
+  total: number
+}
+
+export const getIncidentTrend = cache(async function getIncidentTrend(months = 12): Promise<IncidentTrendRow[]> {
+  const { dbOrgId } = await getAuthContext()
+
+  const since = subMonths(startOfMonth(new Date()), months - 1)
+
+  const incidents = await db.incident.findMany({
+    where: {
+      organizationId: dbOrgId,
+      incidentDate: { gte: since },
+    },
+    select: { incidentDate: true, incidentType: true },
+    orderBy: { incidentDate: "asc" },
+  })
+
+  const result: IncidentTrendRow[] = []
+
+  for (let i = months - 1; i >= 0; i--) {
+    const monthStart = startOfMonth(subMonths(new Date(), i))
+    const monthEnd = startOfMonth(addMonths(monthStart, 1))
+    const label = format(monthStart, "MMM yyyy")
+
+    const monthIncidents = incidents.filter((inc) => {
+      const d = new Date(inc.incidentDate)
+      return d >= monthStart && d < monthEnd
+    })
+
+    const row: IncidentTrendRow = {
+      month: label,
+      nearMiss: 0,
+      firstAid: 0,
+      medical: 0,
+      lostTime: 0,
+      fatality: 0,
+      environmental: 0,
+      propertyDamage: 0,
+      total: monthIncidents.length,
+    }
+
+    for (const inc of monthIncidents) {
+      switch (inc.incidentType) {
+        case "NEAR_MISS": row.nearMiss++; break
+        case "FIRST_AID": row.firstAid++; break
+        case "MEDICAL": row.medical++; break
+        case "LOST_TIME": row.lostTime++; break
+        case "FATALITY": row.fatality++; break
+        case "ENVIRONMENTAL": row.environmental++; break
+        case "PROPERTY_DAMAGE": row.propertyDamage++; break
+      }
+    }
+
+    result.push(row)
+  }
+
+  return result
+})
+
+// ── LTIFR data (Lost Time Injury Frequency Rate) ────────────────────
+
+export type LtifrRow = {
+  month: string
+  lti: number
+  hoursWorked: number
+  ltifr: number | null
+}
+
+export type LtifrData = {
+  monthly: LtifrRow[]
+  rolling12MonthLtifr: number | null
+  monthlyHoursWorked: number | null
+}
+
+export const getLtifr = cache(async function getLtifr(months = 12): Promise<LtifrData> {
+  const { dbOrgId } = await getAuthContext()
+
+  const since = subMonths(startOfMonth(new Date()), months - 1)
+
+  // Fetch org settings for monthly hours worked
+  const org = await db.organization.findUnique({
+    where: { id: dbOrgId },
+    select: { settings: true },
+  })
+  const settings = (org?.settings as Record<string, unknown>) ?? {}
+  const monthlyHoursWorked = (typeof settings.monthlyHoursWorked === "number" && settings.monthlyHoursWorked > 0)
+    ? settings.monthlyHoursWorked
+    : null
+
+  // Fetch LTI incidents (LOST_TIME and FATALITY count as LTIs)
+  const incidents = await db.incident.findMany({
+    where: {
+      organizationId: dbOrgId,
+      incidentType: { in: ["LOST_TIME", "FATALITY"] },
+      incidentDate: { gte: since },
+    },
+    select: { incidentDate: true },
+    orderBy: { incidentDate: "asc" },
+  })
+
+  const monthly: LtifrRow[] = []
+  let totalLti = 0
+
+  for (let i = months - 1; i >= 0; i--) {
+    const monthStart = startOfMonth(subMonths(new Date(), i))
+    const monthEnd = startOfMonth(addMonths(monthStart, 1))
+    const label = format(monthStart, "MMM yyyy")
+
+    const lti = incidents.filter((inc) => {
+      const d = new Date(inc.incidentDate)
+      return d >= monthStart && d < monthEnd
+    }).length
+
+    totalLti += lti
+
+    const ltifr = monthlyHoursWorked
+      ? Number(((lti * 1_000_000) / monthlyHoursWorked).toFixed(2))
+      : null
+
+    monthly.push({
+      month: label,
+      lti,
+      hoursWorked: monthlyHoursWorked ?? 0,
+      ltifr,
+    })
+  }
+
+  const rolling12MonthLtifr = monthlyHoursWorked
+    ? Number(((totalLti * 1_000_000) / (monthlyHoursWorked * months)).toFixed(2))
+    : null
+
+  return { monthly, rolling12MonthLtifr, monthlyHoursWorked }
+})

@@ -895,6 +895,134 @@ export async function GET(request: NextRequest) {
       data: { status: "EXPIRED" },
     })
 
+    // ── 9. Statutory reporting deadline notifications ──────
+    let statutoryNotified = 0
+
+    const in48Hours = addDays(now, 2)
+
+    const reportableIncidents = await db.incident.findMany({
+      where: {
+        isReportable: true,
+        statutoryReportedAt: null,
+        reportingDeadline: { lte: in48Hours },
+      },
+      select: {
+        id: true,
+        title: true,
+        reportingDeadline: true,
+        investigatorId: true,
+        reportedById: true,
+        organizationId: true,
+      },
+    })
+
+    for (const incident of reportableIncidents) {
+      const targetUserId = incident.investigatorId ?? incident.reportedById
+      const isOverdue = incident.reportingDeadline ? isBefore(incident.reportingDeadline, now) : false
+      const deadlineLabel = incident.reportingDeadline
+        ? new Date(incident.reportingDeadline).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric" })
+        : "unknown"
+
+      // Dedup: check if STATUTORY_DEADLINE was sent in the last 24 hours for this incident
+      const existing = await db.notification.findFirst({
+        where: {
+          userId: targetUserId,
+          organizationId: incident.organizationId,
+          type: "STATUTORY_DEADLINE",
+          entityId: incident.id,
+          createdAt: { gte: addDays(now, -1) },
+        },
+      })
+      if (existing) continue
+
+      const statTitle = "Statutory reporting deadline"
+      const statMsg = isOverdue
+        ? `OVERDUE: Statutory reporting deadline for "${incident.title}" was ${deadlineLabel}. Report to the regulator immediately.`
+        : `Statutory reporting deadline for "${incident.title}" is ${deadlineLabel}. Ensure the report is submitted on time.`
+
+      // Notify the investigator (or reporter)
+      const [inAppEnabled, emailEnabled] = await Promise.all([
+        isNotificationEnabled(targetUserId, "STATUTORY_DEADLINE", "IN_APP"),
+        isNotificationEnabled(targetUserId, "STATUTORY_DEADLINE", "EMAIL"),
+      ])
+
+      if (inAppEnabled) {
+        await db.notification.create({
+          data: {
+            title: statTitle,
+            message: statMsg,
+            type: "STATUTORY_DEADLINE",
+            entityId: incident.id,
+            userId: targetUserId,
+            organizationId: incident.organizationId,
+          },
+        })
+        created++
+        statutoryNotified++
+      }
+
+      if (emailEnabled) {
+        sendNotificationEmail({
+          userId: targetUserId,
+          title: statTitle,
+          message: statMsg,
+          type: "STATUTORY_DEADLINE",
+        })
+      }
+
+      // Also notify ADMIN/MANAGER users in the org
+      const orgManagers = await db.organizationUser.findMany({
+        where: {
+          organizationId: incident.organizationId,
+          isActive: true,
+          role: { in: ["OWNER", "ADMIN", "MANAGER"] },
+          userId: { not: targetUserId },
+        },
+        select: { userId: true },
+      })
+
+      const mgrIds = orgManagers.map((m) => m.userId)
+      const [inAppIds, emailIds] = await Promise.all([
+        filterEnabledUsers(mgrIds, "STATUTORY_DEADLINE", "IN_APP"),
+        filterEnabledUsers(mgrIds, "STATUTORY_DEADLINE", "EMAIL"),
+      ])
+
+      for (const userId of inAppIds) {
+        const mgrExisting = await db.notification.findFirst({
+          where: {
+            userId,
+            organizationId: incident.organizationId,
+            type: "STATUTORY_DEADLINE",
+            entityId: incident.id,
+            createdAt: { gte: addDays(now, -1) },
+          },
+        })
+        if (mgrExisting) continue
+
+        await db.notification.create({
+          data: {
+            title: statTitle,
+            message: statMsg,
+            type: "STATUTORY_DEADLINE",
+            entityId: incident.id,
+            userId,
+            organizationId: incident.organizationId,
+          },
+        })
+        created++
+        statutoryNotified++
+      }
+
+      for (const userId of emailIds) {
+        sendNotificationEmail({
+          userId,
+          title: statTitle,
+          message: statMsg,
+          type: "STATUTORY_DEADLINE",
+        })
+      }
+    }
+
     // ── 10. Billing lifecycle ──────────────────────────
     let trialsExpired = 0
     let gracePeriodsCancelled = 0
@@ -1758,6 +1886,7 @@ export async function GET(request: NextRequest) {
       capasEscalated: escalated,
       assessmentsNotified,
       incidentsNotified,
+      statutoryNotified,
       objectivesNotified,
       checklistsGenerated,
       permitsExpired,

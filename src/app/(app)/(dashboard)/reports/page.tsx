@@ -13,12 +13,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { PageHeader } from "@/components/shared/page-header"
-import { getReportData } from "./actions"
+import { getReportData, getIncidentTrend, getLtifr } from "./actions"
 import { parseDateRange } from "./date-utils"
 import { ReportChartsLazy as ReportCharts } from "./report-charts-lazy"
 import { DateRangeFilter } from "./date-range-filter"
 import { ReportExportButtons } from "./report-export-buttons"
 import { ReportsHelpPanel } from "./reports-help-panel"
+import { IncidentTrendChart } from "@/components/dashboard/incident-trend-chart"
+import { LtifrChart } from "@/components/dashboard/ltifr-chart"
 
 interface Props {
   searchParams: Promise<Record<string, string | string[] | undefined>>
@@ -33,9 +35,15 @@ export default async function ReportsPage({ searchParams }: Props) {
   )
 
   let data: Awaited<ReturnType<typeof getReportData>>
+  let incidentTrend: Awaited<ReturnType<typeof getIncidentTrend>> = []
+  let ltifrData: Awaited<ReturnType<typeof getLtifr>> = { monthly: [], rolling12MonthLtifr: null, monthlyHoursWorked: null }
 
   try {
-    data = await getReportData(dateRange)
+    ;[data, incidentTrend, ltifrData] = await Promise.all([
+      getReportData(dateRange),
+      getIncidentTrend(12),
+      getLtifr(12),
+    ])
   } catch {
     return (
       <div className="space-y-6">
@@ -169,6 +177,16 @@ export default async function ReportsPage({ searchParams }: Props) {
         incidentsBySeverity={data.incidentsBySeverity}
         incidentsByStatus={data.incidentsByStatus}
       />
+
+      {/* ── Incident Trends & LTIFR ── */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight">Incident Trends &amp; Safety Performance</h2>
+        <p className="text-sm text-muted-foreground">Monthly incident breakdown and Lost Time Injury Frequency Rate</p>
+      </div>
+
+      <IncidentTrendChart data={incidentTrend} />
+
+      <LtifrChart data={ltifrData} />
     </div>
   )
 }

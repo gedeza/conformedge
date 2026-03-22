@@ -17,6 +17,7 @@ const orgSettingsSchema = z.object({
   autoClassifyOnUpload: z.boolean().optional(),
   companyAddress: z.string().max(500).optional(),
   coidaRegNumber: z.string().max(50).optional(),
+  monthlyHoursWorked: z.number().int().min(0).optional(),
 })
 
 export async function getOrgSettings() {
@@ -48,6 +49,9 @@ export async function updateOrgSettings(values: z.infer<typeof orgSettingsSchema
     }
     if (parsed.coidaRegNumber !== undefined) {
       mergedSettings.coidaRegNumber = parsed.coidaRegNumber
+    }
+    if (parsed.monthlyHoursWorked !== undefined) {
+      mergedSettings.monthlyHoursWorked = parsed.monthlyHoursWorked
     }
 
     await db.organization.update({

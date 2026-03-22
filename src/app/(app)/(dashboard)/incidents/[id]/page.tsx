@@ -512,24 +512,41 @@ export default async function IncidentDetailPage({
             </Card>
           )}
 
-          {/* Linked CAPA (read-only display) */}
-          {incident.capa && (
-            <Card className="border-border/50 transition-all hover:shadow-md">
-              <CardHeader><CardTitle>Linked CAPA</CardTitle></CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Link href={`/capas/${incident.capa.id}`} className="text-sm font-medium hover:underline">
-                      {incident.capa.title}
-                    </Link>
-                    <div className="mt-1">
-                      <StatusBadge type="capa" value={incident.capa.status} />
-                    </div>
+          {/* Linked CAPAs (read-only display) */}
+          {(() => {
+            const incidentCapas = (incident as Record<string, unknown>).incidentCapas as Array<{
+              capa: { id: string; title: string; status: string; type: string; priority: string }
+            }> | undefined
+            const allCapas = incidentCapas && incidentCapas.length > 0
+              ? incidentCapas.map((ic) => ic.capa)
+              : incident.capa
+                ? [{ ...incident.capa, type: undefined as string | undefined, priority: undefined as string | undefined }]
+                : []
+            if (allCapas.length === 0) return null
+            return (
+              <Card className="border-border/50 transition-all hover:shadow-md">
+                <CardHeader><CardTitle>Linked CAPAs ({allCapas.length})</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {allCapas.map((capa) => (
+                      <div key={capa.id} className="flex items-center justify-between rounded-md border p-3">
+                        <div className="space-y-1">
+                          <Link href={`/capas/${capa.id}`} className="text-sm font-medium hover:underline">
+                            {capa.title}
+                          </Link>
+                          <div className="flex items-center gap-2">
+                            <StatusBadge type="capa" value={capa.status} />
+                            {capa.type && <Badge variant="outline" className="text-[10px]">{capa.type}</Badge>}
+                            {capa.priority && <Badge variant="secondary" className="text-[10px]">{capa.priority}</Badge>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                </CardContent>
+              </Card>
+            )
+          })()}
         </div>
 
         {/* Sidebar — workflow actions */}

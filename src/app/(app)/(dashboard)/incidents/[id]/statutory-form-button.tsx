@@ -14,15 +14,22 @@ export function StatutoryFormButton({ incidentId, incidentType }: { incidentId: 
     window.open(`/api/incidents/${incidentId}/statutory-form?type=${type}`, "_blank")
   }
 
+  function downloadInvestigationReport() {
+    window.open(`/api/incidents/${incidentId}/investigation-report`, "_blank")
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <FileText className="mr-2 h-4 w-4" />
-          Statutory Form
+          Reports & Forms
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={downloadInvestigationReport}>
+          Investigation Report
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => download("wcl2")}>
           W.Cl.2 — Injury on Duty (IOD)
         </DropdownMenuItem>

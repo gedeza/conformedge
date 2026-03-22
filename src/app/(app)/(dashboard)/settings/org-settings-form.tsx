@@ -21,6 +21,7 @@ const formSchema = z.object({
   autoClassifyOnUpload: z.boolean().default(true),
   companyAddress: z.string().max(500).optional(),
   coidaRegNumber: z.string().max(50).optional(),
+  monthlyHoursWorked: z.coerce.number().int().min(0).optional(),
 })
 
 interface OrgSettingsFormProps {
@@ -41,6 +42,7 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
       autoClassifyOnUpload: settingsJson.autoClassifyOnUpload !== false,
       companyAddress: (settingsJson.companyAddress as string) ?? "",
       coidaRegNumber: (settingsJson.coidaRegNumber as string) ?? "",
+      monthlyHoursWorked: (settingsJson.monthlyHoursWorked as number) ?? undefined,
     },
   })
 
@@ -113,6 +115,25 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
           <FormItem>
             <FormLabel>COIDA Registration Number</FormLabel>
             <FormControl><Input placeholder="e.g. W123456789" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="monthlyHoursWorked" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Monthly Hours Worked (all employees)</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                placeholder="e.g. 20000"
+                min={0}
+                {...field}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+              />
+            </FormControl>
+            <p className="text-sm text-muted-foreground">
+              Total person-hours worked per month &mdash; used for LTIFR calculation
+            </p>
             <FormMessage />
           </FormItem>
         )} />

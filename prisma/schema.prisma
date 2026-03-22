@@ -740,6 +740,7 @@ model Capa {
   linkedItems      ChecklistItem[]
   standardClauses  CapaStandardClause[]
   incidents        Incident[]
+  incidentCapas    IncidentCapa[]
   repairRecords    RepairRecord[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_capa_org_created")
@@ -1208,8 +1209,9 @@ model Incident {
   reportedBy   User         @relation("IncidentReporter", fields: [reportedById], references: [id])
   investigator User?        @relation("IncidentInvestigator", fields: [investigatorId], references: [id])
   capa         Capa?        @relation(fields: [capaId], references: [id], onDelete: SetNull)
-  evidence     IncidentEvidence[]
+  evidence       IncidentEvidence[]
   witnessRecords IncidentWitness[]
+  incidentCapas  IncidentCapa[]
 
   @@index([organizationId, createdAt(sort: Desc)], map: "idx_incident_org_created")
   @@index([organizationId, status], map: "idx_incident_org_status")
@@ -1250,6 +1252,19 @@ model IncidentWitness {
 
   @@index([incidentId], map: "idx_incident_witness_incident")
   @@map("incident_witnesses")
+}
+
+model IncidentCapa {
+  id         String   @id @default(uuid())
+  incidentId String   @map("incident_id")
+  capaId     String   @map("capa_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  capa     Capa     @relation(fields: [capaId], references: [id], onDelete: Cascade)
+
+  @@unique([incidentId, capaId])
+  @@map("incident_capas")
 }
 
 // ─────────────────────────────────────────────
