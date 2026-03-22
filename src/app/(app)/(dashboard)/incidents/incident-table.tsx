@@ -91,6 +91,10 @@ export function IncidentTable({ data, projects, members, role }: IncidentTablePr
           victimNationality: editItem.victimNationality ?? null,
           victimContractor: editItem.victimContractor ?? null,
           immediateSupervisor: editItem.immediateSupervisor ?? null,
+          // Medical treatment
+          victimDateOfBirth: editItem.victimDateOfBirth ?? null,
+          treatingDoctor: editItem.treatingDoctor ?? null,
+          hospitalClinic: editItem.hospitalClinic ?? null,
           // Consequence & Impact
           estimatedCost: editItem.estimatedCost ? Number(editItem.estimatedCost) : null,
           spillVolume: editItem.spillVolume ? Number(editItem.spillVolume) : null,

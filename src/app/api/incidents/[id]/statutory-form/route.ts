@@ -49,6 +49,7 @@ export async function GET(
 
     const orgSettings = (incident.organization.settings as Record<string, unknown>) || {}
     const coidaRegNumber = (orgSettings.coidaRegNumber as string) || undefined
+    const employerAddress = (orgSettings.companyAddress as string) || undefined
 
     const reporterName = incident.reportedBy
       ? `${incident.reportedBy.firstName} ${incident.reportedBy.lastName}`
@@ -68,6 +69,7 @@ export async function GET(
     if (formType === "wcl2") {
       pdfElement = React.createElement(WCl2Form, {
         employerName: incident.organization.name,
+        employerAddress,
         coidaRegNumber,
         employeeName: incident.injuredParty || "Not specified",
         employeeIdNumber: incident.victimIdNumber || undefined,
@@ -76,6 +78,7 @@ export async function GET(
         employeeDepartment: incident.victimDepartment || undefined,
         employeeNationality: incident.victimNationality || undefined,
         employeeContractor: incident.victimContractor || undefined,
+        employeeDateOfBirth: incident.victimDateOfBirth ? format(incident.victimDateOfBirth, "dd MMM yyyy") : undefined,
         supervisorName: incident.immediateSupervisor || undefined,
         incidentTitle: incident.title,
         incidentDate: format(incident.incidentDate, "dd MMM yyyy"),
@@ -88,6 +91,8 @@ export async function GET(
         immediateAction: incident.immediateAction || undefined,
         witnesses: incident.witnesses || undefined,
         daysAbsent: incident.lostDays != null ? String(incident.lostDays) : undefined,
+        treatingDoctor: incident.treatingDoctor || undefined,
+        hospitalClinic: incident.hospitalClinic || undefined,
         treatmentType: incident.treatmentType ? (treatmentLabels[incident.treatmentType] ?? incident.treatmentType) : undefined,
         estimatedCost: incident.estimatedCost != null ? `R ${Number(incident.estimatedCost).toLocaleString("en-ZA", { minimumFractionDigits: 2 })}` : undefined,
         returnedToWork: incident.returnedToWork != null ? (incident.returnedToWork ? "Yes" : "No — not yet returned") : undefined,

@@ -19,6 +19,8 @@ const formSchema = z.object({
   industry: z.string().max(100).optional(),
   country: z.string().max(2).default("ZA"),
   autoClassifyOnUpload: z.boolean().default(true),
+  companyAddress: z.string().max(500).optional(),
+  coidaRegNumber: z.string().max(50).optional(),
 })
 
 interface OrgSettingsFormProps {
@@ -37,6 +39,8 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
       industry: org.industry ?? "",
       country: org.country,
       autoClassifyOnUpload: settingsJson.autoClassifyOnUpload !== false,
+      companyAddress: (settingsJson.companyAddress as string) ?? "",
+      coidaRegNumber: (settingsJson.coidaRegNumber as string) ?? "",
     },
   })
 
@@ -96,6 +100,20 @@ export function OrgSettingsForm({ org }: OrgSettingsFormProps) {
             <FormControl>
               <Switch checked={field.value} onCheckedChange={field.onChange} />
             </FormControl>
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="companyAddress" render={({ field }) => (
+          <FormItem>
+            <FormLabel>Company Address</FormLabel>
+            <FormControl><Input placeholder="Physical address (used on statutory forms)" {...field} /></FormControl>
+            <FormMessage />
+          </FormItem>
+        )} />
+        <FormField control={form.control} name="coidaRegNumber" render={({ field }) => (
+          <FormItem>
+            <FormLabel>COIDA Registration Number</FormLabel>
+            <FormControl><Input placeholder="e.g. W123456789" {...field} /></FormControl>
+            <FormMessage />
           </FormItem>
         )} />
         <Button type="submit" disabled={isPending} size="sm">

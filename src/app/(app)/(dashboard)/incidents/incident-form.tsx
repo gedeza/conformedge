@@ -61,6 +61,9 @@ const formSchema = z.object({
   victimNationality: z.string().max(100).optional(),
   victimContractor: z.string().max(200).optional(),
   immediateSupervisor: z.string().max(200).optional(),
+  victimDateOfBirth: z.coerce.date().optional(),
+  treatingDoctor: z.string().max(200).optional(),
+  hospitalClinic: z.string().max(200).optional(),
   estimatedCost: z.coerce.number().min(0).optional(),
   spillVolume: z.coerce.number().min(0).optional(),
   impactAreas: z.array(z.string()).optional(),
@@ -214,6 +217,9 @@ interface IncidentFormProps {
     victimNationality: string | null
     victimContractor: string | null
     immediateSupervisor: string | null
+    victimDateOfBirth: Date | null
+    treatingDoctor: string | null
+    hospitalClinic: string | null
     estimatedCost: number | null
     spillVolume: number | null
     impactAreas: unknown
@@ -276,6 +282,9 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
       victimNationality: incident?.victimNationality ?? "",
       victimContractor: incident?.victimContractor ?? "",
       immediateSupervisor: incident?.immediateSupervisor ?? "",
+      victimDateOfBirth: incident?.victimDateOfBirth ?? undefined,
+      treatingDoctor: incident?.treatingDoctor ?? "",
+      hospitalClinic: incident?.hospitalClinic ?? "",
       estimatedCost: incident?.estimatedCost ?? undefined,
       spillVolume: incident?.spillVolume ?? undefined,
       nonInjuriousType: incident?.nonInjuriousType ?? "",
@@ -362,6 +371,9 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
         victimNationality: "",
         victimContractor: "",
         immediateSupervisor: "",
+        victimDateOfBirth: undefined,
+        treatingDoctor: "",
+        hospitalClinic: "",
         estimatedCost: undefined,
         spillVolume: undefined,
         nonInjuriousType: "",
@@ -932,6 +944,34 @@ export function IncidentForm({ open, onOpenChange, incident, projects, members }
                               <FormLabel className="font-semibold">Work Days Lost</FormLabel>
                               <FormControl>
                                 <Input type="number" min={0} placeholder="0" {...field} value={field.value ?? ""} className="h-10" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+
+                          <FormField control={form.control} name="victimDateOfBirth" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Date of Birth</FormLabel>
+                              <DatePicker value={field.value} onChange={field.onChange} />
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+
+                          <FormField control={form.control} name="treatingDoctor" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Treating Doctor / Practitioner</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Dr. name" {...field} value={field.value ?? ""} className="h-10" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )} />
+
+                          <FormField control={form.control} name="hospitalClinic" render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Hospital / Clinic</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Hospital or clinic name" {...field} value={field.value ?? ""} className="h-10" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

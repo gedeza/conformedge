@@ -42,6 +42,10 @@ export type IncidentRow = {
   victimNationality: string | null
   victimContractor: string | null
   immediateSupervisor: string | null
+  // Medical treatment
+  victimDateOfBirth: Date | null
+  treatingDoctor: string | null
+  hospitalClinic: string | null
   // Consequence & Impact
   estimatedCost: unknown // Decimal
   spillVolume: unknown // Decimal

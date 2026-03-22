@@ -49,6 +49,10 @@ const incidentSchema = z.object({
   victimNationality: z.string().max(100).optional(),
   victimContractor: z.string().max(200).optional(),
   immediateSupervisor: z.string().max(200).optional(),
+  // Medical treatment
+  victimDateOfBirth: z.coerce.date().optional(),
+  treatingDoctor: z.string().max(200).optional(),
+  hospitalClinic: z.string().max(200).optional(),
   // Consequence & Impact
   estimatedCost: z.coerce.number().min(0).optional(),
   spillVolume: z.coerce.number().min(0).optional(),
@@ -169,6 +173,10 @@ export async function createIncident(values: IncidentFormValues): Promise<Action
         victimNationality: parsed.victimNationality || null,
         victimContractor: parsed.victimContractor || null,
         immediateSupervisor: parsed.immediateSupervisor || null,
+        // Medical treatment
+        victimDateOfBirth: parsed.victimDateOfBirth || null,
+        treatingDoctor: parsed.treatingDoctor || null,
+        hospitalClinic: parsed.hospitalClinic || null,
         // Consequence & Impact
         estimatedCost: parsed.estimatedCost ?? null,
         spillVolume: parsed.spillVolume ?? null,
@@ -290,6 +298,10 @@ export async function updateIncident(id: string, values: IncidentFormValues): Pr
         victimNationality: parsed.victimNationality || null,
         victimContractor: parsed.victimContractor || null,
         immediateSupervisor: parsed.immediateSupervisor || null,
+        // Medical treatment
+        victimDateOfBirth: parsed.victimDateOfBirth || null,
+        treatingDoctor: parsed.treatingDoctor || null,
+        hospitalClinic: parsed.hospitalClinic || null,
         // Consequence & Impact
         estimatedCost: parsed.estimatedCost ?? null,
         spillVolume: parsed.spillVolume ?? null,

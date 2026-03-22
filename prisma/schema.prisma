@@ -1167,6 +1167,11 @@ model Incident {
   victimContractor      String?    @map("victim_contractor")
   immediateSupervisor   String?    @map("immediate_supervisor")
 
+  // Medical treatment
+  victimDateOfBirth     DateTime?  @map("victim_date_of_birth")
+  treatingDoctor        String?    @map("treating_doctor")
+  hospitalClinic        String?    @map("hospital_clinic")
+
   // COIDA / Safety fields
   lostDays            Int?       @map("lost_days")
   bodyPartInjured     String?    @map("body_part_injured")
