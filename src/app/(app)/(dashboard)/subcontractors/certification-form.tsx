@@ -5,14 +5,16 @@ import { useForm } from "react-hook-form"
 import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { Award } from "lucide-react"
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { DatePicker } from "@/components/shared/date-picker"
 import { addCertification, updateCertification } from "./actions"
 
@@ -57,7 +59,6 @@ export function CertificationForm({ open, onOpenChange, subcontractorId, certifi
       const result = isEditing
         ? await updateCertification(certification.id, subcontractorId, values)
         : await addCertification(subcontractorId, values)
-
       if (result.success) {
         toast.success(isEditing ? "Certification updated" : "Certification added")
         onOpenChange(false)
@@ -70,72 +71,57 @@ export function CertificationForm({ open, onOpenChange, subcontractorId, certifi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Certification" : "Add Certification"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Award className="h-5 w-5" />
+            {isEditing ? "Edit Certification" : "Add Certification"}
+          </DialogTitle>
+          <DialogDescription>
+            {isEditing ? "Update the certification details." : "Add a certification or accreditation for this subcontractor."}
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Certification Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. ISO 9001:2015" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="issuedBy"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Issued By</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Certifying body" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="issuedDate"
-                render={({ field }) => (
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Certification Name *</FormLabel>
+                <FormControl><Input placeholder="e.g. ISO 9001:2015" {...field} className="h-10" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="issuedBy" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Issued By</FormLabel>
+                <FormControl><Input placeholder="Certifying body" {...field} className="h-10" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div className="space-y-3 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">Validity Period</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField control={form.control} name="issuedDate" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Issued Date</FormLabel>
-                    <FormControl>
-                      <DatePicker value={field.value} onChange={field.onChange} />
-                    </FormControl>
+                    <FormControl><DatePicker value={field.value} onChange={field.onChange} /></FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="expiresAt"
-                render={({ field }) => (
+                )} />
+                <FormField control={form.control} name="expiresAt" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expiry Date</FormLabel>
-                    <FormControl>
-                      <DatePicker value={field.value} onChange={field.onChange} />
-                    </FormControl>
+                    <FormControl><DatePicker value={field.value} onChange={field.onChange} /></FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
+                )} />
+              </div>
             </div>
-            <div className="flex justify-end gap-2 pt-4">
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Saving..." : isEditing ? "Update" : "Add"}
+                {isPending ? "Saving..." : isEditing ? "Update Certification" : "Add Certification"}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

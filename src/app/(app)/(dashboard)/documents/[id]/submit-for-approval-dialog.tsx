@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -48,11 +48,7 @@ const ROLE_OPTIONS = [
 ] as const
 
 const ROLE_LEVEL: Record<string, number> = {
-  VIEWER: 0,
-  AUDITOR: 1,
-  MANAGER: 2,
-  ADMIN: 3,
-  OWNER: 4,
+  VIEWER: 0, AUDITOR: 1, MANAGER: 2, ADMIN: 3, OWNER: 4,
 }
 
 interface Props {
@@ -73,12 +69,7 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
     const defaultTemplate = templates.find((t) => t.isDefault) ?? templates[0]
     if (defaultTemplate) {
       const parsed = defaultTemplate.steps as StepInput[]
-      return parsed.map((s) => ({
-        stepOrder: s.stepOrder,
-        label: s.label,
-        requiredRole: s.role,
-        assignedToId: "",
-      }))
+      return parsed.map((s) => ({ stepOrder: s.stepOrder, label: s.label, requiredRole: s.role, assignedToId: "" }))
     }
     return [{ stepOrder: 1, label: "Manager Review", requiredRole: "MANAGER", assignedToId: "" }]
   }
@@ -94,22 +85,12 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
     const template = templates.find((t) => t.id === templateId)
     if (template) {
       const parsed = template.steps as StepInput[]
-      setSteps(
-        parsed.map((s) => ({
-          stepOrder: s.stepOrder,
-          label: s.label,
-          requiredRole: s.role,
-          assignedToId: "",
-        }))
-      )
+      setSteps(parsed.map((s) => ({ stepOrder: s.stepOrder, label: s.label, requiredRole: s.role, assignedToId: "" })))
     }
   }
 
   function addStep() {
-    setSteps((prev) => [
-      ...prev,
-      { stepOrder: prev.length + 1, label: "", requiredRole: "ADMIN", assignedToId: "" },
-    ])
+    setSteps((prev) => [...prev, { stepOrder: prev.length + 1, label: "", requiredRole: "ADMIN", assignedToId: "" }])
   }
 
   function removeStep(index: number) {
@@ -126,27 +107,15 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
   }
 
   function handleSubmit() {
-    if (steps.some((s) => !s.label.trim())) {
-      toast.error("All steps must have a label")
-      return
-    }
-    if (steps.some((s) => !s.assignedToId)) {
-      toast.error("All steps must have an assigned reviewer")
-      return
-    }
+    if (steps.some((s) => !s.label.trim())) { toast.error("All steps must have a label"); return }
+    if (steps.some((s) => !s.assignedToId)) { toast.error("All steps must have an assigned reviewer"); return }
 
     startTransition(async () => {
       const result = await submitForApproval({
         documentId,
         templateId: selectedTemplateId === "custom" ? undefined : selectedTemplateId,
-        steps: steps.map((s) => ({
-          stepOrder: s.stepOrder,
-          label: s.label,
-          requiredRole: s.requiredRole,
-          assignedToId: s.assignedToId,
-        })),
+        steps: steps.map((s) => ({ stepOrder: s.stepOrder, label: s.label, requiredRole: s.requiredRole, assignedToId: s.assignedToId })),
       })
-
       if (result.success) {
         toast.success("Document submitted for approval")
         setDialogOpen(false)
@@ -165,23 +134,26 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
           Submit for Approval
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Submit for Approval</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Send className="h-5 w-5" />
+            Submit for Approval
+          </DialogTitle>
+          <DialogDescription>
+            Configure the approval workflow. Reviews proceed sequentially — each step must be approved before the next.
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 pt-2">
+
+        <div className="space-y-5">
           {templates.length > 0 && (
             <div className="space-y-2">
-              <Label>Workflow Template</Label>
+              <Label className="text-sm font-semibold">Workflow Template</Label>
               <Select value={selectedTemplateId} onValueChange={handleTemplateChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select template" />
-                </SelectTrigger>
+                <SelectTrigger className="h-10"><SelectValue placeholder="Select template..." /></SelectTrigger>
                 <SelectContent>
                   {templates.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.name}{t.isDefault ? " (Default)" : ""}
-                    </SelectItem>
+                    <SelectItem key={t.id} value={t.id}>{t.name}{t.isDefault ? " (Default)" : ""}</SelectItem>
                   ))}
                   <SelectItem value="custom">Custom Steps</SelectItem>
                 </SelectContent>
@@ -189,94 +161,71 @@ export function SubmitForApprovalDialog({ documentId, templates, members }: Prop
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label>Approval Steps</Label>
-            <p className="text-xs text-muted-foreground">
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">Approval Steps</Label>
+            <p className="text-sm text-muted-foreground">
               Assign a reviewer for each step. Reviews proceed sequentially.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {steps.map((step, i) => {
                 const eligible = getEligibleMembers(step.requiredRole)
                 return (
-                  <div key={i} className="rounded-md border p-3 space-y-2">
+                  <div key={i} className="rounded-lg border p-4 space-y-3">
                     <div className="flex items-center gap-2">
                       <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <span className="text-xs font-medium text-muted-foreground w-5 shrink-0">
-                        {i + 1}.
-                      </span>
+                      <span className="text-sm font-medium text-muted-foreground w-6 shrink-0">{i + 1}.</span>
                       <Input
                         value={step.label}
                         onChange={(e) => updateStep(i, "label", e.target.value)}
                         placeholder="Step label"
                         aria-label={`Step ${i + 1} label`}
-                        className="flex-1"
+                        className="flex-1 h-10"
                       />
                       <Select
                         value={step.requiredRole}
-                        onValueChange={(v) => {
-                          updateStep(i, "requiredRole", v)
-                          updateStep(i, "assignedToId", "")
-                        }}
+                        onValueChange={(v) => { updateStep(i, "requiredRole", v); updateStep(i, "assignedToId", "") }}
                       >
-                        <SelectTrigger className="w-[130px]" aria-label={`Step ${i + 1} required role`}>
+                        <SelectTrigger className="w-[130px] h-10" aria-label={`Step ${i + 1} required role`}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {ROLE_OPTIONS.map((r) => (
-                            <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                          ))}
+                          {ROLE_OPTIONS.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
                         </SelectContent>
                       </Select>
                       {steps.length > 1 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeStep(i)}
-                          className="shrink-0 text-destructive hover:text-destructive"
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => removeStep(i)} className="shrink-0 text-destructive hover:text-destructive">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
-                    <div>
-                      <Select
-                        value={step.assignedToId}
-                        onValueChange={(v) => updateStep(i, "assignedToId", v)}
-                      >
-                        <SelectTrigger aria-label={`Step ${i + 1} reviewer`}>
-                          <SelectValue placeholder="Select reviewer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {eligible.length === 0 ? (
-                            <SelectItem value="__none" disabled>
-                              No members with required role
-                            </SelectItem>
-                          ) : (
-                            eligible.map((m) => (
-                              <SelectItem key={m.id} value={m.id}>
-                                {m.name} ({m.role})
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Select value={step.assignedToId} onValueChange={(v) => updateStep(i, "assignedToId", v)}>
+                      <SelectTrigger className="h-10" aria-label={`Step ${i + 1} reviewer`}>
+                        <SelectValue placeholder="Select reviewer..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eligible.length === 0 ? (
+                          <SelectItem value="__none" disabled>No members with required role</SelectItem>
+                        ) : (
+                          eligible.map((m) => <SelectItem key={m.id} value={m.id}>{m.name} ({m.role})</SelectItem>)
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
                 )
               })}
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={addStep}>
+            <Button type="button" variant="outline" size="sm" onClick={addStep} className="w-full">
               <Plus className="mr-2 h-4 w-4" /> Add Step
             </Button>
           </div>
-
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSubmit} disabled={isPending}>
-              {isPending ? "Submitting..." : "Submit for Approval"}
-            </Button>
-          </div>
         </div>
+
+        <DialogFooter className="pt-2">
+          <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleSubmit} disabled={isPending}>
+            {isPending ? "Submitting..." : "Submit for Approval"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

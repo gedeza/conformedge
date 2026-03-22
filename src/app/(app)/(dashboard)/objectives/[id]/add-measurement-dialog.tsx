@@ -6,8 +6,9 @@ import { z } from "zod/v4"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Gauge } from "lucide-react"
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
 import {
   Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
@@ -30,13 +31,7 @@ interface AddMeasurementDialogProps {
   targetValue: number
 }
 
-export function AddMeasurementDialog({
-  open,
-  onOpenChange,
-  objectiveId,
-  unit,
-  targetValue,
-}: AddMeasurementDialogProps) {
+export function AddMeasurementDialog({ open, onOpenChange, objectiveId, unit, targetValue }: AddMeasurementDialogProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -64,38 +59,36 @@ export function AddMeasurementDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Record Measurement</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Gauge className="h-5 w-5" />
+            Record Measurement
+          </DialogTitle>
+          <DialogDescription>
+            Target: {targetValue}{unit ? ` ${unit}` : ""}. Enter the current measured value.
+          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="value"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Value{unit ? ` (${unit})` : ""}</FormLabel>
-                  <FormControl><Input type="number" step="any" placeholder={`Target: ${targetValue}`} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes (optional)</FormLabel>
-                  <FormControl><Textarea placeholder="Any context about this measurement..." rows={2} {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex justify-end gap-2">
+            <FormField control={form.control} name="value" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Value{unit ? ` (${unit})` : ""} *</FormLabel>
+                <FormControl><Input type="number" step="any" placeholder={`Target: ${targetValue}`} {...field} className="h-10" /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="notes" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notes</FormLabel>
+                <FormControl><Textarea placeholder="Any context about this measurement..." rows={3} {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Saving..." : "Record"}
+                {isPending ? "Saving..." : "Record Measurement"}
               </Button>
-            </div>
+            </DialogFooter>
           </form>
         </Form>
       </DialogContent>

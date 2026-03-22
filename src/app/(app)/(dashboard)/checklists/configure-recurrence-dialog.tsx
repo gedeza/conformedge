@@ -2,21 +2,13 @@
 
 import { useState, useTransition } from "react"
 import { toast } from "sonner"
-import { Settings2, Pause, Play } from "lucide-react"
+import { Settings2, Pause, Play, CalendarClock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -48,20 +40,14 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
   const [frequency, setFrequency] = useState<RecurrenceFrequency | "">(template.recurrenceFrequency ?? "")
   const [customDays, setCustomDays] = useState(String(template.customIntervalDays ?? 30))
   const [startDate, setStartDate] = useState(
-    template.nextDueDate
-      ? new Date(template.nextDueDate).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0]
+    template.nextDueDate ? new Date(template.nextDueDate).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
   )
   const [assigneeId, setAssigneeId] = useState(template.defaultAssigneeId ?? "")
   const [projectId, setProjectId] = useState(template.defaultProjectId ?? "")
   const [isPending, startTransition] = useTransition()
 
   function handleSave() {
-    if (isRecurring && !frequency) {
-      toast.error("Please select a frequency")
-      return
-    }
-
+    if (isRecurring && !frequency) { toast.error("Please select a frequency"); return }
     startTransition(async () => {
       const result = await configureRecurrence(template.id, {
         isRecurring,
@@ -103,100 +89,92 @@ export function ConfigureRecurrenceDialog({ template, members, projects, trigger
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Recurring Schedule — {template.name}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5" />
+            Recurring Schedule
+          </DialogTitle>
+          <DialogDescription>{template.name}</DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="recurring-toggle">Enable recurring schedule</Label>
-            <Switch
-              id="recurring-toggle"
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
+
+        <div className="space-y-5">
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div>
+              <Label htmlFor="recurring-toggle" className="font-semibold">Enable recurring schedule</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">Automatically create new checklist instances</p>
+            </div>
+            <Switch id="recurring-toggle" checked={isRecurring} onCheckedChange={setIsRecurring} />
           </div>
 
           {isRecurring && (
             <>
-              <div className="space-y-2">
-                <Label htmlFor="recurrence-freq">Frequency</Label>
-                <Select value={frequency} onValueChange={(v) => setFrequency(v as RecurrenceFrequency)}>
-                  <SelectTrigger id="recurrence-freq"><SelectValue placeholder="Select frequency" /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(RECURRENCE_FREQUENCIES).map(([key, cfg]) => (
-                      <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4 rounded-lg border p-4">
+                <Label className="text-sm font-semibold">Schedule</Label>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="recurrence-freq" className="text-sm">Frequency</Label>
+                    <Select value={frequency} onValueChange={(v) => setFrequency(v as RecurrenceFrequency)}>
+                      <SelectTrigger id="recurrence-freq" className="h-10"><SelectValue placeholder="Select frequency..." /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(RECURRENCE_FREQUENCIES).map(([key, cfg]) => (
+                          <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {frequency === "CUSTOM" && (
+                    <div>
+                      <Label htmlFor="custom-interval" className="text-sm">Custom interval (days)</Label>
+                      <Input id="custom-interval" type="number" min={1} max={365} value={customDays} onChange={(e) => setCustomDays(e.target.value)} className="h-10" />
+                    </div>
+                  )}
+
+                  <div>
+                    <Label htmlFor="recurrence-start" className="text-sm">Start date (first due date)</Label>
+                    <Input id="recurrence-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="h-10" />
+                  </div>
+                </div>
               </div>
 
-              {frequency === "CUSTOM" && (
-                <div className="space-y-2">
-                  <Label htmlFor="custom-interval">Custom interval (days)</Label>
-                  <Input
-                    id="custom-interval"
-                    type="number"
-                    min={1}
-                    max={365}
-                    value={customDays}
-                    onChange={(e) => setCustomDays(e.target.value)}
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="recurrence-start">Start date (first due date)</Label>
-                <Input id="recurrence-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="default-assignee">Default Assignee</Label>
-                  <Select value={assigneeId} onValueChange={setAssigneeId}>
-                    <SelectTrigger id="default-assignee"><SelectValue placeholder="None" /></SelectTrigger>
-                    <SelectContent>
-                      {members.map((m) => (
-                        <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="default-project">Default Project</Label>
-                  <Select value={projectId} onValueChange={setProjectId}>
-                    <SelectTrigger id="default-project"><SelectValue placeholder="None" /></SelectTrigger>
-                    <SelectContent>
-                      {projects.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4 rounded-lg border p-4">
+                <Label className="text-sm font-semibold">Defaults</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="default-assignee" className="text-sm">Default Assignee</Label>
+                    <Select value={assigneeId} onValueChange={setAssigneeId}>
+                      <SelectTrigger id="default-assignee" className="h-10"><SelectValue placeholder="Select..." /></SelectTrigger>
+                      <SelectContent>
+                        {members.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="default-project" className="text-sm">Default Project</Label>
+                    <Select value={projectId} onValueChange={setProjectId}>
+                      <SelectTrigger id="default-project" className="h-10"><SelectValue placeholder="Select..." /></SelectTrigger>
+                      <SelectContent>
+                        {projects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
               {template.isRecurring && (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleTogglePause}
-                  disabled={isPending}
-                >
-                  {template.isPaused ? (
-                    <><Play className="mr-2 h-4 w-4" />Resume Schedule</>
-                  ) : (
-                    <><Pause className="mr-2 h-4 w-4" />Pause Schedule</>
-                  )}
+                <Button variant="outline" className="w-full" onClick={handleTogglePause} disabled={isPending}>
+                  {template.isPaused ? <><Play className="mr-2 h-4 w-4" />Resume Schedule</> : <><Pause className="mr-2 h-4 w-4" />Pause Schedule</>}
                 </Button>
               )}
             </>
           )}
-
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={isPending}>
-              {isPending ? "Saving..." : "Save"}
-            </Button>
-          </div>
         </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleSave} disabled={isPending}>
+            {isPending ? "Saving..." : "Save Schedule"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { addDays, addHours } from "date-fns"
-import { Plus, Copy, Check } from "lucide-react"
+import { Plus, Copy, Check, Link2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,13 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog"
 import { createShareLink } from "./share-link-actions"
 
@@ -47,19 +41,14 @@ function getExpiryDate(preset: string): Date {
 }
 
 export function CreateShareLinkDialog({
-  documents,
-  auditPacks,
-  subcontractors = [],
-  prefilledType,
-  prefilledEntityId,
-  trigger,
+  documents, auditPacks, subcontractors = [],
+  prefilledType, prefilledEntityId, trigger,
 }: CreateShareLinkDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [createdUrl, setCreatedUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
-  // Form state
   const [type, setType] = useState<"DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR">(prefilledType ?? "DOCUMENT")
   const [entityId, setEntityId] = useState(prefilledEntityId ?? "")
   const [label, setLabel] = useState("")
@@ -75,54 +64,33 @@ export function CreateShareLinkDialog({
   const [portalSubcontractors, setPortalSubcontractors] = useState(false)
 
   function resetForm() {
-    setType(prefilledType ?? "DOCUMENT")
-    setEntityId(prefilledEntityId ?? "")
-    setLabel("")
-    setRecipientEmail("")
-    setRecipientName("")
-    setExpiryPreset("7d")
-    setMaxViews("")
-    setAllowDownload(true)
-    setPortalDocuments(true)
-    setPortalAssessments(false)
-    setPortalCapas(false)
-    setPortalChecklists(false)
-    setPortalSubcontractors(false)
-    setCreatedUrl(null)
-    setCopied(false)
+    setType(prefilledType ?? "DOCUMENT"); setEntityId(prefilledEntityId ?? "")
+    setLabel(""); setRecipientEmail(""); setRecipientName("")
+    setExpiryPreset("7d"); setMaxViews(""); setAllowDownload(true)
+    setPortalDocuments(true); setPortalAssessments(false); setPortalCapas(false)
+    setPortalChecklists(false); setPortalSubcontractors(false)
+    setCreatedUrl(null); setCopied(false)
   }
 
-  function handleOpenChange(val: boolean) {
-    setOpen(val)
-    if (!val) resetForm()
-  }
+  function handleOpenChange(val: boolean) { setOpen(val); if (!val) resetForm() }
 
   function handleSubmit() {
     startTransition(async () => {
       const result = await createShareLink({
         type,
         entityId: type !== "PORTAL" ? entityId || undefined : undefined,
-        label,
-        recipientEmail: recipientEmail || undefined,
+        label, recipientEmail: recipientEmail || undefined,
         recipientName: recipientName || undefined,
         expiresAt: getExpiryDate(expiryPreset),
         maxViews: maxViews ? parseInt(maxViews, 10) : undefined,
         allowDownload,
         portalConfig: type === "PORTAL" ? {
-          documents: portalDocuments,
-          assessments: portalAssessments,
-          capas: portalCapas,
-          checklists: portalChecklists,
-          subcontractors: portalSubcontractors,
+          documents: portalDocuments, assessments: portalAssessments,
+          capas: portalCapas, checklists: portalChecklists, subcontractors: portalSubcontractors,
         } : undefined,
       })
-
-      if (result.success && result.data) {
-        setCreatedUrl(result.data.url)
-        toast.success("Share link created")
-      } else {
-        toast.error(result.error ?? "Failed to create share link")
-      }
+      if (result.success && result.data) { setCreatedUrl(result.data.url); toast.success("Share link created") }
+      else toast.error(result.error ?? "Failed to create share link")
     })
   }
 
@@ -138,27 +106,27 @@ export function CreateShareLinkDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" /> Create Share Link
-          </Button>
+          <Button size="sm"><Plus className="mr-2 h-4 w-4" /> Create Share Link</Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{createdUrl ? "Share Link Created" : "Create Share Link"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5" />
+            {createdUrl ? "Share Link Created" : "Create Share Link"}
+          </DialogTitle>
           <DialogDescription>
             {createdUrl
               ? "Copy this link — it won't be shown again."
-              : "Create a time-limited link for external access."
-            }
+              : "Create a time-limited link for external access."}
           </DialogDescription>
         </DialogHeader>
 
         {createdUrl ? (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Input value={createdUrl} readOnly className="font-mono text-xs" />
-              <Button variant="outline" size="icon" onClick={handleCopy}>
+              <Input value={createdUrl} readOnly className="font-mono text-xs h-10" />
+              <Button variant="outline" size="icon" onClick={handleCopy} className="shrink-0">
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
@@ -167,125 +135,113 @@ export function CreateShareLinkDialog({
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Type</Label>
-              <Select value={type} onValueChange={(v) => setType(v as typeof type)} disabled={!!prefilledType}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="DOCUMENT">Document</SelectItem>
-                  <SelectItem value="AUDIT_PACK">Audit Pack</SelectItem>
-                  <SelectItem value="PORTAL">Portal</SelectItem>
-                  <SelectItem value="SUBCONTRACTOR">Subcontractor</SelectItem>
-                </SelectContent>
-              </Select>
+          <div className="space-y-5">
+            {/* Type & Entity */}
+            <div className="space-y-4 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">What to Share</Label>
+              <div className="space-y-3">
+                <Select value={type} onValueChange={(v) => setType(v as typeof type)} disabled={!!prefilledType}>
+                  <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DOCUMENT">Document</SelectItem>
+                    <SelectItem value="AUDIT_PACK">Audit Pack</SelectItem>
+                    <SelectItem value="PORTAL">Portal</SelectItem>
+                    <SelectItem value="SUBCONTRACTOR">Subcontractor</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {type === "DOCUMENT" && (
+                  <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
+                    <SelectTrigger className="h-10"><SelectValue placeholder="Select document..." /></SelectTrigger>
+                    <SelectContent>
+                      {documents.map((d) => <SelectItem key={d.id} value={d.id}>{d.title}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {type === "AUDIT_PACK" && (
+                  <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
+                    <SelectTrigger className="h-10"><SelectValue placeholder="Select audit pack..." /></SelectTrigger>
+                    <SelectContent>
+                      {auditPacks.map((p) => <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {type === "SUBCONTRACTOR" && (
+                  <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
+                    <SelectTrigger className="h-10"><SelectValue placeholder="Select subcontractor..." /></SelectTrigger>
+                    <SelectContent>
+                      {subcontractors.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {type === "PORTAL" && (
+                  <div className="space-y-2">
+                    <Label className="text-sm">Portal Sections</Label>
+                    <div className="grid grid-cols-2 gap-2 rounded-md border p-3 bg-background">
+                      {[
+                        { id: "documents", label: "Documents", checked: portalDocuments, set: setPortalDocuments },
+                        { id: "assessments", label: "Assessments", checked: portalAssessments, set: setPortalAssessments },
+                        { id: "capas", label: "CAPAs", checked: portalCapas, set: setPortalCapas },
+                        { id: "checklists", label: "Checklists", checked: portalChecklists, set: setPortalChecklists },
+                        { id: "subcontractors", label: "Subcontractors", checked: portalSubcontractors, set: setPortalSubcontractors },
+                      ].map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 py-1">
+                          <Checkbox id={item.id} checked={item.checked} onCheckedChange={(v) => item.set(!!v)} />
+                          <Label htmlFor={item.id} className="font-normal text-sm">{item.label}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {type === "DOCUMENT" && (
-              <div className="space-y-2">
-                <Label>Document</Label>
-                <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
-                  <SelectTrigger><SelectValue placeholder="Select a document" /></SelectTrigger>
-                  <SelectContent>
-                    {documents.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>{d.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {type === "AUDIT_PACK" && (
-              <div className="space-y-2">
-                <Label>Audit Pack</Label>
-                <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
-                  <SelectTrigger><SelectValue placeholder="Select an audit pack" /></SelectTrigger>
-                  <SelectContent>
-                    {auditPacks.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {type === "SUBCONTRACTOR" && (
-              <div className="space-y-2">
-                <Label>Subcontractor</Label>
-                <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
-                  <SelectTrigger><SelectValue placeholder="Select a subcontractor" /></SelectTrigger>
-                  <SelectContent>
-                    {subcontractors.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {type === "PORTAL" && (
-              <div className="space-y-2">
-                <Label>Portal Sections</Label>
-                <div className="space-y-2">
-                  {[
-                    { id: "documents", label: "Documents", checked: portalDocuments, set: setPortalDocuments },
-                    { id: "assessments", label: "Assessments", checked: portalAssessments, set: setPortalAssessments },
-                    { id: "capas", label: "CAPAs", checked: portalCapas, set: setPortalCapas },
-                    { id: "checklists", label: "Checklists", checked: portalChecklists, set: setPortalChecklists },
-                    { id: "subcontractors", label: "Subcontractors", checked: portalSubcontractors, set: setPortalSubcontractors },
-                  ].map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <Checkbox id={item.id} checked={item.checked} onCheckedChange={(v) => item.set(!!v)} />
-                      <Label htmlFor={item.id} className="font-normal">{item.label}</Label>
-                    </div>
-                  ))}
+            {/* Label & Recipient */}
+            <div className="space-y-4 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">Recipient</Label>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm">Label *</Label>
+                  <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. SABS audit 2026" className="h-10" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm">Recipient Name</Label>
+                    <Input value={recipientName} onChange={(e) => setRecipientName(e.target.value)} placeholder="John Smith" className="h-10" />
+                  </div>
+                  <div>
+                    <Label className="text-sm">Recipient Email</Label>
+                    <Input value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="john@example.com" type="email" className="h-10" />
+                  </div>
                 </div>
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Label</Label>
-              <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="e.g. SABS audit 2026" />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Recipient Name (optional)</Label>
-                <Input value={recipientName} onChange={(e) => setRecipientName(e.target.value)} placeholder="John Smith" />
+            {/* Security */}
+            <div className="space-y-4 rounded-lg border p-4">
+              <Label className="text-sm font-semibold">Security</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm">Expires In</Label>
+                  <Select value={expiryPreset} onValueChange={setExpiryPreset}>
+                    <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {EXPIRY_PRESETS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm">Max Views</Label>
+                  <Input type="number" value={maxViews} onChange={(e) => setMaxViews(e.target.value)} placeholder="Unlimited" min={1} className="h-10" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Recipient Email (optional)</Label>
-                <Input value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} placeholder="john@example.com" type="email" />
+              <div className="flex items-center gap-2 pt-1">
+                <Checkbox id="allowDownload" checked={allowDownload} onCheckedChange={(v) => setAllowDownload(!!v)} />
+                <Label htmlFor="allowDownload" className="font-normal text-sm">Allow file downloads</Label>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Expires In</Label>
-                <Select value={expiryPreset} onValueChange={setExpiryPreset}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {EXPIRY_PRESETS.map((p) => (
-                      <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Max Views (optional)</Label>
-                <Input
-                  type="number"
-                  value={maxViews}
-                  onChange={(e) => setMaxViews(e.target.value)}
-                  placeholder="Unlimited"
-                  min={1}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Checkbox id="allowDownload" checked={allowDownload} onCheckedChange={(v) => setAllowDownload(!!v)} />
-              <Label htmlFor="allowDownload" className="font-normal">Allow file downloads</Label>
             </div>
           </div>
         )}
@@ -294,11 +250,8 @@ export function CreateShareLinkDialog({
           {createdUrl ? (
             <Button onClick={() => handleOpenChange(false)}>Done</Button>
           ) : (
-            <Button
-              onClick={handleSubmit}
-              disabled={isPending || !label || (type !== "PORTAL" && !entityId)}
-            >
-              {isPending ? "Creating…" : "Create Link"}
+            <Button onClick={handleSubmit} disabled={isPending || !label || (type !== "PORTAL" && !entityId)}>
+              {isPending ? "Creating..." : "Create Link"}
             </Button>
           )}
         </DialogFooter>
