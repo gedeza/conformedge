@@ -95,6 +95,36 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Permit Expiring",
     hint: "Review and renew the work permit or close out the job before it expires.",
   },
+  INVESTIGATION_OVERDUE: {
+    color: "#dc2626",
+    label: "Investigation Overdue",
+    hint: "An incident investigation has passed its due date. Take immediate action.",
+  },
+  STATUTORY_DEADLINE: {
+    color: "#b91c1c",
+    label: "Statutory Deadline",
+    hint: "A statutory reporting deadline is approaching. Submit the required report.",
+  },
+  CALIBRATION_DUE: {
+    color: "#0891b2",
+    label: "Calibration Due",
+    hint: "Equipment calibration is due. Schedule calibration to maintain compliance.",
+  },
+  CALIBRATION_OVERDUE: {
+    color: "#dc2626",
+    label: "Calibration Overdue",
+    hint: "Equipment calibration is overdue. Quarantine equipment until calibrated.",
+  },
+  MAINTENANCE_DUE: {
+    color: "#0d9488",
+    label: "Maintenance Due",
+    hint: "Scheduled equipment maintenance is approaching.",
+  },
+  EQUIPMENT_QUARANTINED: {
+    color: "#dc2626",
+    label: "Equipment Quarantined",
+    hint: "Equipment has been quarantined due to safety concerns. Do not use until resolved.",
+  },
 }
 
 function EmailLayout({ children }: { children: React.ReactNode }) {

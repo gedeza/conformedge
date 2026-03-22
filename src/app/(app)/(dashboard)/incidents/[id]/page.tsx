@@ -133,7 +133,7 @@ export default async function IncidentDetailPage({
 
       <PageHeader heading={incident.title} description={incident.description ?? undefined}>
         <div className="flex items-center gap-2">
-          <StatutoryFormButton incidentId={incident.id} />
+          <StatutoryFormButton incidentId={incident.id} incidentType={incident.incidentType} />
           <StatusBadge type="incident" value={incident.status} />
           <StatusBadge type="incidentType" value={incident.incidentType} />
           <StatusBadge type="risk" value={incident.severity} />

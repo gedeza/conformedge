@@ -228,6 +228,8 @@ export const NOTIFICATION_TYPES = {
   QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
   TEAM_INVITATION: { label: "Team Invitation", color: "bg-blue-100 text-blue-800" },
   PERMIT_EXPIRING: { label: "Permit Expiring", color: "bg-orange-100 text-orange-800" },
+  INVESTIGATION_OVERDUE: { label: "Investigation Overdue", color: "bg-red-100 text-red-800" },
+  STATUTORY_DEADLINE: { label: "Statutory Deadline", color: "bg-red-200 text-red-900" },
   CALIBRATION_DUE: { label: "Calibration Due", color: "bg-cyan-100 text-cyan-800" },
   CALIBRATION_OVERDUE: { label: "Calibration Overdue", color: "bg-red-100 text-red-800" },
   MAINTENANCE_DUE: { label: "Maintenance Due", color: "bg-teal-100 text-teal-800" },

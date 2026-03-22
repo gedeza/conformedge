@@ -601,7 +601,7 @@ export async function GET(request: NextRequest) {
         where: {
           userId: targetUserId,
           organizationId: incident.organizationId,
-          type: "INCIDENT_REPORTED",
+          type: "INVESTIGATION_OVERDUE",
           createdAt: { gte: addDays(now, -1) },
         },
       })
@@ -611,8 +611,8 @@ export async function GET(request: NextRequest) {
       const incMsg = `Investigation for incident "${incident.title}" is past its due date. Please take action.`
 
       const [inAppEnabled, emailEnabled] = await Promise.all([
-        isNotificationEnabled(targetUserId, "INCIDENT_REPORTED", "IN_APP"),
-        isNotificationEnabled(targetUserId, "INCIDENT_REPORTED", "EMAIL"),
+        isNotificationEnabled(targetUserId, "INVESTIGATION_OVERDUE", "IN_APP"),
+        isNotificationEnabled(targetUserId, "INVESTIGATION_OVERDUE", "EMAIL"),
       ])
 
       if (inAppEnabled) {
@@ -620,7 +620,7 @@ export async function GET(request: NextRequest) {
           data: {
             title: incTitle,
             message: incMsg,
-            type: "INCIDENT_REPORTED",
+            type: "INVESTIGATION_OVERDUE",
             userId: targetUserId,
             organizationId: incident.organizationId,
           },
@@ -634,7 +634,7 @@ export async function GET(request: NextRequest) {
           userId: targetUserId,
           title: incTitle,
           message: incMsg,
-          type: "INCIDENT_REPORTED",
+          type: "INVESTIGATION_OVERDUE",
         })
       }
     }

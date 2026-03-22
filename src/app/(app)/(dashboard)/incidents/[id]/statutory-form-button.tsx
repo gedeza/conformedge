@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function StatutoryFormButton({ incidentId }: { incidentId: string }) {
+export function StatutoryFormButton({ incidentId, incidentType }: { incidentId: string; incidentType: string }) {
   function download(type: "wcl2" | "saps277") {
     window.open(`/api/incidents/${incidentId}/statutory-form?type=${type}`, "_blank")
   }
@@ -26,9 +26,11 @@ export function StatutoryFormButton({ incidentId }: { incidentId: string }) {
         <DropdownMenuItem onClick={() => download("wcl2")}>
           W.Cl.2 — Injury on Duty (IOD)
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => download("saps277")}>
-          SAPS 277 — Fatality Notice
-        </DropdownMenuItem>
+        {incidentType === "FATALITY" && (
+          <DropdownMenuItem onClick={() => download("saps277")}>
+            SAPS 277 — Fatality Notice
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

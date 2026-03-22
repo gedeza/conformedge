@@ -79,6 +79,30 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Permit Expiring",
     description: "When a work permit is about to expire or has expired",
   },
+  INVESTIGATION_OVERDUE: {
+    label: "Investigation Overdue",
+    description: "When an incident investigation has passed its due date",
+  },
+  STATUTORY_DEADLINE: {
+    label: "Statutory Deadline",
+    description: "When a statutory reporting deadline is approaching or overdue",
+  },
+  CALIBRATION_DUE: {
+    label: "Calibration Due",
+    description: "When equipment calibration is due or approaching",
+  },
+  CALIBRATION_OVERDUE: {
+    label: "Calibration Overdue",
+    description: "When equipment calibration is past its due date",
+  },
+  MAINTENANCE_DUE: {
+    label: "Maintenance Due",
+    description: "When scheduled equipment maintenance is approaching",
+  },
+  EQUIPMENT_QUARANTINED: {
+    label: "Equipment Quarantined",
+    description: "When equipment is quarantined due to safety concerns",
+  },
 }
 
 // Must match NOTIFICATION_TYPES in notification-actions.ts
@@ -96,6 +120,12 @@ const TYPES: NotificationType[] = [
   "OBJECTIVE_DUE",
   "MANAGEMENT_REVIEW_DUE",
   "PERMIT_EXPIRING",
+  "INVESTIGATION_OVERDUE",
+  "STATUTORY_DEADLINE",
+  "CALIBRATION_DUE",
+  "CALIBRATION_OVERDUE",
+  "MAINTENANCE_DUE",
+  "EQUIPMENT_QUARANTINED",
 ]
 
 interface Props {
