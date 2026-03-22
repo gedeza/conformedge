@@ -227,6 +227,7 @@ export const NOTIFICATION_TYPES = {
   QUOTA_LIMIT_REACHED: { label: "Quota Reached", color: "bg-orange-100 text-orange-800" },
   QUOTA_WARNING: { label: "Quota Warning", color: "bg-yellow-100 text-yellow-800" },
   TEAM_INVITATION: { label: "Team Invitation", color: "bg-blue-100 text-blue-800" },
+  MANAGEMENT_REVIEW_DUE: { label: "Management Review Due", color: "bg-violet-100 text-violet-800" },
   PERMIT_EXPIRING: { label: "Permit Expiring", color: "bg-orange-100 text-orange-800" },
   INVESTIGATION_OVERDUE: { label: "Investigation Overdue", color: "bg-red-100 text-red-800" },
   STATUTORY_DEADLINE: { label: "Statutory Deadline", color: "bg-red-200 text-red-900" },
@@ -404,24 +405,6 @@ export const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
 }
-
-export const NAV_ITEMS = [
-  { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
-  { title: "Projects", href: "/projects", icon: "FolderKanban" },
-  { title: "Documents", href: "/documents", icon: "FileText" },
-  { title: "Assessments", href: "/assessments", icon: "ClipboardCheck" },
-  { title: "CAPAs", href: "/capas", icon: "AlertTriangle" },
-  { title: "Incidents", href: "/incidents", icon: "Siren" },
-  { title: "Objectives", href: "/objectives", icon: "Target" },
-  { title: "Checklists", href: "/checklists", icon: "CheckSquare" },
-  { title: "Equipment", href: "/equipment", icon: "Wrench" },
-  { title: "Subcontractors", href: "/subcontractors", icon: "Building2" },
-  { title: "Audit Packs", href: "/audit-packs", icon: "Package" },
-  { title: "Audit Trail", href: "/audit-trail", icon: "ScrollText" },
-  { title: "Reports", href: "/reports", icon: "BarChart3" },
-  { title: "Gap Analysis", href: "/gap-analysis", icon: "SearchCheck" },
-  { title: "Cross-References", href: "/cross-references", icon: "GitCompareArrows" },
-] as const
 
 export const FIELD_TYPES = {
   COMPLIANCE: { label: "Compliance", icon: "CheckSquare" },

@@ -21,7 +21,7 @@ export async function GET() {
 
   // Required env vars
   const missingEnv = REQUIRED_ENV_VARS.filter((v) => !process.env[v])
-  checks.env = missingEnv.length === 0 ? "ok" : `missing: ${missingEnv.join(", ")}`
+  checks.env = missingEnv.length === 0 ? "ok" : `missing_count: ${missingEnv.length}`
 
   const healthy = checks.database === "ok" && checks.env === "ok"
 

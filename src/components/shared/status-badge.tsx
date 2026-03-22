@@ -29,6 +29,8 @@ import {
   CALIBRATION_RESULTS,
   MAINTENANCE_STATUSES,
   REPAIR_PRIORITIES,
+  CAPA_TYPES,
+  TREATMENT_TYPES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -62,6 +64,8 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   calibration: CALIBRATION_RESULTS,
   maintenance: MAINTENANCE_STATUSES,
   repairPriority: REPAIR_PRIORITIES,
+  capaType: CAPA_TYPES,
+  treatment: TREATMENT_TYPES,
 }
 
 interface StatusBadgeProps {

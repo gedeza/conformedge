@@ -7,6 +7,7 @@ import { getAuthContext } from "@/lib/auth"
 import { logAuditEvent } from "@/lib/audit"
 import { canCreate, canEdit, canDelete } from "@/lib/permissions"
 import { notifyOrgMembers } from "@/lib/notifications"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import type { ActionResult } from "@/types"
 
 const permitSchema = z.object({
@@ -115,6 +116,12 @@ export async function createPermit(values: PermitFormValues): Promise<ActionResu
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canCreate(role)) return { success: false, error: "Insufficient permissions" }
+
+    // Billing gate — Work Permits require Professional+
+    const billing = await getBillingContext(dbOrgId)
+    const access = checkFeatureAccess(billing, "permitToWork")
+    if (!access.allowed) return { success: false, error: access.reason ?? "Work Permits require a Professional plan or higher." }
+
     const parsed = permitSchema.parse(values)
 
     if (parsed.validTo <= parsed.validFrom) {

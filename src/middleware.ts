@@ -56,10 +56,9 @@ export default hasClerkKey
         }
       }
     })
-  : function noopMiddleware() {
+  : function noopMiddleware(req: import("next/server").NextRequest) {
       // Fail closed — block all protected routes when Clerk is not configured
-      const url = new URL("/", "http://localhost:3000")
-      const pathname = arguments[0]?.nextUrl?.pathname || ""
+      const pathname = req.nextUrl.pathname
       const isProtected = [
         "/dashboard", "/projects", "/documents", "/assessments", "/capas",
         "/incidents", "/objectives", "/checklists", "/subcontractors",
