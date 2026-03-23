@@ -405,7 +405,7 @@ function UploadCertDialog({ token, renewCertName, onSuccess, trigger }: UploadCe
               accept=".pdf,.doc,.docx,.xlsx,.jpg,.jpeg,.png"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
-            <p className="text-xs text-muted-foreground">PDF, Word, Excel, or image (max 10MB)</p>
+            <p className="text-xs text-muted-foreground">PDF, Word, Excel, or image (max 4MB)</p>
           </div>
         </div>
 

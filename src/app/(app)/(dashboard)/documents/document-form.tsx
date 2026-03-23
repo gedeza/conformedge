@@ -161,7 +161,7 @@ export function DocumentForm({ open, onOpenChange, document, projects, autoClass
                   {form.watch("fileUrl") ? (
                     <span className="text-sm text-green-600 font-medium">File attached</span>
                   ) : (
-                    <span className="text-sm text-muted-foreground">PDF, Word, Excel, or images. Max 10 MB.</span>
+                    <span className="text-sm text-muted-foreground">PDF, Word, Excel, or images. Max 4 MB.</span>
                   )}
                 </div>
               </div>

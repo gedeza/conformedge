@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactCompiler: true,
   serverExternalPackages: ["@react-pdf/renderer", "pdf-parse", "mammoth", "@google-cloud/vision"],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,

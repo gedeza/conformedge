@@ -394,7 +394,7 @@ export const ALLOWED_FILE_TYPES = [
   "image/png",
 ] as const
 
-export const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+export const MAX_FILE_SIZE = 4 * 1024 * 1024 // 4MB
 
 /** Derive safe file extension from validated MIME type (not user-supplied filename) */
 export const MIME_TO_EXT: Record<string, string> = {

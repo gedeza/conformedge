@@ -357,16 +357,15 @@ export const FOOTER_LINKS = {
     { label: "Features", href: "#features" },
     { label: "Pricing", href: "#pricing" },
     { label: "Standards", href: "#standards" },
-    { label: "Security", href: "#" },
+    { label: "Security", href: "#features" },
   ],
   company: [
-    { label: "About ISU Tech", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "About ISU Tech", href: "https://isutech.co.za" },
+    { label: "Contact", href: "mailto:nhlanhla@isutech.co.za" },
   ],
   legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Cookie Policy", href: "#" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms-of-service" },
+    { label: "Cookie Policy", href: "/cookie-policy" },
   ],
 } as const
