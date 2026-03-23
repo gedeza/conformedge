@@ -159,28 +159,28 @@ const st = StyleSheet.create({
   featureGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
-    marginTop: 8,
-    marginBottom: 12,
+    gap: 6,
+    marginTop: 6,
+    marginBottom: 8,
   },
   featureCard: {
     width: "48%",
-    padding: 12,
+    padding: 8,
     backgroundColor: c.bgLight,
     borderRadius: 4,
     border: `1px solid ${c.border}`,
-    marginBottom: 2,
+    marginBottom: 0,
   },
   featureCardTitle: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "bold",
     color: c.navy,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   featureCardText: {
-    fontSize: 8.5,
+    fontSize: 7.5,
     color: c.textMuted,
-    lineHeight: 1.5,
+    lineHeight: 1.4,
   },
 
   // ---- Tables ----
@@ -467,7 +467,7 @@ export function BrochurePDF() {
 
         <Text style={st.sectionTitle}>Key Features</Text>
         <View style={st.featureGrid}>
-          {features.slice(0, 4).map((f) => (
+          {features.map((f) => (
             <View key={f.title} style={st.featureCard}>
               <Text style={st.featureCardTitle}>{f.title}</Text>
               <Text style={st.featureCardText}>{f.text}</Text>
@@ -478,18 +478,9 @@ export function BrochurePDF() {
         <PageFooter />
       </Page>
 
-      {/* ===================== PAGE 3: MORE FEATURES + COMPARISON ===================== */}
+      {/* ===================== PAGE 3: COMPARISON + PRICING ===================== */}
       <Page size="A4" style={st.page}>
-        <PageHeader title="Features & Comparison" />
-
-        <View style={st.featureGrid}>
-          {features.slice(4).map((f) => (
-            <View key={f.title} style={st.featureCard}>
-              <Text style={st.featureCardTitle}>{f.title}</Text>
-              <Text style={st.featureCardText}>{f.text}</Text>
-            </View>
-          ))}
-        </View>
+        <PageHeader title="Pricing & Comparison" />
 
         <Text style={st.sectionTitle}>Why ConformEdge?</Text>
 
