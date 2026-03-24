@@ -301,15 +301,15 @@ export function PartnerOpportunityPDF() {
         <View style={st.modelCard}>
           <View style={st.modelCardHeader}>
             <Text style={st.modelCardTitle}>2. Consulting Partner</Text>
-            <Text style={st.modelCardPrice}>R4,999/mo + R899/client</Text>
+            <Text style={st.modelCardPrice}>R4,999/mo + tiered per-client</Text>
           </View>
           <Text style={st.modelCardDesc}>
             Manage multiple client companies from one dashboard. Hire or contract an ISO practitioner,
             use ConformEdge as the platform, and charge clients your own service fee.
           </Text>
+          <Bullet>Clients 1–10: R899/mo | Clients 11–25: R1,299/mo | 26+: R999/mo</Bullet>
           <Bullet>Multi-tenant dashboard — manage all clients from one login</Bullet>
           <Bullet>Each client gets isolated, secure workspace</Bullet>
-          <Bullet>Volume discounts: 10% off at 10+ clients, 15% at 25+</Bullet>
           <Bullet>You set your own pricing to clients — keep the margin</Bullet>
         </View>
 
@@ -317,14 +317,14 @@ export function PartnerOpportunityPDF() {
         <View style={st.modelCard}>
           <View style={st.modelCardHeader}>
             <Text style={st.modelCardTitle}>3. White-Label Partner</Text>
-            <Text style={st.modelCardPrice}>R6,999/mo + R699/client</Text>
+            <Text style={st.modelCardPrice}>R6,999/mo + tiered per-client</Text>
           </View>
           <Text style={st.modelCardDesc}>
             Full custom branding — your logo, your colours, your domain. Your clients see your brand,
             not ConformEdge. Best for building a standalone compliance division.
           </Text>
+          <Bullet>Clients 1–10: R699/mo | Clients 11–25: R999/mo | 26+: R799/mo</Bullet>
           <Bullet>Custom branding: logo, colours, email templates, domain</Bullet>
-          <Bullet>Lowest per-client cost — maximise margin at scale</Bullet>
           <Bullet>Full API access for integration with your systems</Bullet>
           <Bullet>Dedicated partner manager from ConformEdge</Bullet>
         </View>
@@ -352,9 +352,9 @@ export function PartnerOpportunityPDF() {
           </View>
           {[
             ["Starting out", "5", "R25,000/mo", "R9,494/mo", "R15,506/mo"],
-            ["Growing", "10", "R50,000/mo", "R12,989/mo", "R37,011/mo"],
-            ["Established", "15", "R75,000/mo", "R17,384/mo", "R57,616/mo"],
-            ["Scaled", "25", "R125,000/mo", "R23,096/mo", "R101,904/mo"],
+            ["Growing", "10", "R50,000/mo", "R13,989/mo", "R36,011/mo"],
+            ["Established", "15", "R75,000/mo", "R20,484/mo", "R54,516/mo"],
+            ["Scaled", "25", "R125,000/mo", "R33,474/mo", "R91,526/mo"],
           ].map(([scenario, clients, revenue, cost, margin], i) => (
             <View key={scenario} style={i % 2 === 0 ? st.tableRow : st.tableRowAlt}>
               <Text style={[st.tableCellBold, { width: "22%" }]}>{scenario}</Text>
@@ -368,17 +368,17 @@ export function PartnerOpportunityPDF() {
 
         <Text style={st.bodyTextMuted}>
           Based on charging clients R5,000/mo per company for compliance management services
-          (platform + practitioner support). Volume discounts applied at 10+ and 25+ clients.
+          (platform + practitioner support). Tiered per-client pricing: R899/mo (1–10), R1,299/mo (11–25), R999/mo (26+).
         </Text>
 
         <View style={st.revenueBox}>
           <Text style={st.revenueTitle}>15-Client Consulting Partner — Annual Projection</Text>
           <Text style={st.revenueText}>
             Revenue: R75,000/mo x 12 = R900,000/year{"\n"}
-            Platform cost: R17,384/mo x 12 = R208,608/year{"\n"}
+            Platform cost: R20,484/mo x 12 = R245,808/year{"\n"}
             Practitioner cost (estimate): R25,000/mo x 12 = R300,000/year
           </Text>
-          <Text style={st.revenueBig}>Net Profit: ~R391,392/year</Text>
+          <Text style={st.revenueBig}>Net Profit: ~R354,192/year</Text>
         </View>
 
         <Text style={st.sectionTitle}>What You Offer Your Clients</Text>

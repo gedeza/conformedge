@@ -568,8 +568,8 @@ export function BrochurePDF() {
           </View>
           {[
             ["Referral", "Free", "15% commission", "Passive income from referrals"],
-            ["Consulting", "R8,999/mo", "R899-R2,499", "Client dashboard, co-branded"],
-            ["White-Label", "R12,999/mo", "R699-R1,999", "Your brand, your pricing"],
+            ["Consulting", "R4,999/mo", "R899-R1,299", "Client dashboard, co-branded"],
+            ["White-Label", "R6,999/mo", "R699-R999", "Your brand, your pricing"],
           ].map(([model, base, perClient, desc], i) => (
             <View key={model} style={i % 2 === 0 ? st.tableRow : st.tableRowAlt}>
               <Text style={[st.tableCellBold, { width: "22%" }]}>{model}</Text>

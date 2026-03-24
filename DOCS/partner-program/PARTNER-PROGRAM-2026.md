@@ -1,7 +1,7 @@
 # ConformEdge Partner Program
 
-**Version:** 1.1
-**Date:** March 2026 (Updated 11 March 2026)
+**Version:** 1.2
+**Date:** March 2026 (Updated 24 March 2026)
 **Prepared by:** ISU Technologies (Pty) Ltd
 **Contact:** nhlanhla@isutech.co.za
 
@@ -37,8 +37,8 @@ ConformEdge is an AI-powered ISO Compliance Management platform built for South 
 | Tier | Best For | Starting Cost |
 |------|----------|---------------|
 | Referral | Independent advisors who recommend, not manage | Free |
-| Consulting | Firms managing compliance for multiple clients | R4,999/mo + R899/client |
-| White-Label | Large consultancies wanting their own brand | R6,999/mo + R699/client |
+| Consulting | Firms managing compliance for multiple clients | R4,999/mo + tiered per-client |
+| White-Label | Large consultancies wanting their own brand | R6,999/mo + tiered per-client |
 
 ---
 
@@ -73,7 +73,9 @@ The Partner Program provides:
 | Feature | Referral | Consulting | White-Label |
 |---------|----------|------------|-------------|
 | Platform fee | Free | R4,999/mo | R6,999/mo |
-| Per client org | N/A | R899/mo | R699/mo |
+| Per client org (1–10) | N/A | R899/mo | R699/mo |
+| Per client org (11–25) | N/A | R1,299/mo | R999/mo |
+| Per client org (26+) | N/A | R999/mo | R799/mo |
 | Internal users | N/A | 5 included | 10 included |
 | Additional internal users | N/A | R149/user/mo | R149/user/mo |
 | Multi-tenant dashboard | No | Yes | Yes |
@@ -81,7 +83,6 @@ The Partner Program provides:
 | Custom branding | No | No | Yes (logo, colours, domain) |
 | API access | No | Read-only | Full read/write |
 | Commission | 15% Year 1 | N/A | N/A |
-| Volume discounts | N/A | Yes (10+ orgs) | Yes (10+ orgs) |
 | Dedicated partner manager | No | 50+ orgs | Always |
 
 ---
@@ -133,7 +134,12 @@ For SHEQ consultancies, compliance management firms, and quality professionals w
 - Client health dashboard (% compliance across portfolio)
 - Partner analytics and billing management
 
-**Per Client Organization (R899/mo each):**
+**Per Client Organization (tiered pricing):**
+- Clients 1–10: R899/mo each
+- Clients 11–25: R1,299/mo each
+- Clients 26+: R999/mo each
+
+Each client org includes:
 - Fully isolated tenant (separate data, documents, assessments)
 - Up to 3 client-facing user accounts per org
 - All Professional-tier features (5 standards, unlimited docs, 200 AI credits/mo)
@@ -150,11 +156,12 @@ For SHEQ consultancies, compliance management firms, and quality professionals w
 | Line Item | Monthly | Annual |
 |-----------|---------|--------|
 | Platform fee (5 internal users) | R4,999 | R59,988 |
-| 12 client organisations x R899 | R10,788 | R129,456 |
-| **Total** | **R15,787** | **R189,444** |
+| 10 client organisations x R899 (tier 1) | R8,990 | R107,880 |
+| 2 client organisations x R1,299 (tier 2) | R2,598 | R31,176 |
+| **Total** | **R16,587** | **R199,044** |
 
-**Comparison:** 12 clients buying Professional individually = R53,988/mo (R647,856/year)
-**Partner saving:** 71% (R458,412/year)
+**Comparison:** 12 clients buying Professional individually = R65,988/mo (R791,856/year)
+**Partner saving:** 75% (R592,812/year)
 
 ### Requirements
 - Registered business entity
@@ -185,20 +192,25 @@ For large consultancies, industry bodies, and enterprise service providers who w
 - Branded email notifications
 - Custom login page
 
-**Per Client Organization (R699/mo each):**
-- Same as Consulting tier, at deeper discount
-- Full Professional-tier features per org
+**Per Client Organization (tiered pricing):**
+- Clients 1–10: R699/mo each
+- Clients 11–25: R999/mo each
+- Clients 26+: R799/mo each
+
+Each client org includes same as Consulting tier, with full Professional-tier features.
 
 ### Pricing Example — 30 Clients
 
 | Line Item | Monthly | Annual |
 |-----------|---------|--------|
 | Platform fee (10 internal users) | R6,999 | R83,988 |
-| 30 client organisations x R699 | R20,970 | R251,640 |
-| **Total** | **R27,969** | **R335,628** |
+| 10 client organisations x R699 (tier 1) | R6,990 | R83,880 |
+| 15 client organisations x R999 (tier 2) | R14,985 | R179,820 |
+| 5 client organisations x R799 (tier 3) | R3,995 | R47,940 |
+| **Total** | **R32,969** | **R395,628** |
 
-**Comparison:** 30 clients buying Professional individually = R134,970/mo (R1,619,640/year)
-**Partner saving:** 79% (R1,284,012/year)
+**Comparison:** 30 clients buying Professional individually = R164,970/mo (R1,979,640/year)
+**Partner saving:** 80% (R1,584,012/year)
 
 ### Requirements
 - Registered business entity with 2+ years of operation
@@ -209,29 +221,33 @@ For large consultancies, industry bodies, and enterprise service providers who w
 
 ---
 
-## 7. Volume Discounts
+## 7. Tiered Per-Client Pricing
 
-Volume discounts apply to the per-client-org fee for Consulting and White-Label partners.
+Per-client fees use a tiered structure that rewards growth while ensuring fair platform revenue at scale. No separate volume discounts — the tiers ARE the volume structure.
 
-### Consulting Partner (base: R899/org/mo)
+### Consulting Partner
 
-| Client Orgs | Discount | Effective Per-Org | Monthly (at max) |
-|-------------|----------|-------------------|------------------|
-| 1–9 | None | R899/mo | R8,091 |
-| 10–24 | 10% off | R809/mo | R19,416 |
-| 25–49 | 15% off | R764/mo | R37,436 |
-| 50+ | 20% off | R719/mo | Custom |
+| Client Orgs | Per-Org Fee | Example Monthly Total |
+|-------------|-------------|----------------------|
+| 1–10 | R899/mo | 10 clients: R4,999 + R8,990 = R13,989 |
+| 11–25 | R1,299/mo | 15 clients: R4,999 + R8,990 + R6,495 = R20,484 |
+| 26+ | R999/mo | 30 clients: R4,999 + R8,990 + R19,485 + R4,995 = R38,469 |
 
-### White-Label Partner (base: R699/org/mo)
+### White-Label Partner
 
-| Client Orgs | Discount | Effective Per-Org | Monthly (at max) |
-|-------------|----------|-------------------|------------------|
-| 1–9 | None | R699/mo | R6,291 |
-| 10–24 | 10% off | R629/mo | R15,096 |
-| 25–49 | 15% off | R594/mo | R29,106 |
-| 50+ | 20% off | R559/mo | Custom |
+| Client Orgs | Per-Org Fee | Example Monthly Total |
+|-------------|-------------|----------------------|
+| 1–10 | R699/mo | 10 clients: R6,999 + R6,990 = R13,989 |
+| 11–25 | R999/mo | 15 clients: R6,999 + R6,990 + R4,995 = R18,984 |
+| 26+ | R799/mo | 30 clients: R6,999 + R6,990 + R14,985 + R3,995 = R32,969 |
 
-**Note:** 50+ org partners also receive a dedicated partner manager at no additional cost.
+**Note:** Partners with 50+ client orgs receive a dedicated partner manager at no additional cost.
+
+### How Tiered Pricing Works
+- Your first 10 clients are always at the base rate (R899 or R699)
+- Clients 11–25 are at the mid-tier rate
+- Clients 26+ receive a scale benefit at the third-tier rate
+- All tiers are cumulative (e.g., at 15 clients, you pay tier 1 for the first 10 and tier 2 for the next 5)
 
 ---
 
@@ -241,33 +257,33 @@ Volume discounts apply to the per-client-org fee for Consulting and White-Label 
 
 | Model | Monthly Cost | Annual Cost |
 |-------|-------------|-------------|
-| Clients buy directly (Professional) | R22,495 | R269,940 |
-| **Consulting Partner** | **R9,494** | **R113,928** |
-| **Saving** | **58%** | **R156,012/year** |
+| Clients buy directly (Professional) | R27,495 | R329,940 |
+| **Consulting Partner** (5 x R899) | **R9,494** | **R113,928** |
+| **Saving** | **65%** | **R216,012/year** |
 
 ### Scenario B: Mid-Size Firm (15 Clients)
 
 | Model | Monthly Cost | Annual Cost |
 |-------|-------------|-------------|
-| Clients buy directly (Professional) | R67,485 | R809,820 |
-| **Consulting Partner** (10% vol. discount) | **R17,134** | **R205,608** |
-| **Saving** | **75%** | **R604,212/year** |
+| Clients buy directly (Professional) | R82,485 | R989,820 |
+| **Consulting Partner** (10 x R899 + 5 x R1,299) | **R20,484** | **R245,808** |
+| **Saving** | **75%** | **R744,012/year** |
 
 ### Scenario C: Large Consultancy (30 Clients)
 
 | Model | Monthly Cost | Annual Cost |
 |-------|-------------|-------------|
-| Clients buy directly (Professional) | R134,970 | R1,619,640 |
-| **White-Label Partner** (15% vol. discount) | **R24,819** | **R297,828** |
-| **Saving** | **82%** | **R1,321,812/year** |
+| Clients buy directly (Professional) | R164,970 | R1,979,640 |
+| **White-Label Partner** (10 x R699 + 15 x R999 + 5 x R799) | **R32,969** | **R395,628** |
+| **Saving** | **80%** | **R1,584,012/year** |
 
-### Scenario D: Enterprise Consultancy (50+ Clients)
+### Scenario D: Enterprise Consultancy (50 Clients)
 
 | Model | Monthly Cost | Annual Cost |
 |-------|-------------|-------------|
-| Clients buy directly (Professional) | R224,950 | R2,699,400 |
-| **White-Label Partner** (20% vol. discount) | **R34,949** | **R419,388** |
-| **Saving** | **84%** | **R2,280,012/year** |
+| Clients buy directly (Professional) | R274,950 | R3,299,400 |
+| **White-Label Partner** (10 x R699 + 15 x R999 + 25 x R799) | **R48,944** | **R587,328** |
+| **Saving** | **82%** | **R2,712,072/year** |
 
 ---
 
@@ -378,16 +394,16 @@ The partner program is designed to be a profit centre, not just a cost saving.
 | Line Item | Amount |
 |-----------|--------|
 | Client charges for "compliance management service" | R4,000–R7,000/mo per client |
-| Your cost on ConformEdge per client | R899/mo (Consulting) or R699/mo (White-Label) |
-| **Your margin per client** | **R3,101–R6,301/mo** |
+| Your cost on ConformEdge per client | R899–R1,299/mo (Consulting) or R699–R999/mo (White-Label) |
+| **Your margin per client** | **R2,701–R6,301/mo** |
 
 ### Example: 15-Client Consulting Firm
 
 | Revenue Stream | Monthly | Annual |
 |----------------|---------|--------|
 | Client fees (15 x R5,000 avg) | R75,000 | R900,000 |
-| ConformEdge cost (platform + 15 orgs) | R17,134 | R205,608 |
-| **Net margin from platform** | **R57,866** | **R694,392** |
+| ConformEdge cost (platform + 10 x R899 + 5 x R1,299) | R20,484 | R245,808 |
+| **Net margin from platform** | **R54,516** | **R654,192** |
 
 The platform pays for itself many times over while reducing your manual workload through AI-powered document classification, automated gap analysis, and bulk scheduling.
 
@@ -408,7 +424,7 @@ Your clients' subcontractors interact with the platform through the Subcontracto
 
 | Benefit | Detail |
 |---------|--------|
-| **Lower client costs** | 58–84% below retail pricing |
+| **Lower client costs** | 65–82% below retail pricing |
 | **Higher margins** | Platform cost is a fraction of what you charge clients |
 | **Operational efficiency** | One dashboard for all clients, not 15 separate logins |
 | **AI automation** | Document classification, gap detection, compliance scoring — less manual work |
