@@ -344,24 +344,27 @@ export function PartnerOpportunityPDF() {
 
         <View style={st.table}>
           <View style={st.tableHeader}>
-            <Text style={[st.tableHeaderCell, { width: "22%" }]}>Scenario</Text>
-            <Text style={[st.tableHeaderCell, { width: "18%" }]}>Clients</Text>
-            <Text style={[st.tableHeaderCell, { width: "20%" }]}>Your Revenue</Text>
-            <Text style={[st.tableHeaderCell, { width: "20%" }]}>Platform Cost</Text>
-            <Text style={[st.tableHeaderCell, { width: "20%" }]}>Net Margin</Text>
+            <Text style={[st.tableHeaderCell, { width: "16%" }]}>Scenario</Text>
+            <Text style={[st.tableHeaderCell, { width: "10%", textAlign: "center" }]}>Clients</Text>
+            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Your Revenue</Text>
+            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Platform Cost</Text>
+            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Your Net</Text>
+            <Text style={[st.tableHeaderCell, { width: "17%", textAlign: "center" }]}>Platform %</Text>
           </View>
           {[
-            ["Starting out", "5", "R25,000/mo", "R9,494/mo", "R15,506/mo"],
-            ["Growing", "10", "R50,000/mo", "R13,989/mo", "R36,011/mo"],
-            ["Established", "15", "R75,000/mo", "R20,484/mo", "R54,516/mo"],
-            ["Scaled", "25", "R125,000/mo", "R33,474/mo", "R91,526/mo"],
-          ].map(([scenario, clients, revenue, cost, margin], i) => (
+            ["Starting out", "5", "R25,000/mo", "R9,494/mo", "R15,506/mo", "38%"],
+            ["Growing", "10", "R50,000/mo", "R13,989/mo", "R36,011/mo", "28%"],
+            ["Established", "15", "R75,000/mo", "R20,484/mo", "R54,516/mo", "27%"],
+            ["Scaled", "25", "R125,000/mo", "R33,474/mo", "R91,526/mo", "27%"],
+            ["Large", "30", "R150,000/mo", "R38,469/mo", "R111,531/mo", "26%"],
+          ].map(([scenario, clients, revenue, cost, margin, pct], i) => (
             <View key={scenario} style={i % 2 === 0 ? st.tableRow : st.tableRowAlt}>
-              <Text style={[st.tableCellBold, { width: "22%" }]}>{scenario}</Text>
-              <Text style={[st.tableCell, { width: "18%", textAlign: "center" }]}>{clients}</Text>
-              <Text style={[st.tableCell, { width: "20%" }]}>{revenue}</Text>
-              <Text style={[st.tableCellMuted, { width: "20%" }]}>{cost}</Text>
-              <Text style={[st.tableCell, { width: "20%", fontWeight: "bold", color: c.green }]}>{margin}</Text>
+              <Text style={[st.tableCellBold, { width: "16%" }]}>{scenario}</Text>
+              <Text style={[st.tableCell, { width: "10%", textAlign: "center" }]}>{clients}</Text>
+              <Text style={[st.tableCell, { width: "19%" }]}>{revenue}</Text>
+              <Text style={[st.tableCellMuted, { width: "19%" }]}>{cost}</Text>
+              <Text style={[st.tableCell, { width: "19%", fontWeight: "bold", color: c.green }]}>{margin}</Text>
+              <Text style={[st.tableCell, { width: "17%", textAlign: "center", color: c.teal, fontWeight: "bold" }]}>{pct}</Text>
             </View>
           ))}
         </View>
