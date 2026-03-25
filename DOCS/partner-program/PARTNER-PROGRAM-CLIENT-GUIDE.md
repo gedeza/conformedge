@@ -147,7 +147,7 @@ A **mutual collaboration** between two businesses working together as equals.
 
 ## Getting Started
 
-1. **Contact us** — Email nhlanhla@isutech.co.za
+1. **Contact us** — Email conformedge@isutech.co.za
 2. **Discovery call** — 30-minute call to understand your client base and demonstrate the platform
 3. **Agreement & setup fee** — Sign partner agreement, pay R25,000 setup fee
 4. **2-week onboarding** — Platform config, first 5 client orgs, 12 hours structured training

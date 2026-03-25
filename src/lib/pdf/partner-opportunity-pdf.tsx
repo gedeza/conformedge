@@ -220,7 +220,7 @@ function PageFooter() {
   return (
     <View style={st.footer} fixed>
       <Text style={st.footerText}>ConformEdge — Partner Revenue Opportunity</Text>
-      <Text style={st.footerText}>conformedge.isutech.co.za | nhlanhla@isutech.co.za</Text>
+      <Text style={st.footerText}>conformedge.isutech.co.za | conformedge@isutech.co.za</Text>
       <Text style={st.footerText} render={({ pageNumber }) => `Page ${pageNumber}`} />
     </View>
   )
@@ -469,7 +469,7 @@ export function PartnerOpportunityPDF() {
           <Text style={st.ctaText}>your revenue model, and exactly what the R25K setup delivers.</Text>
           <Text style={st.ctaHighlight}>conformedge.isutech.co.za</Text>
           <Text style={[st.ctaText, { marginTop: 10 }]}>
-            Nhlanhla Mnyandu | nhlanhla@isutech.co.za | ISU Technologies
+            Nhlanhla Mnyandu | conformedge@isutech.co.za | ISU Technologies
           </Text>
         </View>
 

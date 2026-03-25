@@ -3,7 +3,7 @@
 **Version:** 2.0
 **Date:** March 2026 (Updated 25 March 2026)
 **Prepared by:** ISU Technologies (Pty) Ltd
-**Contact:** nhlanhla@isutech.co.za
+**Contact:** conformedge@isutech.co.za
 
 ---
 
@@ -530,7 +530,7 @@ Refer 5 clients to Professional: **R32,994/year** in commission — with no ongo
 
 ### Step 1: Express Interest
 
-Email **nhlanhla@isutech.co.za** with:
+Email **conformedge@isutech.co.za** with:
 - Your company name and registration number
 - Number of current compliance clients
 - Brief description of your services and target sectors
@@ -570,7 +570,7 @@ We'll schedule a 30-minute call to:
 ## Contact
 
 **ISU Technologies (Pty) Ltd**
-Email: nhlanhla@isutech.co.za
+Email: conformedge@isutech.co.za
 Platform: conformedge.isutech.co.za
 
 ---

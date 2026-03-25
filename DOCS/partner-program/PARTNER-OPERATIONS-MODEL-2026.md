@@ -3,7 +3,7 @@
 **Version:** 2.0
 **Date:** 25 March 2026
 **Prepared by:** ISU Technologies (Pty) Ltd
-**Contact:** nhlanhla@isutech.co.za
+**Contact:** conformedge@isutech.co.za
 **Status:** INTERNAL — Pre-launch pricing model
 
 ---

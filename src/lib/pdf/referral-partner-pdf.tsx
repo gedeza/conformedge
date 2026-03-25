@@ -202,7 +202,7 @@ function PageFooter() {
   return (
     <View style={st.footer} fixed>
       <Text style={st.footerText}>ConformEdge — Referral Partner Programme</Text>
-      <Text style={st.footerText}>conformedge.isutech.co.za | nhlanhla@isutech.co.za</Text>
+      <Text style={st.footerText}>conformedge.isutech.co.za | conformedge@isutech.co.za</Text>
       <Text style={st.footerText} render={({ pageNumber }) => `Page ${pageNumber}`} />
     </View>
   )
@@ -391,7 +391,7 @@ export function ReferralPartnerPDF() {
           <Text style={st.ctaTitle}>Start Earning Today</Text>
           <Text style={st.ctaText}>Sign up takes 5 minutes. No cost, no risk.</Text>
           <Text style={st.ctaText}>Email us and we'll set up your referral account.</Text>
-          <Text style={st.ctaHighlight}>nhlanhla@isutech.co.za</Text>
+          <Text style={st.ctaHighlight}>conformedge@isutech.co.za</Text>
           <Text style={[st.ctaText, { marginTop: 8 }]}>
             conformedge.isutech.co.za | ISU Technologies (Pty) Ltd
           </Text>
