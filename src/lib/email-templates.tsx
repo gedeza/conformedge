@@ -256,6 +256,51 @@ interface AuditPackEmailProps {
   organizationName: string
 }
 
+interface ReferralWelcomeEmailProps {
+  partnerName: string
+  referralUrl: string
+  referralCode: string
+  brochureUrl: string
+}
+
+export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, brochureUrl }: ReferralWelcomeEmailProps) {
+  return (
+    <EmailLayout>
+      <Badge color="#f59e0b" label="Referral Partner" />
+      <h1 style={{ fontSize: "20px", color: "#18181b", margin: "16px 0 8px 0" }}>
+        Welcome to the ConformEdge Referral Programme
+      </h1>
+      <p style={{ fontSize: "14px", color: "#3f3f46", lineHeight: "1.6", margin: "0 0 12px 0" }}>
+        Hi {partnerName}, your referral partner account has been approved. You can start
+        earning 10% commission on every company you refer.
+      </p>
+      <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "3px solid #f59e0b", borderRadius: "4px", padding: "12px", margin: "0 0 16px 0" }}>
+        <p style={{ fontSize: "12px", color: "#6b7280", margin: "0 0 4px 0" }}>Your referral link:</p>
+        <p style={{ fontSize: "14px", fontWeight: "bold", color: "#1e3a5f", margin: "0", wordBreak: "break-all" }}>
+          {referralUrl}
+        </p>
+        <p style={{ fontSize: "11px", color: "#6b7280", margin: "4px 0 0 0" }}>
+          Code: {referralCode} | Valid for 90 days
+        </p>
+      </div>
+      <p style={{ fontSize: "13px", color: "#3f3f46", lineHeight: "1.6", margin: "0 0 8px 0" }}>
+        <strong>How it works:</strong>
+      </p>
+      <ul style={{ fontSize: "13px", color: "#3f3f46", lineHeight: "1.8", margin: "0 0 16px 0", paddingLeft: "20px" }}>
+        <li>Share this link with companies that need ISO compliance management</li>
+        <li>When they sign up through your link, you earn 10% of what they pay</li>
+        <li>Commission is paid monthly via EFT for the client's first 12 months</li>
+        <li>We handle everything — onboarding, training, and support</li>
+      </ul>
+      <CTAButton href={referralUrl} label="Share Your Referral Link" />
+      <p style={{ fontSize: "12px", color: "#71717a", lineHeight: "1.5", margin: "16px 0 0 0" }}>
+        Download the full programme brochure:{" "}
+        <a href={brochureUrl} style={{ color: "#0d9488" }}>Referral Partner Brochure (PDF)</a>
+      </p>
+    </EmailLayout>
+  )
+}
+
 export function AuditPackEmail({ packTitle, organizationName }: AuditPackEmailProps) {
   return (
     <EmailLayout>

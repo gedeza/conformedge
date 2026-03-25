@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { getSuperAdminContext } from "@/lib/admin-auth"
 import type { ActionResult } from "@/types"
 import { logAdminAction } from "@/lib/admin-audit"
+import { sendReferralWelcomeEmail } from "@/lib/email"
 
 // ─────────────────────────────────────────────
 // OVERVIEW METRICS
@@ -729,6 +730,14 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
   const url = `${appUrl}/ref/${code}`
+
+  // Send welcome email with referral link (fire-and-forget)
+  sendReferralWelcomeEmail({
+    to: partner.contactEmail,
+    partnerName: partner.name,
+    referralUrl: url,
+    referralCode: code,
+  })
 
   logAdminAction({
     action: "PARTNER_APPROVED",
