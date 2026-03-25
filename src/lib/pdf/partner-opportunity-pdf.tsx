@@ -425,53 +425,42 @@ export function PartnerOpportunityPDF() {
         <Text style={st.sectionTitle}>How to Get Started</Text>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 1 — Discovery Call</Text>
+          <Text style={st.highlightTitle}>Step 1 — Discovery Call (30 minutes)</Text>
           <Text style={st.highlightText}>
-            A 30-minute call to understand your client base, demonstrate the platform, and walk
-            through the economics for your specific situation.
+            We walk you through the platform, discuss your client base, and model the economics
+            for your specific situation.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 2 — Agreement & Setup Fee</Text>
+          <Text style={st.highlightTitle}>Step 2 — Agreement & R25,000 Setup</Text>
           <Text style={st.highlightText}>
-            Sign the partner agreement and pay the R25,000 once-off setup fee. This covers platform
-            configuration, your first 5 client organisations, and 12 hours of structured training.
+            Sign the partner agreement and pay the once-off setup fee. Over 2 weeks we configure
+            your partner account, set up your first 5 client organisations, and deliver 12 hours
+            of hands-on training across 5 modules.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 3 — 2-Week Onboarding</Text>
-          <Text style={st.highlightText}>
-            We set up your partner account, provision your 5 consultant seats, configure your first
-            5 client organisations with safety checklists, permit types, and incident categories.
-            Your team gets 12 hours of hands-on training across 5 modules.
-          </Text>
-        </View>
-
-        <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 4 — Go Live & Grow</Text>
+          <Text style={st.highlightTitle}>Step 3 — Go Live & Grow</Text>
           <Text style={st.highlightText}>
             Start managing your clients' compliance from day one. Add more clients at the flat
-            per-org rate. The same fee for your 1st client as your 50th — no bands, no surprises.
+            per-org rate — same fee for your 1st client as your 50th.
           </Text>
         </View>
 
-        <Text style={st.sectionSubtitle}>What's Included in the R25,000 Setup</Text>
-        <Bullet>Partner account with 5 consultant seats</Bullet>
-        <Bullet>First 5 client organisations fully configured</Bullet>
-        <Bullet>Safety checklist templates loaded (13 construction-specific templates)</Bullet>
-        <Bullet>Work permit types, incident categories, and equipment register set up</Bullet>
+        <Text style={st.sectionSubtitle}>The R25,000 Setup Includes</Text>
+        <Bullet>5 consultant seats + first 5 client organisations fully configured</Bullet>
+        <Bullet>13 construction safety checklist templates, work permits, incident categories</Bullet>
         <Bullet>Data migration assistance (existing incidents, equipment, documents)</Bullet>
-        <Bullet>12 hours of training: incidents, permits, equipment, checklists, partner console</Bullet>
+        <Bullet>12 hours training: incidents, permits, equipment, checklists, partner console</Bullet>
         <Bullet>Operations guide, quick-reference cards, and handover pack</Bullet>
 
         <Text style={st.sectionSubtitle}>Why ConformEdge?</Text>
         <Bullet>Built for South Africa — Rand pricing, SA regulations, local support</Bullet>
         <Bullet>AI-powered — saves hours of manual document classification</Bullet>
-        <Bullet>Multi-tenant — one dashboard for all your clients, fully isolated data</Bullet>
-        <Bullet>Mobile/offline — your consultants work on-site with the PWA app</Bullet>
-        <Bullet>Simple pricing — flat per-client fee, no volume tiers to track</Bullet>
+        <Bullet>Multi-tenant — one dashboard, fully isolated client data</Bullet>
+        <Bullet>Mobile/offline — PWA app for on-site safety work</Bullet>
 
         {/* CTA */}
         <View style={st.ctaBox}>
