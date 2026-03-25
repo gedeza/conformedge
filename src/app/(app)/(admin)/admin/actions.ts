@@ -678,7 +678,6 @@ export async function getAdminPartners() {
         },
       },
       referrals: {
-        where: { status: { not: "EXPIRED" } },
         select: { code: true, status: true },
         take: 1,
         orderBy: { createdAt: "desc" },
