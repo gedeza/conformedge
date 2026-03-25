@@ -174,7 +174,7 @@ export function NotificationPreferences({ initialPreferences }: Props) {
       {/* Notification type rows */}
       {TYPES.map((type) => {
         const config = NOTIFICATION_LABELS[type]
-        const pref = prefs[type]
+        const pref = prefs[type] ?? { IN_APP: true, EMAIL: true }
 
         return (
           <div
