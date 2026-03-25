@@ -175,14 +175,65 @@ The partner controls what they charge. If they charge R7,000/client:
 
 At R7K/client, CE share drops to ~35% at scale — but CE's **absolute revenue** is identical. The partner earns more per client, which is their reward for premium positioning. CE still gets R1,999/org regardless.
 
-### 3.6 Annual Revenue Projections (CE)
+### 3.6 Annual Billing Discount — The Partner's Incentive
 
-| Partner Profile | Year 1 CE Revenue | Notes |
-|-----------------|-------------------|-------|
-| 1 partner, 5 clients | R179,880 + R25K setup = **R204,880** | Starting scenario |
-| 1 partner, 10 clients (by month 6) | R254,850 + R25K = **R279,850** | Growth path |
-| 3 partners, avg 8 clients each | R629,640 + R75K = **R704,640** | Multi-partner |
-| 5 partners, avg 12 clients each | R1,289,280 + R125K = **R1,414,280** | Scale target |
+Partners who pay annually get **2 months free** (pay 10 months for 12 = 17% discount). This is a powerful sales lever that benefits both sides.
+
+#### Monthly vs Annual Comparison (5 Seats, 5 Professional Clients)
+
+| | Monthly Billing | Annual Billing | Saving |
+|---|---|---|---|
+| Per-seat cost (5 × R999) | R4,995/mo | R4,163/mo effective | R832/mo |
+| Per-org cost (5 × R1,999) | R9,995/mo | R8,329/mo effective | R1,666/mo |
+| **CE total** | **R14,990/mo** | **R12,492/mo effective** | **R2,498/mo** |
+| **CE annual** | **R179,880** | **R149,900** | — |
+| Partner pays CE (annual) | — | **R149,900 upfront** | — |
+
+#### Impact on Partner Profitability
+
+| | Monthly Billing | Annual Billing |
+|---|---|---|
+| Partner revenue (5 × R5K × 12) | R300,000/yr | R300,000/yr |
+| CE cost | -R179,880 | **-R149,900** |
+| **Partner gross profit** | **R120,120/yr** | **R150,100/yr** |
+| **Extra profit from annual** | — | **+R29,980/yr** |
+
+The partner pockets an extra **~R30K/year** — nearly a consultant's monthly salary — just by paying upfront. No additional clients needed.
+
+#### At Scale (7 Seats, 15 Professional Clients)
+
+| | Monthly Billing | Annual Billing |
+|---|---|---|
+| CE cost | R36,981/mo = R443,772/yr | R369,810/yr (10 months) |
+| Partner revenue (15 × R5K × 12) | R900,000/yr | R900,000/yr |
+| **Partner gross profit** | **R456,228/yr** | **R530,190/yr** |
+| **Extra profit from annual** | — | **+R73,962/yr** |
+
+At 15 clients, the annual discount saves the partner **R74K/year** — enough to fund an additional junior consultant.
+
+#### Why This Works for CE
+
+| CE Benefit | Detail |
+|------------|--------|
+| **Cash flow** | 10 months of revenue received upfront instead of monthly |
+| **Reduced churn** | Partner committed for 12 months — no month-to-month cancellation risk |
+| **Lower admin** | 1 annual invoice vs 12 monthly invoices per partner |
+| **Margins preserved** | CE variable cost per org is ~R20/mo — even at discounted rate, margins exceed 98% |
+
+#### The Sales Pitch
+
+> *"Pay annually, save R30K on 5 clients — or R74K on 15 clients. That's real money back in your business. And you're locked into the best compliance platform in SA for the year."*
+
+### 3.7 Annual Revenue Projections (CE)
+
+| Partner Profile | Monthly Billing (Year 1) | Annual Billing (Year 1) | Notes |
+|-----------------|--------------------------|-------------------------|-------|
+| 1 partner, 5 clients | R179,880 + R25K = **R204,880** | R149,900 + R25K = **R174,900** | Starting scenario |
+| 1 partner, 10 clients (by month 6) | R254,850 + R25K = **R279,850** | R212,375 + R25K = **R237,375** | Growth path |
+| 3 partners, avg 8 clients each | R629,640 + R75K = **R704,640** | R524,700 + R75K = **R599,700** | Multi-partner |
+| 5 partners, avg 12 clients each | R1,289,280 + R125K = **R1,414,280** | R1,074,400 + R125K = **R1,199,400** | Scale target |
+
+**Note:** Annual billing projections assume all partners on annual plans. In practice, expect a mix — new partners start monthly, convert to annual after 3–6 months of proven value.
 
 ---
 
@@ -567,12 +618,26 @@ AI credits are incremental revenue, not the primary revenue driver — but they 
 | Upgrade client org (Professional → Business) | +R1,000/mo (difference) |
 | Onboarding assistance for new client org (after first 5) | R2,500 once-off |
 
-### 9.3 No Penalties, No Cliffs
+### 9.3 Annual Billing at Any Scale
+
+Annual billing (pay 10, get 12) applies at every growth phase:
+
+| Phase | Monthly Rate | Annual Rate (effective) | Partner Saves/Year |
+|-------|-------------|------------------------|-------------------|
+| Launch (5 seats, 5 Pro) | R14,990/mo | R12,492/mo | **R29,976** |
+| Establishment (5 seats, 10 Pro) | R24,985/mo | R20,821/mo | **R49,968** |
+| Growth (7 seats, 15 Pro) | R36,981/mo | R30,818/mo | **R73,956** |
+| Scale (10 seats, 25 Pro) | R59,965/mo | R49,971/mo | **R119,928** |
+
+Partners can switch from monthly to annual at any renewal point. The discount applies to the full bill (seats + orgs).
+
+### 9.4 No Penalties, No Cliffs
 
 - Adding a client at any point costs the same per-org fee
 - No minimum commitment on client count (seats have a 5 minimum)
 - Clients can be removed (org deactivated) with 30-day notice — fee stops
 - No long-term lock-in on specific client orgs
+- Annual billing converts to monthly if not renewed — no penalty
 
 ---
 
