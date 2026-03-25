@@ -346,6 +346,24 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 
 ---
 
+## Phase 12 — Referral Partner System
+
+> Priority: Medium — first referral prospect (Ida Mthethwa) awaiting registration link.
+> Existing: `Referral` model in Prisma (code, status tracking, commission fields). Partner console has referral link generation.
+> Needed: Public-facing registration + self-service referral management.
+
+- [ ] **T148** Referral partner registration page — public form at `/referral/register` (name, email, company, phone, bank details). Creates `Partner` record with `tier: REFERRAL`, `status: APPLIED`. No Clerk account needed.
+- [ ] **T149** Referral partner approval workflow — admin action to approve registration → sets `status: ACTIVE`, generates unique referral code/link, sends welcome email with link.
+- [ ] **T150** Referral tracking landing page — `/ref/[code]` redirect to main landing page with referral cookie/param. Track `PENDING → CLICKED → SIGNED_UP → CONVERTED` status on `Referral` model.
+- [ ] **T151** Referral attribution on sign-up — detect referral code during Clerk sign-up flow, link new org to referral partner via `Referral` record. Auto-set status to `SIGNED_UP`, then `CONVERTED` when subscription activates.
+- [ ] **T152** Referral partner dashboard — lightweight self-service page at `/referral/dashboard` (email + code login, no Clerk). Shows: referral link, click count, sign-ups, conversions, commission earned, commission pending, payout history.
+- [ ] **T153** Commission calculation engine — monthly cron: for each `CONVERTED` referral in Year 1, calculate 10% of client's actual payments (respecting annual = 10 months). Create commission ledger entries.
+- [ ] **T154** Commission payout tracking — admin view to mark commissions as paid (EFT reference, date). Referral partner sees payout status on their dashboard.
+- [ ] **T155** Referral welcome email — automated email on approval with: referral link, how it works, brochure PDF link, commission terms.
+- [ ] **T156** Admin referral management — `/dashboard/admin/referrals` page to view all referral partners, approve/reject applications, view conversion metrics, manage payouts.
+
+---
+
 ## Manual Actions Required
 
 | Item | Action | Owner |
