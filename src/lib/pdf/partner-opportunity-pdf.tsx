@@ -162,6 +162,22 @@ const st = StyleSheet.create({
   modelCardPrice: { fontSize: 11, fontWeight: "bold", color: c.teal },
   modelCardDesc: { fontSize: 9, color: c.textMuted, lineHeight: 1.5, marginBottom: 4 },
 
+  // Pricing card
+  pricingCard: {
+    border: `1px solid ${c.teal}`,
+    borderRadius: 4,
+    padding: 12,
+    marginBottom: 6,
+    backgroundColor: c.bgLight,
+  },
+  pricingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 3,
+  },
+  pricingLabel: { fontSize: 9, color: c.textDark },
+  pricingValue: { fontSize: 9, fontWeight: "bold", color: c.navy },
+
   // CTA
   ctaBox: {
     backgroundColor: c.navy,
@@ -231,8 +247,8 @@ export function PartnerOpportunityPDF() {
           <Text style={st.coverTitleAccent}>Revenue Stream</Text>
           <Text style={st.coverTagline}>
             Add ISO compliance management as a service to your business.{"\n"}
-            Help small construction companies stay compliant — and earn{"\n"}
-            recurring monthly revenue from the platform that powers it all.
+            Manage construction clients' safety compliance on one platform —{"\n"}
+            simple pricing, healthy margins, recurring monthly revenue.
           </Text>
           <View style={st.coverStats}>
             <View style={st.coverStat}>
@@ -244,8 +260,8 @@ export function PartnerOpportunityPDF() {
               <Text style={st.coverStatLabel}>Modules</Text>
             </View>
             <View style={st.coverStat}>
-              <Text style={st.coverStatNumber}>3</Text>
-              <Text style={st.coverStatLabel}>Partner Models</Text>
+              <Text style={st.coverStatNumber}>R25K</Text>
+              <Text style={st.coverStatLabel}>Setup Fee</Text>
             </View>
             <View style={st.coverStat}>
               <Text style={st.coverStatNumber}>AI</Text>
@@ -259,7 +275,7 @@ export function PartnerOpportunityPDF() {
         </View>
       </Page>
 
-      {/* ===================== PAGE 2: THE OPPORTUNITY ===================== */}
+      {/* ===================== PAGE 2: THE OPPORTUNITY + PRICING ===================== */}
       <Page size="A4" style={st.page}>
         <PageHeader title="The Opportunity" />
 
@@ -273,61 +289,58 @@ export function PartnerOpportunityPDF() {
         <View style={st.highlightBox}>
           <Text style={st.highlightTitle}>The Gap You Can Fill</Text>
           <Text style={st.highlightText}>
-            You already meet these companies through your financial consulting work. By adding
-            compliance services — powered by ConformEdge and delivered by a qualified ISO
-            practitioner — you create a new recurring revenue stream while solving a real problem
-            for your clients.
+            By adding compliance services — powered by ConformEdge and delivered by a qualified
+            safety practitioner — you create a new recurring revenue stream while solving a real
+            problem for your clients. One platform, multiple clients, predictable costs.
           </Text>
         </View>
 
-        <Text style={st.sectionTitle}>Three Ways to Partner</Text>
+        <Text style={st.sectionTitle}>Simple, Predictable Pricing</Text>
+        <Text style={st.bodyText}>
+          No complex tier bands. No volume discount tables. Two line items on your bill:
+        </Text>
 
-        {/* Model 1: Referral */}
-        <View style={st.modelCard}>
-          <View style={st.modelCardHeader}>
-            <Text style={st.modelCardTitle}>1. Referral Partner</Text>
-            <Text style={st.modelCardPrice}>Free — Earn 15% Commission</Text>
+        <View style={st.pricingCard}>
+          <View style={st.pricingRow}>
+            <Text style={st.pricingLabel}>Once-off setup & training (first 5 clients)</Text>
+            <Text style={st.pricingValue}>R25,000</Text>
           </View>
-          <Text style={st.modelCardDesc}>
-            The simplest model. Refer companies to ConformEdge and earn 15% of their first-year
-            subscription. No platform cost, no management — just introductions.
-          </Text>
-          <Bullet>Best for: Passive income alongside your consulting work</Bullet>
-          <Bullet>Example: 5 Professional referrals = R49,491/year commission</Bullet>
-          <Bullet>Zero operational overhead — we handle everything</Bullet>
+          <View style={st.pricingRow}>
+            <Text style={st.pricingLabel}>Per consultant seat (minimum 5)</Text>
+            <Text style={st.pricingValue}>R999/mo</Text>
+          </View>
+          <View style={st.pricingRow}>
+            <Text style={st.pricingLabel}>Per client org — Essentials</Text>
+            <Text style={st.pricingValue}>R1,499/mo</Text>
+          </View>
+          <View style={st.pricingRow}>
+            <Text style={st.pricingLabel}>Per client org — Professional</Text>
+            <Text style={st.pricingValue}>R1,999/mo</Text>
+          </View>
+          <View style={st.pricingRow}>
+            <Text style={st.pricingLabel}>Per client org — Business</Text>
+            <Text style={st.pricingValue}>R2,999/mo</Text>
+          </View>
+          <View style={[st.pricingRow, { marginTop: 4, paddingTop: 4, borderTop: `1px solid ${c.border}` }]}>
+            <Text style={[st.pricingLabel, { fontWeight: "bold" }]}>Annual billing discount</Text>
+            <Text style={[st.pricingValue, { color: c.green }]}>2 months free</Text>
+          </View>
         </View>
 
-        {/* Model 2: Consulting Partner */}
-        <View style={st.modelCard}>
-          <View style={st.modelCardHeader}>
-            <Text style={st.modelCardTitle}>2. Consulting Partner</Text>
-            <Text style={st.modelCardPrice}>R4,999/mo + tiered per-client</Text>
-          </View>
-          <Text style={st.modelCardDesc}>
-            Manage multiple client companies from one dashboard. Hire or contract an ISO practitioner,
-            use ConformEdge as the platform, and charge clients your own service fee.
-          </Text>
-          <Bullet>Clients 1–10: R899/mo | Clients 11–25: R1,299/mo | 26+: R999/mo</Bullet>
-          <Bullet>Multi-tenant dashboard — manage all clients from one login</Bullet>
-          <Bullet>Each client gets isolated, secure workspace</Bullet>
-          <Bullet>You set your own pricing to clients — keep the margin</Bullet>
-        </View>
+        <Text style={st.bodyTextMuted}>
+          Professional tier is the sweet spot for construction safety — it includes incident management
+          (COIDA, MHSA), work permits (7 types), equipment register, recurring checklists, and AI-powered
+          gap analysis. The same flat rate whether it's your 1st client or your 50th.
+        </Text>
 
-        {/* Model 3: White-Label */}
-        <View style={st.modelCard}>
-          <View style={st.modelCardHeader}>
-            <Text style={st.modelCardTitle}>3. White-Label Partner</Text>
-            <Text style={st.modelCardPrice}>R6,999/mo + tiered per-client</Text>
-          </View>
-          <Text style={st.modelCardDesc}>
-            Full custom branding — your logo, your colours, your domain. Your clients see your brand,
-            not ConformEdge. Best for building a standalone compliance division.
-          </Text>
-          <Bullet>Clients 1–10: R699/mo | Clients 11–25: R999/mo | 26+: R799/mo</Bullet>
-          <Bullet>Custom branding: logo, colours, email templates, domain</Bullet>
-          <Bullet>Full API access for integration with your systems</Bullet>
-          <Bullet>Dedicated partner manager from ConformEdge</Bullet>
-        </View>
+        <Text style={st.sectionSubtitle}>What You Offer Your Clients</Text>
+        <Bullet>ISO compliance management — documents, assessments, audit packs</Bullet>
+        <Bullet>Incident management with COIDA and MHSA statutory reporting</Bullet>
+        <Bullet>Work permits — hot work, confined space, heights, excavation, and more</Bullet>
+        <Bullet>Equipment register with calibration and maintenance tracking</Bullet>
+        <Bullet>AI-powered document classification — upload and auto-file</Bullet>
+        <Bullet>Mobile/offline access — your consultants work on-site with the PWA app</Bullet>
+        <Bullet>11 SA-relevant standards — ISO 9001, 14001, 45001, MHSA, POPIA, and more</Bullet>
 
         <PageFooter />
       </Page>
@@ -338,66 +351,68 @@ export function PartnerOpportunityPDF() {
 
         <Text style={st.sectionTitle}>Revenue Projections</Text>
         <Text style={st.bodyText}>
-          As a Consulting Partner, you charge clients a monthly service fee for compliance management
-          (platform + your practitioner's expertise). Here's what the economics look like:
+          You charge clients a monthly service fee for compliance management (platform + your
+          practitioner's expertise). Here's what the economics look like at R5,000/client:
         </Text>
 
         <View style={st.table}>
           <View style={st.tableHeader}>
-            <Text style={[st.tableHeaderCell, { width: "16%" }]}>Scenario</Text>
+            <Text style={[st.tableHeaderCell, { width: "18%" }]}>Scenario</Text>
             <Text style={[st.tableHeaderCell, { width: "10%", textAlign: "center" }]}>Clients</Text>
-            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Your Revenue</Text>
-            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Platform Cost</Text>
-            <Text style={[st.tableHeaderCell, { width: "19%" }]}>Your Net</Text>
-            <Text style={[st.tableHeaderCell, { width: "17%", textAlign: "center" }]}>Platform %</Text>
+            <Text style={[st.tableHeaderCell, { width: "18%" }]}>Your Revenue</Text>
+            <Text style={[st.tableHeaderCell, { width: "18%" }]}>Platform Cost</Text>
+            <Text style={[st.tableHeaderCell, { width: "18%" }]}>Your Margin</Text>
+            <Text style={[st.tableHeaderCell, { width: "18%", textAlign: "center" }]}>Your Keep %</Text>
           </View>
           {[
-            ["Starting out", "5", "R25,000/mo", "R9,494/mo", "R15,506/mo", "38%"],
-            ["Growing", "10", "R50,000/mo", "R13,989/mo", "R36,011/mo", "28%"],
-            ["Established", "15", "R75,000/mo", "R20,484/mo", "R54,516/mo", "27%"],
-            ["Scaled", "25", "R125,000/mo", "R33,474/mo", "R91,526/mo", "27%"],
-            ["Large", "30", "R150,000/mo", "R38,469/mo", "R111,531/mo", "26%"],
+            ["Starting", "5", "R25,000/mo", "R14,990/mo", "R10,010/mo", "40%"],
+            ["Growing", "10", "R50,000/mo", "R24,985/mo", "R25,015/mo", "50%"],
+            ["Established", "15", "R75,000/mo", "R36,978/mo", "R38,022/mo", "51%"],
+            ["Scaling", "20", "R100,000/mo", "R47,975/mo", "R52,025/mo", "52%"],
+            ["Large", "30", "R150,000/mo", "R69,960/mo", "R80,040/mo", "53%"],
           ].map(([scenario, clients, revenue, cost, margin, pct], i) => (
             <View key={scenario} style={i % 2 === 0 ? st.tableRow : st.tableRowAlt}>
-              <Text style={[st.tableCellBold, { width: "16%" }]}>{scenario}</Text>
+              <Text style={[st.tableCellBold, { width: "18%" }]}>{scenario}</Text>
               <Text style={[st.tableCell, { width: "10%", textAlign: "center" }]}>{clients}</Text>
-              <Text style={[st.tableCell, { width: "19%" }]}>{revenue}</Text>
-              <Text style={[st.tableCellMuted, { width: "19%" }]}>{cost}</Text>
-              <Text style={[st.tableCell, { width: "19%", fontWeight: "bold", color: c.green }]}>{margin}</Text>
-              <Text style={[st.tableCell, { width: "17%", textAlign: "center", color: c.teal, fontWeight: "bold" }]}>{pct}</Text>
+              <Text style={[st.tableCell, { width: "18%" }]}>{revenue}</Text>
+              <Text style={[st.tableCellMuted, { width: "18%" }]}>{cost}</Text>
+              <Text style={[st.tableCell, { width: "18%", fontWeight: "bold", color: c.green }]}>{margin}</Text>
+              <Text style={[st.tableCell, { width: "18%", textAlign: "center", color: c.teal, fontWeight: "bold" }]}>{pct}</Text>
             </View>
           ))}
         </View>
 
         <Text style={st.bodyTextMuted}>
-          Based on charging clients R5,000/mo per company for compliance management services
-          (platform + practitioner support). Tiered per-client pricing: R899/mo (1–10), R1,299/mo (11–25), R999/mo (26+).
+          Based on 5 consultant seats (R999/mo each) + Professional client orgs (R1,999/mo each).
+          Seats increase with team growth: 5 seats for up to 10 clients, 7 for 15, 8 for 20, 10 for 30.
         </Text>
 
         <View style={st.revenueBox}>
-          <Text style={st.revenueTitle}>15-Client Consulting Partner — Annual Projection</Text>
+          <Text style={st.revenueTitle}>10-Client Partner — Annual (with Annual Billing Discount)</Text>
           <Text style={st.revenueText}>
-            Revenue: R75,000/mo x 12 = R900,000/year{"\n"}
-            Platform cost: R20,484/mo x 12 = R245,808/year{"\n"}
+            Revenue: R50,000/mo x 12 = R600,000/year{"\n"}
+            Platform cost (annual): R249,850/year (save R49,820 vs monthly){"\n"}
             Practitioner cost (estimate): R25,000/mo x 12 = R300,000/year
           </Text>
-          <Text style={st.revenueBig}>Net Profit: ~R354,192/year</Text>
+          <Text style={st.revenueBig}>Net Profit: ~R50,150/year</Text>
         </View>
 
-        <Text style={st.sectionTitle}>What You Offer Your Clients</Text>
-        <Bullet>ISO compliance management — documents, assessments, audit packs</Bullet>
-        <Bullet>AI-powered document classification — upload and auto-file</Bullet>
-        <Bullet>Incident management with COIDA and MHSA reporting</Bullet>
-        <Bullet>Equipment and calibration tracking</Bullet>
-        <Bullet>Subcontractor compliance portals</Bullet>
-        <Bullet>Audit-ready packs generated in one click</Bullet>
-        <Bullet>11 SA-relevant standards — ISO 9001, 14001, 45001, MHSA, POPIA, and more</Bullet>
+        <View style={st.revenueBox}>
+          <Text style={st.revenueTitle}>15-Client Partner — Annual (with Annual Billing Discount)</Text>
+          <Text style={st.revenueText}>
+            Revenue: R75,000/mo x 12 = R900,000/year{"\n"}
+            Platform cost (annual): R369,780/year (save R73,956 vs monthly){"\n"}
+            2 Practitioners: R50,000/mo x 12 = R600,000/year
+          </Text>
+          <Text style={st.revenueBig}>Net Profit: ~R-69,780/year at R5K/client</Text>
+          <Text style={[st.revenueText, { marginTop: 4, fontWeight: "bold" }]}>
+            At R7,000/client: Revenue R1,260,000 — Profit R290,220/year
+          </Text>
+        </View>
 
-        <Text style={st.sectionSubtitle}>Built-In Platform Monitoring</Text>
         <Text style={st.bodyTextMuted}>
-          ConformEdge includes a Partner Insights dashboard that monitors client activity, usage
-          patterns, and health scores — ensuring quality service delivery and flagging anomalies
-          automatically. Full transparency for both you and ConformEdge.
+          The annual billing discount (pay 10 months, get 12) saves R30K–R120K/year depending on scale.
+          That saving goes straight to your bottom line.
         </Text>
 
         <PageFooter />
@@ -410,52 +425,71 @@ export function PartnerOpportunityPDF() {
         <Text style={st.sectionTitle}>How to Get Started</Text>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 1 — Choose Your Model</Text>
+          <Text style={st.highlightTitle}>Step 1 — Discovery Call</Text>
           <Text style={st.highlightText}>
-            Start as a Referral Partner (zero cost) to test the waters, or go straight to Consulting
-            Partner if you're ready to manage clients actively. You can upgrade at any time.
+            A 30-minute call to understand your client base, demonstrate the platform, and walk
+            through the economics for your specific situation.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 2 — Bring the Expertise</Text>
+          <Text style={st.highlightTitle}>Step 2 — Agreement & Setup Fee</Text>
           <Text style={st.highlightText}>
-            Hire or contract a qualified ISO practitioner (SHEQ officer, lead auditor, or similar).
-            They manage the compliance work; ConformEdge provides the platform. Your financial
-            consulting clients get a complete service.
+            Sign the partner agreement and pay the R25,000 once-off setup fee. This covers platform
+            configuration, your first 5 client organisations, and 12 hours of structured training.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 3 — Onboard Your First Clients</Text>
+          <Text style={st.highlightTitle}>Step 3 — 2-Week Onboarding</Text>
           <Text style={st.highlightText}>
-            We help you set up your partner dashboard, configure client workspaces, and train your
-            team on the platform. Each client gets their own isolated environment with full
-            compliance tracking.
+            We set up your partner account, provision your 5 consultant seats, configure your first
+            5 client organisations with safety checklists, permit types, and incident categories.
+            Your team gets 12 hours of hands-on training across 5 modules.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Step 4 — Scale and Earn</Text>
+          <Text style={st.highlightTitle}>Step 4 — Go Live & Grow</Text>
           <Text style={st.highlightText}>
-            As you add more clients, your per-client costs decrease (volume discounts at 10+ and 25+
-            clients) while your revenue scales linearly. The more clients, the better the margins.
+            Start managing your clients' compliance from day one. Add more clients at the flat
+            per-org rate. The same fee for your 1st client as your 50th — no bands, no surprises.
           </Text>
         </View>
+
+        <Text style={st.sectionSubtitle}>What's Included in the R25,000 Setup</Text>
+        <Bullet>Partner account with 5 consultant seats</Bullet>
+        <Bullet>First 5 client organisations fully configured</Bullet>
+        <Bullet>Safety checklist templates loaded (13 construction-specific templates)</Bullet>
+        <Bullet>Work permit types, incident categories, and equipment register set up</Bullet>
+        <Bullet>Data migration assistance (existing incidents, equipment, documents)</Bullet>
+        <Bullet>12 hours of training: incidents, permits, equipment, checklists, partner console</Bullet>
+        <Bullet>Operations guide, quick-reference cards, and handover pack</Bullet>
 
         <Text style={st.sectionSubtitle}>Why ConformEdge?</Text>
         <Bullet>Built for South Africa — Rand pricing, SA regulations, local support</Bullet>
         <Bullet>AI-powered — saves hours of manual document classification</Bullet>
-        <Bullet>Multi-tenant architecture — one dashboard for all your clients</Bullet>
-        <Bullet>Data isolation — every client's data is completely separate and secure</Bullet>
-        <Bullet>Partner insights — real-time monitoring of client health and activity</Bullet>
-        <Bullet>No lock-in — month-to-month billing, cancel anytime</Bullet>
+        <Bullet>Multi-tenant — one dashboard for all your clients, fully isolated data</Bullet>
+        <Bullet>Mobile/offline — your consultants work on-site with the PWA app</Bullet>
+        <Bullet>Simple pricing — flat per-client fee, no volume tiers to track</Bullet>
+
+        {/* Not just referral option */}
+        <View style={[st.modelCard, { marginTop: 8 }]}>
+          <View style={st.modelCardHeader}>
+            <Text style={st.modelCardTitle}>Not ready to manage clients?</Text>
+            <Text style={st.modelCardPrice}>Referral: 15% Commission</Text>
+          </View>
+          <Text style={st.modelCardDesc}>
+            Refer companies to ConformEdge and earn 15% of their first-year subscription.
+            No setup cost, no management required. 5 Professional referrals = R49,491/year.
+          </Text>
+        </View>
 
         {/* CTA */}
         <View style={st.ctaBox}>
           <Text style={st.ctaTitle}>Let's Talk</Text>
-          <Text style={st.ctaText}>Book a 15-minute call and we'll walk you through the platform,</Text>
-          <Text style={st.ctaText}>the partner economics, and how to get started.</Text>
+          <Text style={st.ctaText}>Book a 30-minute discovery call. We'll walk you through the platform,</Text>
+          <Text style={st.ctaText}>your revenue model, and exactly what the R25K setup delivers.</Text>
           <Text style={st.ctaHighlight}>conformedge.isutech.co.za</Text>
           <Text style={[st.ctaText, { marginTop: 10 }]}>
             Nhlanhla Mnyandu | nhlanhla@isutech.co.za | ISU Technologies
