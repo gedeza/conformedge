@@ -662,7 +662,11 @@ export async function getAdminPartners() {
       tier: true,
       status: true,
       contactEmail: true,
+      contactPhone: true,
+      notes: true,
+      description: true,
       createdAt: true,
+      approvedAt: true,
       commissionPercent: true,
       basePlatformFeeCents: true,
       _count: {
@@ -672,9 +676,103 @@ export async function getAdminPartners() {
           referrals: true,
         },
       },
+      referrals: {
+        where: { status: { not: "EXPIRED" } },
+        select: { code: true, status: true },
+        take: 1,
+        orderBy: { createdAt: "desc" },
+      },
     },
     orderBy: { createdAt: "desc" },
   })
+}
+
+// ─────────────────────────────────────────────
+// PARTNER APPROVAL / REFERRAL LINK GENERATION
+// ─────────────────────────────────────────────
+
+export async function approveReferralPartner(partnerId: string): Promise<ActionResult<{ code: string; url: string }>> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, slug: true, status: true, tier: true, commissionPercent: true, contactEmail: true, name: true },
+  })
+
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "APPLIED") {
+    return { success: false, error: `Partner status is ${partner.status}, expected APPLIED` }
+  }
+
+  // Generate referral code
+  const randomPart = Math.random().toString(36).slice(2, 8)
+  const code = `${partner.slug}-${randomPart}`
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + 90)
+
+  // Approve partner + create first referral link in a transaction
+  await db.$transaction([
+    db.partner.update({
+      where: { id: partnerId },
+      data: { status: "ACTIVE", approvedAt: new Date() },
+    }),
+    db.referral.create({
+      data: {
+        partnerId,
+        code,
+        commissionPercent: partner.commissionPercent,
+        expiresAt,
+      },
+    }),
+  ])
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
+  const url = `${appUrl}/ref/${code}`
+
+  logAdminAction({
+    action: "PARTNER_APPROVED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail, referralCode: code },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+
+  return { success: true, data: { code, url } }
+}
+
+export async function rejectReferralPartner(partnerId: string): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, status: true, name: true, contactEmail: true },
+  })
+
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "APPLIED") {
+    return { success: false, error: `Partner status is ${partner.status}, expected APPLIED` }
+  }
+
+  await db.partner.update({
+    where: { id: partnerId },
+    data: { status: "TERMINATED", terminatedAt: new Date() },
+  })
+
+  logAdminAction({
+    action: "PARTNER_REJECTED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+
+  return { success: true }
 }
 
 // ─────────────────────────────────────────────
