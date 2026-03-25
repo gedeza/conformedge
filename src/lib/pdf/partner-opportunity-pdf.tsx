@@ -473,18 +473,6 @@ export function PartnerOpportunityPDF() {
         <Bullet>Mobile/offline — your consultants work on-site with the PWA app</Bullet>
         <Bullet>Simple pricing — flat per-client fee, no volume tiers to track</Bullet>
 
-        {/* Not just referral option */}
-        <View style={[st.modelCard, { marginTop: 8 }]}>
-          <View style={st.modelCardHeader}>
-            <Text style={st.modelCardTitle}>Not ready to manage clients?</Text>
-            <Text style={st.modelCardPrice}>Referral: 10% Commission</Text>
-          </View>
-          <Text style={st.modelCardDesc}>
-            Refer companies to ConformEdge and earn 10% of their first-year subscription.
-            No setup cost, no management required. 5 Professional referrals = R32,994/year.
-          </Text>
-        </View>
-
         {/* CTA */}
         <View style={st.ctaBox}>
           <Text style={st.ctaTitle}>Let's Talk</Text>
