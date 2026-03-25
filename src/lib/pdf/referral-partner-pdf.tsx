@@ -357,50 +357,34 @@ export function ReferralPartnerPDF() {
         <View style={st.highlightBox}>
           <Text style={st.highlightTitle}>Financial Consultants & Accountants</Text>
           <Text style={st.highlightText}>
-            Your clients ask about compliance. You're not a compliance expert — but you know
-            someone who is. Refer them to ConformEdge and earn while they get sorted.
+            Your clients ask about compliance. Refer them to ConformEdge and earn while they get sorted.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
           <Text style={st.highlightTitle}>Industry Associations & Networks</Text>
           <Text style={st.highlightText}>
-            Construction associations, chamber of commerce members, trade bodies — your members
-            need compliance tools. Share the link, earn on every sign-up.
+            Construction associations, trade bodies — your members need compliance tools. Share the link, earn on every sign-up.
           </Text>
         </View>
 
         <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>SHEQ Professionals Between Contracts</Text>
+          <Text style={st.highlightTitle}>SHEQ Professionals & Anyone in Construction</Text>
           <Text style={st.highlightText}>
-            Not ready to manage clients full-time? Refer companies you know and earn passive
-            income. Upgrade to a Consulting Partner when you're ready.
-          </Text>
-        </View>
-
-        <View style={st.highlightBox}>
-          <Text style={st.highlightTitle}>Anyone With a Network in Construction / Infrastructure</Text>
-          <Text style={st.highlightText}>
-            Engineers, project managers, procurement officers — if you know companies that
-            need ISO compliance to win tenders, every introduction has value.
+            Engineers, project managers, procurement officers — if you know companies that need ISO compliance to win tenders, every introduction has value.
           </Text>
         </View>
 
         <Text style={st.sectionSubtitle}>What ConformEdge Offers Your Referrals</Text>
-        <Bullet>AI-powered ISO compliance management platform</Bullet>
-        <Bullet>11 SA-relevant standards (ISO 9001, 14001, 45001, MHSA, POPIA, etc.)</Bullet>
-        <Bullet>Incident management, work permits, equipment tracking</Bullet>
-        <Bullet>Mobile/offline access for on-site safety work</Bullet>
-        <Bullet>Built for South African construction and infrastructure</Bullet>
-        <Bullet>Pricing from R2,299/mo — affordable for small and mid-size companies</Bullet>
+        <Bullet>AI-powered ISO compliance platform — 11 SA standards, 36 modules</Bullet>
+        <Bullet>Incident management, work permits, equipment tracking, audit packs</Bullet>
+        <Bullet>Mobile/offline access for on-site safety work (PWA)</Bullet>
+        <Bullet>Built for SA construction — from R2,299/mo</Bullet>
 
         <Text style={st.sectionSubtitle}>Programme Terms</Text>
         <Bullet>No sign-up fee, no monthly fee, no contract</Bullet>
-        <Bullet>10% commission on the referred client's first 12 months</Bullet>
-        <Bullet>Commission paid monthly via EFT</Bullet>
-        <Bullet>Referral link valid for 90 days per lead</Bullet>
-        <Bullet>No minimum referral count — refer 1 or 100</Bullet>
-        <Bullet>Upgrade to Consulting Partner anytime for full client management</Bullet>
+        <Bullet>10% commission on the referred client's first 12 months, paid monthly via EFT</Bullet>
+        <Bullet>Referral link valid for 90 days per lead — no minimum referral count</Bullet>
 
         {/* CTA */}
         <View style={st.ctaBox}>
