@@ -1,6 +1,6 @@
 # ConformEdge Partner Program — Client Guide
 
-> Version 1.0 | March 2026 | ISU Technologies
+> Version 2.0 | March 2026 | ISU Technologies
 
 ---
 
@@ -27,10 +27,11 @@ This is a **structured business platform** where you provide a service to client
 
 ## How It Works
 
-1. **You sign up as a Consulting or White-Label Partner**
-2. **You onboard your clients** — each client gets their own isolated organization with full ConformEdge features
-3. **You manage everything from one Partner Console** — see all clients' documents, CAPAs, incidents, assessments, and compliance status in one place
-4. **Your clients see you as their compliance partner** — a "Managed by [Your Company]" banner shows on their dashboard, and all your actions are visible in the audit trail for full transparency
+1. **You sign up as a Consulting Partner**
+2. **You pay a R25,000 once-off setup fee** — we configure your account, set up your first 5 clients, and deliver 12 hours of training
+3. **You onboard your clients** — each client gets their own isolated organization with full ConformEdge features
+4. **You manage everything from one Partner Console** — see all clients' documents, CAPAs, incidents, assessments, and compliance status in one place
+5. **Your clients see you as their compliance partner** — all your actions are visible in the audit trail for full transparency
 
 ---
 
@@ -41,56 +42,45 @@ This is a **structured business platform** where you provide a service to client
 | **Centralized Dashboard** | Overview of all client orgs — compliance scores, open CAPAs, incidents, document counts |
 | **Cross-Client Visibility** | Drill into any client's data — team, documents, assessments, incidents, audit trail |
 | **Team Management** | Add your consultants with role-based access (Admin, Manager, Viewer) |
-| **Consolidated Billing** | One monthly invoice for platform fee + per-client fees — no chasing individual payments |
-| **Volume Discounts** | 10% discount at 10+ clients, 15% at 20+ clients |
-| **Custom Rates** | Negotiate per-client pricing based on size and scope |
-| **Full Platform Access** | Your clients get all ConformEdge features — AI classification, IMS, audit packs, work permits, etc. |
+| **Consolidated Billing** | One monthly invoice for seats + per-client fees — simple and predictable |
+| **Flat Pricing** | Same per-client fee whether it's your 1st or 50th client — no bands, no tiers |
+| **Full Platform Access** | Clients get all ConformEdge features — AI classification, IMS, audit packs, work permits, etc. |
 
 ---
 
 ## Pricing
 
-### Consulting Partner
+### Your Monthly Costs
 
-- **Platform fee:** R8,999/month (your base access)
-- **Per-client fees** (based on client size):
-  - Small (1-10 employees): R1,299/month
-  - Medium (11-50 employees): R1,899/month
-  - Large (51+ employees): R2,499/month
-- **Volume discounts** kick in automatically
-- **15% VAT** added to total
+| Item | Cost |
+|------|------|
+| Per consultant seat (minimum 5) | **R999/mo** |
+| Per client org — Essentials | **R1,499/mo** |
+| Per client org — Professional | **R1,999/mo** |
+| Per client org — Business | **R2,999/mo** |
 
-### White-Label Partner
+### Once-Off
 
-- **Platform fee:** R12,999/month (includes custom branding)
-- **Per-client fees** (based on client size):
-  - Small (1-10 employees): R699/month
-  - Medium (11-50 employees): R1,299/month
-  - Large (51+ employees): R1,999/month
-- **Volume discounts** kick in automatically
-- **15% VAT** added to total
+| Item | Cost |
+|------|------|
+| Setup & training (first 5 client orgs + 12 hours training) | **R25,000** |
+| Additional client org onboarding (after first 5) | **R2,500/org** |
 
 ### Pricing Example
 
-A consulting partner with 5 medium clients pays:
+A consulting partner with 5 seats and 5 Professional clients pays:
 
-> R8,999 + (5 x R1,899) = **R18,494/month + VAT**
+> 5 × R999 + 5 × R1,999 = **R14,990/month + VAT**
 >
-> vs. 5 separate Business subscriptions = 5 x R8,499 = R42,495/month
+> vs. 5 separate Professional subscriptions = 5 × R5,499 = R27,495/month
 >
-> **That's a 56% saving for your clients**
-
-### Volume Discount Tiers
-
-| Active Clients | Discount |
-|----------------|----------|
-| 1-9 clients | Standard rates |
-| 10-19 clients | 10% off client fees |
-| 20+ clients | 15% off client fees |
+> **That's a 45% saving**
 
 ### Annual Billing
 
-Pay annually and receive a **17% discount** (pay for 10 months, get 12).
+Pay annually and get **2 months free** (pay 10 months for 12).
+
+5 seats + 5 Professional clients on annual billing = **R149,900/year** (saves R29,980).
 
 ---
 
@@ -100,15 +90,17 @@ Pay annually and receive a **17% discount** (pay for 10 months, get 12).
 - **One view, all clients** — no switching between accounts
 - **Your brand, your relationship** — you remain the trusted compliance advisor
 - **Audit-ready** — every action is logged, every client org is isolated
-- **Scale easily** — add new clients in minutes, not days
+- **Scale easily** — add new clients at the same flat rate
+- **Mobile/offline** — your consultants work on-site with the PWA app
 
 ---
 
 ## Who Is It For?
 
-- ISO compliance consultants managing multiple companies
-- Health & safety firms serving construction/infrastructure clients
-- Quality management consultants
+- SHEQ consultancies managing multiple construction/infrastructure companies
+- Health & safety practitioners serving multiple clients
+- ISO compliance consultants
+- Quality management firms
 - Any professional services firm doing compliance work for multiple organizations
 
 ---
@@ -121,7 +113,7 @@ These terms sound similar but mean different things:
 
 A **structured business platform** where you provide a service to clients through our software.
 
-- You pay us a platform fee
+- You pay us per seat + per client org
 - You onboard your clients onto ConformEdge
 - You manage their compliance through our Partner Console
 - You charge your clients whatever you want for your consulting services
@@ -144,25 +136,25 @@ A **mutual collaboration** between two businesses working together as equals.
 
 | Aspect | Partner Program (Ours) | Partnership Program |
 |--------|------------------------|---------------------|
-| **Structure** | Platform provider -> Partner -> Clients | Company A <-> Company B |
+| **Structure** | Platform provider → Partner → Clients | Company A ↔ Company B |
 | **Revenue** | You pay us fees, you charge your clients | Shared revenue or co-investment |
 | **Control** | We own the platform, you use it | Joint decision-making |
-| **Branding** | ConformEdge (or white-label) | Co-branded |
 | **Scale** | Designed for many partners | Usually 1-3 strategic partnerships |
 
-**Bottom line:** The ConformEdge Partner Program is a **service delivery channel** — you use ConformEdge as the tool to deliver compliance services to your clients at scale. It is not a 50/50 partnership between equals.
+**Bottom line:** The ConformEdge Partner Program is a **service delivery channel** — you use ConformEdge as the tool to deliver compliance services to your clients at scale.
 
 ---
 
 ## Getting Started
 
-1. **Contact us** — Email nhlanhla@isutech.co.za or visit conformedge.isutech.co.za
-2. **Choose your tier** — Consulting or White-Label based on your needs
-3. **Onboarding** — We set up your Partner Console and walk you through the platform
-4. **Add clients** — Start onboarding client organizations from your Partner Dashboard
+1. **Contact us** — Email nhlanhla@isutech.co.za
+2. **Discovery call** — 30-minute call to understand your client base and demonstrate the platform
+3. **Agreement & setup fee** — Sign partner agreement, pay R25,000 setup fee
+4. **2-week onboarding** — Platform config, first 5 client orgs, 12 hours structured training
 5. **Go live** — Manage compliance across all your clients from one place
 
 ---
 
 *ConformEdge by ISU Technologies | AI-Powered ISO Compliance Management*
-*For more information: DOCS/partner-program/PARTNER-PROGRAM-2026.md*
+*All prices in South African Rand (ZAR), excluding 15% VAT.*
+*For full details: DOCS/partner-program/PARTNER-PROGRAM-2026.md*
