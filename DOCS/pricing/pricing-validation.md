@@ -174,7 +174,7 @@ Based on this validation, the following are approved for implementation:
 
 ### 6.1 Annual Billing (Priority: HIGH)
 - **Discount:** 2 months free = 17% savings for customer
-- **Annual prices:** Starter R6,990 → **R5,810/yr** | Professional R23,988 → **R19,990/yr** | Business R53,988 → **R44,990/yr**
+- **Annual prices:** Starter R6,990 → **R5,810/yr** | Professional R65,988 → **R54,990/yr** | Business R65,988 → **R54,990/yr**
 - **Impact:** Improves cash flow, reduces churn by 15-20%
 - **Margin at annual prices:** All tiers remain above 50%
 

@@ -239,9 +239,9 @@ Assuming average churn: 5% monthly (SaaS B2B average) → avg lifetime = 20 mont
 
 | Customers | Gross Revenue | Net Revenue | Variable Cost | Contribution |
 |---|---|---|---|---|
-| 10 | R44,990 | R43,395 | R19,249 | R24,146 |
-| 25 | R112,475 | R108,488 | R48,123 | R60,366 |
-| 50 | R224,950 | R216,977 | R96,245 | R120,732 |
+| 10 | R54,990 | R53,045 | R19,249 | R33,796 |
+| 25 | R137,475 | R132,613 | R48,123 | R84,490 |
+| 50 | R274,950 | R265,227 | R96,245 | R168,982 |
 
 ### 4.2 Realistic Mixed Customer Scenarios
 
@@ -262,7 +262,7 @@ Assuming average churn: 5% monthly (SaaS B2B average) → avg lifetime = 20 mont
 |---|---|---|---|
 | Starter | 30 | R20,970 | R14,397 |
 | Professional | 25 | R49,975 | R33,599 |
-| Business | 10 | R44,990 | R24,146 |
+| Business | 10 | R54,990 | R33,796 |
 | Enterprise | 2 | R20,000 | R11,389 |
 | **Total** | **67** | **R135,935** | **R83,531** |
 
@@ -273,7 +273,7 @@ Assuming average churn: 5% monthly (SaaS B2B average) → avg lifetime = 20 mont
 |---|---|---|---|
 | Starter | 60 | R41,940 | R28,793 |
 | Professional | 80 | R159,920 | R107,518 |
-| Business | 30 | R134,970 | R72,439 |
+| Business | 30 | R164,970 | R96,563 |
 | Enterprise | 5 | R50,000 | R28,472 |
 | **Total** | **175** | **R386,830** | **R237,222** |
 

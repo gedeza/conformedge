@@ -348,7 +348,7 @@
 | **Monthly Total** | | | **R18,163** |
 | **Annual (17% discount)** | | | **R15,075/mo (R180,900/yr)** |
 
-> "Compare that to 12 clients each buying Professional at R5,499 — that's R53,988/mo. You're saving over 66%.
+> "Compare that to 12 clients each buying Professional at R5,499 — that's R65,988/mo. You're saving over 66%.
 >
 > And here's the business model: you charge your clients R4,000-R7,000/mo for compliance management services. Your platform cost per client is R899 plus maybe R200 for extra users. Your margin per client is R3,000-R6,000/mo. The platform pays for itself many times over."
 
@@ -405,10 +405,10 @@
 
 | Clients | Monthly Cost | vs Direct Pricing | Saving |
 |---|---|---|---|
-| 5 clients | R9,494 | R22,495 (5×Professional) | **58%** |
-| 10 clients (10% vol. discount) | R13,090 | R44,990 | **71%** |
-| 15 clients (10% vol. discount) | R17,134 | R67,485 | **75%** |
-| 25 clients (15% vol. discount) | R24,074 | R112,475 | **79%** |
+| 5 clients | R9,494 | R27,495 (5×Professional) | **65%** |
+| 10 clients (10% vol. discount) | R13,090 | R54,990 | **76%** |
+| 15 clients (10% vol. discount) | R17,134 | R82,485 | **79%** |
+| 25 clients (15% vol. discount) | R24,074 | R137,475 | **82%** |
 
 ### M-Theory Revenue Model
 
