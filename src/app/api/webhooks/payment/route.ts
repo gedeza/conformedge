@@ -224,6 +224,23 @@ async function processPlanSubscription(
     "SYSTEM"
   )
 
+  // Convert any SIGNED_UP referral linked to this org
+  try {
+    const referral = await db.referral.findFirst({
+      where: { referredOrgId: orgId, status: "SIGNED_UP" },
+    })
+    if (referral) {
+      await db.referral.update({
+        where: { id: referral.id },
+        data: { status: "CONVERTED", convertedAt: now },
+      })
+      console.log(`[payment-webhook] Referral ${referral.code} converted for org ${orgId}`)
+    }
+  } catch (err) {
+    // Non-critical — don't fail the payment webhook for referral errors
+    console.error("[payment-webhook] Referral conversion error:", err)
+  }
+
   console.log(`[payment-webhook] Activated ${targetTier}/${cycle} for org ${orgId}`)
 }
 

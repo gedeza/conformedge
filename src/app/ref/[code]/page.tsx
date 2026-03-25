@@ -46,5 +46,5 @@ export default async function ReferralPage({ params }: Props) {
     path: "/",
   })
 
-  redirect("/sign-up")
+  redirect(`/sign-up?ref=${code}`)
 }
