@@ -477,11 +477,11 @@ export function PartnerOpportunityPDF() {
         <View style={[st.modelCard, { marginTop: 8 }]}>
           <View style={st.modelCardHeader}>
             <Text style={st.modelCardTitle}>Not ready to manage clients?</Text>
-            <Text style={st.modelCardPrice}>Referral: 15% Commission</Text>
+            <Text style={st.modelCardPrice}>Referral: 10% Commission</Text>
           </View>
           <Text style={st.modelCardDesc}>
-            Refer companies to ConformEdge and earn 15% of their first-year subscription.
-            No setup cost, no management required. 5 Professional referrals = R49,491/year.
+            Refer companies to ConformEdge and earn 10% of their first-year subscription.
+            No setup cost, no management required. 5 Professional referrals = R32,994/year.
           </Text>
         </View>
 

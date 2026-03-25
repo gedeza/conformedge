@@ -473,17 +473,17 @@ Not ready to manage clients on the platform? You can still earn by referring com
 2. Receive a unique tracking link
 3. Share with prospective clients
 4. Client signs up directly for any ConformEdge plan
-5. You earn **15% commission** on the client's first year of subscription
+5. You earn **10% commission** on the client's first year of subscription
 
 ### Commission Examples
 
-| Client Signs Up For | Monthly | Your Annual Commission |
-|--------------------|---------|----------------------|
-| Essentials (R2,299/mo) | R2,299 | **R4,138** |
-| Professional (R5,499/mo) | R5,499 | **R9,898** |
-| Business (R8,499/mo) | R8,499 | **R15,298** |
+| Client Signs Up For | Monthly | Your Annual Commission (10%) |
+|--------------------|---------|-------------------------------|
+| Essentials (R2,299/mo) | R2,299 | **R2,759** |
+| Professional (R5,499/mo) | R5,499 | **R6,599** |
+| Business (R8,499/mo) | R8,499 | **R10,199** |
 
-Refer 5 clients to Professional: **R49,491/year** in commission — with no ongoing management.
+Refer 5 clients to Professional: **R32,994/year** in commission — with no ongoing management.
 
 ### Requirements
 
