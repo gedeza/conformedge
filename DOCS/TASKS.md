@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
-**Last Updated:** 2026-03-10
-**Phase:** Phase 4A–4E Complete + Billing Complete + P5 (DMRE, POPIA) + Pricing Revision. Remaining: T34, T35, T37
+**Last Updated:** 2026-03-25
+**Phase:** Phase 12 (Referral Partner System) in progress. Remaining from earlier: T34, T35, T37
 
 ---
 
@@ -352,14 +352,14 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 > Existing: `Referral` model in Prisma (code, status tracking, commission fields). Partner console has referral link generation.
 > Needed: Public-facing registration + self-service referral management.
 
-- [ ] **T148** Referral partner registration page — public form at `/referral/register` (name, email, company, phone, bank details). Creates `Partner` record with `tier: REFERRAL`, `status: APPLIED`. No Clerk account needed.
-- [ ] **T149** Referral partner approval workflow — admin action to approve registration → sets `status: ACTIVE`, generates unique referral code/link, sends welcome email with link.
-- [ ] **T150** Referral tracking landing page — `/ref/[code]` redirect to main landing page with referral cookie/param. Track `PENDING → CLICKED → SIGNED_UP → CONVERTED` status on `Referral` model.
-- [ ] **T151** Referral attribution on sign-up — detect referral code during Clerk sign-up flow, link new org to referral partner via `Referral` record. Auto-set status to `SIGNED_UP`, then `CONVERTED` when subscription activates.
+- [x] **T148** Referral partner registration page — public form at `/referral/register`. Creates Partner with tier=REFERRAL, status=APPLIED, commission=10%. *(2026-03-25)*
+- [x] **T149** Referral partner approval workflow — admin approve/reject on `/admin/partners`, auto-generates referral code/link. *(2026-03-25)*
+- [x] **T150** Referral tracking landing page — `/ref/[code]` already existed (cookie-based attribution, 90-day expiry). *(pre-existing)*
+- [x] **T151** Referral attribution — ReferralAttribution component (pre-existing) handles SIGNED_UP on dashboard load. CONVERTED added to payment webhook on subscription activation. *(2026-03-25)*
 - [ ] **T152** Referral partner dashboard — lightweight self-service page at `/referral/dashboard` (email + code login, no Clerk). Shows: referral link, click count, sign-ups, conversions, commission earned, commission pending, payout history.
 - [ ] **T153** Commission calculation engine — monthly cron: for each `CONVERTED` referral in Year 1, calculate 10% of client's actual payments (respecting annual = 10 months). Create commission ledger entries.
 - [ ] **T154** Commission payout tracking — admin view to mark commissions as paid (EFT reference, date). Referral partner sees payout status on their dashboard.
-- [ ] **T155** Referral welcome email — automated email on approval with: referral link, how it works, brochure PDF link, commission terms.
+- [x] **T155** Referral welcome email — automated on approval with referral link, how-it-works, brochure PDF link. *(2026-03-25)*
 - [ ] **T156** Admin referral management — `/dashboard/admin/referrals` page to view all referral partners, approve/reject applications, view conversion metrics, manage payouts.
 
 ---
