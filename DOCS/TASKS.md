@@ -59,7 +59,7 @@
 - [x] **T26** Growth tier monitoring — `getGrowthTierAnalytics()` in admin actions tracks Business tier seat distribution, flags when 20-35% of 5+ clients use <25 seats *(2026-03-26)*
 - [x] **T27** Mining sector entry evaluation — `DOCS/business-dev/MINING-SECTOR-EVALUATION-2026.md` (TAM, readiness, competition, strategy, recommendation: GO) *(2026-03-26)*
 - [x] **T28** Configurable vendor scoring weights — `VendorScoringWeights` in compliance-score.ts, reads from `Organization.settings.vendorScoringWeights`, defaults to current weights *(2026-03-26)*
-- [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes) — **Deferred: low urgency, high churn risk**
+- [x] **T30** Schema rename Subcontractor → Vendor — 61 files, migration renames tables/columns/indexes, routes /subcontractors→/vendors, feature gate vendorPortal, all UI text updated *(2026-03-26)*
 
 ## B1 — Billing Phase 1: Data Layer — ALL COMPLETE
 
