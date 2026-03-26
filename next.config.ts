@@ -15,10 +15,28 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000,
   },
   async headers() {
+    // CSP: allow Clerk auth, Sentry telemetry, Paystack checkout, inline styles (shadcn/ui)
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://*.sentry.io",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.accounts.dev",
+      "font-src 'self' data:",
+      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://api.clerk.com https://*.sentry.io https://js.paystack.co https://api.paystack.co wss://*.clerk.accounts.dev",
+      "frame-src 'self' https://js.paystack.co https://*.clerk.accounts.dev",
+      "worker-src 'self' blob:",
+      "media-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join("; ")
+
     return [
       {
         source: "/(.*)",
         headers: [
+          { key: "Content-Security-Policy", value: csp },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
