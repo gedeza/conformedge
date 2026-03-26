@@ -6,9 +6,9 @@ import { Plus, X, AlertTriangle, CheckSquare, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const QUICK_ACTIONS = [
-  { label: "Report Incident", href: "/incidents/new", icon: AlertTriangle, color: "bg-red-500" },
-  { label: "New Checklist", href: "/checklists", icon: CheckSquare, color: "bg-blue-500" },
-  { label: "New Permit", href: "/permits", icon: ShieldCheck, color: "bg-amber-500" },
+  { label: "Incidents", href: "/incidents", icon: AlertTriangle, color: "bg-red-500" },
+  { label: "Checklists", href: "/checklists", icon: CheckSquare, color: "bg-blue-500" },
+  { label: "Permits", href: "/permits", icon: ShieldCheck, color: "bg-amber-500" },
 ]
 
 export function MobileFAB() {
