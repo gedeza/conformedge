@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns"
-import type { PartnerRiskLevel, Prisma } from "@/generated/prisma/client"
+import type { PartnerRiskLevel, PartnerAlertType, Prisma } from "@/generated/prisma/client"
 
 // ─────────────────────────────────────────────
 // Score Weights
@@ -304,9 +304,88 @@ async function generateAlerts(partnerId: string, metrics: AlertMetrics) {
 // Calculate All Partner Scores (batch)
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// Event-Driven Alerts (called from partner actions)
+// ─────────────────────────────────────────────
+
+/**
+ * Create a partner alert if one of the same type isn't already open.
+ * Used for event-driven alerts (CLIENT_CHURN, INACTIVE_CLIENT, STATUS_CHANGE, etc.)
+ */
+export async function createPartnerAlert(
+  partnerId: string,
+  alertType: PartnerAlertType,
+  severity: PartnerRiskLevel,
+  title: string,
+  description: string,
+  metadata: Record<string, unknown> = {}
+) {
+  const existing = await db.partnerAlert.findFirst({
+    where: {
+      partnerId,
+      alertType,
+      status: { in: ["OPEN", "ACKNOWLEDGED"] },
+    },
+  })
+  if (existing) return null
+
+  return db.partnerAlert.create({
+    data: {
+      partner: { connect: { id: partnerId } },
+      alertType,
+      severity,
+      title,
+      description,
+      metadata: metadata as Prisma.InputJsonValue,
+    },
+  })
+}
+
+/**
+ * Check for user spike: if total users across client orgs jumped >50% in a single action
+ */
+export async function checkUserSpikeAlert(partnerId: string) {
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    include: {
+      clientOrganizations: {
+        where: { isActive: true },
+        select: { organizationId: true },
+      },
+    },
+  })
+  if (!partner || partner.clientOrganizations.length === 0) return
+
+  const orgIds = partner.clientOrganizations.map(c => c.organizationId)
+  const totalUsers = await db.organizationUser.count({
+    where: { organizationId: { in: orgIds }, isActive: true },
+  })
+
+  // Check against last score snapshot
+  const lastScore = await db.partnerAuditScore.findFirst({
+    where: { partnerId },
+    orderBy: { createdAt: "desc" },
+    select: { totalUsers: true },
+  })
+
+  if (lastScore && lastScore.totalUsers > 0) {
+    const growthPercent = ((totalUsers - lastScore.totalUsers) / lastScore.totalUsers) * 100
+    if (growthPercent > 50) {
+      await createPartnerAlert(
+        partnerId,
+        "USER_SPIKE",
+        "HIGH",
+        `User spike detected — ${growthPercent.toFixed(0)}% increase`,
+        `Total users jumped from ${lastScore.totalUsers} to ${totalUsers} (${growthPercent.toFixed(0)}% increase). Verify this is expected growth.`,
+        { previousUsers: lastScore.totalUsers, currentUsers: totalUsers, growthPercent }
+      )
+    }
+  }
+}
+
 export async function calculateAllPartnerScores() {
   const activePartners = await db.partner.findMany({
-    where: { status: "ACTIVE" },
+    where: { status: { in: ["ACTIVE", "APPROVED"] } },
     select: { id: true },
   })
 

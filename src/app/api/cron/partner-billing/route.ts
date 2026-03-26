@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { generatePartnerInvoice } from "@/lib/billing/partner-billing"
+import { calculateAllPartnerScores } from "@/lib/billing/partner-compliance"
 import { sendPartnerEmail } from "@/lib/email"
 import { captureError } from "@/lib/error-tracking"
+import type { Prisma } from "@/generated/prisma/client"
 
 const CRON_SECRET = process.env.CRON_SECRET
 
@@ -37,6 +39,7 @@ export async function GET(request: NextRequest) {
   let invoicesGenerated = 0
   let overdueReminders = 0
   let partnersSuspended = 0
+  let scoresCalculated = 0
   const errors: string[] = []
 
   try {
@@ -107,7 +110,33 @@ export async function GET(request: NextRequest) {
 
     for (const invoice of overdueInvoices) {
       try {
-        // Send overdue reminder
+        // Create OVERDUE_INVOICE alert (deduplicated — skip if one already exists)
+        const existingAlert = await db.partnerAlert.findFirst({
+          where: {
+            partnerId: invoice.partner.id,
+            alertType: "OVERDUE_INVOICE",
+            status: { in: ["OPEN", "ACKNOWLEDGED"] },
+          },
+        })
+        if (!existingAlert) {
+          await db.partnerAlert.create({
+            data: {
+              partner: { connect: { id: invoice.partner.id } },
+              alertType: "OVERDUE_INVOICE",
+              severity: "HIGH",
+              title: `Overdue invoice ${invoice.invoiceNumber}`,
+              description: `Invoice ${invoice.invoiceNumber} for R${(invoice.totalCents / 100).toFixed(2)} was due on ${invoice.dueAt.toLocaleDateString("en-ZA")} and remains unpaid.`,
+              metadata: {
+                invoiceId: invoice.id,
+                invoiceNumber: invoice.invoiceNumber,
+                totalCents: invoice.totalCents,
+                dueAt: invoice.dueAt.toISOString(),
+              } as Prisma.InputJsonValue,
+            },
+          })
+        }
+
+        // Send overdue reminder email
         if (invoice.partner.contactEmail) {
           sendPartnerEmail({
             to: invoice.partner.contactEmail,
@@ -141,6 +170,15 @@ export async function GET(request: NextRequest) {
         captureError(new Error(msg), ERR_SRC)
       }
     }
+    // ── 3. Recalculate all partner compliance scores ──
+    try {
+      const scores = await calculateAllPartnerScores()
+      scoresCalculated = scores.length
+    } catch (err) {
+      const msg = `Partner score calculation failed: ${err}`
+      errors.push(msg)
+      captureError(new Error(msg), ERR_SRC)
+    }
   } catch (err) {
     captureError(err instanceof Error ? err : new Error(String(err)), ERR_SRC)
     return NextResponse.json(
@@ -153,6 +191,7 @@ export async function GET(request: NextRequest) {
     invoicesGenerated,
     overdueReminders,
     partnersSuspended,
+    scoresCalculated,
     errors: errors.length,
     timestamp: now.toISOString(),
   }

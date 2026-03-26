@@ -8,6 +8,7 @@ import { getPartnerContext, validatePartnerOrgAccess } from "@/lib/partner-auth"
 import { logAuditEvent } from "@/lib/audit"
 import { isPartnerAdmin, canPartnerEdit } from "@/lib/permissions"
 import { PARTNER_BASE_FEES } from "@/lib/constants"
+import { createPartnerAlert, checkUserSpikeAlert } from "@/lib/billing/partner-compliance"
 import { addDays } from "date-fns"
 import type { ActionResult, PartnerTier, PartnerRole, PartnerClientSize, PlanTier } from "@/types"
 
@@ -292,6 +293,9 @@ export async function addClientOrganization(
     // This ensures feature gates align with what the partner is being billed for
     await syncClientSubscription(parsed.organizationId, parsed.clientSize as PartnerClientSize)
 
+    // Check for user spike (new client may bring many users)
+    checkUserSpikeAlert(ctx.partnerId).catch(() => {}) // fire-and-forget
+
     logAuditEvent({
       action: "PARTNER_CLIENT_ADDED",
       entityType: "PartnerOrganization",
@@ -336,6 +340,16 @@ export async function disconnectClientOrganization(organizationId: string): Prom
       userId: ctx.dbUserId,
       organizationId,
     })
+
+    // Fire CLIENT_CHURN alert for compliance monitor
+    createPartnerAlert(
+      ctx.partnerId,
+      "CLIENT_CHURN",
+      "MEDIUM",
+      "Client organization disconnected",
+      `A client organization was disconnected from the partner portfolio. Review whether this indicates churn risk.`,
+      { organizationId, disconnectedAt: new Date().toISOString() }
+    ).catch(() => {}) // fire-and-forget
 
     revalidatePath("/partner")
     return { success: true }

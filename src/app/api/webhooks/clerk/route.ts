@@ -266,5 +266,16 @@ export async function POST(req: Request) {
     }
   }
 
+  // Track user session for accurate activity scoring (partner compliance monitor)
+  if (eventType === "session.created") {
+    const { user_id } = evt.data as { user_id: string }
+    if (user_id) {
+      await db.user.updateMany({
+        where: { clerkUserId: user_id },
+        data: { lastLoginAt: new Date() },
+      })
+    }
+  }
+
   return NextResponse.json({ received: true })
 }

@@ -137,6 +137,7 @@ export default async function PartnerInsightsPage() {
                   { label: "Client Density", score: latestScore.clientDensityScore, weight: "20%", detail: `${latestScore.avgUsersPerClient.toFixed(1)} users/client` },
                   { label: "Revenue Health", score: latestScore.revenueScore, weight: "25%", detail: `R${(latestScore.totalRevenueCents / 100).toLocaleString("en-ZA")} MRR` },
                   { label: "Feature Utilization", score: latestScore.featureUtilizationScore, weight: "15%", detail: "module variety" },
+                  { label: "Compliance", score: Math.max(0, 100 - (openAlerts.length * 15)), weight: "10%", detail: `${openAlerts.length} open alert${openAlerts.length !== 1 ? "s" : ""}` },
                 ].map(dim => (
                   <div key={dim.label}>
                     <div className="flex items-center justify-between text-xs mb-1">
