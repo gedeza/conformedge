@@ -173,7 +173,7 @@ export function EvidenceGallery({ incidentId, evidence, role }: EvidenceGalleryP
         {evidence.length === 0 ? (
           <p className="text-sm text-muted-foreground">No evidence files uploaded yet.</p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {evidence.map((item) => (
               <div
                 key={item.id}
@@ -193,9 +193,14 @@ export function EvidenceGallery({ incidentId, evidence, role }: EvidenceGalleryP
                   rel="noopener noreferrer"
                   className="block"
                 >
-                  <div className="flex items-center justify-center h-16 rounded bg-muted">
+                  <div className="flex items-center justify-center h-20 rounded bg-muted overflow-hidden">
                     {isImageType(item.fileType) ? (
-                      <ImageIcon className="h-8 w-8 text-muted-foreground/60" />
+                      <img
+                        src={`/api/download/${item.fileKey}`}
+                        alt={item.fileName}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
                     ) : (
                       <FileText className="h-8 w-8 text-muted-foreground/60" />
                     )}

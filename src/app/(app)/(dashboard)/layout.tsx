@@ -6,6 +6,8 @@ import { TrialBannerWrapper } from "@/components/billing/trial-banner-wrapper"
 import { PartnerNavLink } from "@/components/partner/partner-nav-link"
 import { ReferralAttribution } from "@/components/shared/referral-attribution"
 import { AdminNavLink } from "@/components/admin/admin-nav-link"
+import { MobileFAB } from "@/components/dashboard/mobile-fab"
+import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav"
 
 export default function DashboardLayout({
   children,
@@ -29,8 +31,10 @@ export default function DashboardLayout({
         <Suspense fallback={null}>
           <ReferralAttribution />
         </Suspense>
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-6 pb-24 md:pb-6">{children}</main>
       </SidebarInset>
+      <MobileFAB />
+      <MobileBottomNav />
     </SidebarProvider>
   )
 }
