@@ -20,7 +20,7 @@ const CLIENT_DENSITY_THRESHOLD = 8 // users per client — above this gets penal
 // Risk Level Thresholds
 // ─────────────────────────────────────────────
 
-function getRiskLevel(score: number): PartnerRiskLevel {
+export function getRiskLevel(score: number): PartnerRiskLevel {
   if (score >= 80) return "LOW"
   if (score >= 60) return "MEDIUM"
   if (score >= 40) return "HIGH"
@@ -31,19 +31,19 @@ function getRiskLevel(score: number): PartnerRiskLevel {
 // Scoring Functions
 // ─────────────────────────────────────────────
 
-function calcActivityScore(active: number, total: number): number {
+export function calcActivityScore(active: number, total: number): number {
   if (total === 0) return 100 // No users = no penalty
   return Math.round((active / total) * 100)
 }
 
-function calcClientDensityScore(avgUsersPerClient: number): number {
+export function calcClientDensityScore(avgUsersPerClient: number): number {
   if (avgUsersPerClient <= CLIENT_DENSITY_THRESHOLD) return 100
   // Penalize linearly above threshold, floor at 0
   const penalty = (avgUsersPerClient - CLIENT_DENSITY_THRESHOLD) * 10
   return Math.max(0, Math.round(100 - penalty))
 }
 
-function calcRevenueScore(growthPercent: number, totalRevenueCents: number): number {
+export function calcRevenueScore(growthPercent: number, totalRevenueCents: number): number {
   // Base score from absolute revenue (max 50 pts)
   const absoluteScore = Math.min(50, Math.round(totalRevenueCents / 10000)) // R100 = 1 point
   // Growth component (max 50 pts)
