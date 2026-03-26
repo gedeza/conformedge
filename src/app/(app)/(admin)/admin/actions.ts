@@ -744,11 +744,14 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + 90)
 
+  // Generate access token for self-service dashboard
+  const accessToken = crypto.randomUUID()
+
   // Approve partner + create first referral link in a transaction
   await db.$transaction([
     db.partner.update({
       where: { id: partnerId },
-      data: { status: "ACTIVE", approvedAt: new Date() },
+      data: { status: "ACTIVE", approvedAt: new Date(), accessToken },
     }),
     db.referral.create({
       data: {
@@ -762,6 +765,7 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
   const url = `${appUrl}/ref/${code}`
+  const dashboardUrl = `${appUrl}/referral/dashboard?token=${accessToken}`
 
   // Send welcome email with referral link (fire-and-forget)
   sendReferralWelcomeEmail({
@@ -769,6 +773,7 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
     partnerName: partner.name,
     referralUrl: url,
     referralCode: code,
+    dashboardUrl,
   })
 
   logAdminAction({
@@ -934,6 +939,54 @@ export async function getAdminRevenue() {
     totalActive,
     totalTrialing: subscriptions.filter((s) => s.status === "TRIALING").length,
     cancelledCount,
+  }
+}
+
+// ─────────────────────────────────────────────
+// CROSS-ORG AUDIT TRAIL
+// ─────────────────────────────────────────────
+
+// ─────────────────────────────────────────────
+// COMMISSION PAYOUT
+// ─────────────────────────────────────────────
+
+export async function adminMarkCommissionPaid(
+  referralId: string,
+  bankReference: string
+): Promise<ActionResult> {
+  try {
+    const ctx = await getSuperAdminContext()
+    if (!ctx) return { success: false, error: "Unauthorized" }
+
+    const referral = await db.referral.findUnique({
+      where: { id: referralId },
+      select: { id: true, status: true, commissionCents: true, commissionPaidAt: true, partnerId: true },
+    })
+    if (!referral) return { success: false, error: "Referral not found" }
+    if (referral.status !== "CONVERTED") return { success: false, error: "Referral is not converted" }
+    if (referral.commissionPaidAt) return { success: false, error: "Commission already paid" }
+    if (!referral.commissionCents) return { success: false, error: "No commission to pay" }
+
+    await db.referral.update({
+      where: { id: referralId },
+      data: {
+        commissionPaidAt: new Date(),
+      },
+    })
+
+    logAdminAction({
+      adminUserId: ctx.dbUserId,
+      action: "COMMISSION_PAID",
+      targetType: "Referral",
+      targetId: referralId,
+      metadata: { bankReference, commissionCents: referral.commissionCents, partnerId: referral.partnerId },
+    })
+
+    revalidatePath("/admin/partners")
+    return { success: true }
+  } catch (err) {
+    console.error("adminMarkCommissionPaid error:", err)
+    return { success: false, error: "Failed to mark commission as paid" }
   }
 }
 

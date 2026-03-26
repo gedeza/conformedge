@@ -86,11 +86,13 @@ export function sendReferralWelcomeEmail({
   partnerName,
   referralUrl,
   referralCode,
+  dashboardUrl,
 }: {
   to: string
   partnerName: string
   referralUrl: string
   referralCode: string
+  dashboardUrl?: string
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
   const brochureUrl = `${appUrl}/api/referral-partner/pdf`
@@ -101,6 +103,7 @@ export function sendReferralWelcomeEmail({
       referralUrl,
       referralCode,
       brochureUrl,
+      dashboardUrl,
     })
   )
     .then((html) =>

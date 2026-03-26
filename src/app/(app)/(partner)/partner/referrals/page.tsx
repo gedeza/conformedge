@@ -41,7 +41,7 @@ export default async function PartnerReferralsPage() {
       </PageHeader>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <SummaryCard
           icon={Link2}
           label="Total Referrals"
@@ -66,6 +66,12 @@ export default async function PartnerReferralsPage() {
           value={formatZar(summary?.totalCommissionCents ?? 0)}
           sub={`${summary?.converted ?? 0} converted`}
           highlight
+        />
+        <SummaryCard
+          icon={Banknote}
+          label="Unpaid Commission"
+          value={formatZar(summary?.unpaidCommissionCents ?? 0)}
+          sub="Awaiting payout"
         />
       </div>
 
@@ -98,10 +104,26 @@ export default async function PartnerReferralsPage() {
                           </span>
                         )}
                       </div>
-                      {ref.commissionCents && ref.status === "CONVERTED" && (
-                        <p className="text-xs font-medium text-green-700">
-                          Commission: {formatZar(ref.commissionCents)}
-                        </p>
+                      {ref.status === "CONVERTED" && (
+                        <div className="flex items-center gap-2 text-xs">
+                          {ref.commissionCents ? (
+                            <>
+                              <span className="font-medium text-green-700">
+                                Commission: {formatZar(ref.commissionCents)}
+                              </span>
+                              <span className="text-muted-foreground">
+                                ({ref.commissionMonthsEarned}/12 months)
+                              </span>
+                              {ref.commissionPaidAt ? (
+                                <Badge className="bg-green-100 text-green-800 text-[10px]">Paid</Badge>
+                              ) : (
+                                <Badge className="bg-amber-100 text-amber-800 text-[10px]">Unpaid</Badge>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground">Awaiting first payment</span>
+                          )}
+                        </div>
                       )}
                     </div>
                     {isAdmin && (

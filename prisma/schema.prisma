@@ -1682,6 +1682,7 @@ model Partner {
   approvedAt          DateTime?     @map("approved_at")
   terminatedAt        DateTime?     @map("terminated_at")
   notes               String?       @db.Text                         // Internal admin notes
+  accessToken         String?       @unique @map("access_token")      // Token-based dashboard access for referral partners
   createdAt           DateTime      @default(now()) @map("created_at")
   updatedAt           DateTime      @updatedAt @map("updated_at")
 

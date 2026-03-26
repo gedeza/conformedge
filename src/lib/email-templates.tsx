@@ -261,9 +261,10 @@ interface ReferralWelcomeEmailProps {
   referralUrl: string
   referralCode: string
   brochureUrl: string
+  dashboardUrl?: string
 }
 
-export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, brochureUrl }: ReferralWelcomeEmailProps) {
+export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, brochureUrl, dashboardUrl }: ReferralWelcomeEmailProps) {
   return (
     <EmailLayout>
       <Badge color="#f59e0b" label="Referral Partner" />
@@ -293,6 +294,12 @@ export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, b
         <li>We handle everything — onboarding, training, and support</li>
       </ul>
       <CTAButton href={referralUrl} label="Share Your Referral Link" />
+      {dashboardUrl && (
+        <p style={{ fontSize: "12px", color: "#3f3f46", lineHeight: "1.5", margin: "16px 0 0 0" }}>
+          Track your referrals and commission:{" "}
+          <a href={dashboardUrl} style={{ color: "#0d9488", fontWeight: "bold" }}>Open Your Referral Dashboard</a>
+        </p>
+      )}
       <p style={{ fontSize: "12px", color: "#71717a", lineHeight: "1.5", margin: "16px 0 0 0" }}>
         Download the full programme brochure:{" "}
         <a href={brochureUrl} style={{ color: "#0d9488" }}>Referral Partner Brochure (PDF)</a>
