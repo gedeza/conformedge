@@ -272,14 +272,47 @@ export async function adminMarkInvoicePaid(
     if (!invoice) return { success: false, error: "Invoice not found" }
     if (invoice.status === "PAID") return { success: false, error: "Invoice is already paid" }
 
+    const now = new Date()
+
     await db.invoice.update({
       where: { id: invoiceId },
       data: {
         status: "PAID",
-        paidAt: new Date(),
+        paidAt: now,
         ...(bankReference && { bankReference }),
       },
     })
+
+    // Auto-activate subscription if it's not currently active
+    // This is critical for EFT/INVOICE clients where payment confirmation is manual
+    const sub = await db.subscription.findUnique({
+      where: { organizationId: invoice.organizationId },
+    })
+    if (sub && !["ACTIVE", "TRIALING"].includes(sub.status)) {
+      const periodEnd = sub.billingCycle === "ANNUAL"
+        ? new Date(now.getFullYear() + 1, now.getMonth(), now.getDate())
+        : new Date(now.getFullYear(), now.getMonth() + 1, now.getDate())
+
+      await db.subscription.update({
+        where: { organizationId: invoice.organizationId },
+        data: {
+          status: "ACTIVE",
+          currentPeriodStart: now,
+          currentPeriodEnd: periodEnd,
+          gracePeriodEndsAt: null,
+          trialEndsAt: null,
+        },
+      })
+
+      logAdminAction({
+        adminUserId: ctx.dbUserId,
+        action: "SUBSCRIPTION_AUTO_ACTIVATED",
+        targetType: "Subscription",
+        targetId: sub.id,
+        metadata: { trigger: "invoice_paid", invoiceId, previousStatus: sub.status },
+        organizationId: invoice.organizationId,
+      })
+    }
 
     logAdminAction({
       adminUserId: ctx.dbUserId,

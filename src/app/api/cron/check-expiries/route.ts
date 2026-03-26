@@ -1410,7 +1410,7 @@ export async function GET(request: NextRequest) {
       captureError(err, { source: "cron.billingLifecycle" })
     }
 
-    // ── 11. Auto-generate invoices for INVOICE-method subscriptions ──────
+    // ── 11. Auto-generate invoices for EFT and INVOICE-method subscriptions ──
     let invoicesGenerated = 0
     let overdueInvoices = 0
     let prepaidDeductions = 0
@@ -1418,11 +1418,11 @@ export async function GET(request: NextRequest) {
     try {
       const in3DaysBilling = addDays(now, 3)
 
-      // 11a. Generate invoices for INVOICE-method subs approaching period end
+      // 11a. Generate invoices for EFT/INVOICE-method subs approaching period end
       const invoiceSubs = await db.subscription.findMany({
         where: {
           status: "ACTIVE",
-          paymentMethod: "INVOICE",
+          paymentMethod: { in: ["EFT", "INVOICE"] },
           currentPeriodEnd: { lte: in3DaysBilling },
         },
         select: {
