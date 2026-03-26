@@ -8,7 +8,45 @@ import { getPartnerContext, validatePartnerOrgAccess } from "@/lib/partner-auth"
 import { logAuditEvent } from "@/lib/audit"
 import { isPartnerAdmin, canPartnerEdit } from "@/lib/permissions"
 import { PARTNER_BASE_FEES } from "@/lib/constants"
-import type { ActionResult, PartnerTier, PartnerRole, PartnerClientSize } from "@/types"
+import { addDays } from "date-fns"
+import type { ActionResult, PartnerTier, PartnerRole, PartnerClientSize, PlanTier } from "@/types"
+
+/** Maps partner clientSize to the subscription PlanTier the org should be on */
+const CLIENT_SIZE_TO_PLAN: Record<PartnerClientSize, PlanTier> = {
+  SMALL: "STARTER",
+  MEDIUM: "PROFESSIONAL",
+  LARGE: "BUSINESS",
+}
+
+/**
+ * Sync a client org's subscription tier to match the declared clientSize.
+ * Activates the subscription if it's still trialing/inactive.
+ * This ensures feature gates match what the partner is paying for.
+ */
+async function syncClientSubscription(organizationId: string, clientSize: PartnerClientSize) {
+  const targetPlan = CLIENT_SIZE_TO_PLAN[clientSize]
+  const now = new Date()
+  const periodEnd = addDays(now, 30)
+
+  await db.subscription.upsert({
+    where: { organizationId },
+    create: {
+      organizationId,
+      plan: targetPlan,
+      status: "ACTIVE",
+      billingCycle: "MONTHLY",
+      currentPeriodStart: now,
+      currentPeriodEnd: periodEnd,
+    },
+    update: {
+      plan: targetPlan,
+      status: "ACTIVE",
+      trialEndsAt: null,
+      currentPeriodStart: now,
+      currentPeriodEnd: periodEnd,
+    },
+  })
+}
 
 // ─────────────────────────────────────────────
 // SCHEMAS
@@ -250,6 +288,10 @@ export async function addClientOrganization(
       },
     })
 
+    // Sync the client org's subscription tier to match the declared clientSize
+    // This ensures feature gates align with what the partner is being billed for
+    await syncClientSubscription(parsed.organizationId, parsed.clientSize as PartnerClientSize)
+
     logAuditEvent({
       action: "PARTNER_CLIENT_ADDED",
       entityType: "PartnerOrganization",
@@ -325,6 +367,11 @@ export async function updateClientOrganization(
         ...(data.notes !== undefined && { notes: data.notes || null }),
       },
     })
+
+    // If clientSize changed, sync the org's subscription tier to match
+    if (data.clientSize) {
+      await syncClientSubscription(organizationId, data.clientSize)
+    }
 
     revalidatePath("/partner")
     return { success: true }
@@ -833,7 +880,7 @@ export async function getReferralSummary() {
 
   const referrals = await db.referral.findMany({
     where: { partnerId: ctx.partnerId },
-    select: { status: true, commissionCents: true, commissionPaidAt: true },
+    select: { status: true, commissionCents: true, commissionPaidAt: true, commissionMonthsEarned: true },
   })
 
   return {

@@ -122,6 +122,36 @@ export function sendReferralWelcomeEmail({
 }
 
 /**
+ * Send a plain-text email to a partner contact (fire-and-forget).
+ * Used for billing notifications, overdue reminders, and suspension notices.
+ */
+export function sendPartnerEmail({
+  to,
+  subject,
+  text,
+}: {
+  to: string
+  subject: string
+  text: string
+}) {
+  resend.emails
+    .send({
+      from: FROM_ADDRESS,
+      to,
+      subject,
+      text,
+    })
+    .then((result) => {
+      if (result && "error" in result && result.error) {
+        captureError(new Error(result.error.message), { source: "email.partnerBilling" })
+      }
+    })
+    .catch((err) => {
+      captureError(err, { source: "email.partnerBilling" })
+    })
+}
+
+/**
  * Send an audit pack PDF via email.
  * NOT fire-and-forget — returns result for UI feedback.
  */

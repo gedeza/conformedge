@@ -224,34 +224,46 @@ async function processPlanSubscription(
     "SYSTEM"
   )
 
-  // Convert any SIGNED_UP referral linked to this org and calculate commission (T153)
+  // Referral commission accrual (T153) — credits commission per payment, max 12 months
   try {
+    // Find a referral for this org that is either awaiting first conversion or still accruing
     const referral = await db.referral.findFirst({
-      where: { referredOrgId: orgId, status: "SIGNED_UP" },
+      where: {
+        referredOrgId: orgId,
+        status: { in: ["SIGNED_UP", "CONVERTED"] },
+      },
     })
-    if (referral) {
-      // Commission = commissionPercent% × monthly subscription × 12 months
-      // For annual plans, netCents is already the full annual amount, so derive monthly
+
+    if (referral && referral.commissionMonthsEarned < 12) {
       const monthlyCents = cycle === "ANNUAL" ? Math.round(netCents / 12) : netCents
-      const commissionCents = Math.round(monthlyCents * 12 * (referral.commissionPercent / 100))
+      // For annual plans, credit all 12 months at once (payment covers full year)
+      const monthsToCredit = cycle === "ANNUAL"
+        ? Math.min(12, 12 - referral.commissionMonthsEarned)
+        : 1
+      const monthlyCommission = Math.round(monthlyCents * (referral.commissionPercent / 100))
+      const accrualCents = monthlyCommission * monthsToCredit
+      const newTotal = (referral.commissionCents ?? 0) + accrualCents
+      const newMonthsEarned = referral.commissionMonthsEarned + monthsToCredit
 
       await db.referral.update({
         where: { id: referral.id },
         data: {
           status: "CONVERTED",
-          convertedAt: now,
-          commissionCents,
+          ...(referral.status === "SIGNED_UP" && { convertedAt: now }),
+          commissionCents: newTotal,
+          commissionMonthsEarned: newMonthsEarned,
         },
       })
+
       console.log(
-        `[payment-webhook] Referral ${referral.code} converted for org ${orgId} — ` +
-        `commission: R${(commissionCents / 100).toFixed(2)} ` +
-        `(${referral.commissionPercent}% × R${(monthlyCents / 100).toFixed(2)}/mo × 12)`
+        `[payment-webhook] Referral ${referral.code} — ` +
+        `commission accrual: +R${(accrualCents / 100).toFixed(2)} (${monthsToCredit} month(s)), ` +
+        `total: R${(newTotal / 100).toFixed(2)} (${newMonthsEarned}/12 months)`
       )
     }
   } catch (err) {
     // Non-critical — don't fail the payment webhook for referral errors
-    console.error("[payment-webhook] Referral conversion error:", err)
+    console.error("[payment-webhook] Referral commission error:", err)
   }
 
   console.log(`[payment-webhook] Activated ${targetTier}/${cycle} for org ${orgId}`)

@@ -1808,10 +1808,11 @@ model Referral {
   signedUpAt        DateTime?      @map("signed_up_at")
   convertedAt       DateTime?      @map("converted_at")
 
-  // Commission
-  commissionPercent Float          @map("commission_percent")  // Snapshot from partner at creation
-  commissionCents   Int?           @map("commission_cents")    // Calculated on conversion
-  commissionPaidAt  DateTime?      @map("commission_paid_at")
+  // Commission (10% of Year 1, accrued monthly over 12 payments)
+  commissionPercent     Float          @map("commission_percent")       // Snapshot from partner at creation
+  commissionCents       Int?           @map("commission_cents")         // Total commission earned so far (accrued)
+  commissionMonthsEarned Int          @default(0) @map("commission_months_earned") // How many months credited (max 12)
+  commissionPaidAt      DateTime?      @map("commission_paid_at")
 
   expiresAt         DateTime       @map("expires_at")
   createdAt         DateTime       @default(now()) @map("created_at")
