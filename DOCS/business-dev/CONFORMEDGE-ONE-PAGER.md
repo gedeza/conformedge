@@ -84,11 +84,11 @@ All tiers include: AI document classification, unlimited document storage, audit
 
 Are you an ISO consultant or SHEQ advisor? Offer ConformEdge to your clients and earn recurring revenue.
 
-| Model | Base Fee | Per Client | You Get |
-|---|---|---|---|
-| **Referral** | Free | 15% commission | Passive income from referrals |
-| **Consulting** | R8,999/mo | R899-R2,499/client | Client dashboard, co-branded |
-| **White-Label** | R12,999/mo | R699-R1,999/client | Your brand, your pricing, your clients |
+| Model | Setup | Monthly Base | Per Client | You Get |
+|---|---|---|---|---|
+| **Referral** | Free | Free | 10% commission (Year 1) | Passive income from referrals |
+| **Consulting** | R25,000 | R999/seat (min 5) | R1,499-R2,999 | Client dashboard, co-branded |
+| **White-Label** | R25,000+ | R999/seat (min 5) | R1,499-R2,999 | Your brand, your pricing, your clients |
 
 ---
 

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
 import { VAT_RATE } from "@/lib/billing/plans"
-import { PARTNER_CLIENT_SIZES, PARTNER_VOLUME_DISCOUNTS } from "@/lib/constants"
+import { PARTNER_CLIENT_SIZES } from "@/lib/constants"
 import type { PartnerClientSize } from "@/types"
 
 interface ClientFeeLineItem {
@@ -25,7 +25,8 @@ interface PartnerInvoiceCalculation {
 
 /**
  * Calculate a partner's monthly invoice breakdown.
- * Uses the partner's negotiated rates and applies volume discounts.
+ * v2.0: Flat per-client pricing (R1,499/R1,999/R2,999 by tier).
+ * No volume discounts — same rate whether client #1 or #50.
  */
 export async function calculatePartnerInvoice(partnerId: string): Promise<PartnerInvoiceCalculation | null> {
   const partner = await db.partner.findUnique({
@@ -60,17 +61,9 @@ export async function calculatePartnerInvoice(partnerId: string): Promise<Partne
   const clientFeesCents = clientLineItems.reduce((sum, item) => sum + item.feeCents, 0)
   const activeClientCount = clientLineItems.length
 
-  // Calculate volume discount
-  let volumeDiscountPercent = partner.volumeDiscountPercent
-  if (volumeDiscountPercent === 0) {
-    // Apply automatic volume discount tiers
-    for (const tier of PARTNER_VOLUME_DISCOUNTS) {
-      if (activeClientCount >= tier.minClients) {
-        volumeDiscountPercent = tier.discountPercent
-        break
-      }
-    }
-  }
+  // v2.0: No automatic volume discounts — flat pricing at all scales.
+  // volumeDiscountPercent on the Partner model is only used for manually negotiated discounts.
+  const volumeDiscountPercent = partner.volumeDiscountPercent
 
   const discountCents = Math.round(clientFeesCents * (volumeDiscountPercent / 100))
   const subtotalCents = partner.basePlatformFeeCents + clientFeesCents - discountCents

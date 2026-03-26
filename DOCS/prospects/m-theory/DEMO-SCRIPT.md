@@ -281,9 +281,9 @@
 1. **4 cards** — Total Referrals, Active Links, Conversions, Commission Earned
 2. **Generate Referral Link** — Show the dialog, copy-to-clipboard
 3. **"How Referrals Work"** — 4-step explainer
-4. **15% commission** for 12 months on referred clients
+4. **10% commission** for 12 months on referred clients
 
-> "Even as a Consulting Partner, you can earn referral commissions. If you recommend ConformEdge to a company that doesn't need your consulting services — say a smaller firm that wants to self-manage — you earn 15% of their subscription for 12 months. A Professional referral earns you over R8,000/year per client."
+> "Even as a Consulting Partner, you can earn referral commissions. If you recommend ConformEdge to a company that doesn't need your consulting services — say a smaller firm that wants to self-manage — you earn 10% of their subscription for 12 months. A Professional referral earns you over R6,500/year per client."
 
 **12f. Team Management** (`/partner/team`)
 1. **Active members** — Roles (PARTNER_ADMIN, PARTNER_MANAGER, PARTNER_VIEWER)
@@ -329,7 +329,7 @@
 
 | Component | How It Works |
 |---|---|
-| **Platform users (your team)** | 5 included with Consulting Partner (R4,999/mo). Additional consultants: R149/user/mo |
+| **Platform users (your team)** | 5 seats included with Consulting Partner (5 × R999 = R4,995/mo). Additional seats: R999/seat/mo |
 | **Client users (per org)** | 3 included per client org. Additional client users: R99/user/mo |
 | **Roles** | 5 roles: Owner, Admin, Manager, Auditor, Viewer — each user gets one role |
 | **Partner roles** | 3 roles: Partner Admin, Partner Manager, Partner Viewer |
@@ -340,15 +340,14 @@
 
 | Line Item | Qty | Rate | Monthly |
 |---|---|---|---|
-| Consulting Partner platform fee | 1 | R4,999 | R4,999 |
-| Your consultant team (5 included) | 0 extra | — | R0 |
-| 12 client organisations | 12 | R899/org | R10,788 |
+| Consultant seats (5 included) | 5 | R999/seat | R4,995 |
+| 12 client organisations (Professional) | 12 | R1,999/org | R23,988 |
 | Client users (3 included per org) | 0 extra | — | R0 |
 | Extra client users (2 per org × 12) | 24 | R99/user | R2,376 |
-| **Monthly Total** | | | **R18,163** |
-| **Annual (17% discount)** | | | **R15,075/mo (R180,900/yr)** |
+| **Monthly Total** | | | **R31,359** |
+| **Annual (17% discount)** | | | **R26,028/mo (R312,336/yr)** |
 
-> "Compare that to 12 clients each buying Professional at R5,499 — that's R65,988/mo. You're saving over 66%.
+> "Compare that to 12 clients each buying Professional at R5,499 — that's R65,988/mo. You're saving over 52%.
 >
 > And here's the business model: you charge your clients R4,000-R7,000/mo for compliance management services. Your platform cost per client is R899 plus maybe R200 for extra users. Your margin per client is R3,000-R6,000/mo. The platform pays for itself many times over."
 
@@ -395,28 +394,30 @@
 
 | Component | Cost |
 |---|---|
-| **Platform fee** (5 consultant users included) | R4,999/mo |
-| **Per client organisation** | R899/mo each |
-| **Extra consultant users** | R149/user/mo |
+| **Once-off setup & training** (first 5 clients configured) | R25,000 |
+| **Consultant seats** (minimum 5 included) | R999/seat/mo |
+| **Per client org — Essentials** | R1,499/mo |
+| **Per client org — Professional** | R1,999/mo |
+| **Per client org — Business** | R2,999/mo |
 | **Extra client users** (above 3 per org) | R99/user/mo |
-| **Volume discounts** | 10% at 10+ clients, 15% at 25+, 20% at 50+ |
+| **Volume discounts** | None — flat pricing at all scales |
 
-### Growth Scenarios
+### Growth Scenarios (Professional clients, 5 seats)
 
 | Clients | Monthly Cost | vs Direct Pricing | Saving |
 |---|---|---|---|
-| 5 clients | R9,494 | R27,495 (5×Professional) | **65%** |
-| 10 clients (10% vol. discount) | R13,090 | R54,990 | **76%** |
-| 15 clients (10% vol. discount) | R17,134 | R82,485 | **79%** |
-| 25 clients (15% vol. discount) | R24,074 | R137,475 | **82%** |
+| 5 clients | R14,990 (R4,995 + 5×R1,999) | R27,495 (5×Professional) | **45%** |
+| 10 clients | R24,985 (R4,995 + 10×R1,999) | R54,990 | **55%** |
+| 15 clients | R34,980 (R4,995 + 15×R1,999) | R82,485 | **58%** |
+| 25 clients | R54,970 (R4,995 + 25×R1,999) | R137,475 | **60%** |
 
 ### M-Theory Revenue Model
 
 | | Per Client | 10 Clients | 15 Clients |
 |---|---|---|---|
 | You charge client (compliance service) | R5,000/mo | R50,000/mo | R75,000/mo |
-| Your ConformEdge cost | ~R1,100/mo | ~R13,090/mo | ~R17,134/mo |
-| **Your margin** | **~R3,900/mo** | **~R36,910/mo** | **~R57,866/mo** |
+| Your ConformEdge cost | ~R2,499/mo | ~R24,985/mo | ~R34,980/mo |
+| **Your margin** | **~R2,501/mo** | **~R25,015/mo** | **~R40,020/mo** |
 
 ### Talk Track
 

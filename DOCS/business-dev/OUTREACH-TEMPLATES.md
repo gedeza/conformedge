@@ -99,9 +99,9 @@ I'm the founder of ConformEdge — an AI-powered ISO compliance platform built f
 
 **Why I'm reaching out:** We have a partner program designed for ISO consultants like you. Instead of recommending spreadsheets or expensive enterprise tools to your clients, you can offer them ConformEdge under your brand:
 
-- **Consulting Partner** — R8,999/mo base + R899-R2,499 per client (based on size)
-- **White-Label Partner** — R12,999/mo base + your own branding, logo, colours
-- **Referral Partner** — simply refer clients and earn 15% recurring commission
+- **Consulting Partner** — R25K setup + R999/seat/mo + R1,499-R2,999 per client (by tier)
+- **White-Label Partner** — R25K+ setup + your own branding, logo, colours
+- **Referral Partner** — simply refer clients and earn 10% commission on Year 1
 
 Your clients get a modern compliance tool. You get recurring revenue and deeper client relationships. We handle the platform.
 

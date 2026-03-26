@@ -347,11 +347,11 @@ Credits never expire. Used when monthly allocation is exhausted.
 
 ### Three Partner Tiers
 
-| Tier | Model | Platform Fee | Per-Client Org | Discount |
-|------|-------|-------------|----------------|----------|
-| **Referral** | Refer only, no management | Free | N/A | 15% commission on Year 1 |
-| **Consulting** | Multi-tenant management | R4,999/mo (5 internal users) | R899/client org/mo | ~40% off retail |
-| **White-Label** | Full rebrand + API | R6,999/mo (10 internal users) | R699/client org/mo | ~55% off retail |
+| Tier | Model | Setup Fee | Monthly Base | Per-Client Org |
+|------|-------|-----------|-------------|----------------|
+| **Referral** | Refer only, no management | Free | Free | N/A — 10% commission on Year 1 |
+| **Consulting** | Multi-tenant management | R25,000 | 5 seats × R999 = R4,995 | Essentials R1,499 / Professional R1,999 / Business R2,999 |
+| **White-Label** | Full rebrand + API | R25,000+ | 5 seats × R999 = R4,995 | Essentials R1,499 / Professional R1,999 / Business R2,999 |
 
 ### Consulting Partner Features
 - Single dashboard across all client organizations
@@ -360,17 +360,18 @@ Credits never expire. Used when monthly allocation is exhausted.
 - Client health dashboard (% compliance across portfolio)
 - Each client org: isolated tenant, up to 3 client users (additional at R99/user/mo)
 - AI credits: 100/mo per client org
+- Additional consultant seats: R999/seat/mo (minimum 5 included)
 
-### Volume Discounts (Client Orgs)
-- 10-24 orgs: 10% off per-org fee
-- 25-49 orgs: 15% off per-org fee
-- 50+ orgs: 20% off + dedicated partner manager
+### Pricing Model (v2.0 — Flat, No Volume Discounts)
+- Same per-client rate whether it's client #1 or client #50
+- Transparent, predictable pricing at all scales
+- ConformEdge retains ~27% at scale (industry standard: 20-30%)
 
-### Example: Consulting Firm Managing 12 Clients
-- Platform: R4,999 + (12 x R899) = **R15,787/mo**
-- vs 12 clients buying Professional individually: 12 x R5,499 = R53,988/mo
-- Consultant saves clients 71%, takes margin on their consulting service
-- ConformEdge gets R15,787 MRR from one partner (vs hoping 12 SMEs convert individually)
+### Example: Consulting Firm Managing 12 Clients (Professional)
+- Platform: R4,995 + (12 × R1,999) = **R28,983/mo**
+- vs 12 clients buying Professional individually: 12 × R5,499 = R65,988/mo
+- Consultant saves clients 56%, takes margin on their consulting service
+- ConformEdge gets R28,983 MRR from one partner (vs hoping 12 SMEs convert individually)
 
 ---
 
@@ -582,7 +583,7 @@ Plus future high-value layers:
 - Government annual licenses (R150K–R600K lump sum)
 - Implementation & training fees (R25K–R170K once-off)
 - Managed compliance services (R5K–R75K/mo recurring)
-- Consulting partner commissions (R4,999/mo + R899/client org)
+- Consulting partner revenue (R25K setup + R999/seat + R1,499-R2,999/client org)
 
 ---
 

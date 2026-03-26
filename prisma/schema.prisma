@@ -1665,11 +1665,11 @@ model Partner {
 
   // Pricing (negotiable per partner — these are defaults for new client orgs)
   basePlatformFeeCents    Int       @map("base_platform_fee_cents")   // Monthly platform fee in cents
-  defaultSmallFeeCents    Int       @default(129900) @map("default_small_fee_cents")   // R1,299 default
-  defaultMediumFeeCents   Int       @default(189900) @map("default_medium_fee_cents")  // R1,899 default
-  defaultLargeFeeCents    Int       @default(249900) @map("default_large_fee_cents")   // R2,499 default
+  defaultSmallFeeCents    Int       @default(149900) @map("default_small_fee_cents")   // R1,499 Essentials
+  defaultMediumFeeCents   Int       @default(199900) @map("default_medium_fee_cents")  // R1,999 Professional
+  defaultLargeFeeCents    Int       @default(299900) @map("default_large_fee_cents")   // R2,999 Business
   volumeDiscountPercent   Float     @default(0) @map("volume_discount_percent")        // Negotiated volume discount
-  commissionPercent       Float     @default(15) @map("commission_percent")            // Referral commission %
+  commissionPercent       Float     @default(10) @map("commission_percent")            // Referral commission %
 
   // Branding (WHITE_LABEL partners)
   logoKey             String?   @map("logo_key")              // R2 key for partner logo

@@ -75,10 +75,10 @@ export async function createPartner(values: z.infer<typeof createPartnerSchema>)
         registrationNumber: parsed.registrationNumber || null,
         description: parsed.description || null,
         basePlatformFeeCents: baseFee,
-        defaultSmallFeeCents: parsed.defaultSmallFeeCents ?? 129900,
-        defaultMediumFeeCents: parsed.defaultMediumFeeCents ?? 189900,
-        defaultLargeFeeCents: parsed.defaultLargeFeeCents ?? 249900,
-        commissionPercent: parsed.commissionPercent ?? 15,
+        defaultSmallFeeCents: parsed.defaultSmallFeeCents ?? 149900,   // R1,499 Essentials
+        defaultMediumFeeCents: parsed.defaultMediumFeeCents ?? 199900, // R1,999 Professional
+        defaultLargeFeeCents: parsed.defaultLargeFeeCents ?? 299900,   // R2,999 Business
+        commissionPercent: parsed.commissionPercent ?? 10,
       },
     })
 
@@ -833,7 +833,7 @@ export async function getReferralSummary() {
 
   const referrals = await db.referral.findMany({
     where: { partnerId: ctx.partnerId },
-    select: { status: true, commissionCents: true },
+    select: { status: true, commissionCents: true, commissionPaidAt: true },
   })
 
   return {
@@ -845,7 +845,7 @@ export async function getReferralSummary() {
       .filter((r) => r.status === "CONVERTED" && r.commissionCents)
       .reduce((sum, r) => sum + (r.commissionCents ?? 0), 0),
     unpaidCommissionCents: referrals
-      .filter((r) => r.status === "CONVERTED" && r.commissionCents && !r.commissionCents)
+      .filter((r) => r.status === "CONVERTED" && r.commissionCents && !r.commissionPaidAt)
       .reduce((sum, r) => sum + (r.commissionCents ?? 0), 0),
   }
 }

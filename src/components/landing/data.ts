@@ -220,8 +220,8 @@ export const FEATURE_DETAILS = [
     bullets: [
       "Consulting Partner: Manage multiple client organisations from one dashboard",
       "White-Label Partner: Your branding, your domain, our technology",
-      "Referral Partner: Earn 15% recurring commission on referred clients",
-      "Per-client billing with volume discounts at 10+ and 20+ clients",
+      "Referral Partner: Earn 10% commission on referred clients (Year 1)",
+      "Flat per-client billing — transparent, predictable pricing",
       "Cross-org insights and compliance benchmarking",
       "Dedicated partner support and co-marketing opportunities",
     ],

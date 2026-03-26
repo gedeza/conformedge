@@ -23,11 +23,11 @@ ConformEdge has **zero direct competitors** combining AI document classification
 
 | Rank | Firm | Location | Standards | Why | Suggested Tier |
 |------|------|----------|-----------|-----|----------------|
-| 1 | **SRM SHEQ Consultants** | JHB, CPT, DBN | 9001, 14001, 45001 | 1,670+ construction projects, SACPCMP registered, clients include Eskom, Anglo American | Consulting (R8,999/mo) |
+| 1 | **SRM SHEQ Consultants** | JHB, CPT, DBN | 9001, 14001, 45001 | 1,670+ construction projects, SACPCMP registered, clients include Eskom, Anglo American | Consulting Partner |
 | 2 | **WWISE** | Centurion | 9001, 14001, 45001, 27001, 22000, 37001 | 11-50 staff, Level 1 BBBEE, digital maturity (own e-learning), multi-industry | Consulting or White-Label |
-| 3 | **ISO Quest** | National | 9001, 14001, 45001, 27001, POPIA | 20+ years, 150+ implementations, 1,000+ audits | Consulting (R8,999/mo) |
-| 4 | **SHEQ-UP Consulting** | National | 9001, 14001, 45001 | Construction + mining + manufacturing alignment | Consulting (R8,999/mo) |
-| 5 | **Synergy Consilium** | Lyttelton | 9001, 14001, 45001 | Building own digital tool (iQuotient EMS) — white-label candidate or competitor watch | White-Label (R12,999/mo) |
+| 3 | **ISO Quest** | National | 9001, 14001, 45001, 27001, POPIA | 20+ years, 150+ implementations, 1,000+ audits | Consulting Partner |
+| 4 | **SHEQ-UP Consulting** | National | 9001, 14001, 45001 | Construction + mining + manufacturing alignment | Consulting Partner |
+| 5 | **Synergy Consilium** | Lyttelton | 9001, 14001, 45001 | Building own digital tool (iQuotient EMS) — white-label candidate or competitor watch | White-Label Partner |
 
 ### Additional Prospects
 
@@ -175,9 +175,9 @@ ConformEdge has **zero direct competitors** combining AI document classification
 | Profile | Description | Tier |
 |---------|------------|------|
 | Mid-size construction (20-100 staff) | Holds 9001+45001+14001, SHEQ manager uses spreadsheets | Professional R5,499/mo |
-| ISO consulting firm (5-15 consultants) | Manages 10-30 clients with Word/Excel | Consulting Partner R8,999/mo |
+| ISO consulting firm (5-15 consultants) | Manages 10-30 clients with Word/Excel | Consulting Partner (R25K setup + R999/seat) |
 | Mining SHEQ department | DMRE pressure, multiple sites, subcontractors | Business R8,499/mo |
-| Solo SHEQ consultant | SAIOSH registered, 3-8 SME clients | Referral Partner (15% commission) |
+| Solo SHEQ consultant | SAIOSH registered, 3-8 SME clients | Referral Partner (10% commission, Year 1) |
 
 ### Training/Certification Body Partnerships
 

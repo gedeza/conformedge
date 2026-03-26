@@ -136,7 +136,7 @@ export default async function PartnerReferralsPage() {
             <Step number={4} title="Earn Commission" description="Get paid when they convert to a paid plan" />
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Your commission rate is {summary ? `${referrals[0]?.commissionPercent ?? 15}%` : "15%"} of the referred
+            Your commission rate is {summary ? `${referrals[0]?.commissionPercent ?? 10}%` : "10%"} of the referred
             client&apos;s first 12 months of subscription fees. Referral links expire after 90 days.
           </p>
         </CardContent>

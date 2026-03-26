@@ -224,17 +224,30 @@ async function processPlanSubscription(
     "SYSTEM"
   )
 
-  // Convert any SIGNED_UP referral linked to this org
+  // Convert any SIGNED_UP referral linked to this org and calculate commission (T153)
   try {
     const referral = await db.referral.findFirst({
       where: { referredOrgId: orgId, status: "SIGNED_UP" },
     })
     if (referral) {
+      // Commission = commissionPercent% × monthly subscription × 12 months
+      // For annual plans, netCents is already the full annual amount, so derive monthly
+      const monthlyCents = cycle === "ANNUAL" ? Math.round(netCents / 12) : netCents
+      const commissionCents = Math.round(monthlyCents * 12 * (referral.commissionPercent / 100))
+
       await db.referral.update({
         where: { id: referral.id },
-        data: { status: "CONVERTED", convertedAt: now },
+        data: {
+          status: "CONVERTED",
+          convertedAt: now,
+          commissionCents,
+        },
       })
-      console.log(`[payment-webhook] Referral ${referral.code} converted for org ${orgId}`)
+      console.log(
+        `[payment-webhook] Referral ${referral.code} converted for org ${orgId} — ` +
+        `commission: R${(commissionCents / 100).toFixed(2)} ` +
+        `(${referral.commissionPercent}% × R${(monthlyCents / 100).toFixed(2)}/mo × 12)`
+      )
     }
   } catch (err) {
     // Non-critical — don't fail the payment webhook for referral errors

@@ -477,24 +477,48 @@ export const PARTNER_ROLES = {
   PARTNER_VIEWER: { label: "Partner Viewer", description: "Read-only across assigned client orgs" },
 } as const
 
+/**
+ * v2.0 Partner Pricing — Flat per-client model (no volume discounts)
+ * Per-client fees by subscription tier (not client "size"):
+ *   Essentials: R1,499/mo | Professional: R1,999/mo | Business: R2,999/mo
+ */
+export const PARTNER_CLIENT_FEES = {
+  ESSENTIALS:    { label: "Essentials",    feeCents: 149900 },  // R1,499/mo
+  PROFESSIONAL:  { label: "Professional",  feeCents: 199900 },  // R1,999/mo
+  BUSINESS:      { label: "Business",      feeCents: 299900 },  // R2,999/mo
+} as const
+
+/** Legacy alias — maps old size keys to new tier-based fees */
 export const PARTNER_CLIENT_SIZES = {
-  SMALL: { label: "Small", description: "≤5 users, ≤2 standards", defaultFeeCents: 129900 },
-  MEDIUM: { label: "Medium", description: "6-15 users, 3-5 standards", defaultFeeCents: 189900 },
-  LARGE: { label: "Large", description: "16+ users, all standards", defaultFeeCents: 249900 },
+  SMALL:  { label: "Essentials",    description: "Essentials tier", defaultFeeCents: 149900 },
+  MEDIUM: { label: "Professional",  description: "Professional tier", defaultFeeCents: 199900 },
+  LARGE:  { label: "Business",      description: "Business tier", defaultFeeCents: 299900 },
 } as const
 
-/** Default base platform fees in cents */
+/** Partner seat fee: R999/mo per consultant seat (minimum 5 seats) */
+export const PARTNER_SEAT_FEE_CENTS = 99900  // R999/mo
+export const PARTNER_MIN_SEATS = 5
+
+/** Once-off setup fees in cents */
+export const PARTNER_SETUP_FEES = {
+  CONSULTING:  2500000,  // R25,000
+  WHITE_LABEL: 2500000,  // R25,000+
+  REFERRAL:    0,
+} as const
+
+/** Monthly base = seats × seat fee (no flat base fee in v2.0) */
 export const PARTNER_BASE_FEES = {
-  CONSULTING: 899900,   // R8,999/mo
-  WHITE_LABEL: 1299900,  // R12,999/mo
-  REFERRAL: 0,           // No platform fee for referral partners
+  CONSULTING:  PARTNER_MIN_SEATS * PARTNER_SEAT_FEE_CENTS,  // 5 × R999 = R4,995/mo
+  WHITE_LABEL: PARTNER_MIN_SEATS * PARTNER_SEAT_FEE_CENTS,  // 5 × R999 = R4,995/mo
+  REFERRAL: 0,
 } as const
 
-/** Volume discount thresholds */
-export const PARTNER_VOLUME_DISCOUNTS = [
-  { minClients: 20, discountPercent: 15 },
-  { minClients: 10, discountPercent: 10 },
-] as const
+/** Referral commission — 10% of Year 1 subscription */
+export const REFERRAL_COMMISSION_PERCENT = 10
+export const REFERRAL_COMMISSION_MONTHS = 12
+
+/** v2.0 removed volume discounts — flat pricing at all scales */
+export const PARTNER_VOLUME_DISCOUNTS = [] as const
 
 export const REFERRAL_STATUSES = {
   PENDING: { label: "Pending", color: "bg-gray-100 text-gray-800" },

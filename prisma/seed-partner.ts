@@ -38,11 +38,11 @@ async function main() {
       website: "https://isutech.co.za",
       registrationNumber: "2020/123456/07",
       description: "ISO compliance consulting for SA construction and infrastructure companies",
-      basePlatformFeeCents: 899900, // R8,999
-      defaultSmallFeeCents: 129900,
-      defaultMediumFeeCents: 189900,
-      defaultLargeFeeCents: 249900,
-      commissionPercent: 15,
+      basePlatformFeeCents: 499500, // 5 seats × R999 = R4,995/mo
+      defaultSmallFeeCents: 149900,  // Essentials R1,499
+      defaultMediumFeeCents: 199900, // Professional R1,999
+      defaultLargeFeeCents: 299900,  // Business R2,999
+      commissionPercent: 10,
       approvedAt: new Date(),
     },
   })
