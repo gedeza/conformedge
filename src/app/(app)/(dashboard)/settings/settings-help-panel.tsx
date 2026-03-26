@@ -12,7 +12,7 @@ export function SettingsHelpPanel() {
       items={[
         { icon: Users, label: "Team & Roles", description: "View members and their roles (Owner, Admin, Manager, Auditor, Viewer)" },
         { icon: Bell, label: "Notifications", description: "Toggle in-app and email alerts per notification type" },
-        { icon: Share2, label: "External Sharing", description: "Create token-based links for clients, auditors, or subcontractors" },
+        { icon: Share2, label: "External Sharing", description: "Create token-based links for clients, auditors, or vendors" },
       ]}
       expandLabel="Tips"
       tips={[

@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { addPortalCertification } from "./subcontractor-portal-actions"
+import { addPortalCertification } from "./vendor-portal-actions"
 import { isR2Key } from "@/lib/r2-utils"
 
 interface Certification {
@@ -34,7 +34,7 @@ interface Certification {
   createdAt: Date
 }
 
-interface SubcontractorData {
+interface VendorData {
   id: string
   name: string
   registrationNumber: string | null
@@ -58,8 +58,8 @@ interface ActivePermit {
   emergencyProcedures: string | null
 }
 
-interface SubcontractorPortalProps {
-  subcontractor: SubcontractorData
+interface VendorPortalProps {
+  vendor: VendorData
   token: string
   allowDownload: boolean
   activePermits?: ActivePermit[]
@@ -90,8 +90,8 @@ const PERMIT_TYPE_LABELS: Record<string, string> = {
   GENERAL: "General",
 }
 
-export function SubcontractorPortal({ subcontractor, token, allowDownload, activePermits = [] }: SubcontractorPortalProps) {
-  const [certs, setCerts] = useState(subcontractor.certifications)
+export function VendorPortal({ vendor, token, allowDownload, activePermits = [] }: VendorPortalProps) {
+  const [certs, setCerts] = useState(vendor.certifications)
 
   return (
     <div className="space-y-6">
@@ -101,13 +101,13 @@ export function SubcontractorPortal({ subcontractor, token, allowDownload, activ
           <div className="flex items-center gap-3">
             <Building2 className="h-6 w-6 text-muted-foreground" />
             <div>
-              <CardTitle>{subcontractor.name}</CardTitle>
-              {subcontractor.registrationNumber && (
-                <p className="text-sm text-muted-foreground">{subcontractor.registrationNumber}</p>
+              <CardTitle>{vendor.name}</CardTitle>
+              {vendor.registrationNumber && (
+                <p className="text-sm text-muted-foreground">{vendor.registrationNumber}</p>
               )}
             </div>
             <div className="ml-auto">
-              <StatusBadge type="subcontractor" value={subcontractor.tier} />
+              <StatusBadge type="vendor" value={vendor.tier} />
             </div>
           </div>
         </CardHeader>
@@ -115,11 +115,11 @@ export function SubcontractorPortal({ subcontractor, token, allowDownload, activ
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground">BEE Level</span>
-              <p className="mt-1 font-medium">{subcontractor.beeLevel ? `Level ${subcontractor.beeLevel}` : "N/A"}</p>
+              <p className="mt-1 font-medium">{vendor.beeLevel ? `Level ${vendor.beeLevel}` : "N/A"}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Safety Rating</span>
-              <p className="mt-1 font-medium">{subcontractor.safetyRating !== null ? `${subcontractor.safetyRating}%` : "N/A"}</p>
+              <p className="mt-1 font-medium">{vendor.safetyRating !== null ? `${vendor.safetyRating}%` : "N/A"}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Certifications</span>

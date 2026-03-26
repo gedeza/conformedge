@@ -23,7 +23,7 @@ export async function POST(
       return NextResponse.json({ error: "Invalid or expired link" }, { status: 403 })
     }
 
-    if (shareLink.type !== "SUBCONTRACTOR") {
+    if (shareLink.type !== "VENDOR") {
       return NextResponse.json({ error: "Upload not allowed for this link type" }, { status: 403 })
     }
 

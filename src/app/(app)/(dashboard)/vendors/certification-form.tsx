@@ -29,7 +29,7 @@ const formSchema = z.object({
 interface CertificationFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  subcontractorId: string
+  vendorId: string
   certification?: {
     id: string
     name: string
@@ -39,7 +39,7 @@ interface CertificationFormProps {
   }
 }
 
-export function CertificationForm({ open, onOpenChange, subcontractorId, certification }: CertificationFormProps) {
+export function CertificationForm({ open, onOpenChange, vendorId, certification }: CertificationFormProps) {
   const [isPending, startTransition] = useTransition()
   const isEditing = !!certification
 
@@ -57,8 +57,8 @@ export function CertificationForm({ open, onOpenChange, subcontractorId, certifi
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       const result = isEditing
-        ? await updateCertification(certification.id, subcontractorId, values)
-        : await addCertification(subcontractorId, values)
+        ? await updateCertification(certification.id, vendorId, values)
+        : await addCertification(vendorId, values)
       if (result.success) {
         toast.success(isEditing ? "Certification updated" : "Certification added")
         onOpenChange(false)
@@ -78,7 +78,7 @@ export function CertificationForm({ open, onOpenChange, subcontractorId, certifi
             {isEditing ? "Edit Certification" : "Add Certification"}
           </DialogTitle>
           <DialogDescription>
-            {isEditing ? "Update the certification details." : "Add a certification or accreditation for this subcontractor."}
+            {isEditing ? "Update the certification details." : "Add a certification or accreditation for this vendor."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

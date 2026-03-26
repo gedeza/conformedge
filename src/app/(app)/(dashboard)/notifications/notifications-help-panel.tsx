@@ -8,7 +8,7 @@ export function NotificationsHelpPanel() {
     <HelpPanel
       title="Guide"
       icon={Bell}
-      summary="Notifications alert you to important events — expiring documents, overdue CAPAs, scheduled assessments, approval requests, and subcontractor certificate uploads. Delivered in-app and via email."
+      summary="Notifications alert you to important events — expiring documents, overdue CAPAs, scheduled assessments, approval requests, and vendor certificate uploads. Delivered in-app and via email."
       items={[
         { icon: Mail, label: "Dual Channel", description: "Notifications are sent both in-app and via email" },
         { icon: Settings, label: "Preferences", description: "Customise which notifications you receive in Settings" },

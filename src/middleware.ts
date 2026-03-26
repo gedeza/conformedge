@@ -10,7 +10,7 @@ const isProtectedRoute = createRouteMatcher([
   "/incidents(.*)",
   "/objectives(.*)",
   "/checklists(.*)",
-  "/subcontractors(.*)",
+  "/vendors(.*)",
   "/audit-packs(.*)",
   "/audit-trail(.*)",
   "/reports(.*)",
@@ -62,7 +62,7 @@ export default hasClerkKey
       const pathname = req.nextUrl.pathname
       const isProtected = [
         "/dashboard", "/projects", "/documents", "/assessments", "/capas",
-        "/incidents", "/objectives", "/checklists", "/subcontractors",
+        "/incidents", "/objectives", "/checklists", "/vendors",
         "/audit-packs", "/audit-trail", "/reports", "/gap-analysis",
         "/settings", "/billing", "/notifications", "/calendar", "/ims",
         "/cross-references", "/management-reviews", "/permits", "/equipment", "/partner/", "/admin", "/api/download",

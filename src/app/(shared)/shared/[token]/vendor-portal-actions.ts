@@ -24,20 +24,20 @@ export async function addPortalCertification(
   try {
     const shareLink = await validateShareToken(token)
     if (!shareLink) return { success: false, error: "Invalid or expired link" }
-    if (shareLink.type !== "SUBCONTRACTOR" || !shareLink.entityId) {
+    if (shareLink.type !== "VENDOR" || !shareLink.entityId) {
       return { success: false, error: "Invalid link type" }
     }
 
     const parsed = portalCertSchema.parse(values)
 
-    // Verify subcontractor belongs to org
-    const sub = await db.subcontractor.findFirst({
+    // Verify vendor belongs to org
+    const sub = await db.vendor.findFirst({
       where: { id: shareLink.entityId, organizationId: shareLink.organizationId },
       select: { id: true, name: true },
     })
-    if (!sub) return { success: false, error: "Subcontractor not found" }
+    if (!sub) return { success: false, error: "Vendor not found" }
 
-    const cert = await db.subcontractorCertification.create({
+    const cert = await db.vendorCertification.create({
       data: {
         name: parsed.name,
         issuedBy: parsed.issuedBy || undefined,
@@ -45,16 +45,16 @@ export async function addPortalCertification(
         expiresAt: parsed.expiresAt || undefined,
         fileUrl: parsed.fileUrl || undefined,
         status: "PENDING_REVIEW",
-        subcontractorId: sub.id,
+        vendorId: sub.id,
       },
     })
 
     // Audit trail (no userId — external portal action)
     logAuditEvent({
       action: "PORTAL_CERT_UPLOAD",
-      entityType: "SubcontractorCertification",
+      entityType: "VendorCertification",
       entityId: cert.id,
-      metadata: { via: "subcontractor-portal", certName: parsed.name, subcontractorName: sub.name },
+      metadata: { via: "vendor-portal", certName: parsed.name, vendorName: sub.name },
       organizationId: shareLink.organizationId,
     })
 
@@ -68,7 +68,7 @@ export async function addPortalCertification(
     // Notify org admins
     notifyOrgMembers({
       title: "New Certificate Upload",
-      message: `${sub.name} uploaded "${parsed.name}" via the subcontractor portal. Review required.`,
+      message: `${sub.name} uploaded "${parsed.name}" via the vendor portal. Review required.`,
       type: "CERT_UPLOAD",
       organizationId: shareLink.organizationId,
     })

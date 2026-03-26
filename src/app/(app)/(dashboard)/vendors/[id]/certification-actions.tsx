@@ -9,7 +9,7 @@ import { CertificationForm } from "../certification-form"
 import { deleteCertification } from "../actions"
 
 interface CertificationActionsProps {
-  subcontractorId: string
+  vendorId: string
   certification?: {
     id: string
     name: string
@@ -20,7 +20,7 @@ interface CertificationActionsProps {
   mode?: "add" | "edit"
 }
 
-export function CertificationActions({ subcontractorId, certification, mode = "add" }: CertificationActionsProps) {
+export function CertificationActions({ vendorId, certification, mode = "add" }: CertificationActionsProps) {
   const [showForm, setShowForm] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -28,7 +28,7 @@ export function CertificationActions({ subcontractorId, certification, mode = "a
   async function handleDelete() {
     if (!certification) return
     setDeleting(true)
-    const result = await deleteCertification(certification.id, subcontractorId)
+    const result = await deleteCertification(certification.id, vendorId)
     setDeleting(false)
     if (result.success) {
       toast.success("Certification deleted")
@@ -47,7 +47,7 @@ export function CertificationActions({ subcontractorId, certification, mode = "a
         <CertificationForm
           open={showForm}
           onOpenChange={setShowForm}
-          subcontractorId={subcontractorId}
+          vendorId={vendorId}
         />
       </>
     )
@@ -64,7 +64,7 @@ export function CertificationActions({ subcontractorId, certification, mode = "a
       <CertificationForm
         open={showForm}
         onOpenChange={setShowForm}
-        subcontractorId={subcontractorId}
+        vendorId={vendorId}
         certification={certification}
       />
       <ConfirmDialog

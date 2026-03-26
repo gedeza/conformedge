@@ -15,7 +15,7 @@ interface ReportChartsProps {
   riskDistribution: ReportData["riskDistribution"]
   monthlyActivity: ReportData["monthlyActivity"]
   complianceTrend: ReportData["complianceTrend"]
-  subcontractorMetrics: ReportData["subcontractorMetrics"]
+  vendorMetrics: ReportData["vendorMetrics"]
   incidentsByType: ReportData["incidentsByType"]
   incidentsBySeverity: ReportData["incidentsBySeverity"]
   incidentsByStatus: ReportData["incidentsByStatus"]
@@ -52,7 +52,7 @@ export function ReportCharts({
   riskDistribution,
   monthlyActivity,
   complianceTrend,
-  subcontractorMetrics,
+  vendorMetrics,
   incidentsByType,
   incidentsBySeverity,
   incidentsByStatus,
@@ -150,9 +150,9 @@ export function ReportCharts({
         />
       </div>
 
-      {/* ── Subcontractor Metrics Section ── */}
+      {/* ── Vendor Metrics Section ── */}
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold tracking-tight">Subcontractor Metrics</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Vendor Metrics</h2>
         <p className="text-sm text-muted-foreground">BEE levels, certification expiry, and compliance scoring</p>
       </div>
 
@@ -161,19 +161,19 @@ export function ReportCharts({
         <BarChartCard
           title="BEE Level Distribution"
           description="Broad-Based Black Economic Empowerment levels"
-          data={subcontractorMetrics.beeDistribution}
+          data={vendorMetrics.beeDistribution}
           xKey="level"
-          bars={[{ key: "count", color: "hsl(215, 70%, 45%)", label: "Subcontractors" }]}
+          bars={[{ key: "count", color: "hsl(215, 70%, 45%)", label: "Vendors" }]}
         />
 
         {/* Tier Distribution (reuse existing data) */}
         <PieChartCard
           title="Compliance Tier Distribution"
-          description="Subcontractor compliance tiers based on scoring"
+          description="Vendor compliance tiers based on scoring"
           data={
-            subcontractorMetrics.scoredSubcontractors.length > 0
+            vendorMetrics.scoredVendors.length > 0
               ? Object.entries(
-                  subcontractorMetrics.scoredSubcontractors.reduce<Record<string, number>>(
+                  vendorMetrics.scoredVendors.reduce<Record<string, number>>(
                     (acc, s) => {
                       acc[s.tier] = (acc[s.tier] ?? 0) + 1
                       return acc
@@ -194,16 +194,16 @@ export function ReportCharts({
             <CardDescription>Certifications expiring within the next 90 days</CardDescription>
           </CardHeader>
           <CardContent>
-            {subcontractorMetrics.certExpiryCountdown.length === 0 ? (
+            {vendorMetrics.certExpiryCountdown.length === 0 ? (
               <p className="text-sm text-muted-foreground py-6 text-center">
                 No certifications expiring in the next 90 days
               </p>
             ) : (
               <div className="space-y-3">
-                {subcontractorMetrics.certExpiryCountdown.map((cert, i) => (
+                {vendorMetrics.certExpiryCountdown.map((cert, i) => (
                   <div key={i} className="flex items-center justify-between text-sm">
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium truncate">{cert.subcontractorName}</p>
+                      <p className="font-medium truncate">{cert.vendorName}</p>
                       <p className="text-xs text-muted-foreground truncate">{cert.certName}</p>
                     </div>
                     <Badge
@@ -223,16 +223,16 @@ export function ReportCharts({
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Compliance Score Rankings</CardTitle>
-            <CardDescription>Top subcontractors by compliance score</CardDescription>
+            <CardDescription>Top vendors by compliance score</CardDescription>
           </CardHeader>
           <CardContent>
-            {subcontractorMetrics.scoredSubcontractors.length === 0 ? (
+            {vendorMetrics.scoredVendors.length === 0 ? (
               <p className="text-sm text-muted-foreground py-6 text-center">
-                No subcontractors to score
+                No vendors to score
               </p>
             ) : (
               <div className="space-y-3">
-                {subcontractorMetrics.scoredSubcontractors.map((sub, i) => (
+                {vendorMetrics.scoredVendors.map((sub, i) => (
                   <div key={i} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
                       <span className="font-medium truncate">{sub.name}</span>

@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
-import { getSubcontractor } from "../actions"
+import { getVendor } from "../actions"
 import { calculateComplianceScore, type VendorScoringWeights } from "../compliance-score"
 import { CertificationActions } from "./certification-actions"
 import { CertReviewActions } from "./cert-review-actions"
@@ -30,16 +30,16 @@ function getExpiryBadge(expiresAt: Date | null) {
   return <Badge variant="outline" className="bg-green-100 text-green-800">Valid</Badge>
 }
 
-export default async function SubcontractorDetailPage({
+export default async function VendorDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  let sub: Awaited<ReturnType<typeof getSubcontractor>>
+  let sub: Awaited<ReturnType<typeof getVendor>>
 
   try {
-    sub = await getSubcontractor(id)
+    sub = await getVendor(id)
   } catch {
     notFound()
   }
@@ -65,7 +65,7 @@ export default async function SubcontractorDetailPage({
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" asChild>
-          <Link href="/subcontractors">
+          <Link href="/vendors">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Link>
@@ -74,8 +74,8 @@ export default async function SubcontractorDetailPage({
 
       <PageHeader heading={sub.name} description={sub.registrationNumber ?? undefined}>
         <div className="flex items-center gap-2">
-          <StatusBadge type="subcontractor" value={sub.tier} />
-          {isAdmin && <InviteToPortalButton subcontractorId={sub.id} subcontractorName={sub.name} />}
+          <StatusBadge type="vendor" value={sub.tier} />
+          {isAdmin && <InviteToPortalButton vendorId={sub.id} vendorName={sub.name} />}
         </div>
       </PageHeader>
 
@@ -87,7 +87,7 @@ export default async function SubcontractorDetailPage({
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <ComplianceScoreCard subcontractorId={sub.id} initialScore={complianceScore} />
+          <ComplianceScoreCard vendorId={sub.id} initialScore={complianceScore} />
           <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader>
               <CardTitle>Company Details</CardTitle>
@@ -96,7 +96,7 @@ export default async function SubcontractorDetailPage({
               <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                 <div>
                   <span className="text-muted-foreground">Tier</span>
-                  <div className="mt-1"><StatusBadge type="subcontractor" value={sub.tier} /></div>
+                  <div className="mt-1"><StatusBadge type="vendor" value={sub.tier} /></div>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Registration Number</span>
@@ -127,7 +127,7 @@ export default async function SubcontractorDetailPage({
           <Card className="border-border/50 transition-all hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Certifications</CardTitle>
-              <CertificationActions subcontractorId={sub.id} />
+              <CertificationActions vendorId={sub.id} />
             </CardHeader>
             <CardContent>
               {sub.certifications.length === 0 ? (
@@ -161,10 +161,10 @@ export default async function SubcontractorDetailPage({
                           </Button>
                         )}
                         {cert.status === "PENDING_REVIEW" && isAdmin && (
-                          <CertReviewActions certId={cert.id} subcontractorId={sub.id} certName={cert.name} />
+                          <CertReviewActions certId={cert.id} vendorId={sub.id} certName={cert.name} />
                         )}
                         <CertificationActions
-                          subcontractorId={sub.id}
+                          vendorId={sub.id}
                           certification={cert}
                           mode="edit"
                         />

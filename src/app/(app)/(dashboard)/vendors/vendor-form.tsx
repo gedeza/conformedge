@@ -23,8 +23,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { DatePicker } from "@/components/shared/date-picker"
-import { SUBCONTRACTOR_TIERS } from "@/lib/constants"
-import { createSubcontractor, updateSubcontractor, type SubcontractorFormValues } from "./actions"
+import { VENDOR_TIERS } from "@/lib/constants"
+import { createVendor, updateVendor, type VendorFormValues } from "./actions"
 
 /* ─────────────── Constants ─────────────── */
 
@@ -116,10 +116,10 @@ function StepIndicator({ steps, currentStep, onStepClick, completedSteps }: {
 
 /* ─────────────── Props ─────────────── */
 
-interface SubcontractorFormProps {
+interface VendorFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  subcontractor?: {
+  vendor?: {
     id: string
     name: string
     registrationNumber: string | null
@@ -138,49 +138,49 @@ interface SubcontractorFormProps {
 
 /* ─────────────── Main Component ─────────────── */
 
-export function SubcontractorForm({ open, onOpenChange, subcontractor }: SubcontractorFormProps) {
+export function VendorForm({ open, onOpenChange, vendor }: VendorFormProps) {
   const [isPending, startTransition] = useTransition()
   const [currentStep, setCurrentStep] = useState(0)
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
-  const isEditing = !!subcontractor
+  const isEditing = !!vendor
   const [selectedTrades, setSelectedTrades] = useState<string[]>(
-    (subcontractor?.tradeTypes as string[]) ?? []
+    (vendor?.tradeTypes as string[]) ?? []
   )
 
   const form = useForm<z.infer<typeof formSchema>>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(formSchema) as any,
     defaultValues: {
-      name: subcontractor?.name ?? "",
-      registrationNumber: subcontractor?.registrationNumber ?? "",
-      beeLevel: subcontractor?.beeLevel ? Number(subcontractor.beeLevel) : undefined,
-      safetyRating: subcontractor?.safetyRating ?? undefined,
-      tier: (subcontractor?.tier as SubcontractorFormValues["tier"]) ?? "UNRATED",
-      contactPerson: subcontractor?.contactPerson ?? "",
-      contactEmail: subcontractor?.contactEmail ?? "",
-      contactPhone: subcontractor?.contactPhone ?? "",
-      physicalAddress: subcontractor?.physicalAddress ?? "",
-      taxClearanceExpiry: subcontractor?.taxClearanceExpiry ?? undefined,
-      liabilityExpiry: subcontractor?.liabilityExpiry ?? undefined,
+      name: vendor?.name ?? "",
+      registrationNumber: vendor?.registrationNumber ?? "",
+      beeLevel: vendor?.beeLevel ? Number(vendor.beeLevel) : undefined,
+      safetyRating: vendor?.safetyRating ?? undefined,
+      tier: (vendor?.tier as VendorFormValues["tier"]) ?? "UNRATED",
+      contactPerson: vendor?.contactPerson ?? "",
+      contactEmail: vendor?.contactEmail ?? "",
+      contactPhone: vendor?.contactPhone ?? "",
+      physicalAddress: vendor?.physicalAddress ?? "",
+      taxClearanceExpiry: vendor?.taxClearanceExpiry ?? undefined,
+      liabilityExpiry: vendor?.liabilityExpiry ?? undefined,
     },
   })
 
   useEffect(() => {
-    if (subcontractor) {
+    if (vendor) {
       form.reset({
-        name: subcontractor.name,
-        registrationNumber: subcontractor.registrationNumber ?? "",
-        beeLevel: subcontractor.beeLevel ? Number(subcontractor.beeLevel) : undefined,
-        safetyRating: subcontractor.safetyRating ?? undefined,
-        tier: (subcontractor.tier as SubcontractorFormValues["tier"]) ?? "UNRATED",
-        contactPerson: subcontractor.contactPerson ?? "",
-        contactEmail: subcontractor.contactEmail ?? "",
-        contactPhone: subcontractor.contactPhone ?? "",
-        physicalAddress: subcontractor.physicalAddress ?? "",
-        taxClearanceExpiry: subcontractor.taxClearanceExpiry ?? undefined,
-        liabilityExpiry: subcontractor.liabilityExpiry ?? undefined,
+        name: vendor.name,
+        registrationNumber: vendor.registrationNumber ?? "",
+        beeLevel: vendor.beeLevel ? Number(vendor.beeLevel) : undefined,
+        safetyRating: vendor.safetyRating ?? undefined,
+        tier: (vendor.tier as VendorFormValues["tier"]) ?? "UNRATED",
+        contactPerson: vendor.contactPerson ?? "",
+        contactEmail: vendor.contactEmail ?? "",
+        contactPhone: vendor.contactPhone ?? "",
+        physicalAddress: vendor.physicalAddress ?? "",
+        taxClearanceExpiry: vendor.taxClearanceExpiry ?? undefined,
+        liabilityExpiry: vendor.liabilityExpiry ?? undefined,
       })
-      setSelectedTrades((subcontractor.tradeTypes as string[]) ?? [])
+      setSelectedTrades((vendor.tradeTypes as string[]) ?? [])
     } else {
       form.reset({
         name: "", registrationNumber: "", beeLevel: undefined, safetyRating: undefined,
@@ -191,7 +191,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
     }
     setCurrentStep(0)
     setCompletedSteps(new Set())
-  }, [subcontractor, form])
+  }, [vendor, form])
 
   useEffect(() => { if (!open) { setCurrentStep(0); setCompletedSteps(new Set()) } }, [open])
 
@@ -216,10 +216,10 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
     startTransition(async () => {
       const submitValues = { ...values, tradeTypes: selectedTrades.length > 0 ? selectedTrades : undefined }
       const result = isEditing
-        ? await updateSubcontractor(subcontractor.id, submitValues)
-        : await createSubcontractor(submitValues)
+        ? await updateVendor(vendor.id, submitValues)
+        : await createVendor(submitValues)
       if (result.success) {
-        toast.success(isEditing ? "Subcontractor updated" : "Subcontractor added")
+        toast.success(isEditing ? "Vendor updated" : "Vendor added")
         onOpenChange(false)
         form.reset()
         setSelectedTrades([])
@@ -236,10 +236,10 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-2">
               <Building2 className="h-5 w-5" />
-              {isEditing ? "Edit Subcontractor" : "Add Subcontractor"}
+              {isEditing ? "Edit Vendor" : "Add Vendor"}
             </DialogTitle>
             <DialogDescription>
-              {isEditing ? "Update the subcontractor details." : "Register a new subcontractor with their compliance details."}
+              {isEditing ? "Update the vendor details." : "Register a new vendor with their compliance details."}
             </DialogDescription>
           </DialogHeader>
           <StepIndicator steps={STEPS} currentStep={currentStep} onStepClick={goToStep} completedSteps={completedSteps} />
@@ -247,7 +247,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
 
         <div className="flex-1 overflow-y-auto px-6 py-5">
           <Form {...form}>
-            <form id="subcontractor-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <form id="vendor-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
 
               {/* ═══════════ STEP 1: Company Details ═══════════ */}
               {currentStep === 0 && (
@@ -352,7 +352,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl><SelectTrigger className="h-10"><SelectValue placeholder="Select tier..." /></SelectTrigger></FormControl>
                             <SelectContent>
-                              {Object.entries(SUBCONTRACTOR_TIERS).map(([v, c]) => (
+                              {Object.entries(VENDOR_TIERS).map(([v, c]) => (
                                 <SelectItem key={v} value={v}>{c.label}</SelectItem>
                               ))}
                             </SelectContent>
@@ -394,7 +394,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
                       <Badge variant="secondary" className="ml-auto text-xs">{selectedTrades.length} selected</Badge>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground">Select all trade types this subcontractor can perform.</p>
+                  <p className="text-sm text-muted-foreground">Select all trade types this vendor can perform.</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 rounded-lg border p-4 bg-background">
                     {TRADE_OPTIONS.map(trade => (
                       <label key={trade} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/50 rounded px-2 py-2">
@@ -415,7 +415,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
 
                   {/* Summary */}
                   <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
-                    <Label className="text-sm font-semibold">Subcontractor Summary</Label>
+                    <Label className="text-sm font-semibold">Vendor Summary</Label>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <span className="text-muted-foreground">Company:</span>
@@ -425,7 +425,7 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
                         <span className="text-muted-foreground">Tier:</span>
                         <span className="ml-2">
                           <Badge variant="outline" className="text-xs">
-                            {SUBCONTRACTOR_TIERS[form.watch("tier") as keyof typeof SUBCONTRACTOR_TIERS]?.label}
+                            {VENDOR_TIERS[form.watch("tier") as keyof typeof VENDOR_TIERS]?.label}
                           </Badge>
                         </span>
                       </div>
@@ -458,8 +458,8 @@ export function SubcontractorForm({ open, onOpenChange, subcontractor }: Subcont
             {currentStep < STEPS.length - 1 ? (
               <Button type="button" onClick={nextStep}>Next <ChevronRight className="h-4 w-4 ml-1" /></Button>
             ) : (
-              <Button type="submit" form="subcontractor-form" disabled={isPending}>
-                {isPending ? "Saving..." : isEditing ? "Update Subcontractor" : "Add Subcontractor"}
+              <Button type="submit" form="vendor-form" disabled={isPending}>
+                {isPending ? "Saving..." : isEditing ? "Update Vendor" : "Add Vendor"}
               </Button>
             )}
           </div>

@@ -194,7 +194,7 @@ export const CHECKLIST_STATUSES = {
   COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800" },
 } as const
 
-export const SUBCONTRACTOR_TIERS = {
+export const VENDOR_TIERS = {
   PLATINUM: { label: "Platinum", color: "bg-violet-100 text-violet-800" },
   GOLD: { label: "Gold", color: "bg-yellow-100 text-yellow-800" },
   SILVER: { label: "Silver", color: "bg-gray-200 text-gray-800" },
@@ -345,7 +345,7 @@ export const SHARE_LINK_TYPES = {
   DOCUMENT: { label: "Document", color: "bg-blue-100 text-blue-800" },
   AUDIT_PACK: { label: "Audit Pack", color: "bg-purple-100 text-purple-800" },
   PORTAL: { label: "Portal", color: "bg-emerald-100 text-emerald-800" },
-  SUBCONTRACTOR: { label: "Subcontractor", color: "bg-orange-100 text-orange-800" },
+  VENDOR: { label: "Vendor", color: "bg-orange-100 text-orange-800" },
 } as const
 
 export const ASSESSMENT_STATUSES = {

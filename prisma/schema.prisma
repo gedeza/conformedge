@@ -71,7 +71,7 @@ enum ChecklistStatus {
   COMPLETED
 }
 
-enum SubcontractorTier {
+enum VendorTier {
   PLATINUM
   GOLD
   SILVER
@@ -143,7 +143,7 @@ enum ShareLinkType {
   DOCUMENT
   AUDIT_PACK
   PORTAL
-  SUBCONTRACTOR
+  VENDOR @map("SUBCONTRACTOR")
 }
 
 enum CertificationStatus {
@@ -409,7 +409,7 @@ model Organization {
   assessments      Assessment[]
   capas            Capa[]
   checklists       ComplianceChecklist[]
-  subcontractors   Subcontractor[]
+  vendors          Vendor[]
   auditPacks       AuditPack[]
   auditTrailEvents AuditTrailEvent[]
   notifications              Notification[]
@@ -819,13 +819,13 @@ model ChecklistItem {
   @@map("checklist_items")
 }
 
-model Subcontractor {
+model Vendor {
   id                 String            @id @default(uuid())
   name               String
   registrationNumber String?           @map("registration_number")
   beeLevel           String?           @map("bee_level")
   safetyRating       Float?            @map("safety_rating")
-  tier               SubcontractorTier @default(UNRATED)
+  tier               VendorTier        @default(UNRATED)
 
   // Contact details
   contactPerson      String?           @map("contact_person")
@@ -844,12 +844,12 @@ model Subcontractor {
 
   // Relations
   organization   Organization                @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  certifications SubcontractorCertification[]
+  certifications VendorCertification[]
 
-  @@map("subcontractors")
+  @@map("vendors")
 }
 
-model SubcontractorCertification {
+model VendorCertification {
   id               String               @id @default(uuid())
   name             String
   issuedBy         String?              @map("issued_by")
@@ -859,15 +859,15 @@ model SubcontractorCertification {
   status           CertificationStatus? @map("status")
   reviewedAt       DateTime?            @map("reviewed_at")
   reviewNotes      String?              @map("review_notes")
-  subcontractorId  String               @map("subcontractor_id")
+  vendorId         String               @map("vendor_id")
   createdAt        DateTime             @default(now()) @map("created_at")
   updatedAt        DateTime             @updatedAt @map("updated_at")
 
   // Relations
-  subcontractor Subcontractor @relation(fields: [subcontractorId], references: [id], onDelete: Cascade)
+  vendor Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
 
-  @@index([subcontractorId, expiresAt], map: "idx_cert_subcontractor_expires")
-  @@map("subcontractor_certifications")
+  @@index([vendorId, expiresAt], map: "idx_cert_vendor_expires")
+  @@map("vendor_certifications")
 }
 
 model AuditPack {

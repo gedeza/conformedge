@@ -376,8 +376,8 @@ export function BrochurePDF() {
       text: "Full investigation workflow with evidence capture, fishbone analysis, COIDA W.Cl.2 export, LTIFR dashboards, and MHSA forms.",
     },
     {
-      title: "Subcontractor Portal",
-      text: "Subcontractors upload their own certificates via a secure portal. Expiry alerts notify you 30 days before any cert lapses.",
+      title: "Vendor Portal",
+      text: "Vendors upload their own certificates via a secure portal. Expiry alerts notify you 30 days before any cert lapses.",
     },
     {
       title: "Equipment Register",
@@ -551,7 +551,7 @@ export function BrochurePDF() {
         <Bullet>SA regulatory depth — MHSA, POPIA, ECSA, SACPCMP built in, not bolted on</Bullet>
         <Bullet>POPIA compliant — data encrypted at rest and in transit</Bullet>
         <Bullet>Local support — South African development team, SAST business hours</Bullet>
-        <Bullet>BEE-friendly — supports BEE level tracking for subcontractors</Bullet>
+        <Bullet>BEE-friendly — supports BEE level tracking for vendors</Bullet>
 
         <Text style={[st.sectionTitle, { marginTop: 20 }]}>Partner Program</Text>
         <Text style={st.bodyText}>

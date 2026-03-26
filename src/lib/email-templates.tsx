@@ -23,7 +23,7 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
   CERT_EXPIRY: {
     color: "#ca8a04",
     label: "Certification Expiry",
-    hint: "Contact the subcontractor for an updated certificate.",
+    hint: "Contact the vendor for an updated certificate.",
   },
   SYSTEM: {
     color: "#6b7280",

@@ -52,7 +52,7 @@ export const PAIN_POINTS = [
   },
   {
     title: "Expired Certifications",
-    description: "Vendor and subcontractor certs slip through the cracks. One expired certificate can halt an entire project.",
+    description: "Vendor and vendor certs slip through the cracks. One expired certificate can halt an entire project.",
     stat: "R2M+",
     statLabel: "average cost of project delays from compliance failures",
   },
@@ -106,7 +106,7 @@ export const FEATURES: FeatureItem[] = [
     icon: CheckSquare,
   },
   {
-    title: "Subcontractor Management",
+    title: "Vendor Management",
     description: "Monitor certifications, BEE levels, safety ratings, and get alerts before certificates expire.",
     icon: Building2,
   },
@@ -310,7 +310,7 @@ export const PRICING_TIERS: PricingTier[] = [
       "Management reviews",
       "SA statutory forms (W.Cl.2, SAPS 277)",
       "Work permits (all 7 types)",
-      "Subcontractor compliance portal",
+      "Vendor compliance portal",
       "Advanced reports & analytics",
       "API access",
       "Dedicated support (8h SLA)",

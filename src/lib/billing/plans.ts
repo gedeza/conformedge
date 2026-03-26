@@ -10,7 +10,7 @@ export interface PlanLimits {
   maxStandards: number | null
   maxDocuments: number | null
   maxProjects: number | null       // null = unlimited — prevents consultant abuse
-  maxSubcontractors: number | null // null = unlimited — prevents consultant abuse
+  maxVendors: number | null // null = unlimited — prevents consultant abuse
   aiClassificationsPerMonth: number | null
 }
 
@@ -20,7 +20,7 @@ export interface FeatureGates {
   recurringChecklists: boolean
   reportExport: boolean
   gapAnalysis: boolean
-  subcontractorPortal: boolean
+  vendorPortal: boolean
   customFormBuilder: boolean
   auditPackGeneration: boolean
   approvalWorkflows: boolean
@@ -55,7 +55,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxStandards: 2,
       maxDocuments: 1_000,
       maxProjects: 5,
-      maxSubcontractors: 10,
+      maxVendors: 10,
       aiClassificationsPerMonth: 50,
     },
     features: {
@@ -64,7 +64,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       recurringChecklists: false,
       reportExport: false,
       gapAnalysis: false,
-      subcontractorPortal: false,
+      vendorPortal: false,
       customFormBuilder: false,
       auditPackGeneration: false,
       approvalWorkflows: false,
@@ -89,7 +89,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxStandards: 5,
       maxDocuments: null,
       maxProjects: 15,
-      maxSubcontractors: 25,
+      maxVendors: 25,
       aiClassificationsPerMonth: 200,
     },
     features: {
@@ -98,7 +98,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       recurringChecklists: true,
       reportExport: true,
       gapAnalysis: true,
-      subcontractorPortal: false,
+      vendorPortal: false,
       customFormBuilder: true,
       auditPackGeneration: true,
       approvalWorkflows: true,
@@ -123,7 +123,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxStandards: null,
       maxDocuments: null,
       maxProjects: 30,
-      maxSubcontractors: 50,
+      maxVendors: 50,
       aiClassificationsPerMonth: 500,
     },
     features: {
@@ -132,7 +132,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       recurringChecklists: true,
       reportExport: true,
       gapAnalysis: true,
-      subcontractorPortal: true,
+      vendorPortal: true,
       customFormBuilder: true,
       auditPackGeneration: true,
       approvalWorkflows: true,
@@ -157,7 +157,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       maxStandards: null,
       maxDocuments: null,
       maxProjects: null,
-      maxSubcontractors: null,
+      maxVendors: null,
       aiClassificationsPerMonth: null,
     },
     features: {
@@ -166,7 +166,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       recurringChecklists: true,
       reportExport: true,
       gapAnalysis: true,
-      subcontractorPortal: true,
+      vendorPortal: true,
       customFormBuilder: true,
       auditPackGeneration: true,
       approvalWorkflows: true,

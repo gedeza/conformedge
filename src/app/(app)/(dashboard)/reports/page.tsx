@@ -66,7 +66,7 @@ export default async function ReportsPage({ searchParams }: Props) {
     { title: "Assessments", value: s.totalAssessments, icon: ClipboardCheck, iconBg: "bg-landing-cta/10", iconColor: "text-landing-cta" },
     { title: "CAPAs", value: s.totalCapas, icon: AlertTriangle, iconBg: "bg-amber-500/10", iconColor: "text-amber-500" },
     { title: "Checklists", value: s.totalChecklists, icon: CheckSquare, iconBg: "bg-purple-500/10", iconColor: "text-purple-500" },
-    { title: "Subcontractors", value: s.totalSubcontractors, icon: Building2, iconBg: "bg-slate-500/10", iconColor: "text-slate-500" },
+    { title: "Vendors", value: s.totalVendors, icon: Building2, iconBg: "bg-slate-500/10", iconColor: "text-slate-500" },
     { title: "Incidents", value: s.totalIncidents, icon: ShieldAlert, iconBg: "bg-red-500/10", iconColor: "text-red-500" },
   ]
 
@@ -173,7 +173,7 @@ export default async function ReportsPage({ searchParams }: Props) {
         riskDistribution={data.riskDistribution}
         monthlyActivity={data.monthlyActivity}
         complianceTrend={data.complianceTrend}
-        subcontractorMetrics={data.subcontractorMetrics}
+        vendorMetrics={data.vendorMetrics}
         incidentsByType={data.incidentsByType}
         incidentsBySeverity={data.incidentsBySeverity}
         incidentsByStatus={data.incidentsByStatus}

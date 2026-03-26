@@ -90,7 +90,7 @@ export default async function ClientOrgDetailPage({ params }: Props) {
         <MetricCard icon={Siren} label="Incidents" value={org._count.incidents} />
         <MetricCard icon={Target} label="Objectives" value={org._count.objectives} />
         <MetricCard icon={ShieldCheck} label="Work Permits" value={org._count.workPermits} />
-        <MetricCard icon={Building2} label="Subcontractors" value={org._count.subcontractors} />
+        <MetricCard icon={Building2} label="Vendors" value={org._count.vendors} />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

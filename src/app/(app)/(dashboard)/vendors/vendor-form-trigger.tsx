@@ -3,14 +3,14 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { SubcontractorForm } from "./subcontractor-form"
+import { VendorForm } from "./vendor-form"
 import { canCreate } from "@/lib/permissions"
 
-interface SubcontractorFormTriggerProps {
+interface VendorFormTriggerProps {
   role: string
 }
 
-export function SubcontractorFormTrigger({ role }: SubcontractorFormTriggerProps) {
+export function VendorFormTrigger({ role }: VendorFormTriggerProps) {
   const [open, setOpen] = useState(false)
 
   if (!canCreate(role)) return null
@@ -19,9 +19,9 @@ export function SubcontractorFormTrigger({ role }: SubcontractorFormTriggerProps
     <>
       <Button onClick={() => setOpen(true)}>
         <Plus className="mr-2 h-4 w-4" />
-        Add Subcontractor
+        Add Vendor
       </Button>
-      <SubcontractorForm open={open} onOpenChange={setOpen} />
+      <VendorForm open={open} onOpenChange={setOpen} />
     </>
   )
 }

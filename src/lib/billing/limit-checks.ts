@@ -130,11 +130,11 @@ export function checkProjectLimit(billing: BillingContext, currentProjectCount: 
 }
 
 /**
- * Check if the org can add more subcontractors.
- * Prevents consultant abuse — forces high-volume subcontractor management
+ * Check if the org can add more vendors.
+ * Prevents consultant abuse — forces high-volume vendor management
  * into higher tiers or the Partner program.
  */
-export function checkSubcontractorLimit(billing: BillingContext, currentSubcontractorCount: number): LimitCheckResult {
+export function checkVendorLimit(billing: BillingContext, currentVendorCount: number): LimitCheckResult {
   if (!isActiveSubscription(billing.subscription.status)) {
     return { allowed: false, reason: "Subscription is not active." }
   }
@@ -144,22 +144,22 @@ export function checkSubcontractorLimit(billing: BillingContext, currentSubcontr
   }
 
   const plan = PLAN_DEFINITIONS[billing.subscription.plan]
-  if (plan.limits.maxSubcontractors === null) {
+  if (plan.limits.maxVendors === null) {
     return { allowed: true }
   }
 
-  if (currentSubcontractorCount >= plan.limits.maxSubcontractors) {
+  if (currentVendorCount >= plan.limits.maxVendors) {
     const upgrade = getNextTier(billing.subscription.plan)
     return {
       allowed: false,
-      reason: `Your ${plan.name} plan supports up to ${plan.limits.maxSubcontractors} subcontractors. Need more? Upgrade your plan or contact us about our Consulting Partner program.`,
+      reason: `Your ${plan.name} plan supports up to ${plan.limits.maxVendors} vendors. Need more? Upgrade your plan or contact us about our Consulting Partner program.`,
       upgradeRequired: upgrade,
-      current: currentSubcontractorCount,
-      limit: plan.limits.maxSubcontractors,
+      current: currentVendorCount,
+      limit: plan.limits.maxVendors,
     }
   }
 
-  return { allowed: true, current: currentSubcontractorCount, limit: plan.limits.maxSubcontractors }
+  return { allowed: true, current: currentVendorCount, limit: plan.limits.maxVendors }
 }
 
 /**
@@ -259,7 +259,7 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     recurringChecklists: "Recurring Checklists",
     reportExport: "Report Export",
     gapAnalysis: "Gap Analysis",
-    subcontractorPortal: "Subcontractor Portal",
+    vendorPortal: "Vendor Portal",
     customFormBuilder: "Custom Form Builder",
     auditPackGeneration: "Audit Pack Generation",
     approvalWorkflows: "Approval Workflows",

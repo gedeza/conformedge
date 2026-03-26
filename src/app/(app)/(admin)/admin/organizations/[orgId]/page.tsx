@@ -112,7 +112,7 @@ export default async function AdminOrgDetailPage({ params }: Props) {
         <CountCard icon={ClipboardCheck} label="Assessments" value={org._count.assessments} />
         <CountCard icon={AlertTriangle} label="CAPAs" value={org._count.capas} />
         <CountCard icon={ClipboardCheck} label="Checklists" value={org._count.checklists} />
-        <CountCard icon={Truck} label="Subcontractors" value={org._count.subcontractors} />
+        <CountCard icon={Truck} label="Vendors" value={org._count.vendors} />
         <CountCard icon={AlertTriangle} label="Incidents" value={org._count.incidents} />
         <CountCard icon={Target} label="Objectives" value={org._count.objectives} />
         <CountCard icon={HardHat} label="Work Permits" value={org._count.workPermits} />

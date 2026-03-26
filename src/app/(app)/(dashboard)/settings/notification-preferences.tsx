@@ -21,7 +21,7 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
   },
   CERT_EXPIRY: {
     label: "Certification Expiry",
-    description: "When subcontractor certifications are expiring",
+    description: "When vendor certifications are expiring",
   },
   SYSTEM: {
     label: "System",
@@ -33,7 +33,7 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
   },
   CERT_UPLOAD: {
     label: "Certificate Uploads",
-    description: "When a subcontractor uploads a certificate via the portal",
+    description: "When a vendor uploads a certificate via the portal",
   },
   CHECKLIST_DUE: {
     label: "Checklist Due",

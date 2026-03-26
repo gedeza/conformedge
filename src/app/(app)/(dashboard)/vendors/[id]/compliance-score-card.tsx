@@ -11,7 +11,7 @@ import { recalculateComplianceScore } from "../actions"
 import type { ComplianceScore } from "../compliance-score"
 
 interface ComplianceScoreCardProps {
-  subcontractorId: string
+  vendorId: string
   initialScore: ComplianceScore
 }
 
@@ -39,13 +39,13 @@ function ScoreBar({ label, score, max, icon: Icon }: { label: string; score: num
   )
 }
 
-export function ComplianceScoreCard({ subcontractorId, initialScore }: ComplianceScoreCardProps) {
+export function ComplianceScoreCard({ vendorId, initialScore }: ComplianceScoreCardProps) {
   const [score, setScore] = useState(initialScore)
   const [isPending, startTransition] = useTransition()
 
   function handleRecalculate() {
     startTransition(async () => {
-      const result = await recalculateComplianceScore(subcontractorId)
+      const result = await recalculateComplianceScore(vendorId)
       if (result.success && result.data) {
         setScore(result.data)
         toast.success(`Score recalculated: ${result.data.total}/100 (${result.data.tier})`)

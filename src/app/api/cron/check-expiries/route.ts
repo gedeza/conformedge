@@ -17,7 +17,7 @@ const CRON_SECRET = process.env.CRON_SECRET
  * Scans all organizations for:
  * 1. Documents expiring within 30/14/7 days or already expired
  * 2. CAPAs past their due date (not closed)
- * 3. Subcontractor certifications expiring within 30 days or expired
+ * 3. Vendor certifications expiring within 30 days or expired
  *
  * Creates notifications for relevant org members (respecting preferences).
  * Intended to be called by a cron scheduler (e.g. Vercel Cron, external).
@@ -320,8 +320,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── 3. Subcontractor certification expiry ──────────────
-    const expiringCerts = await db.subcontractorCertification.findMany({
+    // ── 3. Vendor certification expiry ──────────────
+    const expiringCerts = await db.vendorCertification.findMany({
       where: {
         expiresAt: { lte: in30Days },
       },
@@ -329,7 +329,7 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         expiresAt: true,
-        subcontractor: {
+        vendor: {
           select: {
             id: true,
             name: true,
@@ -353,13 +353,13 @@ export async function GET(request: NextRequest) {
       const isExpired = isBefore(cert.expiresAt, now)
       const urgency = isExpired ? "has expired" : "expires within 30 days"
 
-      const targetUser = cert.subcontractor.organization.members[0]
+      const targetUser = cert.vendor.organization.members[0]
       if (!targetUser) continue
 
       const existing = await db.notification.findFirst({
         where: {
           userId: targetUser.userId,
-          organizationId: cert.subcontractor.organizationId,
+          organizationId: cert.vendor.organizationId,
           type: "CERT_EXPIRY",
           createdAt: { gte: addDays(now, -1) },
         },
@@ -367,7 +367,7 @@ export async function GET(request: NextRequest) {
       if (existing) continue
 
       const certTitle = `Certification ${urgency}`
-      const certMsg = `${cert.subcontractor.name}'s "${cert.name}" certification ${urgency}.`
+      const certMsg = `${cert.vendor.name}'s "${cert.name}" certification ${urgency}.`
 
       const [inAppEnabled, emailEnabled] = await Promise.all([
         isNotificationEnabled(targetUser.userId, "CERT_EXPIRY", "IN_APP"),
@@ -381,7 +381,7 @@ export async function GET(request: NextRequest) {
             message: certMsg,
             type: "CERT_EXPIRY",
             userId: targetUser.userId,
-            organizationId: cert.subcontractor.organizationId,
+            organizationId: cert.vendor.organizationId,
           },
         })
         created++

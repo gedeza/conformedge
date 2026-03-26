@@ -57,7 +57,7 @@ const coreItems = [
   { title: "Work Permits", href: "/permits", icon: ShieldCheck },
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
   { title: "Equipment", href: "/equipment", icon: Wrench },
-  { title: "Subcontractors", href: "/subcontractors", icon: Building2 },
+  { title: "Vendors", href: "/vendors", icon: Building2 },
 ]
 
 const analysisItems = [

@@ -4,7 +4,7 @@ import { cache } from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { subMonths, startOfMonth, format, addMonths } from "date-fns"
-import { calculateComplianceScore, type VendorScoringWeights } from "@/app/(app)/(dashboard)/subcontractors/compliance-score"
+import { calculateComplianceScore, type VendorScoringWeights } from "@/app/(app)/(dashboard)/vendors/compliance-score"
 import type { DateRangeParams } from "./date-utils"
 
 function dateFilter(dateRange: DateRangeParams, field = "createdAt") {
@@ -30,7 +30,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     totalAssessments,
     totalCapas,
     totalChecklists,
-    totalSubcontractors,
+    totalVendors,
 
     // Score aggregate
     avgScore,
@@ -42,7 +42,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     capasByPriority,
     capasByType,
     checklistsByStatus,
-    subcontractorsByTier,
+    vendorsByTier,
 
     // Per-standard compliance
     checklistsWithStandard,
@@ -67,9 +67,9 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     incidentsByStatus,
     openIncidents,
 
-    // Subcontractor metrics
-    subcontractorsWithCerts,
-    subcontractorsByBeeLevel,
+    // Vendor metrics
+    vendorsWithCerts,
+    vendorsByBeeLevel,
 
     // Org settings (for vendor scoring weights)
     orgForWeights,
@@ -79,7 +79,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     db.assessment.count({ where: { organizationId: dbOrgId, ...dateWhere } }),
     db.capa.count({ where: { organizationId: dbOrgId, ...dateWhere } }),
     db.complianceChecklist.count({ where: { organizationId: dbOrgId, ...dateWhere } }),
-    db.subcontractor.count({ where: { organizationId: dbOrgId } }),
+    db.vendor.count({ where: { organizationId: dbOrgId } }),
 
     db.assessment.aggregate({
       where: { organizationId: dbOrgId, overallScore: { not: null }, ...dateWhere },
@@ -92,7 +92,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     db.capa.groupBy({ by: ["priority"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
     db.capa.groupBy({ by: ["type"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
     db.complianceChecklist.groupBy({ by: ["status"], where: { organizationId: dbOrgId, ...dateWhere }, _count: true }),
-    db.subcontractor.groupBy({ by: ["tier"], where: { organizationId: dbOrgId }, _count: true }),
+    db.vendor.groupBy({ by: ["tier"], where: { organizationId: dbOrgId }, _count: true }),
 
     db.complianceChecklist.findMany({
       where: { organizationId: dbOrgId, ...dateWhere },
@@ -157,8 +157,8 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       where: { organizationId: dbOrgId, status: { in: ["REPORTED", "INVESTIGATING"] } },
     }),
 
-    // Subcontractors with certs for scoring + expiry
-    db.subcontractor.findMany({
+    // Vendors with certs for scoring + expiry
+    db.vendor.findMany({
       where: { organizationId: dbOrgId },
       select: {
         id: true,
@@ -173,7 +173,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     }),
 
     // BEE level distribution
-    db.subcontractor.groupBy({
+    db.vendor.groupBy({
       by: ["beeLevel"],
       where: { organizationId: dbOrgId, beeLevel: { not: null } },
       _count: true,
@@ -262,19 +262,19 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     })
   }
 
-  // ── Subcontractor metrics ──
+  // ── Vendor metrics ──
   const now = new Date()
   const ninetyDaysFromNow = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)
 
   // Cert expiry countdown (next 90 days)
   const certExpiryCountdown: Array<{
-    subcontractorName: string
+    vendorName: string
     certName: string
     expiresAt: string
     daysUntilExpiry: number
   }> = []
 
-  const scoredSubcontractors: Array<{
+  const scoredVendors: Array<{
     name: string
     score: number
     tier: string
@@ -283,10 +283,10 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
   const orgSettings = (orgForWeights?.settings as Record<string, unknown>) ?? {}
   const vendorWeights = orgSettings.vendorScoringWeights as Partial<VendorScoringWeights> | undefined
 
-  for (const sub of subcontractorsWithCerts) {
+  for (const sub of vendorsWithCerts) {
     // Compliance scores
     const score = calculateComplianceScore(sub, vendorWeights)
-    scoredSubcontractors.push({ name: sub.name, score: score.total, tier: score.tier })
+    scoredVendors.push({ name: sub.name, score: score.total, tier: score.tier })
 
     // Cert expiry
     for (const cert of sub.certifications) {
@@ -295,7 +295,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       if (expiry > now && expiry <= ninetyDaysFromNow) {
         const daysUntil = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
         certExpiryCountdown.push({
-          subcontractorName: sub.name,
+          vendorName: sub.name,
           certName: cert.name,
           expiresAt: format(expiry, "dd MMM yyyy"),
           daysUntilExpiry: daysUntil,
@@ -305,9 +305,9 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
   }
 
   certExpiryCountdown.sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
-  scoredSubcontractors.sort((a, b) => b.score - a.score)
+  scoredVendors.sort((a, b) => b.score - a.score)
 
-  const beeDistribution = subcontractorsByBeeLevel.map((r) => ({
+  const beeDistribution = vendorsByBeeLevel.map((r) => ({
     level: `Level ${r.beeLevel}`,
     count: r._count,
   }))
@@ -319,7 +319,7 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       totalAssessments,
       totalCapas,
       totalChecklists,
-      totalSubcontractors,
+      totalVendors,
       totalIncidents,
       openIncidents,
       avgComplianceScore: avgScore._avg.overallScore ?? null,
@@ -335,15 +335,15 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     capasByPriority: capasByPriority.map((r) => ({ priority: r.priority, count: r._count })),
     capasByType: capasByType.map((r) => ({ type: r.type, count: r._count })),
     checklistsByStatus: checklistsByStatus.map((r) => ({ status: r.status, count: r._count })),
-    subcontractorsByTier: subcontractorsByTier.map((r) => ({ tier: r.tier, count: r._count })),
+    vendorsByTier: vendorsByTier.map((r) => ({ tier: r.tier, count: r._count })),
     complianceByStandard,
     riskDistribution: Object.entries(riskDistribution).map(([level, count]) => ({ level, count })),
     monthlyActivity,
     complianceTrend,
-    subcontractorMetrics: {
+    vendorMetrics: {
       beeDistribution,
       certExpiryCountdown: certExpiryCountdown.slice(0, 10),
-      scoredSubcontractors: scoredSubcontractors.slice(0, 10),
+      scoredVendors: scoredVendors.slice(0, 10),
     },
   }
 })

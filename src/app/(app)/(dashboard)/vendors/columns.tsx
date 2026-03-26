@@ -11,7 +11,7 @@ import { StatusBadge } from "@/components/shared/status-badge"
 import { Badge } from "@/components/ui/badge"
 import { canEdit, canDelete } from "@/lib/permissions"
 
-export type SubcontractorRow = {
+export type VendorRow = {
   id: string
   name: string
   registrationNumber: string | null
@@ -31,8 +31,8 @@ export type SubcontractorRow = {
 }
 
 interface ColumnActions {
-  onEdit: (sub: SubcontractorRow) => void
-  onDelete: (sub: SubcontractorRow) => void
+  onEdit: (sub: VendorRow) => void
+  onDelete: (sub: VendorRow) => void
   role: string
 }
 
@@ -52,7 +52,7 @@ function getCertExpiryStatus(certs: Array<{ expiresAt: Date | null }>) {
   return { expired, expiring }
 }
 
-export function getColumns(actions: ColumnActions): ColumnDef<SubcontractorRow>[] {
+export function getColumns(actions: ColumnActions): ColumnDef<VendorRow>[] {
   return [
     {
       accessorKey: "name",
@@ -63,7 +63,7 @@ export function getColumns(actions: ColumnActions): ColumnDef<SubcontractorRow>[
         </Button>
       ),
       cell: ({ row }) => (
-        <Link href={`/subcontractors/${row.original.id}`} className="font-medium hover:underline">
+        <Link href={`/vendors/${row.original.id}`} className="font-medium hover:underline">
           {row.getValue("name")}
         </Link>
       ),
@@ -71,7 +71,7 @@ export function getColumns(actions: ColumnActions): ColumnDef<SubcontractorRow>[
     {
       accessorKey: "tier",
       header: "Tier",
-      cell: ({ row }) => <StatusBadge type="subcontractor" value={row.getValue("tier")} />,
+      cell: ({ row }) => <StatusBadge type="vendor" value={row.getValue("tier")} />,
     },
     {
       accessorKey: "beeLevel",

@@ -43,7 +43,7 @@ const ENTITY_HREFS: Record<string, string> = {
   Assessment: "/assessments",
   Capa: "/capas",
   Checklist: "/checklists",
-  Subcontractor: "/subcontractors",
+  Vendor: "/vendors",
   AuditPack: "/audit-packs",
 }
 

@@ -15,14 +15,14 @@ interface SharedPortalViewProps {
 }
 
 export function SharedPortalView({ data, label }: SharedPortalViewProps) {
-  const { config, metrics, documents, assessments, capas, checklists, subcontractors } = data
+  const { config, metrics, documents, assessments, capas, checklists, vendors } = data
 
   const tabs = [
     config.documents && { id: "documents", label: "Documents", icon: FileText, count: documents.length },
     config.assessments && { id: "assessments", label: "Assessments", icon: ClipboardCheck, count: assessments.length },
     config.capas && { id: "capas", label: "CAPAs", icon: AlertTriangle, count: capas.length },
     config.checklists && { id: "checklists", label: "Checklists", icon: CheckSquare, count: checklists.length },
-    config.subcontractors && { id: "subcontractors", label: "Subcontractors", icon: Building2, count: subcontractors.length },
+    config.vendors && { id: "vendors", label: "Vendors", icon: Building2, count: vendors.length },
   ].filter(Boolean) as { id: string; label: string; icon: React.ComponentType<{ className?: string }>; count: number }[]
 
   const defaultTab = tabs[0]?.id ?? "documents"
@@ -226,12 +226,12 @@ export function SharedPortalView({ data, label }: SharedPortalViewProps) {
             </TabsContent>
           )}
 
-          {config.subcontractors && (
-            <TabsContent value="subcontractors">
+          {config.vendors && (
+            <TabsContent value="vendors">
               <Card>
                 <CardContent className="pt-6">
-                  {subcontractors.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No subcontractors.</p>
+                  {vendors.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No vendors.</p>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -243,10 +243,10 @@ export function SharedPortalView({ data, label }: SharedPortalViewProps) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {subcontractors.map((s) => (
+                        {vendors.map((s) => (
                           <TableRow key={s.id}>
                             <TableCell className="font-medium">{s.name}</TableCell>
-                            <TableCell><StatusBadge type="subcontractor" value={s.tier} /></TableCell>
+                            <TableCell><StatusBadge type="vendor" value={s.tier} /></TableCell>
                             <TableCell>{s.beeLevel ?? "—"}</TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-1">

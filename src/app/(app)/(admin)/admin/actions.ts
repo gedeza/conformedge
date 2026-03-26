@@ -169,7 +169,7 @@ export async function getAdminOrgDetail(orgId: string) {
           assessments: true,
           capas: true,
           checklists: true,
-          subcontractors: true,
+          vendors: true,
           incidents: true,
           objectives: true,
           workPermits: true,

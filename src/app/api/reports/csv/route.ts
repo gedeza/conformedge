@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     lines.push(`Assessments,${s.totalAssessments}`)
     lines.push(`CAPAs,${s.totalCapas}`)
     lines.push(`Checklists,${s.totalChecklists}`)
-    lines.push(`Subcontractors,${s.totalSubcontractors}`)
+    lines.push(`Vendors,${s.totalVendors}`)
     lines.push(`Incidents,${s.totalIncidents}`)
     lines.push(`Open Incidents,${s.openIncidents}`)
     lines.push(`Avg Compliance Score,${s.avgComplianceScore !== null ? s.avgComplianceScore.toFixed(1) : "N/A"}`)
@@ -116,25 +116,25 @@ export async function GET(request: NextRequest) {
     }
     lines.push("")
 
-    // Subcontractor Metrics
-    lines.push("SUBCONTRACTOR BEE DISTRIBUTION")
+    // Vendor Metrics
+    lines.push("VENDOR BEE DISTRIBUTION")
     lines.push("BEE Level,Count")
-    for (const row of data.subcontractorMetrics.beeDistribution) {
+    for (const row of data.vendorMetrics.beeDistribution) {
       lines.push(`${row.level},${row.count}`)
     }
     lines.push("")
 
-    lines.push("SUBCONTRACTOR COMPLIANCE SCORES")
+    lines.push("VENDOR COMPLIANCE SCORES")
     lines.push("Name,Score,Tier")
-    for (const row of data.subcontractorMetrics.scoredSubcontractors) {
+    for (const row of data.vendorMetrics.scoredVendors) {
       lines.push(`"${row.name}",${row.score},${row.tier}`)
     }
     lines.push("")
 
     lines.push("CERTIFICATION EXPIRY (NEXT 90 DAYS)")
-    lines.push("Subcontractor,Certification,Expires,Days Until Expiry")
-    for (const row of data.subcontractorMetrics.certExpiryCountdown) {
-      lines.push(`"${row.subcontractorName}","${row.certName}",${row.expiresAt},${row.daysUntilExpiry}`)
+    lines.push("Vendor,Certification,Expires,Days Until Expiry")
+    for (const row of data.vendorMetrics.certExpiryCountdown) {
+      lines.push(`"${row.vendorName}","${row.certName}",${row.expiresAt},${row.daysUntilExpiry}`)
     }
     lines.push("")
 

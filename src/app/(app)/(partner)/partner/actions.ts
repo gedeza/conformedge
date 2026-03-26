@@ -670,7 +670,7 @@ export async function getClientOrgDetail(organizationId: string) {
           checklists: true,
           objectives: true,
           workPermits: true,
-          subcontractors: true,
+          vendors: true,
         },
       },
     },

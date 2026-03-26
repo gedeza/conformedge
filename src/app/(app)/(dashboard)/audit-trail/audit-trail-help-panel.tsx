@@ -19,7 +19,7 @@ export function AuditTrailHelpPanel() {
         "Logs are immutable — they cannot be edited or deleted by anyone",
         "Use during external audits to demonstrate change control compliance",
         "Filter by user to review a team member's actions",
-        "Subcontractor portal uploads are also logged (marked as 'via subcontractor portal')",
+        "Vendor portal uploads are also logged (marked as 'via vendor portal')",
       ]}
     />
   )

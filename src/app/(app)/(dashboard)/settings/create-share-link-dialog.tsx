@@ -17,8 +17,8 @@ import { createShareLink } from "./share-link-actions"
 interface CreateShareLinkDialogProps {
   documents: { id: string; title: string }[]
   auditPacks: { id: string; title: string }[]
-  subcontractors?: { id: string; name: string }[]
-  prefilledType?: "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR"
+  vendors?: { id: string; name: string }[]
+  prefilledType?: "DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "VENDOR"
   prefilledEntityId?: string
   trigger?: React.ReactNode
 }
@@ -41,7 +41,7 @@ function getExpiryDate(preset: string): Date {
 }
 
 export function CreateShareLinkDialog({
-  documents, auditPacks, subcontractors = [],
+  documents, auditPacks, vendors = [],
   prefilledType, prefilledEntityId, trigger,
 }: CreateShareLinkDialogProps) {
   const [open, setOpen] = useState(false)
@@ -49,7 +49,7 @@ export function CreateShareLinkDialog({
   const [createdUrl, setCreatedUrl] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
-  const [type, setType] = useState<"DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "SUBCONTRACTOR">(prefilledType ?? "DOCUMENT")
+  const [type, setType] = useState<"DOCUMENT" | "AUDIT_PACK" | "PORTAL" | "VENDOR">(prefilledType ?? "DOCUMENT")
   const [entityId, setEntityId] = useState(prefilledEntityId ?? "")
   const [label, setLabel] = useState("")
   const [recipientEmail, setRecipientEmail] = useState("")
@@ -61,14 +61,14 @@ export function CreateShareLinkDialog({
   const [portalAssessments, setPortalAssessments] = useState(false)
   const [portalCapas, setPortalCapas] = useState(false)
   const [portalChecklists, setPortalChecklists] = useState(false)
-  const [portalSubcontractors, setPortalSubcontractors] = useState(false)
+  const [portalVendors, setPortalVendors] = useState(false)
 
   function resetForm() {
     setType(prefilledType ?? "DOCUMENT"); setEntityId(prefilledEntityId ?? "")
     setLabel(""); setRecipientEmail(""); setRecipientName("")
     setExpiryPreset("7d"); setMaxViews(""); setAllowDownload(true)
     setPortalDocuments(true); setPortalAssessments(false); setPortalCapas(false)
-    setPortalChecklists(false); setPortalSubcontractors(false)
+    setPortalChecklists(false); setPortalVendors(false)
     setCreatedUrl(null); setCopied(false)
   }
 
@@ -86,7 +86,7 @@ export function CreateShareLinkDialog({
         allowDownload,
         portalConfig: type === "PORTAL" ? {
           documents: portalDocuments, assessments: portalAssessments,
-          capas: portalCapas, checklists: portalChecklists, subcontractors: portalSubcontractors,
+          capas: portalCapas, checklists: portalChecklists, vendors: portalVendors,
         } : undefined,
       })
       if (result.success && result.data) { setCreatedUrl(result.data.url); toast.success("Share link created") }
@@ -146,7 +146,7 @@ export function CreateShareLinkDialog({
                     <SelectItem value="DOCUMENT">Document</SelectItem>
                     <SelectItem value="AUDIT_PACK">Audit Pack</SelectItem>
                     <SelectItem value="PORTAL">Portal</SelectItem>
-                    <SelectItem value="SUBCONTRACTOR">Subcontractor</SelectItem>
+                    <SelectItem value="VENDOR">Vendor</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -168,11 +168,11 @@ export function CreateShareLinkDialog({
                   </Select>
                 )}
 
-                {type === "SUBCONTRACTOR" && (
+                {type === "VENDOR" && (
                   <Select value={entityId} onValueChange={setEntityId} disabled={!!prefilledEntityId}>
-                    <SelectTrigger className="h-10"><SelectValue placeholder="Select subcontractor..." /></SelectTrigger>
+                    <SelectTrigger className="h-10"><SelectValue placeholder="Select vendor..." /></SelectTrigger>
                     <SelectContent>
-                      {subcontractors.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                      {vendors.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 )}
@@ -186,7 +186,7 @@ export function CreateShareLinkDialog({
                         { id: "assessments", label: "Assessments", checked: portalAssessments, set: setPortalAssessments },
                         { id: "capas", label: "CAPAs", checked: portalCapas, set: setPortalCapas },
                         { id: "checklists", label: "Checklists", checked: portalChecklists, set: setPortalChecklists },
-                        { id: "subcontractors", label: "Subcontractors", checked: portalSubcontractors, set: setPortalSubcontractors },
+                        { id: "vendors", label: "Vendors", checked: portalVendors, set: setPortalVendors },
                       ].map((item) => (
                         <div key={item.id} className="flex items-center gap-2 py-1">
                           <Checkbox id={item.id} checked={item.checked} onCheckedChange={(v) => item.set(!!v)} />

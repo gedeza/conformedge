@@ -124,8 +124,8 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
             <Text style={styles.statLabel}>Checklists</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>{s.totalSubcontractors}</Text>
-            <Text style={styles.statLabel}>Subcontractors</Text>
+            <Text style={styles.statValue}>{s.totalVendors}</Text>
+            <Text style={styles.statLabel}>Vendors</Text>
           </View>
         </View>
 
@@ -248,12 +248,12 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
         <PageFooter />
       </Page>
 
-      {/* ═══════════════════ SUBCONTRACTOR METRICS ═══════════════════ */}
+      {/* ═══════════════════ VENDOR METRICS ═══════════════════ */}
       <Page size="A4" style={styles.page} wrap>
-        <Text style={styles.sectionTitle}>6. Subcontractor Metrics</Text>
+        <Text style={styles.sectionTitle}>6. Vendor Metrics</Text>
 
         <Text style={styles.subTitle}>BEE Level Distribution</Text>
-        {data.subcontractorMetrics.beeDistribution.length === 0 ? (
+        {data.vendorMetrics.beeDistribution.length === 0 ? (
           <Text style={{ fontSize: 9, color: colors.textMuted, fontStyle: "italic" }}>No BEE data available.</Text>
         ) : (
           <>
@@ -261,7 +261,7 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
               <Text style={{ ...styles.headerCell, flex: 2 }}>BEE Level</Text>
               <Text style={{ ...styles.headerCell, flex: 1 }}>Count</Text>
             </View>
-            {data.subcontractorMetrics.beeDistribution.map((row, i) => (
+            {data.vendorMetrics.beeDistribution.map((row, i) => (
               <View key={i} style={i % 2 === 0 ? styles.row : styles.rowAlt}>
                 <Text style={{ ...styles.cell, flex: 2 }}>{row.level}</Text>
                 <Text style={{ ...styles.cell, flex: 1 }}>{row.count}</Text>
@@ -271,8 +271,8 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
         )}
 
         <Text style={styles.subTitle}>Compliance Score Rankings</Text>
-        {data.subcontractorMetrics.scoredSubcontractors.length === 0 ? (
-          <Text style={{ fontSize: 9, color: colors.textMuted, fontStyle: "italic" }}>No subcontractors to score.</Text>
+        {data.vendorMetrics.scoredVendors.length === 0 ? (
+          <Text style={{ fontSize: 9, color: colors.textMuted, fontStyle: "italic" }}>No vendors to score.</Text>
         ) : (
           <>
             <View style={styles.headerRow}>
@@ -280,7 +280,7 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
               <Text style={{ ...styles.headerCell, flex: 1 }}>Score</Text>
               <Text style={{ ...styles.headerCell, flex: 1 }}>Tier</Text>
             </View>
-            {data.subcontractorMetrics.scoredSubcontractors.map((row, i) => (
+            {data.vendorMetrics.scoredVendors.map((row, i) => (
               <View key={i} style={i % 2 === 0 ? styles.row : styles.rowAlt}>
                 <Text style={{ ...styles.cell, flex: 3 }}>{row.name}</Text>
                 <Text style={{ ...styles.cell, flex: 1 }}>{row.score}%</Text>
@@ -291,19 +291,19 @@ export function ReportsPDF({ organizationName, dateRangeLabel, generatedDate, da
         )}
 
         <Text style={styles.subTitle}>Certifications Expiring (Next 90 Days)</Text>
-        {data.subcontractorMetrics.certExpiryCountdown.length === 0 ? (
+        {data.vendorMetrics.certExpiryCountdown.length === 0 ? (
           <Text style={{ fontSize: 9, color: colors.textMuted, fontStyle: "italic" }}>No certifications expiring soon.</Text>
         ) : (
           <>
             <View style={styles.headerRow}>
-              <Text style={{ ...styles.headerCell, flex: 2 }}>Subcontractor</Text>
+              <Text style={{ ...styles.headerCell, flex: 2 }}>Vendor</Text>
               <Text style={{ ...styles.headerCell, flex: 2 }}>Certification</Text>
               <Text style={{ ...styles.headerCell, flex: 1.5 }}>Expires</Text>
               <Text style={{ ...styles.headerCell, flex: 1 }}>Days</Text>
             </View>
-            {data.subcontractorMetrics.certExpiryCountdown.map((row, i) => (
+            {data.vendorMetrics.certExpiryCountdown.map((row, i) => (
               <View key={i} style={i % 2 === 0 ? styles.row : styles.rowAlt}>
-                <Text style={{ ...styles.cell, flex: 2 }}>{row.subcontractorName}</Text>
+                <Text style={{ ...styles.cell, flex: 2 }}>{row.vendorName}</Text>
                 <Text style={{ ...styles.cell, flex: 2 }}>{row.certName}</Text>
                 <Text style={{ ...styles.cell, flex: 1.5 }}>{row.expiresAt}</Text>
                 <Text style={{

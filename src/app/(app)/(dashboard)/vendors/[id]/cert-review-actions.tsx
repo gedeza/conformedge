@@ -18,18 +18,18 @@ import { reviewCertification } from "../actions"
 
 interface CertReviewActionsProps {
   certId: string
-  subcontractorId: string
+  vendorId: string
   certName: string
 }
 
-export function CertReviewActions({ certId, subcontractorId, certName }: CertReviewActionsProps) {
+export function CertReviewActions({ certId, vendorId, certName }: CertReviewActionsProps) {
   const [isPending, startTransition] = useTransition()
   const [rejectOpen, setRejectOpen] = useState(false)
   const [rejectNotes, setRejectNotes] = useState("")
 
   function handleApprove() {
     startTransition(async () => {
-      const result = await reviewCertification(certId, subcontractorId, "APPROVED")
+      const result = await reviewCertification(certId, vendorId, "APPROVED")
       if (result.success) {
         toast.success(`"${certName}" approved`)
       } else {
@@ -40,7 +40,7 @@ export function CertReviewActions({ certId, subcontractorId, certName }: CertRev
 
   function handleReject() {
     startTransition(async () => {
-      const result = await reviewCertification(certId, subcontractorId, "REJECTED", rejectNotes || undefined)
+      const result = await reviewCertification(certId, vendorId, "REJECTED", rejectNotes || undefined)
       if (result.success) {
         toast.success(`"${certName}" rejected`)
         setRejectOpen(false)

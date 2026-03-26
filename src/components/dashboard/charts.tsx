@@ -54,7 +54,7 @@ const STATUS_COLORS: Record<string, string> = {
   CRITICAL: "hsl(0, 65%, 50%)",
   // Risk
   UNRATED: "hsl(220, 10%, 65%)",
-  // Subcontractor tiers
+  // Vendor tiers
   PLATINUM: "hsl(260, 50%, 55%)",
   GOLD: "hsl(45, 85%, 50%)",
   SILVER: "hsl(220, 10%, 65%)",

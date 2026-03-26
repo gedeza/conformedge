@@ -16,11 +16,11 @@ const portalConfigSchema = z.object({
   assessments: z.boolean().default(false),
   capas: z.boolean().default(false),
   checklists: z.boolean().default(false),
-  subcontractors: z.boolean().default(false),
+  vendors: z.boolean().default(false),
 })
 
 const createShareLinkSchema = z.object({
-  type: z.enum(["DOCUMENT", "AUDIT_PACK", "PORTAL", "SUBCONTRACTOR"]),
+  type: z.enum(["DOCUMENT", "AUDIT_PACK", "PORTAL", "VENDOR"]),
   entityId: z.string().optional(),
   label: z.string().min(1, "Label is required").max(200),
   recipientEmail: z.email().optional().or(z.literal("")),
@@ -57,8 +57,8 @@ export async function createShareLink(values: CreateShareLinkValues): Promise<Ac
 
     // Billing: gate by share link type
     const billing = await getBillingContext(dbOrgId)
-    if (parsed.type === "SUBCONTRACTOR") {
-      const gate = checkFeatureAccess(billing, "subcontractorPortal")
+    if (parsed.type === "VENDOR") {
+      const gate = checkFeatureAccess(billing, "vendorPortal")
       if (!gate.allowed) return { success: false, error: gate.reason }
     } else {
       const gate = checkFeatureAccess(billing, "clientPortal")
@@ -74,10 +74,10 @@ export async function createShareLink(values: CreateShareLinkValues): Promise<Ac
       if (!parsed.entityId) return { success: false, error: "Audit Pack ID is required" }
       const pack = await db.auditPack.findFirst({ where: { id: parsed.entityId, organizationId: dbOrgId } })
       if (!pack) return { success: false, error: "Audit Pack not found" }
-    } else if (parsed.type === "SUBCONTRACTOR") {
-      if (!parsed.entityId) return { success: false, error: "Subcontractor ID is required" }
-      const sub = await db.subcontractor.findFirst({ where: { id: parsed.entityId, organizationId: dbOrgId } })
-      if (!sub) return { success: false, error: "Subcontractor not found" }
+    } else if (parsed.type === "VENDOR") {
+      if (!parsed.entityId) return { success: false, error: "Vendor ID is required" }
+      const sub = await db.vendor.findFirst({ where: { id: parsed.entityId, organizationId: dbOrgId } })
+      if (!sub) return { success: false, error: "Vendor not found" }
     }
 
     const rawToken = generateShareToken()

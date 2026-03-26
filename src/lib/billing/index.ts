@@ -3,6 +3,6 @@ export type { PlanDefinition, PlanLimits, FeatureGates, CreditPack } from "./pla
 
 export { getBillingContext, isActiveSubscription, getPlanFromContext } from "./get-billing-context"
 
-export { checkUserLimit, checkDocumentLimit, checkStandardsLimit, checkProjectLimit, checkSubcontractorLimit, checkAiClassificationLimit, checkFeatureAccess } from "./limit-checks"
+export { checkUserLimit, checkDocumentLimit, checkStandardsLimit, checkProjectLimit, checkVendorLimit, checkAiClassificationLimit, checkFeatureAccess } from "./limit-checks"
 
 export { recordAiClassificationUsage, recordDocumentCreated, recordDocumentDeleted, grantCredits, snapshotResourceCounts } from "./usage"

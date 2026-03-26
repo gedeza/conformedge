@@ -97,10 +97,10 @@ export async function getSharedAuditPack(shareLink: ShareLink) {
   })
 }
 
-export async function getSharedSubcontractorData(shareLink: ShareLink) {
-  if (shareLink.type !== "SUBCONTRACTOR" || !shareLink.entityId) return null
+export async function getSharedVendorData(shareLink: ShareLink) {
+  if (shareLink.type !== "VENDOR" || !shareLink.entityId) return null
 
-  return db.subcontractor.findFirst({
+  return db.vendor.findFirst({
     where: { id: shareLink.entityId, organizationId: shareLink.organizationId },
     include: {
       certifications: { orderBy: { createdAt: "desc" } },
@@ -109,14 +109,14 @@ export async function getSharedSubcontractorData(shareLink: ShareLink) {
 }
 
 export async function getSharedWorkPermits(shareLink: ShareLink) {
-  if (shareLink.type !== "SUBCONTRACTOR" || !shareLink.entityId) return []
+  if (shareLink.type !== "VENDOR" || !shareLink.entityId) return []
 
-  // Verify the subcontractor exists for this org
-  const subcontractor = await db.subcontractor.findFirst({
+  // Verify the vendor exists for this org
+  const vendor = await db.vendor.findFirst({
     where: { id: shareLink.entityId, organizationId: shareLink.organizationId },
     select: { id: true },
   })
-  if (!subcontractor) return []
+  if (!vendor) return []
 
   // Return only ACTIVE/APPROVED permits for this org, bounded
   return db.workPermit.findMany({
@@ -147,7 +147,7 @@ interface PortalConfig {
   assessments?: boolean
   capas?: boolean
   checklists?: boolean
-  subcontractors?: boolean
+  vendors?: boolean
 }
 
 export async function getSharedPortalData(shareLink: ShareLink) {
@@ -156,7 +156,7 @@ export async function getSharedPortalData(shareLink: ShareLink) {
   const config = (shareLink.portalConfig as PortalConfig | null) ?? { documents: true }
   const orgId = shareLink.organizationId
 
-  const [docData, assessmentData, capaData, checklistData, subcontractorData] = await Promise.all([
+  const [docData, assessmentData, capaData, checklistData, vendorData] = await Promise.all([
     config.documents
       ? db.document.findMany({
           where: { organizationId: orgId },
@@ -223,8 +223,8 @@ export async function getSharedPortalData(shareLink: ShareLink) {
           take: 50,
         })
       : Promise.resolve([]),
-    config.subcontractors
-      ? db.subcontractor.findMany({
+    config.vendors
+      ? db.vendor.findMany({
           where: { organizationId: orgId },
           select: {
             id: true,
@@ -262,6 +262,6 @@ export async function getSharedPortalData(shareLink: ShareLink) {
     assessments: assessmentData,
     capas: capaData,
     checklists: checklistData,
-    subcontractors: subcontractorData,
+    vendors: vendorData,
   }
 }

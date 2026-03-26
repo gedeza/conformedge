@@ -2,12 +2,12 @@
 
 import { RouteError } from "@/components/shared/route-error"
 
-export default function SubcontractorsError({
+export default function VendorsError({
   error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  return <RouteError error={error} reset={reset} entityName="Subcontractor" backHref="/subcontractors" />
+  return <RouteError error={error} reset={reset} entityName="Vendor" backHref="/vendors" />
 }
