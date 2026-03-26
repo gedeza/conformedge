@@ -4,7 +4,7 @@ import { cache } from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { subMonths, startOfMonth, format, addMonths } from "date-fns"
-import { calculateComplianceScore } from "@/app/(app)/(dashboard)/subcontractors/compliance-score"
+import { calculateComplianceScore, type VendorScoringWeights } from "@/app/(app)/(dashboard)/subcontractors/compliance-score"
 import type { DateRangeParams } from "./date-utils"
 
 function dateFilter(dateRange: DateRangeParams, field = "createdAt") {
@@ -70,6 +70,9 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     // Subcontractor metrics
     subcontractorsWithCerts,
     subcontractorsByBeeLevel,
+
+    // Org settings (for vendor scoring weights)
+    orgForWeights,
   ] = await Promise.all([
     db.project.count({ where: { organizationId: dbOrgId } }),
     db.document.count({ where: { organizationId: dbOrgId, ...dateWhere } }),
@@ -175,6 +178,12 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
       where: { organizationId: dbOrgId, beeLevel: { not: null } },
       _count: true,
     }),
+
+    // Org settings for vendor scoring weights
+    db.organization.findUnique({
+      where: { id: dbOrgId },
+      select: { settings: true },
+    }),
   ])
 
   // ── Compliance by standard ──
@@ -271,9 +280,12 @@ export const getReportData = cache(async function getReportData(dateRange: DateR
     tier: string
   }> = []
 
+  const orgSettings = (orgForWeights?.settings as Record<string, unknown>) ?? {}
+  const vendorWeights = orgSettings.vendorScoringWeights as Partial<VendorScoringWeights> | undefined
+
   for (const sub of subcontractorsWithCerts) {
     // Compliance scores
-    const score = calculateComplianceScore(sub)
+    const score = calculateComplianceScore(sub, vendorWeights)
     scoredSubcontractors.push({ name: sub.name, score: score.total, tier: score.tier })
 
     // Cert expiry

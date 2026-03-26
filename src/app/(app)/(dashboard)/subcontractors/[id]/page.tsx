@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { PageHeader } from "@/components/shared/page-header"
 import { getSubcontractor } from "../actions"
-import { calculateComplianceScore } from "../compliance-score"
+import { calculateComplianceScore, type VendorScoringWeights } from "../compliance-score"
 import { CertificationActions } from "./certification-actions"
 import { CertReviewActions } from "./cert-review-actions"
 import { ComplianceScoreCard } from "./compliance-score-card"
@@ -17,6 +17,7 @@ import { InviteToPortalButton } from "./invite-to-portal-button"
 import { isR2Key } from "@/lib/r2-utils"
 import { getAuthContext } from "@/lib/auth"
 import { canManageOrg } from "@/lib/permissions"
+import { db } from "@/lib/db"
 
 function getExpiryBadge(expiresAt: Date | null) {
   if (!expiresAt) return <Badge variant="outline">No expiry</Badge>
@@ -45,13 +46,20 @@ export default async function SubcontractorDetailPage({
 
   if (!sub) notFound()
 
-  const complianceScore = calculateComplianceScore(sub)
-
   let isAdmin = false
+  let customWeights: Partial<VendorScoringWeights> | undefined
   try {
     const ctx = await getAuthContext()
     isAdmin = canManageOrg(ctx.role)
+    const org = await db.organization.findUnique({
+      where: { id: ctx.dbOrgId },
+      select: { settings: true },
+    })
+    const settings = (org?.settings as Record<string, unknown>) ?? {}
+    customWeights = settings.vendorScoringWeights as Partial<VendorScoringWeights> | undefined
   } catch {}
+
+  const complianceScore = calculateComplianceScore(sub, customWeights)
 
   return (
     <div className="space-y-6">

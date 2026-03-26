@@ -1,4 +1,5 @@
 import { db } from "@/lib/db"
+import { INDUSTRY_STANDARD_WEIGHTS } from "@/lib/constants"
 
 // ─── Types ───────────────────────────────────────────
 
@@ -71,6 +72,15 @@ export async function getGapAnalysisInternal(
   // Get org-specific active standard IDs for scoping
   const { getActiveStandardIds } = await import("@/lib/standards")
   const activeIds = await getActiveStandardIds(orgId)
+
+  // Fetch org industry for weighted scoring
+  const org = await db.organization.findUnique({
+    where: { id: orgId },
+    select: { industry: true },
+  })
+  const industryWeights = org?.industry
+    ? INDUSTRY_STANDARD_WEIGHTS[org.industry] ?? {}
+    : {}
 
   // Build filter conditions (org-scoped)
   const standardWhere = standardCode
@@ -323,10 +333,17 @@ export async function getGapAnalysisInternal(
     }
   })
 
-  const overallCoveragePercent =
-    totalSubClauses > 0
-      ? Math.round(((totalCovered + totalPartial * 0.5) / totalSubClauses) * 100)
-      : 0
+  // Weighted overall coverage — standards important to the org's industry count more
+  let weightedCoveredSum = 0
+  let weightedTotalSum = 0
+  for (const std of standardResults) {
+    const weight = industryWeights[std.code] ?? 1.0
+    weightedCoveredSum += (std.covered + std.partial * 0.5) * weight
+    weightedTotalSum += std.totalSubClauses * weight
+  }
+  const overallCoveragePercent = weightedTotalSum > 0
+    ? Math.round((weightedCoveredSum / weightedTotalSum) * 100)
+    : 0
 
   return {
     totalSubClauses,

@@ -1053,6 +1053,46 @@ export async function adminMarkCommissionPaid(
 // CROSS-ORG AUDIT TRAIL
 // ─────────────────────────────────────────────
 
+/**
+ * T26 — Track user seat distribution across Business tier clients.
+ * Purpose: Inform future "Growth" tier decision (15-50 user gap).
+ * Trigger: 20-35% of Business customers using <25 seats after 6 months.
+ */
+export async function getGrowthTierAnalytics() {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return null
+
+  const businessSubs = await db.subscription.findMany({
+    where: { plan: "BUSINESS", status: { in: ["ACTIVE", "TRIALING"] } },
+    select: {
+      organizationId: true,
+      organization: {
+        select: {
+          name: true,
+          _count: { select: { members: { where: { isActive: true } } } },
+        },
+      },
+    },
+  })
+
+  const distribution = businessSubs.map(s => ({
+    orgName: s.organization.name,
+    activeUsers: s.organization._count.members,
+  }))
+
+  const totalBusiness = distribution.length
+  const under25 = distribution.filter(d => d.activeUsers < 25).length
+  const percentUnder25 = totalBusiness > 0 ? Math.round((under25 / totalBusiness) * 100) : 0
+
+  return {
+    totalBusinessClients: totalBusiness,
+    distribution,
+    under25Users: under25,
+    percentUnder25,
+    growthTierRecommended: totalBusiness >= 5 && percentUnder25 >= 20 && percentUnder25 <= 35,
+  }
+}
+
 export async function getAdminAuditTrail(params: {
   q?: string
   limit?: number

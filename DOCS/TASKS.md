@@ -56,10 +56,10 @@
 - [x] **T31** Generalize landing page copy — hero, footer, CTA, testimonials, problem section, pricing tier descriptions
 - [x] **T32** Generalize pain point descriptions in data.ts — "on site" → "arrives", added "vendor"
 - [x] **T29** Reverted — CIDB/BEE references restored (they are a competitive advantage, not a liability)
-- [ ] **T26** Monitor 15→50 user gap post-launch for potential "Growth" tier — **Trigger: 20-35% of Business customers using <25 seats after 6 months**
-- [ ] **T27** Evaluate mining sector entry (highest-value adjacent market)
-- [ ] **T28** Consider configurable vendor scoring weights per organization
-- [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes)
+- [x] **T26** Growth tier monitoring — `getGrowthTierAnalytics()` in admin actions tracks Business tier seat distribution, flags when 20-35% of 5+ clients use <25 seats *(2026-03-26)*
+- [x] **T27** Mining sector entry evaluation — `DOCS/business-dev/MINING-SECTOR-EVALUATION-2026.md` (TAM, readiness, competition, strategy, recommendation: GO) *(2026-03-26)*
+- [x] **T28** Configurable vendor scoring weights — `VendorScoringWeights` in compliance-score.ts, reads from `Organization.settings.vendorScoringWeights`, defaults to current weights *(2026-03-26)*
+- [ ] **T30** Consider schema rename Subcontractor → Vendor (40+ file changes) — **Deferred: low urgency, high churn risk**
 
 ## B1 — Billing Phase 1: Data Layer — ALL COMPLETE
 
@@ -230,7 +230,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T34** ECSA compliance references — 35 clauses seeded (Act 46 of 2000: registration, CPD, codes of conduct, practice standards) *(pre-existing)*
 - [x] **T35** SACPCMP compliance references — 32 clauses seeded (Act 48 of 2000: registration, CPD, fees, practice standards) *(pre-existing)*
 - [x] **T36** Add POPIA compliance references for IT services sector (11 chapters, 40 sub-clauses)
-- [ ] **T37** Make compliance scoring weights industry-aware (CIDB/BEE for construction, DMRE for mining, etc.)
+- [x] **T37** Industry-aware compliance scoring — `INDUSTRY_STANDARD_WEIGHTS` in constants.ts (20 industries), applied in gap-analysis-core.ts weighted coverage calculation *(2026-03-26)*
 
 ## P6 — Pricing Revision & Market Strategy
 
@@ -243,9 +243,9 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T142** Pricing strategy document — full market research, competitor analysis, consulting/government models (DOCS/pricing-strategy/PRICING-STRATEGY-2026.md)
 - [x] **T147** Add project + subcontractor limits per tier to prevent consultant abuse (plans.ts, limit-checks.ts, project actions, subcontractor actions)
 - [x] **T143** "Become a Partner" landing page at `/partners` — 3 tier cards (Referral/Consulting/White-Label) with v2.0 pricing, revenue example table, CTAs. *(2026-03-26)*
-- [ ] **T144** Government price list PDF template for procurement (future)
-- [ ] **T145** Consultant dashboard — cross-org management view (future)
-- [ ] **T146** SITA vendor registration + B-BBEE certification (manual, business action)
+- [x] **T144** Government price list PDF template — `DOCS/business-dev/GOVERNMENT-PRICE-LIST-2026.md` *(2026-03-26)*
+- [x] **T145** Consultant dashboard — covered by partner console (`/partner/*`) with cross-org management, client health, billing, referrals, insights *(closed — no additional work needed)*
+- [!] **T146** SITA vendor registration + B-BBEE certification — manual business action (register at csd.gov.za, upload B-BBEE certificate)
 
 ---
 

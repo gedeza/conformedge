@@ -385,6 +385,34 @@ export const INDUSTRIES = [
   "Other",
 ] as const
 
+/**
+ * Industry-specific standard importance weights for gap analysis scoring.
+ * Default weight is 1.0. Higher = more important for that industry.
+ * These multiply the per-standard coverage to produce a weighted overall score.
+ */
+export const INDUSTRY_STANDARD_WEIGHTS: Record<string, Record<string, number>> = {
+  "General Building": { ISO9001: 1.2, ISO45001: 1.5, ISO14001: 1.0 },
+  "Civil Engineering": { ISO9001: 1.2, ISO45001: 1.5, ISO14001: 1.3, ECSA: 1.5 },
+  "Electrical Engineering": { ISO9001: 1.2, ISO45001: 1.5, ECSA: 1.5 },
+  "Mechanical Engineering": { ISO9001: 1.2, ISO45001: 1.3, ECSA: 1.5 },
+  "Electrical Contracting": { ISO9001: 1.2, ISO45001: 1.5 },
+  "Plumbing & Pipefitting": { ISO9001: 1.0, ISO45001: 1.3 },
+  "Road Construction": { ISO9001: 1.2, ISO45001: 1.5, ISO14001: 1.3 },
+  "Water & Sanitation": { ISO9001: 1.0, ISO45001: 1.3, ISO14001: 1.5 },
+  "Mining & Resources": { ISO45001: 2.0, DMRE_MHSA: 2.0, ISO14001: 1.5, ISO9001: 1.0 },
+  "Energy & Power": { ISO45001: 1.5, ISO14001: 1.5, ISO9001: 1.2 },
+  "Manufacturing": { ISO9001: 1.5, ISO45001: 1.3, ISO14001: 1.3, POPIA: 1.2 },
+  "Telecommunications": { ISO27001: 1.5, ISO9001: 1.2, POPIA: 1.5 },
+  "Environmental Services": { ISO14001: 2.0, ISO9001: 1.0, ISO45001: 1.2 },
+  "Project Management": { ISO9001: 1.3, SACPCMP: 1.5, ISO45001: 1.2 },
+  "Consulting Engineering": { ECSA: 1.5, ISO9001: 1.3, ISO45001: 1.2 },
+  "Facilities Management": { ISO45001: 1.3, ISO9001: 1.2, ISO14001: 1.2 },
+  "IT Services": { ISO27001: 2.0, POPIA: 1.5, ISO9001: 1.2 },
+  "Healthcare": { ISO45001: 1.5, POPIA: 1.5, ISO9001: 1.3 },
+  "Logistics & Transport": { ISO39001: 2.0, ISO45001: 1.3, ISO9001: 1.2, ISO14001: 1.0 },
+  "Other": {},
+} as const
+
 export const ALLOWED_FILE_TYPES = [
   "application/pdf",
   "application/msword",

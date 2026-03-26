@@ -199,20 +199,28 @@ export async function deleteSubcontractor(id: string): Promise<ActionResult> {
 
 // ── Compliance Scoring ──────────────────────────────
 
-import { calculateComplianceScore, type ComplianceScore } from "./compliance-score"
+import { calculateComplianceScore, type ComplianceScore, type VendorScoringWeights } from "./compliance-score"
 
 export async function recalculateComplianceScore(subcontractorId: string): Promise<ActionResult<ComplianceScore>> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()
     if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
 
-    const sub = await db.subcontractor.findFirst({
-      where: { id: subcontractorId, organizationId: dbOrgId },
-      include: { certifications: { select: { expiresAt: true } } },
-    })
+    const [sub, org] = await Promise.all([
+      db.subcontractor.findFirst({
+        where: { id: subcontractorId, organizationId: dbOrgId },
+        include: { certifications: { select: { expiresAt: true } } },
+      }),
+      db.organization.findUnique({
+        where: { id: dbOrgId },
+        select: { settings: true },
+      }),
+    ])
     if (!sub) return { success: false, error: "Subcontractor not found" }
 
-    const score = calculateComplianceScore(sub)
+    const settings = (org?.settings as Record<string, unknown>) ?? {}
+    const customWeights = settings.vendorScoringWeights as Partial<VendorScoringWeights> | undefined
+    const score = calculateComplianceScore(sub, customWeights)
 
     await db.subcontractor.update({
       where: { id: subcontractorId },
