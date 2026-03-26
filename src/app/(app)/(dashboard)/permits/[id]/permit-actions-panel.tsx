@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
+import { SignaturePad } from "@/components/shared/signature-pad"
 import { canEdit } from "@/lib/permissions"
 import {
   transitionPermit,
@@ -68,6 +69,7 @@ export function PermitActionsPanel({
   const [isPending, startTransition] = useTransition()
   const [confirmTransition, setConfirmTransition] = useState<string | null>(null)
   const [closureNotes, setClosureNotes] = useState("")
+  const [closureSignature, setClosureSignature] = useState<string | null>(null)
 
   // Extension state
   const [showExtensionForm, setShowExtensionForm] = useState(false)
@@ -78,12 +80,15 @@ export function PermitActionsPanel({
 
   function handleTransition(newStatus: string) {
     startTransition(async () => {
-      const notes = (newStatus === "CLOSED" || newStatus === "SUSPENDED") ? closureNotes : undefined
+      const notes = (newStatus === "CLOSED" || newStatus === "SUSPENDED")
+        ? (closureNotes + (closureSignature ? `\n[SIGNATURE:${closureSignature}]` : ""))
+        : undefined
       const result = await transitionPermit(permitId, newStatus, notes)
       if (result.success) {
         toast.success(`Permit ${newStatus.toLowerCase().replace(/_/g, " ")}`)
         setConfirmTransition(null)
         setClosureNotes("")
+        setClosureSignature(null)
         router.refresh()
       } else {
         toast.error(result.error)
@@ -261,6 +266,7 @@ export function PermitActionsPanel({
           if (!open) {
             setConfirmTransition(null)
             setClosureNotes("")
+            setClosureSignature(null)
           }
         }}
         title="Confirm Status Change"
@@ -275,6 +281,13 @@ export function PermitActionsPanel({
             onChange={(e) => setClosureNotes(e.target.value)}
             placeholder="Notes (optional)..."
             className="mt-2"
+          />
+        )}
+        {confirmTransition === "CLOSED" && (
+          <SignaturePad
+            label="Closure signature"
+            onSave={(dataUrl) => setClosureSignature(dataUrl)}
+            className="mt-3"
           />
         )}
       </ConfirmDialog>

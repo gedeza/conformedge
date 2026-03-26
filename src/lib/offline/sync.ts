@@ -74,3 +74,40 @@ export async function processSyncQueue(): Promise<{ synced: number; failed: numb
 
   return { synced, failed }
 }
+
+/** Reset entries stuck in "syncing" state (e.g., from app crash) back to "pending" */
+export async function resetStaleSyncEntries(): Promise<number> {
+  try {
+    const entries = await getPendingSyncEntriesByStatus("syncing")
+    let resetCount = 0
+    for (const entry of entries) {
+      if (entry.id != null) {
+        await updateSyncEntry(entry.id, { status: "pending" })
+        resetCount++
+      }
+    }
+    return resetCount
+  } catch {
+    return 0
+  }
+}
+
+/** Get sync entries by status (internal helper) */
+async function getPendingSyncEntriesByStatus(status: string): Promise<SyncEntry[]> {
+  const db = await openDBInternal()
+  const tx = db.transaction("sync-queue", "readonly")
+  const index = tx.objectStore("sync-queue").index("status")
+  const request = index.getAll(status)
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+}
+
+function openDBInternal(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("conformedge-offline", 1)
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+}

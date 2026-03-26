@@ -3,11 +3,12 @@
 import { useState, useTransition, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Upload, X, FileText, Image as ImageIcon, Loader2 } from "lucide-react"
+import { Upload, X, FileText, Image as ImageIcon, Loader2, Camera } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ConfirmDialog } from "@/components/shared/confirm-dialog"
+import { CameraCapture } from "@/components/shared/camera-capture"
 import { canEdit, canDelete } from "@/lib/permissions"
 import { addEvidence, removeEvidence } from "../actions"
 
@@ -42,6 +43,7 @@ export function EvidenceGallery({ incidentId, evidence, role }: EvidenceGalleryP
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isUploading, setIsUploading] = useState(false)
+  const [showCamera, setShowCamera] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -101,7 +103,7 @@ export function EvidenceGallery({ incidentId, evidence, role }: EvidenceGalleryP
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle>Evidence & Photos</CardTitle>
         {canEdit(role) && (
-          <div>
+          <div className="flex items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -122,9 +124,51 @@ export function EvidenceGallery({ incidentId, evidence, role }: EvidenceGalleryP
                 <><Upload className="mr-2 h-4 w-4" />Upload</>
               )}
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCamera(!showCamera)}
+              disabled={isUploading}
+              className="gap-1"
+            >
+              <Camera className="h-4 w-4" />
+              {showCamera ? "Hide Camera" : "Take Photo"}
+            </Button>
           </div>
         )}
       </CardHeader>
+      {showCamera && canEdit(role) && (
+        <CardContent className="pt-0 pb-3">
+          <CameraCapture
+            label="Capture evidence photo"
+            onCapture={async (file) => {
+              setIsUploading(true)
+              try {
+                const formData = new FormData()
+                formData.append("file", file)
+                const uploadRes = await fetch("/api/upload", { method: "POST", body: formData })
+                if (!uploadRes.ok) {
+                  toast.error("Failed to upload photo")
+                  return
+                }
+                const { fileUrl, fileType, fileSize, fileName } = await uploadRes.json()
+                const result = await addEvidence(incidentId, fileUrl, fileName, fileType, fileSize)
+                if (result.success) {
+                  toast.success("Photo uploaded")
+                  router.refresh()
+                } else {
+                  toast.error(result.error)
+                }
+              } catch {
+                toast.error("Upload failed")
+              } finally {
+                setIsUploading(false)
+                setShowCamera(false)
+              }
+            }}
+          />
+        </CardContent>
+      )}
       <CardContent>
         {evidence.length === 0 ? (
           <p className="text-sm text-muted-foreground">No evidence files uploaded yet.</p>

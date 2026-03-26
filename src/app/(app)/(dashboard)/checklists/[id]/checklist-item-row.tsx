@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { FIELD_TYPES } from "@/lib/constants"
+import { useOfflineSync } from "@/hooks/use-offline-sync"
 import { toggleItemCompliance, updateItemEvidence, raiseCapaFromItem } from "../actions"
 import { FieldRenderer } from "./field-renderer"
 
@@ -33,10 +34,44 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
   const [showEvidence, setShowEvidence] = useState(false)
   const [evidence, setEvidence] = useState(item.evidence ?? "")
 
+  const { isOnline, queueAction } = useOfflineSync({
+    handlers: {
+      toggleCompliance: async (payload) => {
+        const result = await toggleItemCompliance(
+          payload.itemId as string,
+          payload.checklistId as string,
+          payload.value as boolean | null
+        )
+        return result
+      },
+      updateItemResponse: async (payload) => {
+        const result = await updateItemEvidence(
+          payload.itemId as string,
+          payload.checklistId as string,
+          payload.evidence as string
+        )
+        return result
+      },
+      updateItemEvidence: async (payload) => {
+        const result = await updateItemEvidence(
+          payload.itemId as string,
+          payload.checklistId as string,
+          payload.evidence as string
+        )
+        return result
+      },
+    },
+  })
+
   const isCustomField = item.fieldType && item.fieldType !== "COMPLIANCE"
   const fieldLabel = item.fieldType ? FIELD_TYPES[item.fieldType as keyof typeof FIELD_TYPES]?.label : null
 
   function handleToggle(value: boolean | null) {
+    if (!isOnline) {
+      queueAction("toggleCompliance", { itemId: item.id, checklistId, value })
+      toast.info("Saved offline — will sync when back online")
+      return
+    }
     startTransition(async () => {
       const result = await toggleItemCompliance(item.id, checklistId, value)
       if (!result.success) toast.error(result.error)
@@ -44,6 +79,12 @@ export function ChecklistItemRow({ item, checklistId }: ChecklistItemRowProps) {
   }
 
   function handleSaveEvidence() {
+    if (!isOnline) {
+      queueAction("updateItemEvidence", { itemId: item.id, checklistId, evidence })
+      toast.info("Saved offline — will sync when back online")
+      setShowEvidence(false)
+      return
+    }
     startTransition(async () => {
       const result = await updateItemEvidence(item.id, checklistId, evidence)
       if (result.success) {

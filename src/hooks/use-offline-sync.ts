@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { addToSyncQueue, getSyncQueueCount, type SyncEntry } from "@/lib/offline/db"
-import { processSyncQueue, registerSyncHandler } from "@/lib/offline/sync"
+import { processSyncQueue, registerSyncHandler, resetStaleSyncEntries } from "@/lib/offline/sync"
 
 interface UseOfflineSyncOptions {
   /** Server actions to register as sync handlers */
@@ -80,9 +80,9 @@ export function useOfflineSync(options?: UseOfflineSyncOptions): UseOfflineSyncR
     }
   }, [isOnline, pendingCount, syncNow])
 
-  // Poll pending count on mount
+  // Reset stale entries and poll pending count on mount
   useEffect(() => {
-    refreshCount()
+    resetStaleSyncEntries().then(() => refreshCount())
   }, [refreshCount])
 
   // Queue an action

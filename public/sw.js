@@ -1,4 +1,5 @@
 const CACHE_NAME = "conformedge-v1"
+const OFFLINE_URL = "/offline.html"
 
 const PRECACHE_URLS = [
   "/icons/icon-192x192.png",
@@ -6,9 +7,10 @@ const PRECACHE_URLS = [
   "/icons/apple-touch-icon.png",
   "/images/logo-icon.png",
   "/images/C_Edge_Logo.png",
+  OFFLINE_URL,
 ]
 
-// Install — precache static assets
+// Install — precache static assets + offline fallback
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
@@ -69,14 +71,24 @@ self.addEventListener("fetch", (event) => {
     return
   }
 
-  // Pages — network-first with fallback
+  // Pages — network-first with offline fallback for navigation
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          return response
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match(OFFLINE_URL)))
+    )
+    return
+  }
+
+  // Other GET requests — network-first
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok && request.mode === "navigate") {
-          const clone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
-        }
         return response
       })
       .catch(() => caches.match(request))
