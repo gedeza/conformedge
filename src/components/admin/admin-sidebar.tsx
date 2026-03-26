@@ -9,6 +9,7 @@ import {
   Users,
   CreditCard,
   Handshake,
+  Share2,
   ArrowLeft,
   Shield,
   FileText,
@@ -40,6 +41,7 @@ const adminItems = [
   { title: "Invoices", href: "/admin/invoices", icon: Receipt },
   { title: "Quotations", href: "/admin/quotations", icon: ClipboardList },
   { title: "Partners", href: "/admin/partners", icon: Handshake },
+  { title: "Referrals", href: "/admin/referrals", icon: Share2 },
   { title: "Terms", href: "/admin/terms", icon: FileText },
   { title: "Audit Trail", href: "/admin/audit-trail", icon: ScrollText },
 ]

@@ -943,6 +943,65 @@ export async function getAdminRevenue() {
 }
 
 // ─────────────────────────────────────────────
+// ADMIN REFERRAL MANAGEMENT
+// ─────────────────────────────────────────────
+
+export async function getAdminReferrals() {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { partners: [], totals: { totalReferrals: 0, conversions: 0, totalCommissionCents: 0, unpaidCommissionCents: 0, paidCommissionCents: 0 } }
+
+  const partners = await db.partner.findMany({
+    where: { tier: "REFERRAL" },
+    select: {
+      id: true,
+      name: true,
+      contactEmail: true,
+      contactPhone: true,
+      status: true,
+      commissionPercent: true,
+      accessToken: true,
+      createdAt: true,
+      approvedAt: true,
+      referrals: {
+        select: {
+          id: true,
+          code: true,
+          status: true,
+          referredEmail: true,
+          referredCompany: true,
+          clickCount: true,
+          commissionCents: true,
+          commissionMonthsEarned: true,
+          commissionPaidAt: true,
+          convertedAt: true,
+          createdAt: true,
+          referredOrg: { select: { name: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  })
+
+  // Calculate totals
+  const allReferrals = partners.flatMap(p => p.referrals)
+  const converted = allReferrals.filter(r => r.status === "CONVERTED")
+  const totalCommissionCents = converted.reduce((sum, r) => sum + (r.commissionCents ?? 0), 0)
+  const paidCommissionCents = converted.filter(r => r.commissionPaidAt).reduce((sum, r) => sum + (r.commissionCents ?? 0), 0)
+
+  return {
+    partners,
+    totals: {
+      totalReferrals: allReferrals.length,
+      conversions: converted.length,
+      totalCommissionCents,
+      unpaidCommissionCents: totalCommissionCents - paidCommissionCents,
+      paidCommissionCents,
+    },
+  }
+}
+
+// ─────────────────────────────────────────────
 // CROSS-ORG AUDIT TRAIL
 // ─────────────────────────────────────────────
 

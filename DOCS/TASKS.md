@@ -1,7 +1,7 @@
 # ConformEdge — Task Tracker
 
-**Last Updated:** 2026-03-25
-**Phase:** Phase 12 (Referral Partner System) in progress. Remaining from earlier: T34, T35, T37
+**Last Updated:** 2026-03-26
+**Phase:** Phase 12 nearly complete. Remaining: T156, T34, T35, T37, T143–T146
 
 ---
 
@@ -227,8 +227,8 @@ Strategy: **Cherry-pick 5 high-value features** from competitive gaps. Do NOT br
 Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are selling points.
 
 - [x] **T33** Add DMRE/MHSA compliance references for mining sector (8 chapters, 33 sub-clauses)
-- [ ] **T34** Add ECSA compliance references for engineering sector
-- [ ] **T35** Add SACPCMP compliance references for project management sector
+- [x] **T34** ECSA compliance references — 35 clauses seeded (Act 46 of 2000: registration, CPD, codes of conduct, practice standards) *(pre-existing)*
+- [x] **T35** SACPCMP compliance references — 32 clauses seeded (Act 48 of 2000: registration, CPD, fees, practice standards) *(pre-existing)*
 - [x] **T36** Add POPIA compliance references for IT services sector (11 chapters, 40 sub-clauses)
 - [ ] **T37** Make compliance scoring weights industry-aware (CIDB/BEE for construction, DMRE for mining, etc.)
 
@@ -242,7 +242,7 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T141** Per-user overage pricing added to landing page tier descriptions (+R99/R149/R199 per tier)
 - [x] **T142** Pricing strategy document — full market research, competitor analysis, consulting/government models (DOCS/pricing-strategy/PRICING-STRATEGY-2026.md)
 - [x] **T147** Add project + subcontractor limits per tier to prevent consultant abuse (plans.ts, limit-checks.ts, project actions, subcontractor actions)
-- [ ] **T143** Build "Become a Partner" landing page for consulting firms (future)
+- [x] **T143** "Become a Partner" landing page at `/partners` — 3 tier cards (Referral/Consulting/White-Label) with v2.0 pricing, revenue example table, CTAs. *(2026-03-26)*
 - [ ] **T144** Government price list PDF template for procurement (future)
 - [ ] **T145** Consultant dashboard — cross-org management view (future)
 - [ ] **T146** SITA vendor registration + B-BBEE certification (manual, business action)
@@ -356,11 +356,11 @@ Strategy: **Add depth per industry, not remove existing depth.** CIDB/BEE are se
 - [x] **T149** Referral partner approval workflow — admin approve/reject on `/admin/partners`, auto-generates referral code/link. *(2026-03-25)*
 - [x] **T150** Referral tracking landing page — `/ref/[code]` already existed (cookie-based attribution, 90-day expiry). *(pre-existing)*
 - [x] **T151** Referral attribution — ReferralAttribution component (pre-existing) handles SIGNED_UP on dashboard load. CONVERTED added to payment webhook on subscription activation. *(2026-03-25)*
-- [ ] **T152** Referral partner dashboard — lightweight self-service page at `/referral/dashboard` (email + code login, no Clerk). Shows: referral link, click count, sign-ups, conversions, commission earned, commission pending, payout history.
-- [ ] **T153** Commission calculation engine — monthly cron: for each `CONVERTED` referral in Year 1, calculate 10% of client's actual payments (respecting annual = 10 months). Create commission ledger entries.
-- [ ] **T154** Commission payout tracking — admin view to mark commissions as paid (EFT reference, date). Referral partner sees payout status on their dashboard.
+- [x] **T152** Referral partner dashboard — token-based self-service at `/referral/dashboard?token=XXX`. Shows: referral link, summary cards (active/conversions/earned/paid), referral history with commission accrual progress (X/12 months), Paid/Unpaid badges. *(2026-03-26)*
+- [x] **T153** Commission calculation engine — monthly accrual via payment webhook (not lump sum). Each `charge.success` for a referred org credits commissionPercent% × monthly amount. Annual plans credit all 12 months at once. `commissionMonthsEarned` field tracks progress. *(2026-03-26)*
+- [x] **T154** Commission payout tracking — `adminMarkCommissionPaid` action with bank reference + audit logging. Partner referrals page shows Paid/Unpaid status per referral. Referral dashboard shows paid vs unpaid totals. *(2026-03-26)*
 - [x] **T155** Referral welcome email — automated on approval with referral link, how-it-works, brochure PDF link. *(2026-03-25)*
-- [ ] **T156** Admin referral management — `/dashboard/admin/referrals` page to view all referral partners, approve/reject applications, view conversion metrics, manage payouts.
+- [x] **T156** Admin referral management — `/admin/referrals` page with summary cards (partners/referrals/conversions/commission owed/paid), per-partner breakdown with referral history, commission accrual progress, and "Mark Paid" button with EFT reference. Added to admin sidebar. *(2026-03-26)*
 
 ---
 
