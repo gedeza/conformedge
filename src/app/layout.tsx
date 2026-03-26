@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { ServiceWorkerRegistration } from "@/components/shared/sw-register"
+import { SplashScreen } from "@/components/shared/splash-screen"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -60,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
+        <SplashScreen />
         {children}
         <ServiceWorkerRegistration />
       </body>
