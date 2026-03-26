@@ -9,7 +9,7 @@
  * - 5 Objectives with measurements
  * - 1 Management Review with Maziya-specific agenda
  * - 8 CAPAs linked to incidents and audits
- * - 7 Subcontractors (construction, electrical, mining)
+ * - 7 Vendors (construction, electrical, mining)
  * - 6 Assessments (completed + scheduled)
  * - 3 Checklist Templates + instances
  * - 1 Audit Pack
@@ -1413,10 +1413,10 @@ async function main() {
   console.log("  ✅ Management review created with 8 agenda items and 5 actions")
 
   // ════════════════════════════════════════════════════════════════════
-  // STEP 9: Subcontractors
+  // STEP 9: Vendors
   // ════════════════════════════════════════════════════════════════════
 
-  console.log("\n🏗️  Creating subcontractors...")
+  console.log("\n🏗️  Creating vendors...")
 
   type SubDef = {
     name: string
@@ -1513,7 +1513,7 @@ async function main() {
   ]
 
   for (const def of subDefs) {
-    const sub = await prisma.subcontractor.create({
+    const sub = await prisma.vendor.create({
       data: {
         name: def.name,
         registrationNumber: def.regNo,
@@ -1524,7 +1524,7 @@ async function main() {
       },
     })
     for (const cert of def.certs) {
-      await prisma.subcontractorCertification.create({
+      await prisma.vendorCertification.create({
         data: {
           name: cert.name,
           issuedBy: cert.issuedBy,
@@ -1538,12 +1538,12 @@ async function main() {
               : cert.status === "APPROVED"
                 ? "Verified and accepted"
                 : undefined,
-          subcontractorId: sub.id,
+          vendorId: sub.id,
         },
       })
     }
   }
-  console.log(`  ✅ ${subDefs.length} subcontractors created with certifications`)
+  console.log(`  ✅ ${subDefs.length} vendors created with certifications`)
 
   // ════════════════════════════════════════════════════════════════════
   // STEP 10: Checklists
@@ -1814,10 +1814,10 @@ async function main() {
     { action: "CREATE", entityType: "AuditPack", entityId: "pack-1", metadata: { title: "ISO 45001 Surveillance Audit Pack" }, createdAt: daysAgo(2) },
     { action: "STATUS_CHANGE", entityType: "AuditPack", entityId: "pack-1", metadata: { from: "DRAFT", to: "READY" }, createdAt: daysAgo(1) },
 
-    // Subcontractor uploads
-    { action: "CERT_UPLOAD", entityType: "Subcontractor", entityId: "precision-welding", metadata: { cert: "SAIW Welding Certification", status: "APPROVED" }, createdAt: daysAgo(15) },
-    { action: "CERT_UPLOAD", entityType: "Subcontractor", entityId: "thabiso-electrical", metadata: { cert: "Medical Fitness Certificate", status: "PENDING_REVIEW" }, createdAt: daysAgo(10) },
-    { action: "STATUS_CHANGE", entityType: "SubcontractorCert", entityId: "ngwenya-safety", metadata: { cert: "Safety Competency Card", from: "PENDING_REVIEW", to: "REJECTED", reason: "Certificate expired" }, createdAt: daysAgo(8) },
+    // Vendor uploads
+    { action: "CERT_UPLOAD", entityType: "Vendor", entityId: "precision-welding", metadata: { cert: "SAIW Welding Certification", status: "APPROVED" }, createdAt: daysAgo(15) },
+    { action: "CERT_UPLOAD", entityType: "Vendor", entityId: "thabiso-electrical", metadata: { cert: "Medical Fitness Certificate", status: "PENDING_REVIEW" }, createdAt: daysAgo(10) },
+    { action: "STATUS_CHANGE", entityType: "VendorCert", entityId: "ngwenya-safety", metadata: { cert: "Safety Competency Card", from: "PENDING_REVIEW", to: "REJECTED", reason: "Certificate expired" }, createdAt: daysAgo(8) },
 
     // Document bulk upload activity
     { action: "CREATE", entityType: "Document", entityId: documents[10].id, metadata: { title: "Hazard Identification & Risk Assessment" }, createdAt: daysAgo(27) },
@@ -1859,7 +1859,7 @@ async function main() {
   console.log(`   Work Permits:    7 (all 7 types: HOT_WORK, ELECTRICAL, CONFINED_SPACE, HEIGHTS, LIFTING, EXCAVATION, GENERAL)`)
   console.log(`   Objectives:      5 (with monthly measurements + trend data)`)
   console.log(`   Management Rev:  1 (8 agenda items, 5 actions, multi-standard)`)
-  console.log(`   Subcontractors:  ${subDefs.length} (with certs, tier ratings, BEE levels)`)
+  console.log(`   Vendors:         ${subDefs.length} (with certs, tier ratings, BEE levels)`)
   console.log(`   Checklists:      3 templates + 2 instances (with custom fields)`)
   console.log(`   Audit Pack:      1 (READY status)`)
   console.log(`   Audit Trail:     ${auditEvents.length} events (spanning 60 days)`)

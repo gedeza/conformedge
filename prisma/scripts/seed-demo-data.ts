@@ -554,9 +554,9 @@ async function main() {
   }
   console.log(`   ✅ 5 CAPAs created with actions and clause links`)
 
-  // ── Step 6: Subcontractors ────────────────────────────────────────
+  // ── Step 6: Vendors ──────────────────────────────────────────────
 
-  console.log("\n🏗️  Creating subcontractors...")
+  console.log("\n🏗️  Creating vendors...")
 
   type SubDef = {
     name: string
@@ -617,7 +617,7 @@ async function main() {
   ]
 
   for (const def of subDefs) {
-    const sub = await prisma.subcontractor.create({
+    const sub = await prisma.vendor.create({
       data: {
         name: def.name,
         registrationNumber: def.regNo,
@@ -628,7 +628,7 @@ async function main() {
       },
     })
     for (const cert of def.certs) {
-      await prisma.subcontractorCertification.create({
+      await prisma.vendorCertification.create({
         data: {
           name: cert.name,
           issuedBy: cert.issuedBy,
@@ -642,12 +642,12 @@ async function main() {
               : cert.status === "APPROVED"
                 ? "Verified and accepted"
                 : undefined,
-          subcontractorId: sub.id,
+          vendorId: sub.id,
         },
       })
     }
   }
-  console.log(`   ✅ 4 subcontractors created with certifications`)
+  console.log(`   ✅ 4 vendors created with certifications`)
 
   // ── Step 7: Checklist Templates + Checklists ─────────────────────
 
