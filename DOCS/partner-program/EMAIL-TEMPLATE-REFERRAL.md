@@ -31,7 +31,10 @@ All commissions are paid monthly via EFT directly to your account.
 
 I've attached a short brochure that explains the programme in full — the commission structure, how to get started, and examples.
 
-**To register, simply reply to this email** with your full name and preferred bank account details. We'll set up your referral account and have your unique tracking link ready within 24 hours. No paperwork or agreements needed.
+**To register, visit our online registration page:**
+👉 **https://conformedge.isutech.co.za/referral/register**
+
+It takes less than 5 minutes — just fill in your details and we'll review your application and have your unique tracking link ready within 24 hours. No paperwork or agreements needed.
 
 If you have any questions, feel free to reply or give me a call. I'm happy to walk you through it.
 
