@@ -18,12 +18,12 @@ const nextConfig: NextConfig = {
     // CSP: allow Clerk auth, Sentry telemetry, Paystack checkout, inline styles (shadcn/ui)
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://*.sentry.io",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.paystack.co https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://*.sentry.io https://challenges.cloudflare.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://img.clerk.com https://*.clerk.accounts.dev",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://api.clerk.com https://*.sentry.io https://js.paystack.co https://api.paystack.co wss://*.clerk.accounts.dev",
-      "frame-src 'self' https://js.paystack.co https://*.clerk.accounts.dev",
+      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.conformedge.isutech.co.za https://api.clerk.com https://*.sentry.io https://js.paystack.co https://api.paystack.co wss://*.clerk.accounts.dev https://challenges.cloudflare.com",
+      "frame-src 'self' https://js.paystack.co https://*.clerk.accounts.dev https://challenges.cloudflare.com",
       "worker-src 'self' blob:",
       "media-src 'self' blob:",
       "object-src 'none'",
