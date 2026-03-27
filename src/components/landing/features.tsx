@@ -11,7 +11,7 @@ export function Features() {
             Features
           </span>
           <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything You Need for ISO Compliance
+            Everything You Need for SHEQ Compliance
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             From document upload to audit submission — a complete compliance management platform.

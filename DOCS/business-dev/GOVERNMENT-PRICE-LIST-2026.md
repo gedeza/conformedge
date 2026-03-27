@@ -14,7 +14,7 @@ B-BBEE Level: [To be inserted]
 
 ## Product
 
-**ConformEdge** — AI-Powered ISO Compliance Management Platform
+**ConformEdge** — AI-Powered SHEQ & Compliance Management Platform
 
 A cloud-based, multi-standard compliance management system designed for South African organisations. ConformEdge automates document classification, gap analysis, incident management, and audit preparation across 11 compliance standards, including MHSA, POPIA, ECSA, SACPCMP, and 7 ISO frameworks.
 

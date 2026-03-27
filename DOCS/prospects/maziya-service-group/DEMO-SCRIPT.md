@@ -36,7 +36,7 @@
 
 ### What to Show
 
-1. **Hero section** — "ISO Compliance Simplified by AI"
+1. **Hero section** — "SHEQ Compliance Simplified by AI"
    - Point out: 9001, 14001, 45001 — "These are the three standards you already hold"
 
 2. **Standards bar** — "9 Compliance Frameworks · 340+ Sub-Clauses"

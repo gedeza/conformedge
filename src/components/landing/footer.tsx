@@ -14,7 +14,7 @@ export function Footer() {
               <span className="text-lg font-bold tracking-tight">ConformEdge</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
-              AI-powered ISO compliance management for South African businesses
+              AI-powered SHEQ and compliance management for South African businesses
               and organisations.
             </p>
           </div>

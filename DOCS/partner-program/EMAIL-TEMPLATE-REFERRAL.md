@@ -10,9 +10,9 @@ Hi,
 
 I hope this message finds you well.
 
-I wanted to share an opportunity with you that I think you'll find interesting — especially if you know companies in construction, infrastructure, or manufacturing that need help with ISO compliance.
+I wanted to share an opportunity with you that I think you'll find interesting — especially if you know companies in construction, infrastructure, or manufacturing that need help with SHEQ compliance.
 
-**ConformEdge** is an AI-powered compliance management platform built for South African companies. We help businesses manage ISO standards (9001, 14001, 45001), safety incidents, work permits, equipment registers, and more — all from one platform.
+**ConformEdge** is an AI-powered SHEQ & compliance management platform built for South African companies. We help businesses manage ISO standards (9001, 14001, 45001), safety incidents, work permits, equipment registers, and more — all from one platform.
 
 We've just launched a **Referral Partner Programme**, and I thought of you:
 

@@ -30,7 +30,7 @@
 
 ## 1. Executive Summary
 
-ConformEdge is an AI-powered ISO Compliance Management platform built for South African construction and infrastructure companies. Our Partner Program enables SHEQ consultancies, compliance firms, and safety practitioners to manage multiple client organisations from a single platform.
+ConformEdge is an AI-powered SHEQ & Compliance Management platform built for South African construction and infrastructure companies. Our Partner Program enables SHEQ consultancies, compliance firms, and safety practitioners to manage multiple client organisations from a single platform.
 
 **Simple pricing. No hidden fees. No volume discount complexity.**
 
@@ -49,7 +49,7 @@ You start with 5 consultant seats and add client organisations as you grow. Your
 
 ### The Problem
 
-SHEQ consultancies in South Africa typically manage ISO compliance for 5–30 client companies. Today, each client would need their own ConformEdge subscription:
+SHEQ consultancies in South Africa typically manage SHEQ compliance for 5–30 client companies. Today, each client would need their own ConformEdge subscription:
 
 - **Essentials:** R2,299/mo per client
 - **Professional:** R5,499/mo per client
@@ -488,7 +488,7 @@ Refer 5 clients to Professional: **R32,994/year** in commission — with no ongo
 ### Requirements
 
 - Valid business registration or professional membership
-- Basic familiarity with ISO compliance standards
+- Basic familiarity with SHEQ compliance standards
 - No minimum referral count, no contract
 
 ---

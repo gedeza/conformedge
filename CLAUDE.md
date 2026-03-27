@@ -1,7 +1,7 @@
 # ConformEdge — Development Instructions
 
 ## Project Overview
-AI-powered ISO Compliance Management SaaS platform by ISU Technologies.
+AI-powered SHEQ & Compliance Management SaaS platform by ISU Technologies.
 Multi-tenant platform serving SA construction/infrastructure companies.
 
 ## Tech Stack

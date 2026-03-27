@@ -47,7 +47,7 @@ export default function AuthLayout({
             priority
           />
           <p className="mt-4 max-w-md text-center text-sm leading-relaxed text-white/60">
-            AI-powered ISO compliance management for South African construction
+            AI-powered SHEQ and compliance management for South African construction
             and infrastructure companies.
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function AuthLayout({
           />
           <div className="text-center">
             <h1 className="text-xl font-bold tracking-tight">ConformEdge</h1>
-            <p className="text-xs text-muted-foreground">ISO Compliance Management</p>
+            <p className="text-xs text-muted-foreground">SHEQ & Compliance Management</p>
           </div>
         </div>
         <div className="relative z-10">

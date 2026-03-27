@@ -278,7 +278,7 @@ export function InvoicePDF(props: InvoicePDFProps) {
             <Image src={LOGO_PATH} style={styles.logo} />
             <View>
               <Text style={styles.brandName}>ConformEdge</Text>
-              <Text style={styles.brandTag}>AI-Powered ISO Compliance Management</Text>
+              <Text style={styles.brandTag}>AI-Powered SHEQ & Compliance Management</Text>
             </View>
           </View>
           <View>

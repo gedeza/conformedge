@@ -29,7 +29,7 @@ export default function ReferralRegisterPage() {
               <span className="text-amber-400">No Cost. No Management.</span>
             </h1>
             <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-              Know companies that need ISO compliance? Introduce them to
+              Know companies that need SHEQ compliance? Introduce them to
               ConformEdge and earn 10% of their subscription for 12 months.
             </p>
           </div>

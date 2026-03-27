@@ -2,14 +2,14 @@
 
 **Date:** 2025-02-25
 **Analyst:** Nhlanhla Mnyandu (nhlanhla@isutech.co.za)
-**Project:** ConformEdge ISO Compliance Management Platform
+**Project:** ConformEdge SHEQ & Compliance Management Platform
 **Report Type:** Codebase Audit & Implementation Assessment
 
 ---
 
 ## 1. Executive Summary
 
-ConformEdge is a SaaS ISO Compliance Management Platform targeting SMEs, enterprises, and consulting firms. It aims to centralize and automate compliance with international standards (ISO 9001, 14001, 22301, 27001, 37001, 39001, 45001) and regulations (GDPR, HIPAA, SOC 2).
+ConformEdge is a SaaS SHEQ & Compliance Management Platform targeting SMEs, enterprises, and consulting firms. It aims to centralize and automate compliance with international standards (ISO 9001, 14001, 22301, 27001, 37001, 39001, 45001) and regulations (GDPR, HIPAA, SOC 2).
 
 The MVP goals include: BCP Generator, AI Risk Assessments, Audit Readiness Checklists, Document Management, and Compliance Dashboards.
 

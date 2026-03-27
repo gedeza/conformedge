@@ -1,6 +1,6 @@
 # Service Level Agreement (SLA)
 
-## ConformEdge ISO Compliance Platform
+## ConformEdge SHEQ & Compliance Platform
 
 ---
 
@@ -29,7 +29,7 @@ Address: [CLIENT ADDRESS]
 
 | Term | Definition |
 |------|-----------|
-| **Platform** | The ConformEdge ISO Compliance Platform, a cloud-based SaaS application for ISO compliance management |
+| **Platform** | The ConformEdge SHEQ & Compliance Platform, a cloud-based SaaS application for SHEQ & compliance management |
 | **Uptime** | The percentage of time the Platform is available and operational during a calendar month, excluding Scheduled Maintenance |
 | **Downtime** | Any period during which the Platform is unavailable to the Client due to issues within ISU Technologies' control |
 | **Scheduled Maintenance** | Pre-planned maintenance windows communicated to the Client in advance |
@@ -42,7 +42,7 @@ Address: [CLIENT ADDRESS]
 
 ## 2. Service Description
 
-ISU Technologies provides [CLIENT COMPANY NAME] with access to the ConformEdge ISO Compliance Platform on the **[TIER] Tier**, which includes:
+ISU Technologies provides [CLIENT COMPANY NAME] with access to the ConformEdge SHEQ & Compliance Platform on the **[TIER] Tier**, which includes:
 
 <!-- Essentials Tier -->
 <!-- - Up to 5 users -->
@@ -329,4 +329,4 @@ By signing below, both parties acknowledge and agree to the terms of this Servic
 
 ---
 
-*This Service Level Agreement forms part of the service contract between ISU Technologies and [CLIENT COMPANY NAME] for the ConformEdge ISO Compliance Platform. Document reference: SLA-[CLIENT-CODE]-[YEAR]-[SEQ].*
+*This Service Level Agreement forms part of the service contract between ISU Technologies and [CLIENT COMPANY NAME] for the ConformEdge SHEQ & Compliance Platform. Document reference: SLA-[CLIENT-CODE]-[YEAR]-[SEQ].*

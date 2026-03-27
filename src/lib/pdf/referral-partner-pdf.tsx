@@ -242,7 +242,7 @@ export function ReferralPartnerPDF() {
           <Text style={st.coverTitle}>Earn by Referring.</Text>
           <Text style={st.coverTitleAccent}>No Cost. No Management.</Text>
           <Text style={st.coverTagline}>
-            Know a company that needs ISO compliance?{"\n"}
+            Know a company that needs SHEQ compliance?{"\n"}
             Introduce them to ConformEdge and earn 10% commission{"\n"}
             on their first year — with zero effort on your part.
           </Text>
@@ -371,12 +371,12 @@ export function ReferralPartnerPDF() {
         <View style={st.highlightBox}>
           <Text style={st.highlightTitle}>SHEQ Professionals & Anyone in Construction</Text>
           <Text style={st.highlightText}>
-            Engineers, project managers, procurement officers — if you know companies that need ISO compliance to win tenders, every introduction has value.
+            Engineers, project managers, procurement officers — if you know companies that need SHEQ compliance to win tenders, every introduction has value.
           </Text>
         </View>
 
         <Text style={st.sectionSubtitle}>What ConformEdge Offers Your Referrals</Text>
-        <Bullet>AI-powered ISO compliance platform — 11 SA standards, 36 modules</Bullet>
+        <Bullet>AI-powered SHEQ compliance platform — 11 SA standards, 36 modules</Bullet>
         <Bullet>Incident management, work permits, equipment tracking, audit packs</Bullet>
         <Bullet>Mobile/offline access for on-site safety work (PWA)</Bullet>
         <Bullet>Built for SA construction — from R2,299/mo</Bullet>

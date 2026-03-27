@@ -1,4 +1,4 @@
-# ConformEdge — AI-Powered ISO Compliance Management
+# ConformEdge — AI-Powered SHEQ & Compliance Management
 
 **Stop losing tenders to disorganised compliance. Start winning them in minutes.**
 

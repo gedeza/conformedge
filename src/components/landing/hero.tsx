@@ -15,11 +15,11 @@ export function Hero() {
           <div className="lg:col-span-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-landing-accent/30 bg-landing-accent/10 px-4 py-1.5 text-xs font-medium text-landing-accent">
               <span className="size-1.5 rounded-full bg-landing-accent animate-pulse" />
-              AI-Powered Compliance Management for SA Industry
+              AI-Powered SHEQ & Compliance Management for SA Industry
             </span>
 
             <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-              ISO Compliance{" "}
+              SHEQ Compliance{" "}
               <span className="bg-gradient-to-r from-landing-cta to-landing-accent bg-clip-text text-transparent">
                 Simplified by AI
               </span>
@@ -65,7 +65,7 @@ export function Hero() {
             <div className="relative">
               <Image
                 src="/images/C_Edge_Logo.png"
-                alt="ConformEdge — AI-Powered ISO Compliance"
+                alt="ConformEdge — AI-Powered SHEQ & Compliance Management"
                 width={400}
                 height={220}
                 className="drop-shadow-2xl"

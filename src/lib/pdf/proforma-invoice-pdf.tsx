@@ -48,7 +48,7 @@ export function ProformaInvoicePDF(props: ProformaInvoicePDFProps) {
             <Image src={LOGO_PATH} style={s.logo} />
             <View>
               <Text style={s.brandName}>ConformEdge</Text>
-              <Text style={s.brandTag}>AI-Powered ISO Compliance Management</Text>
+              <Text style={s.brandTag}>AI-Powered SHEQ & Compliance Management</Text>
             </View>
           </View>
           <View>

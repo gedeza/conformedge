@@ -99,7 +99,7 @@ Pay annually and get **2 months free** (pay 10 months for 12).
 
 - SHEQ consultancies managing multiple construction/infrastructure companies
 - Health & safety practitioners serving multiple clients
-- ISO compliance consultants
+- SHEQ compliance consultants
 - Quality management firms
 - Any professional services firm doing compliance work for multiple organizations
 
@@ -155,6 +155,6 @@ A **mutual collaboration** between two businesses working together as equals.
 
 ---
 
-*ConformEdge by ISU Technologies | AI-Powered ISO Compliance Management*
+*ConformEdge by ISU Technologies | AI-Powered SHEQ & Compliance Management*
 *All prices in South African Rand (ZAR), excluding 15% VAT.*
 *For full details: DOCS/partner-program/PARTNER-PROGRAM-2026.md*

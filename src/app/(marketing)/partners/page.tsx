@@ -80,7 +80,7 @@ export default function PartnersPage() {
             Grow Your Business With ConformEdge
           </h1>
           <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-            Earn recurring revenue by offering SA&apos;s most comprehensive ISO compliance platform to your clients.
+            Earn recurring revenue by offering SA&apos;s most comprehensive SHEQ compliance platform to your clients.
             Three partnership models to match your business.
           </p>
         </div>

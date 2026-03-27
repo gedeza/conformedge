@@ -1,7 +1,7 @@
 # ConformEdge — South African Government Market Research
 
 **Date:** 2026-03-13
-**Purpose:** Identify government departments, SOEs, and municipalities that require ISO compliance and could be ConformEdge customers.
+**Purpose:** Identify government departments, SOEs, and municipalities that require SHEQ compliance and could be ConformEdge customers.
 **Pricing Reference:** Government annual licensing R150K–R600K/year
 
 ---

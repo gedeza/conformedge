@@ -24,7 +24,7 @@ const TERMS_CONTENT = `# ConformEdge Terms of Service, Privacy Policy & Acceptab
 
 ### 1. Agreement Overview
 
-These Terms of Service ("Terms") govern your access to and use of the ConformEdge platform ("Service"), an AI-powered ISO compliance management platform operated by ISU Technologies (Pty) Ltd.
+These Terms of Service ("Terms") govern your access to and use of the ConformEdge platform ("Service"), an AI-powered SHEQ & compliance management platform operated by ISU Technologies (Pty) Ltd.
 
 By clicking "Accept & Continue", creating an account, or using the Service, you agree to be bound by these Terms, our Privacy Policy (Part B), and our Acceptable Use Policy (Part C). If you are accepting on behalf of an organization, you represent that you have the authority to bind that organization.
 
@@ -34,7 +34,7 @@ This agreement is legally binding under the Electronic Communications and Transa
 
 ConformEdge provides:
 - AI-powered document classification and gap analysis
-- ISO compliance management across multiple standards (ISO 9001, 14001, 45001, 27001, 22301, 37001, 39001, DMRE/MHSA, POPIA)
+- SHEQ & compliance management across multiple standards (ISO 9001, 14001, 45001, 27001, 22301, 37001, 39001, DMRE/MHSA, POPIA)
 - Incident management, work permits, objectives tracking, and management reviews
 - Subcontractor compliance portals
 - Audit pack generation and reporting
@@ -208,7 +208,7 @@ In the event of a security compromise affecting your personal information, we wi
 
 ### 20. Permitted Use
 
-You may use ConformEdge solely for lawful ISO compliance management purposes consistent with your subscription tier.
+You may use ConformEdge solely for lawful SHEQ and compliance management purposes consistent with your subscription tier.
 
 ### 21. Prohibited Conduct
 

@@ -48,7 +48,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     tier: "STARTER",
     name: "Essentials",
     monthlyPriceZar: 2_299_00,     // R2,299 in cents
-    description: "For small businesses getting started with ISO compliance.",
+    description: "For small businesses getting started with SHEQ compliance.",
     limits: {
       maxUsers: 3,
       additionalUserFeeZar: 399_00,   // R399/additional user/month

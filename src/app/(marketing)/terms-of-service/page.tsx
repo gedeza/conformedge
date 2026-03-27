@@ -27,7 +27,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold mt-8 mb-3">2. Service Description</h2>
               <p className="text-muted-foreground leading-relaxed">
-                ConformEdge is an AI-powered ISO compliance management platform. The Platform provides tools for
+                ConformEdge is an AI-powered SHEQ and compliance management platform. The Platform provides tools for
                 document management, compliance assessments, CAPA tracking, incident management, and related
                 compliance activities. The Platform is provided on a subscription basis.
               </p>

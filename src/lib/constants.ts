@@ -1,5 +1,5 @@
 export const APP_NAME = "ConformEdge"
-export const APP_DESCRIPTION = "AI-Powered ISO Compliance Management"
+export const APP_DESCRIPTION = "AI-Powered SHEQ & Compliance Management"
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
 
 export const ROLES = {

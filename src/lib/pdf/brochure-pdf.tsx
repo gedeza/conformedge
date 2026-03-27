@@ -337,7 +337,7 @@ function PageHeader({ title }: { title: string }) {
 function PageFooter() {
   return (
     <View style={st.footer} fixed>
-      <Text style={st.footerText}>ConformEdge — AI-Powered ISO Compliance Management</Text>
+      <Text style={st.footerText}>ConformEdge — AI-Powered SHEQ & Compliance Management</Text>
       <Text style={st.footerText}>conformedge.isutech.co.za | nhlanhla@isutech.co.za</Text>
       <Text style={st.footerText} render={({ pageNumber }) => `Page ${pageNumber}`} />
     </View>
@@ -404,7 +404,7 @@ export function BrochurePDF() {
         <View style={st.coverAccentBar} />
         <View style={st.coverContent}>
           <Image src={LOGO_PATH} style={st.coverLogo} />
-          <Text style={st.coverTitle}>AI-Powered ISO</Text>
+          <Text style={st.coverTitle}>AI-Powered SHEQ</Text>
           <Text style={st.coverTitleAccent}>Compliance Management</Text>
           <Text style={st.coverTagline}>
             Stop losing tenders to disorganised compliance.{"\n"}

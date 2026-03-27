@@ -1,6 +1,6 @@
 # Service Level Agreement (SLA)
 
-## ConformEdge ISO Compliance Platform
+## ConformEdge SHEQ & Compliance Platform
 
 ---
 
@@ -29,7 +29,7 @@ Address: House No 1136 Morula Street, Mokopane, Mahwelereng Zone 1, Limpopo, 062
 
 | Term | Definition |
 |------|-----------|
-| **Platform** | The ConformEdge ISO Compliance Platform, a cloud-based SaaS application for ISO compliance management |
+| **Platform** | The ConformEdge SHEQ & Compliance Platform, a cloud-based SaaS application for SHEQ & compliance management |
 | **Uptime** | The percentage of time the Platform is available and operational during a calendar month, excluding Scheduled Maintenance |
 | **Downtime** | Any period during which the Platform is unavailable to the Client due to issues within ISU Technologies' control |
 | **Scheduled Maintenance** | Pre-planned maintenance windows communicated to the Client in advance |
@@ -42,7 +42,7 @@ Address: House No 1136 Morula Street, Mokopane, Mahwelereng Zone 1, Limpopo, 062
 
 ## 2. Service Description
 
-ISU Technologies provides AE SHEQ (PTY) LTD with access to the ConformEdge ISO Compliance Platform on the **Business Tier**, which includes:
+ISU Technologies provides AE SHEQ (PTY) LTD with access to the ConformEdge SHEQ & Compliance Platform on the **Business Tier**, which includes:
 
 - Up to 25 users (+R199/user beyond)
 - All 11 compliance frameworks (ISO 9001, 14001, 45001, 27001, 19011, 31000, 44001, DMRE/MHSA, POPIA, ECSA, SACPCMP)
@@ -302,4 +302,4 @@ By signing below, both parties acknowledge and agree to the terms of this Servic
 
 ---
 
-*This Service Level Agreement forms part of the service contract between ISU Technologies and AE SHEQ (PTY) LTD for the ConformEdge ISO Compliance Platform. Document reference: SLA-AESHEQ-2026-001.*
+*This Service Level Agreement forms part of the service contract between ISU Technologies and AE SHEQ (PTY) LTD for the ConformEdge SHEQ & Compliance Platform. Document reference: SLA-AESHEQ-2026-001.*

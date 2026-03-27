@@ -288,7 +288,7 @@ export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, b
         <strong>How it works:</strong>
       </p>
       <ul style={{ fontSize: "13px", color: "#3f3f46", lineHeight: "1.8", margin: "0 0 16px 0", paddingLeft: "20px" }}>
-        <li>Share this link with companies that need ISO compliance management</li>
+        <li>Share this link with companies that need SHEQ compliance management</li>
         <li>When they sign up through your link, you earn 10% of what they pay</li>
         <li>Commission is paid monthly via EFT for the client's first 12 months</li>
         <li>We handle everything — onboarding, training, and support</li>

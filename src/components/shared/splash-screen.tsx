@@ -40,7 +40,7 @@ export function SplashScreen() {
           ConformEdge
         </h1>
         <p className="text-sm text-slate-400">
-          AI-Powered Compliance
+          AI-Powered SHEQ & Compliance
         </p>
         <div className="mt-4 h-1 w-24 overflow-hidden rounded-full bg-slate-800">
           <div className="h-full w-full animate-pulse rounded-full bg-slate-500" />

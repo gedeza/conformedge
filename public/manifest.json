@@ -1,7 +1,7 @@
 {
-  "name": "ConformEdge — ISO Compliance Management",
+  "name": "ConformEdge — SHEQ & Compliance Management",
   "short_name": "ConformEdge",
-  "description": "AI-powered ISO compliance management for South African businesses",
+  "description": "AI-powered SHEQ and compliance management for South African businesses",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

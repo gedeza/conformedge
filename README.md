@@ -5,7 +5,7 @@
 <h1 align="center">ConformEdge</h1>
 
 <p align="center">
-  <strong>AI-Powered ISO Compliance Management for Construction &amp; Infrastructure</strong>
+  <strong>AI-Powered SHEQ &amp; Compliance Management for Construction &amp; Infrastructure</strong>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ## Overview
 
-ConformEdge is a multi-tenant SaaS platform that helps South African construction, engineering, and infrastructure companies manage ISO compliance. It combines AI-powered document classification with structured compliance workflows — from gap assessments and corrective actions to one-click audit pack generation.
+ConformEdge is a multi-tenant SaaS platform that helps South African construction, engineering, and infrastructure companies manage SHEQ compliance. It combines AI-powered document classification with structured compliance workflows — from gap assessments and corrective actions to one-click audit pack generation.
 
 Built by [ISU Technologies](https://isutech.co.za).
 

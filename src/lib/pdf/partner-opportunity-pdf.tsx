@@ -246,7 +246,7 @@ export function PartnerOpportunityPDF() {
           <Text style={st.coverTitle}>Build a Compliance</Text>
           <Text style={st.coverTitleAccent}>Revenue Stream</Text>
           <Text style={st.coverTagline}>
-            Add ISO compliance management as a service to your business.{"\n"}
+            Add SHEQ & compliance management as a service to your business.{"\n"}
             Manage construction clients' safety compliance on one platform —{"\n"}
             simple pricing, healthy margins, recurring monthly revenue.
           </Text>
@@ -334,7 +334,7 @@ export function PartnerOpportunityPDF() {
         </Text>
 
         <Text style={st.sectionSubtitle}>What You Offer Your Clients</Text>
-        <Bullet>ISO compliance management — documents, assessments, audit packs</Bullet>
+        <Bullet>SHEQ & compliance management — documents, assessments, audit packs</Bullet>
         <Bullet>Incident management with COIDA and MHSA statutory reporting</Bullet>
         <Bullet>Work permits — hot work, confined space, heights, excavation, and more</Bullet>
         <Bullet>Equipment register with calibration and maintenance tracking</Bullet>

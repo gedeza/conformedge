@@ -10,7 +10,7 @@ Hi Ida,
 
 Thank you for meeting with us today. It was great explaining the ConformEdge Referral Partner Programme to you, and I appreciate your interest in the opportunity.
 
-As we discussed, this is a straightforward way to earn extra income by connecting companies you know with our ISO compliance management platform. Here's a quick recap of how it works:
+As we discussed, this is a straightforward way to earn extra income by connecting companies you know with our SHEQ & compliance management platform. Here's a quick recap of how it works:
 
 **You refer. We do the rest.**
 

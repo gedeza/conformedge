@@ -11,7 +11,7 @@
 
 | Tier | Monthly Price | Target Segment | User Limit | AI Credits/mo |
 |---|---|---|---|---|
-| **Starter** | R699 | Small contractors starting ISO compliance | 5 users | 50 |
+| **Starter** | R699 | Small contractors starting SHEQ compliance | 5 users | 50 |
 | **Professional** | R1,999 | Growing companies, multiple standards | 15 users | 200 |
 | **Business** | R5,499 | Multi-site firms, advanced compliance | 50 users | 500 |
 | **Enterprise** | Custom (R10K+) | Large organisations, full control & scale | Unlimited | Unlimited |

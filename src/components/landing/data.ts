@@ -252,7 +252,7 @@ export const PRICING_TIERS: PricingTier[] = [
   {
     name: "Essentials",
     monthlyPrice: 2299,
-    description: "For small businesses getting started with ISO compliance.",
+    description: "For small businesses getting started with SHEQ compliance.",
     features: [
       "3 users included (+R399/additional user)",
       "2 compliance frameworks",

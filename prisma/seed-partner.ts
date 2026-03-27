@@ -37,7 +37,7 @@ async function main() {
       contactPhone: "+27 31 000 0000",
       website: "https://isutech.co.za",
       registrationNumber: "2020/123456/07",
-      description: "ISO compliance consulting for SA construction and infrastructure companies",
+      description: "SHEQ compliance consulting for SA construction and infrastructure companies",
       basePlatformFeeCents: 499500, // 5 seats × R999 = R4,995/mo
       defaultSmallFeeCents: 149900,  // Essentials R1,499
       defaultMediumFeeCents: 199900, // Professional R1,999

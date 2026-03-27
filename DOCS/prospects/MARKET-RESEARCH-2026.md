@@ -80,7 +80,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 |---------|-------------|------|------|
 | **Sasol** | 9001, 14001, 45001 | JSE, ~28,000 employees, ~25% of SA ISO 14001 certs | Enterprise |
 | **ArcelorMittal SA** | 9001, 14001, 45001 | JSE, largest African steel producer | Enterprise |
-| **Sappi** | 9001, 14001 | JSE, 40+ years ISO compliance | Business/Enterprise |
+| **Sappi** | 9001, 14001 | JSE, 40+ years SHEQ compliance | Business/Enterprise |
 
 ### Food & Beverage
 
@@ -266,7 +266,7 @@ Only 41 of 257 municipalities received clean audits in 2023/24. ISO-aligned syst
 ### Month 1-2
 5. Reach out to SRM SHEQ, WWISE, ISO Quest about Partner Program
 6. Offer free trials to SAIOSH/SAQI members
-7. Publish content: "5 Signs You've Outgrown Spreadsheets for ISO Compliance"
+7. Publish content: "5 Signs You've Outgrown Spreadsheets for SHEQ Compliance"
 8. Attend/sponsor a SAIOSH or SAQI event
 
 ### Month 3-6

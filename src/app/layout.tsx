@@ -24,9 +24,9 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "ConformEdge — AI-Powered ISO Compliance Management",
+  title: "ConformEdge — AI-Powered SHEQ & Compliance Management",
   description:
-    "Streamline your ISO compliance workflow with AI-powered document classification, gap assessments, CAPA management, and audit pack generation. Built for SA construction & infrastructure.",
+    "Streamline your SHEQ and compliance workflow with AI-powered document classification, gap assessments, CAPA management, and audit pack generation. Built for SA construction & infrastructure.",
   authors: [{ name: "ISU Technologies", url: "https://isutech.co.za" }],
   creator: "ISU Technologies",
   publisher: "ISU Technologies",
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "ConformEdge — AI-Powered ISO Compliance Management",
-    description: "Manage ISO 9001, 14001, 45001, 27001 and more from a single platform. Built for South African construction companies.",
+    title: "ConformEdge — AI-Powered SHEQ & Compliance Management",
+    description: "Manage SHEQ compliance — ISO 9001, 14001, 45001 and SA regulatory frameworks from a single platform. Built for South African construction companies.",
     type: "website",
     siteName: "ConformEdge",
   },

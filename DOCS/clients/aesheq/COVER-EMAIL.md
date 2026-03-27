@@ -2,7 +2,7 @@
 
 **To:** simon.moletsane@aesheq.co.za
 **From:** nhlanhla@isutech.co.za
-**Subject:** ConformEdge ISO Compliance Platform — Client Brief & Service Level Agreement
+**Subject:** ConformEdge SHEQ & Compliance Platform — Client Brief & Service Level Agreement
 
 ---
 
@@ -12,7 +12,7 @@ I trust this email finds you well.
 
 Please find attached the following documents for your review:
 
-1. **Client Brief** — This document outlines everything you need to know about the ConformEdge ISO Compliance Platform and what AE SHEQ (PTY) LTD will receive on the Business tier. I kindly ask that you read through it carefully as it covers the full scope of the platform features, commercial terms, implementation plan, and your founding client benefits.
+1. **Client Brief** — This document outlines everything you need to know about the ConformEdge SHEQ & Compliance Platform and what AE SHEQ (PTY) LTD will receive on the Business tier. I kindly ask that you read through it carefully as it covers the full scope of the platform features, commercial terms, implementation plan, and your founding client benefits.
 
 2. **Service Level Agreement (SLA)** — This document details our service commitments to you, including platform uptime guarantees, support response times, data security measures, and your rights as a client.
 

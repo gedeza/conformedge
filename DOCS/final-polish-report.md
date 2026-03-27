@@ -136,7 +136,7 @@ Every core engine — AI classification, gap detection, IMS, CAPAs, checklists, 
 | AI classifier | NO — fully generic | Adapts to any seeded standard |
 | Gap detection | NO — fully generic | Clause coverage driven |
 | IMS engine | NO — fully generic | Union-Find on cross-references |
-| All other features | NO — fully generic | Universal ISO compliance |
+| All other features | NO — fully generic | Universal SHEQ compliance |
 
 ---
 
@@ -249,7 +249,7 @@ ConformEdge supports 7 ISO standards. Here's how each industry maps:
 | Grade 8-9 | R40M+ | 50-200+ | ISO essentially mandatory | Business / Enterprise |
 
 ### The Sales Message
-> **"Win bigger tenders. Upgrade your CIDB grading. Manage ISO compliance for less than 5% of what a consultant charges."**
+> **"Win bigger tenders. Upgrade your CIDB grading. Manage SHEQ compliance for less than 5% of what a consultant charges."**
 
 Small SA companies pursue ISO for **tender access and CIDB grading**, not quality improvement. All marketing should lead with this.
 

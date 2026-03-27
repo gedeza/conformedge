@@ -3,7 +3,7 @@
 > **Date:** 11 March 2026 (Revised)
 > **Author:** ISU Technologies
 > **Status:** Final — verified by multi-agent pricing analysis
-> **Context:** 34-module AI-powered ISO compliance platform, 39 data models, 11 standards (7 ISO + DMRE/MHSA + POPIA + ECSA + SACPCMP), SA market focus
+> **Context:** 34-module AI-powered SHEQ compliance platform, 39 data models, 11 standards (7 ISO + DMRE/MHSA + POPIA + ECSA + SACPCMP), SA market focus
 
 ---
 
@@ -177,7 +177,7 @@ Our AI document classification alone saves 15-30 minutes per document. A company
 
 ### Tier 1: Essentials — R2,299/mo
 
-*For small businesses getting started with ISO compliance*
+*For small businesses getting started with SHEQ compliance*
 
 | Dimension | Limit |
 |-----------|-------|
