@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils"
 import { NAV_LINKS } from "./data"
 
-export function Header() {
+export function Header({ hideAuth = false }: { hideAuth?: boolean }) {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -54,14 +54,16 @@ export function Header() {
         </nav>
 
         {/* Desktop CTAs */}
-        <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" asChild className="text-white/80 hover:text-white hover:bg-white/10">
-            <Link href="/sign-in">Sign In</Link>
-          </Button>
-          <Button asChild className="bg-landing-cta text-landing-navy font-semibold hover:bg-landing-cta/90">
-            <Link href="/sign-up">Get Started</Link>
-          </Button>
-        </div>
+        {!hideAuth && (
+          <div className="hidden items-center gap-3 md:flex">
+            <Button variant="ghost" asChild className="text-white/80 hover:text-white hover:bg-white/10">
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button asChild className="bg-landing-cta text-landing-navy font-semibold hover:bg-landing-cta/90">
+              <Link href="/sign-up">Get Started</Link>
+            </Button>
+          </div>
+        )}
 
         {/* Mobile Drawer */}
         <Sheet open={open} onOpenChange={setOpen}>
@@ -90,14 +92,16 @@ export function Header() {
                   </a>
                 ))}
               </nav>
-              <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
-                <Button variant="ghost" asChild className="justify-start text-white/80 hover:text-white hover:bg-white/10">
-                  <Link href="/sign-in" onClick={() => setOpen(false)}>Sign In</Link>
-                </Button>
-                <Button asChild className="bg-landing-cta text-landing-navy font-semibold hover:bg-landing-cta/90">
-                  <Link href="/sign-up" onClick={() => setOpen(false)}>Get Started</Link>
-                </Button>
-              </div>
+              {!hideAuth && (
+                <div className="flex flex-col gap-3 pt-4 border-t border-white/10">
+                  <Button variant="ghost" asChild className="justify-start text-white/80 hover:text-white hover:bg-white/10">
+                    <Link href="/sign-in" onClick={() => setOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild className="bg-landing-cta text-landing-navy font-semibold hover:bg-landing-cta/90">
+                    <Link href="/sign-up" onClick={() => setOpen(false)}>Get Started</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </SheetContent>
         </Sheet>

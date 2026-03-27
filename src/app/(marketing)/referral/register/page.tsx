@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ReferralRegisterPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <Header hideAuth />
       <main className="flex-1">
         {/* Hero */}
         <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 sm:py-20">
