@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Link2, TrendingUp, Banknote, Clock } from "lucide-react"
 import { format } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
+import { ReferralResourceHub } from "./resource-hub"
 
 export const metadata: Metadata = {
   title: "Referral Dashboard | ConformEdge",
@@ -145,17 +146,11 @@ export default async function ReferralDashboardPage({
           </CardContent>
         </Card>
 
-        {/* How It Works */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="text-base">How Commission Works</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>You earn {partner.commissionPercent}% of each referred client&apos;s subscription for their first 12 months.</p>
-            <p>Commission accrues monthly as the client pays — not as a lump sum. Annual subscribers credit all 12 months at once.</p>
-            <p>Payouts are processed monthly via EFT to the bank account you registered with.</p>
-          </CardContent>
-        </Card>
+        {/* Partner Resource Hub */}
+        <ReferralResourceHub
+          commissionPercent={partner.commissionPercent}
+          referralLink={activeReferralCode ? `${appUrl}/ref/${activeReferralCode}` : appUrl}
+        />
       </div>
     </div>
   )
