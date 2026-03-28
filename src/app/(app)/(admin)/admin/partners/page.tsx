@@ -101,9 +101,7 @@ export default async function AdminPartnersPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {partners
-              .filter((p) => p.status !== "APPLIED")
-              .map((p) => {
+            {partners.map((p) => {
                 const tierConfig = PARTNER_TIERS[p.tier as keyof typeof PARTNER_TIERS]
                 const statusConfig = PARTNER_STATUSES[p.status as keyof typeof PARTNER_STATUSES]
                 const activeReferral = p.referrals[0]
@@ -159,8 +157,8 @@ export default async function AdminPartnersPage() {
                 )
               })}
 
-            {partners.filter((p) => p.status !== "APPLIED").length === 0 && (
-              <p className="text-sm text-muted-foreground">No approved partners yet.</p>
+            {partners.length === 0 && (
+              <p className="text-sm text-muted-foreground">No partners yet.</p>
             )}
           </div>
         </CardContent>

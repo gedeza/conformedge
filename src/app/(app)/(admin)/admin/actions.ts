@@ -785,6 +785,7 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
   })
 
   revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
 
   return { success: true, data: { code, url } }
 }
@@ -817,6 +818,7 @@ export async function rejectReferralPartner(partnerId: string): Promise<ActionRe
   })
 
   revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
 
   return { success: true }
 }

@@ -23,29 +23,101 @@ export function SplashScreen() {
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-950 transition-opacity duration-500 ${
-        fadeOut ? "opacity-0" : "opacity-100"
-      }`}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#020617",
+        transition: "opacity 500ms ease-out",
+        opacity: fadeOut ? 0 : 1,
+        /* Prevent scroll behind splash on mobile */
+        touchAction: "none",
+        overscrollBehavior: "none",
+        /* Safe area for notched devices */
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        /* Use dvh to avoid mobile address bar glitch */
+        minHeight: "100dvh",
+      }}
     >
-      <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-300">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 16,
+          opacity: fadeOut ? 0 : 1,
+          transform: fadeOut ? "scale(0.95)" : "scale(1)",
+          transition: "opacity 400ms ease-out, transform 400ms ease-out",
+          /* Prevent layout shift */
+          willChange: "opacity, transform",
+        }}
+      >
         <Image
           src="/images/logo-icon.png"
           alt=""
           width={72}
           height={72}
           className="rounded-2xl"
+          style={{ width: 72, height: 72 }}
           priority
         />
-        <h1 className="text-xl font-semibold tracking-tight text-white">
+        <h1
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: 600,
+            letterSpacing: "-0.025em",
+            color: "#ffffff",
+            margin: 0,
+            textAlign: "center",
+          }}
+        >
           ConformEdge
         </h1>
-        <p className="text-sm text-slate-400">
+        <p
+          style={{
+            fontSize: "0.875rem",
+            color: "#94a3b8",
+            margin: 0,
+            textAlign: "center",
+            paddingInline: 24,
+          }}
+        >
           AI-Powered SHEQ & Compliance
         </p>
-        <div className="mt-4 h-1 w-24 overflow-hidden rounded-full bg-slate-800">
-          <div className="h-full w-full animate-pulse rounded-full bg-slate-500" />
+        <div
+          style={{
+            marginTop: 16,
+            height: 4,
+            width: 96,
+            overflow: "hidden",
+            borderRadius: 9999,
+            backgroundColor: "#1e293b",
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              borderRadius: 9999,
+              backgroundColor: "#64748b",
+              animation: "splash-pulse 1.5s ease-in-out infinite",
+            }}
+          />
         </div>
       </div>
+
+      {/* Inline keyframes — avoids Tailwind animation glitches on mobile */}
+      <style>{`
+        @keyframes splash-pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+      `}</style>
     </div>
   )
 }
