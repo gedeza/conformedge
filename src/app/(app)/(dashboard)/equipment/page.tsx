@@ -6,6 +6,7 @@ import { getEquipment, getProjectOptions } from "./actions"
 import { EquipmentTable } from "./equipment-table"
 import { EquipmentFormTrigger } from "./equipment-form-trigger"
 import { EquipmentHelpPanel } from "./equipment-help-panel"
+import { EquipmentExportButton } from "./equipment-export-button"
 import { getAuthContext } from "@/lib/auth"
 
 interface Props {
@@ -51,6 +52,7 @@ export default async function EquipmentPage({ searchParams }: Props) {
     <div className="space-y-6">
       <PageHeader heading="Equipment" description="Manage equipment, calibration, and maintenance records">
         <EquipmentHelpPanel />
+        {equipment.length > 0 && <EquipmentExportButton />}
         <EquipmentFormTrigger projects={projects} role={role} />
       </PageHeader>
       {equipment.length === 0 && pagination.total === 0 ? (

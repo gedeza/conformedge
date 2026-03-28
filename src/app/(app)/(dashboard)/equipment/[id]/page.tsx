@@ -15,6 +15,7 @@ import { CalibrationTab } from "./calibration-tab"
 import { MaintenanceTab } from "./maintenance-tab"
 import { RepairTab } from "./repair-tab"
 import { EquipmentStatusActions } from "./equipment-status-actions"
+import { EquipmentCardButton } from "./equipment-card-button"
 import { getAuthContext } from "@/lib/auth"
 
 interface Props {
@@ -46,6 +47,7 @@ export default async function EquipmentDetailPage({ params }: Props) {
             {equipment.location && ` — ${equipment.location}`}
           </p>
         </div>
+        <EquipmentCardButton equipmentId={equipment.id} />
         <EquipmentStatusActions equipmentId={equipment.id} currentStatus={equipment.status} role={role} />
       </div>
 
