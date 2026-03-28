@@ -18,7 +18,7 @@ import {
 import { format, differenceInDays } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
 import { ReferralResourceHub } from "./resource-hub"
-import { CopyLinkButton, GenerateReferralLinkButton } from "./dashboard-actions"
+import { CopyLinkButton, RequestLinkRenewalButton } from "./dashboard-actions"
 import { PartnerSettings } from "./partner-settings"
 import { DashboardTabs } from "./dashboard-tabs"
 
@@ -168,10 +168,7 @@ export default async function ReferralDashboardPage({
                   Generate a new link to start sharing with prospects.
                 </p>
               </div>
-              <GenerateReferralLinkButton
-                token={token}
-                hasActiveLink={false}
-              />
+              <RequestLinkRenewalButton token={token} />
             </div>
           )}
         </CardContent>
@@ -213,15 +210,7 @@ export default async function ReferralDashboardPage({
       {/* Referral History with enhanced status */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Referral History</CardTitle>
-            {activeReferralUrl && (
-              <GenerateReferralLinkButton
-                token={token}
-                hasActiveLink={true}
-              />
-            )}
-          </div>
+          <CardTitle className="text-base">Referral History</CardTitle>
         </CardHeader>
         <CardContent>
           {referrals.length > 0 ? (
@@ -398,7 +387,7 @@ export default async function ReferralDashboardPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-7xl px-6 py-6">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Referral Dashboard</h1>

@@ -936,7 +936,7 @@ export function ReferralResourceHub({
   referralLink: string
 }) {
   return (
-    <div className="mt-8">
+    <div>
       <div className="mb-4">
         <h2 className="text-lg font-bold">Partner Resource Hub</h2>
         <p className="text-sm text-muted-foreground">

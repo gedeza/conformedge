@@ -257,6 +257,12 @@ export function PartnerSettings({
             Commission payouts are sent to this bank account via EFT on the last
             business day of each month.
           </p>
+          <div className="rounded-md bg-amber-50 border border-amber-200 px-3 py-2 mt-2">
+            <p className="text-xs text-amber-800">
+              Our team is automatically notified when bank details are changed
+              and will verify before the next payout.
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <BankForm

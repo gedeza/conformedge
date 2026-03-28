@@ -2,16 +2,9 @@
 
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Copy, Check, Link2, Plus, RefreshCw } from "lucide-react"
+import { Copy, Check, RefreshCw, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { generateReferralLinkSelfService } from "./actions"
+import { requestLinkRenewal } from "./actions"
 
 /* ------------------------------------------------------------------ */
 /*  Copy Link Button                                                   */
@@ -45,75 +38,42 @@ export function CopyLinkButton({ url }: { url: string }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Generate / Renew Link Button                                       */
+/*  Request Link Renewal Button (admin-controlled)                     */
 /* ------------------------------------------------------------------ */
 
-export function GenerateReferralLinkButton({
-  token,
-  hasActiveLink,
-}: {
-  token: string
-  hasActiveLink: boolean
-}) {
+export function RequestLinkRenewalButton({ token }: { token: string }) {
   const [pending, startTransition] = useTransition()
-  const [generatedUrl, setGeneratedUrl] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
+  const [requested, setRequested] = useState(false)
 
-  function handleGenerate() {
+  function handleRequest() {
     startTransition(async () => {
-      const result = await generateReferralLinkSelfService(token)
-      if (result.success && result.data) {
-        setGeneratedUrl(result.data.url)
-        toast.success("Referral link generated!")
+      const result = await requestLinkRenewal(token)
+      if (result.success) {
+        setRequested(true)
+        toast.success("Renewal request sent! We'll review and generate a new link for you.")
       } else {
         toast.error(result.error)
       }
     })
   }
 
-  async function handleCopy() {
-    if (!generatedUrl) return
-    await navigator.clipboard.writeText(generatedUrl)
-    setCopied(true)
-    toast.success("Link copied to clipboard")
-    setTimeout(() => setCopied(false), 2000)
+  if (requested) {
+    return (
+      <Button size="sm" variant="outline" disabled className="gap-1.5">
+        <Check className="h-4 w-4 text-green-600" />
+        Request Sent
+      </Button>
+    )
   }
 
-  if (hasActiveLink) return null
-
   return (
-    <>
-      <Button size="sm" onClick={handleGenerate} disabled={pending}>
-        <Plus className="mr-1 h-4 w-4" />
-        {pending ? "Generating..." : "Generate New Link"}
-      </Button>
-
-      <Dialog open={!!generatedUrl} onOpenChange={() => setGeneratedUrl(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Referral Link Generated</DialogTitle>
-            <DialogDescription>
-              Your new referral link is ready. Share it with potential clients to
-              start earning commission.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
-            <Link2 className="h-4 w-4 shrink-0 text-primary" />
-            <code className="flex-1 truncate text-sm">{generatedUrl}</code>
-            <Button variant="ghost" size="icon" onClick={handleCopy}>
-              {copied ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            This link expires in 90 days. You can generate a new one after it
-            expires.
-          </p>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Button size="sm" variant="outline" onClick={handleRequest} disabled={pending} className="gap-1.5">
+      {pending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <RefreshCw className="h-4 w-4" />
+      )}
+      Request New Link
+    </Button>
   )
 }
