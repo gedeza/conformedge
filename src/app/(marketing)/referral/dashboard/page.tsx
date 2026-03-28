@@ -21,6 +21,7 @@ import { ReferralResourceHub } from "./resource-hub"
 import { CopyLinkButton, RequestLinkRenewalButton } from "./dashboard-actions"
 import { PartnerSettings } from "./partner-settings"
 import { DashboardTabs } from "./dashboard-tabs"
+import { DashboardBrandHeader, DashboardBrandFooter } from "./dashboard-header"
 
 export const metadata: Metadata = {
   title: "Referral Dashboard | ConformEdge",
@@ -386,24 +387,24 @@ export default async function ReferralDashboardPage({
   )
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-6">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Referral Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Welcome back, {partner.name}. Commission rate:{" "}
-            {partner.commissionPercent}%
-          </p>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col">
+      <DashboardBrandHeader
+        partnerName={partner.name}
+        commissionPercent={partner.commissionPercent}
+      />
 
-        {/* Tabbed Layout */}
-        <DashboardTabs
-          overviewContent={overviewContent}
-          resourcesContent={resourcesContent}
-          settingsContent={settingsContent}
-        />
-      </div>
+      <main className="flex-1">
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          {/* Tabbed Layout */}
+          <DashboardTabs
+            overviewContent={overviewContent}
+            resourcesContent={resourcesContent}
+            settingsContent={settingsContent}
+          />
+        </div>
+      </main>
+
+      <DashboardBrandFooter />
     </div>
   )
 }

@@ -486,7 +486,7 @@ function MarketingKitTab({ referralLink }: { referralLink: string }) {
           {[
             {
               label: "WhatsApp / SMS",
-              msg: `Hi [Name], I came across a platform that handles ISO compliance, incidents, work permits, and equipment tracking — all in one system built for SA companies. It's called ConformEdge. Worth a quick look: ${referralLink}`,
+              msg: `Hi [Name], I came across a SHEQ & compliance management platform that handles safety standards, incidents, work permits, and equipment tracking — all in one system built for SA companies. It's called ConformEdge. Worth a quick look: ${referralLink}`,
             },
             {
               label: "Email Introduction",
@@ -494,7 +494,7 @@ function MarketingKitTab({ referralLink }: { referralLink: string }) {
             },
             {
               label: "LinkedIn Message",
-              msg: `Hi [Name], do you manage SHEQ compliance for construction or infrastructure projects? ConformEdge is an SA-built platform that centralises ISO standards, incidents, permits, and audits in one system — with AI document classification. Might be relevant: ${referralLink}`,
+              msg: `Hi [Name], do you manage SHEQ compliance for construction or infrastructure projects? ConformEdge is an SA-built SHEQ & compliance management platform that handles safety standards, incidents, permits, and audits in one system — with AI document classification. Might be relevant: ${referralLink}`,
             },
           ].map((m) => (
             <div key={m.label} className="rounded-lg border p-4">
