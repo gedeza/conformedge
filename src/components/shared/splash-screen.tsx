@@ -8,10 +8,10 @@ export function SplashScreen() {
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
-    // Start fade-out after app hydrates + brief pause for perceived smoothness
-    const timer = setTimeout(() => setFadeOut(true), 300)
+    // Keep splash visible for 10s so users can read the message
+    const timer = setTimeout(() => setFadeOut(true), 10000)
     // Remove from DOM after fade animation completes
-    const remove = setTimeout(() => setVisible(false), 800)
+    const remove = setTimeout(() => setVisible(false), 10500)
     return () => {
       clearTimeout(timer)
       clearTimeout(remove)

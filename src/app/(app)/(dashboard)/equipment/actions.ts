@@ -153,7 +153,7 @@ export async function createEquipment(values: EquipmentFormValues): Promise<Acti
         commissionDate: parsed.commissionDate || null,
         warrantyExpiry: parsed.warrantyExpiry || null,
         projectId: parsed.projectId || null,
-        specifications: parsed.specifications ?? undefined,
+        specifications: parsed.specifications ?? null,
         notes: parsed.notes || null,
         organizationId: dbOrgId,
       },
@@ -210,7 +210,7 @@ export async function updateEquipment(id: string, values: EquipmentFormValues): 
         commissionDate: parsed.commissionDate || null,
         warrantyExpiry: parsed.warrantyExpiry || null,
         projectId: parsed.projectId || null,
-        specifications: parsed.specifications ?? undefined,
+        specifications: parsed.specifications ?? null,
         notes: parsed.notes || null,
       },
     })

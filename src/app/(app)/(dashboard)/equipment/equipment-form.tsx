@@ -231,7 +231,7 @@ export function EquipmentForm({ open, onOpenChange, equipment, projects }: Equip
                 <FormField control={form.control} name="category" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value || undefined}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger></FormControl>
                       <SelectContent>
                         {EQUIPMENT_CATEGORIES.map((cat) => (
@@ -289,10 +289,10 @@ export function EquipmentForm({ open, onOpenChange, equipment, projects }: Equip
                   <FormField control={form.control} name="projectId" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Assigned Project</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={(v) => field.onChange(v === "none" ? "" : v)} value={field.value || "none"}>
                         <FormControl><SelectTrigger><SelectValue placeholder="None" /></SelectTrigger></FormControl>
                         <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {projects.map((p) => (
                             <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                           ))}
