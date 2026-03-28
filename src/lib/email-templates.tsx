@@ -2,7 +2,10 @@ import React from "react"
 import type { NotificationType } from "@/types"
 
 const BRAND_COLOR = "#1e3a5f"
+const BRAND_LIGHT = "#2d5a8e"
+const ACCENT_COLOR = "#0d9488"
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+const LOGO_URL = `${APP_URL}/images/C_Edge_Logo.png`
 
 const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint: string }> = {
   DOCUMENT_EXPIRY: {
@@ -127,6 +130,10 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
   },
 }
 
+/* ─────────────────────────────────────────────
+   SHARED LAYOUT
+   ───────────────────────────────────────────── */
+
 function EmailLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
@@ -135,14 +142,23 @@ function EmailLayout({ children }: { children: React.ReactNode }) {
           <tbody>
             <tr>
               <td align="center">
-                <table width="600" cellPadding={0} cellSpacing={0} style={{ backgroundColor: "#ffffff", borderRadius: "8px", overflow: "hidden" }}>
+                <table width="600" cellPadding={0} cellSpacing={0} style={{ backgroundColor: "#ffffff", borderRadius: "8px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
                   <tbody>
                     {/* Header */}
                     <tr>
-                      <td style={{ backgroundColor: BRAND_COLOR, padding: "24px 32px" }}>
-                        <span style={{ color: "#ffffff", fontSize: "20px", fontWeight: "bold" }}>
-                          ConformEdge
-                        </span>
+                      <td style={{ backgroundColor: BRAND_COLOR, padding: "20px 32px" }}>
+                        <table width="100%" cellPadding={0} cellSpacing={0}>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <img src={LOGO_URL} alt="ConformEdge" width="160" height="40" style={{ display: "block", maxWidth: "160px", height: "auto" }} />
+                              </td>
+                              <td align="right" style={{ color: "#8ab4d8", fontSize: "11px", verticalAlign: "middle" }}>
+                                AI-Powered SHEQ & Compliance
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </td>
                     </tr>
                     {/* Body */}
@@ -153,13 +169,26 @@ function EmailLayout({ children }: { children: React.ReactNode }) {
                     </tr>
                     {/* Footer */}
                     <tr>
-                      <td style={{ padding: "24px 32px", borderTop: "1px solid #e4e4e7", color: "#71717a", fontSize: "12px" }}>
-                        <p style={{ margin: "0 0 8px 0" }}>
-                          This is an automated notification from ConformEdge.
-                        </p>
-                        <p style={{ margin: 0, color: "#a1a1aa" }}>
-                          &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies. All rights reserved.
-                        </p>
+                      <td style={{ padding: "24px 32px", borderTop: "1px solid #e4e4e7", backgroundColor: "#fafafa" }}>
+                        <table width="100%" cellPadding={0} cellSpacing={0}>
+                          <tbody>
+                            <tr>
+                              <td style={{ color: "#71717a", fontSize: "12px" }}>
+                                <p style={{ margin: "0 0 6px 0", fontWeight: "bold", color: "#52525b" }}>
+                                  ConformEdge by ISU Technologies
+                                </p>
+                                <p style={{ margin: "0 0 4px 0" }}>
+                                  <a href={`${APP_URL}`} style={{ color: ACCENT_COLOR, textDecoration: "none" }}>conformedge.isutech.co.za</a>
+                                  {" | "}
+                                  <a href="mailto:support@isutech.co.za" style={{ color: ACCENT_COLOR, textDecoration: "none" }}>support@isutech.co.za</a>
+                                </p>
+                                <p style={{ margin: "6px 0 0 0", color: "#a1a1aa", fontSize: "11px" }}>
+                                  &copy; 2025&ndash;{new Date().getFullYear()} ISU Technologies (Pty) Ltd. All rights reserved.
+                                </p>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </td>
                     </tr>
                   </tbody>
@@ -172,6 +201,10 @@ function EmailLayout({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
+
+/* ─────────────────────────────────────────────
+   SHARED COMPONENTS
+   ───────────────────────────────────────────── */
 
 function Badge({ color, label }: { color: string; label: string }) {
   return (
@@ -193,16 +226,16 @@ function Badge({ color, label }: { color: string; label: string }) {
   )
 }
 
-function CTAButton({ href, label }: { href: string; label: string }) {
+function CTAButton({ href, label, color }: { href: string; label: string; color?: string }) {
   return (
     <table cellPadding={0} cellSpacing={0} style={{ marginTop: "24px" }}>
       <tbody>
         <tr>
           <td
             style={{
-              backgroundColor: BRAND_COLOR,
+              backgroundColor: color || BRAND_COLOR,
               borderRadius: "6px",
-              padding: "12px 24px",
+              padding: "14px 28px",
             }}
           >
             <a
@@ -212,6 +245,7 @@ function CTAButton({ href, label }: { href: string; label: string }) {
                 textDecoration: "none",
                 fontSize: "14px",
                 fontWeight: "bold",
+                letterSpacing: "0.02em",
               }}
             >
               {label}
@@ -222,6 +256,14 @@ function CTAButton({ href, label }: { href: string; label: string }) {
     </table>
   )
 }
+
+function Divider() {
+  return <hr style={{ border: "none", borderTop: "1px solid #e4e4e7", margin: "24px 0" }} />
+}
+
+/* ─────────────────────────────────────────────
+   NOTIFICATION EMAIL
+   ───────────────────────────────────────────── */
 
 interface NotificationEmailProps {
   title: string
@@ -251,61 +293,13 @@ export function NotificationEmail({ title, message, type }: NotificationEmailPro
   )
 }
 
+/* ─────────────────────────────────────────────
+   AUDIT PACK EMAIL
+   ───────────────────────────────────────────── */
+
 interface AuditPackEmailProps {
   packTitle: string
   organizationName: string
-}
-
-interface ReferralWelcomeEmailProps {
-  partnerName: string
-  referralUrl: string
-  referralCode: string
-  brochureUrl: string
-  dashboardUrl?: string
-}
-
-export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, brochureUrl, dashboardUrl }: ReferralWelcomeEmailProps) {
-  return (
-    <EmailLayout>
-      <Badge color="#f59e0b" label="Referral Partner" />
-      <h1 style={{ fontSize: "20px", color: "#18181b", margin: "16px 0 8px 0" }}>
-        Welcome to the ConformEdge Referral Programme
-      </h1>
-      <p style={{ fontSize: "14px", color: "#3f3f46", lineHeight: "1.6", margin: "0 0 12px 0" }}>
-        Hi {partnerName}, your referral partner account has been approved. You can start
-        earning 10% commission on every company you refer.
-      </p>
-      <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "3px solid #f59e0b", borderRadius: "4px", padding: "12px", margin: "0 0 16px 0" }}>
-        <p style={{ fontSize: "12px", color: "#6b7280", margin: "0 0 4px 0" }}>Your referral link:</p>
-        <p style={{ fontSize: "14px", fontWeight: "bold", color: "#1e3a5f", margin: "0", wordBreak: "break-all" }}>
-          {referralUrl}
-        </p>
-        <p style={{ fontSize: "11px", color: "#6b7280", margin: "4px 0 0 0" }}>
-          Code: {referralCode} | Valid for 90 days
-        </p>
-      </div>
-      <p style={{ fontSize: "13px", color: "#3f3f46", lineHeight: "1.6", margin: "0 0 8px 0" }}>
-        <strong>How it works:</strong>
-      </p>
-      <ul style={{ fontSize: "13px", color: "#3f3f46", lineHeight: "1.8", margin: "0 0 16px 0", paddingLeft: "20px" }}>
-        <li>Share this link with companies that need SHEQ compliance management</li>
-        <li>When they sign up through your link, you earn 10% of what they pay</li>
-        <li>Commission is paid monthly via EFT for the client's first 12 months</li>
-        <li>We handle everything — onboarding, training, and support</li>
-      </ul>
-      <CTAButton href={referralUrl} label="Share Your Referral Link" />
-      {dashboardUrl && (
-        <p style={{ fontSize: "12px", color: "#3f3f46", lineHeight: "1.5", margin: "16px 0 0 0" }}>
-          Track your referrals and commission:{" "}
-          <a href={dashboardUrl} style={{ color: "#0d9488", fontWeight: "bold" }}>Open Your Referral Dashboard</a>
-        </p>
-      )}
-      <p style={{ fontSize: "12px", color: "#71717a", lineHeight: "1.5", margin: "16px 0 0 0" }}>
-        Download the full programme brochure:{" "}
-        <a href={brochureUrl} style={{ color: "#0d9488" }}>Referral Partner Brochure (PDF)</a>
-      </p>
-    </EmailLayout>
-  )
 }
 
 export function AuditPackEmail({ packTitle, organizationName }: AuditPackEmailProps) {
@@ -326,3 +320,201 @@ export function AuditPackEmail({ packTitle, organizationName }: AuditPackEmailPr
   )
 }
 
+/* ─────────────────────────────────────────────
+   REFERRAL WELCOME EMAIL (Enhanced)
+   ───────────────────────────────────────────── */
+
+interface ReferralWelcomeEmailProps {
+  partnerName: string
+  referralUrl: string
+  referralCode: string
+  brochureUrl: string
+  dashboardUrl?: string
+}
+
+export function ReferralWelcomeEmail({ partnerName, referralUrl, referralCode, brochureUrl, dashboardUrl }: ReferralWelcomeEmailProps) {
+  return (
+    <EmailLayout>
+      {/* Hero section */}
+      <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: "24px" }}>
+        <tbody>
+          <tr>
+            <td style={{ backgroundColor: "#f0f9ff", borderRadius: "8px", padding: "24px", borderLeft: `4px solid ${ACCENT_COLOR}` }}>
+              <Badge color="#f59e0b" label="Referral Partner" />
+              <h1 style={{ fontSize: "22px", color: BRAND_COLOR, margin: "12px 0 8px 0" }}>
+                Welcome to the Partner Programme!
+              </h1>
+              <p style={{ fontSize: "15px", color: "#3f3f46", lineHeight: "1.6", margin: 0 }}>
+                Hi <strong>{partnerName}</strong>, your referral partner account has been approved.
+                Start earning commission on every company you refer to ConformEdge.
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Referral link card */}
+      <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: "24px" }}>
+        <tbody>
+          <tr>
+            <td style={{ backgroundColor: BRAND_COLOR, borderRadius: "8px", padding: "20px" }}>
+              <p style={{ fontSize: "11px", color: "#8ab4d8", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: "bold" }}>
+                Your Unique Referral Link
+              </p>
+              <p style={{ fontSize: "16px", fontWeight: "bold", color: "#ffffff", margin: "0 0 8px 0", wordBreak: "break-all" }}>
+                {referralUrl}
+              </p>
+              <table cellPadding={0} cellSpacing={0}>
+                <tbody>
+                  <tr>
+                    <td style={{ backgroundColor: "#ffffff", borderRadius: "4px", padding: "8px 16px" }}>
+                      <a href={referralUrl} style={{ color: BRAND_COLOR, textDecoration: "none", fontSize: "13px", fontWeight: "bold" }}>
+                        Copy & Share Link
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p style={{ fontSize: "11px", color: "#8ab4d8", margin: "10px 0 0 0" }}>
+                Code: <strong style={{ color: "#ffffff" }}>{referralCode}</strong> | Valid for 90 days
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* Commission breakdown */}
+      <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: "24px" }}>
+        <tbody>
+          <tr>
+            <td style={{ backgroundColor: "#fefce8", border: "1px solid #fef08a", borderRadius: "8px", padding: "20px" }}>
+              <p style={{ fontSize: "14px", fontWeight: "bold", color: "#854d0e", margin: "0 0 12px 0" }}>
+                Your Commission Structure
+              </p>
+              <table width="100%" cellPadding={0} cellSpacing={0}>
+                <tbody>
+                  <tr>
+                    <td width="33%" align="center" style={{ padding: "8px" }}>
+                      <p style={{ fontSize: "28px", fontWeight: "bold", color: "#b45309", margin: "0" }}>10%</p>
+                      <p style={{ fontSize: "11px", color: "#92400e", margin: "4px 0 0 0" }}>Commission Rate</p>
+                    </td>
+                    <td width="33%" align="center" style={{ padding: "8px" }}>
+                      <p style={{ fontSize: "28px", fontWeight: "bold", color: "#b45309", margin: "0" }}>12</p>
+                      <p style={{ fontSize: "11px", color: "#92400e", margin: "4px 0 0 0" }}>Months Earned</p>
+                    </td>
+                    <td width="33%" align="center" style={{ padding: "8px" }}>
+                      <p style={{ fontSize: "28px", fontWeight: "bold", color: "#b45309", margin: "0" }}>EFT</p>
+                      <p style={{ fontSize: "11px", color: "#92400e", margin: "4px 0 0 0" }}>Monthly Payout</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      {/* How it works — numbered steps */}
+      <p style={{ fontSize: "15px", fontWeight: "bold", color: BRAND_COLOR, margin: "0 0 16px 0" }}>
+        How It Works
+      </p>
+      <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: "24px" }}>
+        <tbody>
+          {[
+            { num: "1", title: "Share your link", desc: "Send your referral link to companies that need SHEQ compliance management." },
+            { num: "2", title: "They sign up", desc: "When a company registers through your link, we track the referral automatically." },
+            { num: "3", title: "You earn commission", desc: "Receive 10% of their subscription payments for the first 12 months, paid via EFT." },
+            { num: "4", title: "We handle the rest", desc: "We manage all onboarding, training, and ongoing support for your referrals." },
+          ].map((step) => (
+            <tr key={step.num}>
+              <td style={{ padding: "8px 12px 8px 0", verticalAlign: "top", width: "36px" }}>
+                <div style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  backgroundColor: BRAND_COLOR,
+                  color: "#ffffff",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  lineHeight: "32px",
+                }}>
+                  {step.num}
+                </div>
+              </td>
+              <td style={{ padding: "8px 0", verticalAlign: "top" }}>
+                <p style={{ fontSize: "14px", fontWeight: "bold", color: "#18181b", margin: "0 0 2px 0" }}>{step.title}</p>
+                <p style={{ fontSize: "13px", color: "#52525b", margin: "0", lineHeight: "1.5" }}>{step.desc}</p>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <Divider />
+
+      {/* Dashboard access */}
+      {dashboardUrl && (
+        <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: "20px" }}>
+          <tbody>
+            <tr>
+              <td style={{ backgroundColor: "#f8fafc", borderRadius: "8px", padding: "20px", border: "1px solid #e2e8f0" }}>
+                <p style={{ fontSize: "14px", fontWeight: "bold", color: BRAND_COLOR, margin: "0 0 6px 0" }}>
+                  Your Partner Dashboard
+                </p>
+                <p style={{ fontSize: "13px", color: "#52525b", lineHeight: "1.5", margin: "0 0 12px 0" }}>
+                  Track clicks, sign-ups, conversions, and commission earnings in real time.
+                </p>
+                <table cellPadding={0} cellSpacing={0}>
+                  <tbody>
+                    <tr>
+                      <td style={{ backgroundColor: ACCENT_COLOR, borderRadius: "6px", padding: "12px 24px" }}>
+                        <a href={dashboardUrl} style={{ color: "#ffffff", textDecoration: "none", fontSize: "13px", fontWeight: "bold" }}>
+                          Open Partner Dashboard
+                        </a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+
+      {/* Resources */}
+      <table width="100%" cellPadding={0} cellSpacing={0}>
+        <tbody>
+          <tr>
+            <td style={{ padding: "12px 0" }}>
+              <p style={{ fontSize: "13px", color: "#52525b", margin: "0 0 8px 0" }}>
+                <strong>Resources:</strong>
+              </p>
+              <p style={{ fontSize: "13px", color: "#52525b", lineHeight: "1.8", margin: 0 }}>
+                <a href={brochureUrl} style={{ color: ACCENT_COLOR, fontWeight: "bold", textDecoration: "none" }}>
+                  Download Partner Brochure (PDF)
+                </a>
+                <br />
+                <a href={`${APP_URL}`} style={{ color: ACCENT_COLOR, textDecoration: "none" }}>
+                  Visit ConformEdge Website
+                </a>
+                <br />
+                <a href="mailto:partners@isutech.co.za" style={{ color: ACCENT_COLOR, textDecoration: "none" }}>
+                  Contact Partner Support
+                </a>
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Divider />
+
+      <p style={{ fontSize: "12px", color: "#a1a1aa", lineHeight: "1.5", margin: 0, textAlign: "center" }}>
+        You are receiving this email because you registered as a ConformEdge Referral Partner.
+        <br />
+        Questions? Reply to this email or contact <a href="mailto:partners@isutech.co.za" style={{ color: ACCENT_COLOR }}>partners@isutech.co.za</a>
+      </p>
+    </EmailLayout>
+  )
+}
