@@ -724,7 +724,7 @@ export async function getAdminPartners() {
 // PARTNER APPROVAL / REFERRAL LINK GENERATION
 // ─────────────────────────────────────────────
 
-export async function approveReferralPartner(partnerId: string): Promise<ActionResult<{ code: string; url: string }>> {
+export async function approveReferralPartner(partnerId: string): Promise<ActionResult<{ code: string; url: string; emailSent: boolean; emailError?: string }>> {
   const ctx = await getSuperAdminContext()
   if (!ctx) return { success: false, error: "Unauthorized" }
 
@@ -767,8 +767,8 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
   const url = `${appUrl}/ref/${code}`
   const dashboardUrl = `${appUrl}/referral/dashboard?token=${accessToken}`
 
-  // Send welcome email with referral link (fire-and-forget)
-  sendReferralWelcomeEmail({
+  // Send welcome email with referral link (awaited for feedback)
+  const emailResult = await sendReferralWelcomeEmail({
     to: partner.contactEmail,
     partnerName: partner.name,
     referralUrl: url,
@@ -780,14 +780,14 @@ export async function approveReferralPartner(partnerId: string): Promise<ActionR
     action: "PARTNER_APPROVED",
     targetType: "Partner",
     targetId: partnerId,
-    metadata: { name: partner.name, email: partner.contactEmail, referralCode: code },
+    metadata: { name: partner.name, email: partner.contactEmail, referralCode: code, emailSent: emailResult.sent },
     adminUserId: ctx.dbUserId,
   })
 
   revalidatePath("/admin/partners")
   revalidatePath("/admin/referrals")
 
-  return { success: true, data: { code, url } }
+  return { success: true, data: { code, url, emailSent: emailResult.sent, emailError: emailResult.error } }
 }
 
 export async function rejectReferralPartner(partnerId: string): Promise<ActionResult> {
@@ -819,6 +819,47 @@ export async function rejectReferralPartner(partnerId: string): Promise<ActionRe
 
   revalidatePath("/admin/partners")
   revalidatePath("/admin/referrals")
+
+  return { success: true }
+}
+
+export async function resendPartnerWelcomeEmail(partnerId: string): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, name: true, contactEmail: true, status: true, accessToken: true, referrals: { select: { code: true }, orderBy: { createdAt: "desc" }, take: 1 } },
+  })
+
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "ACTIVE") return { success: false, error: "Partner must be active to resend email" }
+  if (!partner.referrals[0]) return { success: false, error: "No referral link found" }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
+  const code = partner.referrals[0].code
+  const url = `${appUrl}/ref/${code}`
+  const dashboardUrl = partner.accessToken ? `${appUrl}/referral/dashboard?token=${partner.accessToken}` : undefined
+
+  const emailResult = await sendReferralWelcomeEmail({
+    to: partner.contactEmail,
+    partnerName: partner.name,
+    referralUrl: url,
+    referralCode: code,
+    dashboardUrl,
+  })
+
+  if (!emailResult.sent) {
+    return { success: false, error: emailResult.error || "Failed to send email" }
+  }
+
+  logAdminAction({
+    action: "PARTNER_EMAIL_RESENT",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail },
+    adminUserId: ctx.dbUserId,
+  })
 
   return { success: true }
 }

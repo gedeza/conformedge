@@ -10,6 +10,7 @@ import { formatZar } from "@/lib/billing/plans"
 import { PARTNER_STATUSES } from "@/lib/constants"
 import { MarkCommissionPaidButton } from "./mark-commission-paid-button"
 import { RenewLinkButton } from "./renew-link-button"
+import { ResendWelcomeButton } from "./resend-welcome-button"
 
 const REFERRAL_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   PENDING: { label: "Pending", color: "bg-gray-100 text-gray-800" },
@@ -80,6 +81,7 @@ export default async function AdminReferralsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  {partner.status === "ACTIVE" && <ResendWelcomeButton partnerId={partner.id} />}
                   {canRenew && <RenewLinkButton partnerId={partner.id} />}
                   <div className="text-right text-xs">
                     <p className="font-medium">Total: {formatZar(partnerCommission)}</p>

@@ -81,7 +81,7 @@ export function sendNotificationEmailBulk({
  * Send referral partner welcome email with their referral link.
  * Fire-and-forget — errors logged, never thrown.
  */
-export function sendReferralWelcomeEmail({
+export async function sendReferralWelcomeEmail({
   to,
   partnerName,
   referralUrl,
@@ -93,35 +93,38 @@ export function sendReferralWelcomeEmail({
   referralUrl: string
   referralCode: string
   dashboardUrl?: string
-}) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
-  const brochureUrl = `${appUrl}/api/referral-partner/pdf`
+}): Promise<{ sent: boolean; error?: string }> {
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
+    const brochureUrl = `${appUrl}/api/referral-partner/pdf`
 
-  renderHtml(
-    React.createElement(ReferralWelcomeEmail, {
-      partnerName,
-      referralUrl,
-      referralCode,
-      brochureUrl,
-      dashboardUrl,
-    })
-  )
-    .then((html) =>
-      resend.emails.send({
-        from: FROM_ADDRESS,
-        to,
-        subject: "Welcome to the ConformEdge Referral Partner Programme",
-        html,
+    const html = await renderHtml(
+      React.createElement(ReferralWelcomeEmail, {
+        partnerName,
+        referralUrl,
+        referralCode,
+        brochureUrl,
+        dashboardUrl,
       })
     )
-    .then((result) => {
-      if (result && "error" in result && result.error) {
-        captureError(new Error(result.error.message), { source: "email.referralWelcome" })
-      }
+
+    const result = await resend.emails.send({
+      from: FROM_ADDRESS,
+      to,
+      subject: "Welcome to the ConformEdge Referral Partner Programme",
+      html,
     })
-    .catch((err) => {
-      captureError(err, { source: "email.referralWelcome" })
-    })
+
+    if (result && "error" in result && result.error) {
+      captureError(new Error(result.error.message), { source: "email.referralWelcome" })
+      return { sent: false, error: result.error.message }
+    }
+
+    return { sent: true }
+  } catch (err) {
+    captureError(err, { source: "email.referralWelcome" })
+    return { sent: false, error: err instanceof Error ? err.message : "Unknown email error" }
+  }
 }
 
 /**
