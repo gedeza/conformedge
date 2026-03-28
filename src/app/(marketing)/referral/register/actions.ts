@@ -49,15 +49,6 @@ export async function registerReferralPartner(
       slug = `${baseSlug}-${attempt}`
     }
 
-    // Build bank details JSON for notes (we'll store in notes until we add dedicated fields)
-    const bankDetails = JSON.stringify({
-      bankName: parsed.bankName,
-      accountHolder: parsed.accountHolder,
-      accountNumber: parsed.accountNumber,
-      branchCode: parsed.branchCode,
-      accountType: parsed.accountType,
-    })
-
     const partner = await db.partner.create({
       data: {
         name: parsed.company || parsed.fullName,
@@ -70,7 +61,12 @@ export async function registerReferralPartner(
         description: `Referral partner registration: ${parsed.fullName}`,
         basePlatformFeeCents: PARTNER_BASE_FEES.REFERRAL,
         commissionPercent: 10,
-        notes: `Bank details: ${bankDetails}\nFull name: ${parsed.fullName}`,
+        bankName: parsed.bankName,
+        bankAccountHolder: parsed.accountHolder,
+        bankAccountNumber: parsed.accountNumber,
+        bankBranchCode: parsed.branchCode,
+        bankAccountType: parsed.accountType,
+        notes: `Full name: ${parsed.fullName}`,
       },
     })
 

@@ -703,6 +703,11 @@ export async function getAdminPartners() {
       approvedAt: true,
       commissionPercent: true,
       basePlatformFeeCents: true,
+      bankName: true,
+      bankAccountHolder: true,
+      bankAccountNumber: true,
+      bankBranchCode: true,
+      bankAccountType: true,
       _count: {
         select: {
           clientOrganizations: { where: { isActive: true } },
@@ -907,6 +912,141 @@ export async function renewReferralLink(partnerId: string): Promise<ActionResult
   revalidatePath("/admin/referrals")
 
   return { success: true, data: { code, url } }
+}
+
+// ─────────────────────────────────────────────
+// ADMIN PARTNER EDIT / SUSPEND / TERMINATE
+// ─────────────────────────────────────────────
+
+const editPartnerSchema = z.object({
+  name: z.string().min(2).max(200).optional(),
+  contactEmail: z.email().optional(),
+  contactPhone: z.string().max(20).optional(),
+  commissionPercent: z.number().min(0).max(100).optional(),
+  notes: z.string().max(5000).optional(),
+})
+
+export async function adminEditPartner(
+  partnerId: string,
+  values: z.infer<typeof editPartnerSchema>
+): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, name: true },
+  })
+  if (!partner) return { success: false, error: "Partner not found" }
+
+  const parsed = editPartnerSchema.parse(values)
+  const data: Record<string, unknown> = {}
+  if (parsed.name !== undefined) data.name = parsed.name
+  if (parsed.contactEmail !== undefined) data.contactEmail = parsed.contactEmail
+  if (parsed.contactPhone !== undefined) data.contactPhone = parsed.contactPhone
+  if (parsed.commissionPercent !== undefined) data.commissionPercent = parsed.commissionPercent
+  if (parsed.notes !== undefined) data.notes = parsed.notes
+
+  await db.partner.update({ where: { id: partnerId }, data })
+
+  logAdminAction({
+    action: "PARTNER_UPDATED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, fields: Object.keys(data) },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
+  return { success: true }
+}
+
+export async function adminSuspendPartner(partnerId: string): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, name: true, status: true, contactEmail: true },
+  })
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "ACTIVE") return { success: false, error: `Partner is ${partner.status}, not ACTIVE` }
+
+  await db.partner.update({
+    where: { id: partnerId },
+    data: { status: "SUSPENDED" },
+  })
+
+  logAdminAction({
+    action: "PARTNER_SUSPENDED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
+  return { success: true }
+}
+
+export async function adminReactivatePartner(partnerId: string): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, name: true, status: true, contactEmail: true },
+  })
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "SUSPENDED") return { success: false, error: `Partner is ${partner.status}, not SUSPENDED` }
+
+  await db.partner.update({
+    where: { id: partnerId },
+    data: { status: "ACTIVE" },
+  })
+
+  logAdminAction({
+    action: "PARTNER_REACTIVATED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
+  return { success: true }
+}
+
+export async function adminTerminatePartner(partnerId: string): Promise<ActionResult> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, name: true, status: true, contactEmail: true },
+  })
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status === "TERMINATED") return { success: false, error: "Already terminated" }
+
+  await db.partner.update({
+    where: { id: partnerId },
+    data: { status: "TERMINATED", terminatedAt: new Date() },
+  })
+
+  logAdminAction({
+    action: "PARTNER_TERMINATED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, email: partner.contactEmail },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
+  return { success: true }
 }
 
 // ─────────────────────────────────────────────

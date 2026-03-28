@@ -9,7 +9,14 @@ import { format } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
 import { PARTNER_TIERS, PARTNER_STATUSES } from "@/lib/constants"
 import { PartnersHelpPanel } from "./partners-help-panel"
-import { ApproveButton, RejectButton } from "./partner-actions"
+import {
+  ApproveButton,
+  RejectButton,
+  EditPartnerButton,
+  SuspendPartnerButton,
+  ReactivatePartnerButton,
+  TerminatePartnerButton,
+} from "./partner-actions"
 
 export default async function AdminPartnersPage() {
   const ctx = await getSuperAdminContext()
@@ -70,10 +77,24 @@ export default async function AdminPartnersPage() {
                           {p.description && (
                             <p className="mt-2 text-xs text-muted-foreground">{p.description}</p>
                           )}
-                          {p.notes && (
+                          {p.bankName && (
                             <details className="mt-2">
                               <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
                                 View bank details
+                              </summary>
+                              <div className="mt-1 text-xs text-muted-foreground bg-slate-50 p-2 rounded grid grid-cols-2 gap-1">
+                                <span className="font-medium">Bank:</span><span>{p.bankName}</span>
+                                <span className="font-medium">Account Holder:</span><span>{p.bankAccountHolder}</span>
+                                <span className="font-medium">Account Number:</span><span>{p.bankAccountNumber}</span>
+                                <span className="font-medium">Branch Code:</span><span>{p.bankBranchCode}</span>
+                                <span className="font-medium">Account Type:</span><span>{p.bankAccountType}</span>
+                              </div>
+                            </details>
+                          )}
+                          {!p.bankName && p.notes && (
+                            <details className="mt-2">
+                              <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                                View notes (legacy)
                               </summary>
                               <pre className="mt-1 text-xs text-muted-foreground bg-slate-50 p-2 rounded whitespace-pre-wrap">
                                 {p.notes}
@@ -109,7 +130,7 @@ export default async function AdminPartnersPage() {
 
                 return (
                   <div key={p.id} className="rounded-lg border p-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{p.name}</span>
@@ -118,11 +139,31 @@ export default async function AdminPartnersPage() {
                         </div>
                         <p className="text-xs text-muted-foreground">{p.contactEmail}</p>
                       </div>
-                      <div className="text-right text-xs text-muted-foreground">
-                        {p.approvedAt && <p>Approved {format(p.approvedAt, "dd MMM yyyy")}</p>}
-                        {!p.approvedAt && <p>Joined {format(p.createdAt, "dd MMM yyyy")}</p>}
-                        {p.basePlatformFeeCents > 0 && (
-                          <p>Platform fee: {formatZar(p.basePlatformFeeCents)}/mo</p>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="text-right text-xs text-muted-foreground">
+                          {p.approvedAt && <p>Approved {format(p.approvedAt, "dd MMM yyyy")}</p>}
+                          {!p.approvedAt && <p>Joined {format(p.createdAt, "dd MMM yyyy")}</p>}
+                          {p.basePlatformFeeCents > 0 && (
+                            <p>Platform fee: {formatZar(p.basePlatformFeeCents)}/mo</p>
+                          )}
+                        </div>
+                        {/* Admin actions for non-pending partners */}
+                        {p.status !== "APPLIED" && (
+                          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                            <EditPartnerButton
+                              partnerId={p.id}
+                              initial={{
+                                name: p.name,
+                                contactEmail: p.contactEmail,
+                                contactPhone: p.contactPhone,
+                                commissionPercent: p.commissionPercent,
+                                notes: p.notes,
+                              }}
+                            />
+                            {p.status === "ACTIVE" && <SuspendPartnerButton partnerId={p.id} />}
+                            {p.status === "SUSPENDED" && <ReactivatePartnerButton partnerId={p.id} />}
+                            {p.status !== "TERMINATED" && <TerminatePartnerButton partnerId={p.id} />}
+                          </div>
                         )}
                       </div>
                     </div>
@@ -144,6 +185,22 @@ export default async function AdminPartnersPage() {
                         Commission: {p.commissionPercent}%
                       </span>
                     </div>
+
+                    {/* Bank details (structured) */}
+                    {p.bankName && (
+                      <details className="mt-2">
+                        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                          View bank details
+                        </summary>
+                        <div className="mt-1 text-xs text-muted-foreground bg-slate-50 p-2 rounded grid grid-cols-2 gap-1">
+                          <span className="font-medium">Bank:</span><span>{p.bankName}</span>
+                          <span className="font-medium">Account Holder:</span><span>{p.bankAccountHolder}</span>
+                          <span className="font-medium">Account Number:</span><span>{p.bankAccountNumber}</span>
+                          <span className="font-medium">Branch Code:</span><span>{p.bankBranchCode}</span>
+                          <span className="font-medium">Account Type:</span><span>{p.bankAccountType}</span>
+                        </div>
+                      </details>
+                    )}
 
                     {activeReferral && (
                       <div className="mt-2 text-xs">

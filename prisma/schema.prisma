@@ -1671,6 +1671,13 @@ model Partner {
   volumeDiscountPercent   Float     @default(0) @map("volume_discount_percent")        // Negotiated volume discount
   commissionPercent       Float     @default(10) @map("commission_percent")            // Referral commission %
 
+  // Bank details (for commission payouts — REFERRAL partners)
+  bankName            String?   @map("bank_name")
+  bankAccountHolder   String?   @map("bank_account_holder")
+  bankAccountNumber   String?   @map("bank_account_number")
+  bankBranchCode      String?   @map("bank_branch_code")
+  bankAccountType     String?   @map("bank_account_type")     // CHEQUE or SAVINGS
+
   // Branding (WHITE_LABEL partners)
   logoKey             String?   @map("logo_key")              // R2 key for partner logo
   primaryColor        String?   @map("primary_color")         // Hex color e.g. #1e40af
