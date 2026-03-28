@@ -9,6 +9,7 @@ import { format } from "date-fns"
 import { formatZar } from "@/lib/billing/plans"
 import { PARTNER_STATUSES } from "@/lib/constants"
 import { MarkCommissionPaidButton } from "./mark-commission-paid-button"
+import { RenewLinkButton } from "./renew-link-button"
 
 const REFERRAL_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   PENDING: { label: "Pending", color: "bg-gray-100 text-gray-800" },
@@ -50,6 +51,11 @@ export default async function AdminReferralsPage() {
         const partnerUnpaid = converted
           .filter(r => r.commissionCents && !r.commissionPaidAt)
           .reduce((sum, r) => sum + (r.commissionCents ?? 0), 0)
+        const now = new Date()
+        const hasActiveLink = partner.referrals.some(
+          r => ["PENDING", "CLICKED"].includes(r.status) && new Date(r.expiresAt) > now
+        )
+        const canRenew = partner.status === "ACTIVE" && !hasActiveLink
 
         return (
           <Card key={partner.id}>
@@ -73,11 +79,14 @@ export default async function AdminReferralsPage() {
                     {partner.approvedAt && <span>Approved {format(partner.approvedAt, "dd MMM yyyy")}</span>}
                   </div>
                 </div>
-                <div className="text-right text-xs">
-                  <p className="font-medium">Total: {formatZar(partnerCommission)}</p>
-                  {partnerUnpaid > 0 && (
-                    <p className="text-amber-600 font-medium">Unpaid: {formatZar(partnerUnpaid)}</p>
-                  )}
+                <div className="flex items-center gap-3">
+                  {canRenew && <RenewLinkButton partnerId={partner.id} />}
+                  <div className="text-right text-xs">
+                    <p className="font-medium">Total: {formatZar(partnerCommission)}</p>
+                    {partnerUnpaid > 0 && (
+                      <p className="text-amber-600 font-medium">Unpaid: {formatZar(partnerUnpaid)}</p>
+                    )}
+                  </div>
                 </div>
               </div>
               {partner.accessToken && (
@@ -112,6 +121,11 @@ export default async function AdminReferralsPage() {
                               <span>{ref.referredCompany}</span>
                             )}
                             <span>Created {format(ref.createdAt, "dd MMM yyyy")}</span>
+                            {new Date(ref.expiresAt) < new Date() ? (
+                              <span className="text-red-600">Expired {format(ref.expiresAt, "dd MMM yyyy")}</span>
+                            ) : (
+                              <span>Expires {format(ref.expiresAt, "dd MMM yyyy")}</span>
+                            )}
                             {ref.convertedAt && <span>Converted {format(ref.convertedAt, "dd MMM yyyy")}</span>}
                           </div>
                           {ref.status === "CONVERTED" && ref.commissionCents && (

@@ -823,6 +823,51 @@ export async function rejectReferralPartner(partnerId: string): Promise<ActionRe
   return { success: true }
 }
 
+export async function renewReferralLink(partnerId: string): Promise<ActionResult<{ code: string; url: string }>> {
+  const ctx = await getSuperAdminContext()
+  if (!ctx) return { success: false, error: "Unauthorized" }
+
+  const partner = await db.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, slug: true, status: true, commissionPercent: true, name: true, contactEmail: true },
+  })
+
+  if (!partner) return { success: false, error: "Partner not found" }
+  if (partner.status !== "ACTIVE") {
+    return { success: false, error: "Only active partners can have links renewed" }
+  }
+
+  const randomPart = Math.random().toString(36).slice(2, 8)
+  const code = `${partner.slug}-${randomPart}`
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + 90)
+
+  await db.referral.create({
+    data: {
+      partnerId,
+      code,
+      commissionPercent: partner.commissionPercent,
+      expiresAt,
+    },
+  })
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://conformedge.isutech.co.za"
+  const url = `${appUrl}/ref/${code}`
+
+  logAdminAction({
+    action: "REFERRAL_LINK_RENEWED",
+    targetType: "Partner",
+    targetId: partnerId,
+    metadata: { name: partner.name, referralCode: code },
+    adminUserId: ctx.dbUserId,
+  })
+
+  revalidatePath("/admin/partners")
+  revalidatePath("/admin/referrals")
+
+  return { success: true, data: { code, url } }
+}
+
 // ─────────────────────────────────────────────
 // REVENUE DATA
 // ─────────────────────────────────────────────
@@ -976,6 +1021,7 @@ export async function getAdminReferrals() {
           commissionMonthsEarned: true,
           commissionPaidAt: true,
           convertedAt: true,
+          expiresAt: true,
           createdAt: true,
           referredOrg: { select: { name: true } },
         },
@@ -1044,6 +1090,7 @@ export async function adminMarkCommissionPaid(
     })
 
     revalidatePath("/admin/partners")
+    revalidatePath("/admin/referrals")
     return { success: true }
   } catch (err) {
     console.error("adminMarkCommissionPaid error:", err)
