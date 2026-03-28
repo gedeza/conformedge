@@ -8,10 +8,10 @@ export function SplashScreen() {
   const [fadeOut, setFadeOut] = useState(false)
 
   useEffect(() => {
-    // Keep splash visible for 10s so users can read the message
-    const timer = setTimeout(() => setFadeOut(true), 10000)
+    // Keep splash visible for 5s so users can read the message
+    const timer = setTimeout(() => setFadeOut(true), 5000)
     // Remove from DOM after fade animation completes
-    const remove = setTimeout(() => setVisible(false), 10500)
+    const remove = setTimeout(() => setVisible(false), 5500)
     return () => {
       clearTimeout(timer)
       clearTimeout(remove)
