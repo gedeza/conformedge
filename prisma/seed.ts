@@ -10,6 +10,10 @@ import { DMRE_MHSA_SUB_CLAUSES } from "./seed-data/dmre-mhsa-subclauses"
 import { POPIA_SUB_CLAUSES } from "./seed-data/popia-subclauses"
 import { ECSA_SUB_CLAUSES } from "./seed-data/ecsa-subclauses"
 import { SACPCMP_SUB_CLAUSES } from "./seed-data/sacpcmp-subclauses"
+import { OHS_ACT_SUB_CLAUSES } from "./seed-data/ohs-act-subclauses"
+import { NEMA_SUB_CLAUSES } from "./seed-data/nema-subclauses"
+import { NWA_SUB_CLAUSES } from "./seed-data/nwa-subclauses"
+import { CARBON_TAX_SUB_CLAUSES } from "./seed-data/carbon-tax-subclauses"
 import { generateHLSCrossReferences, DOMAIN_CROSS_REFERENCES } from "./seed-data/cross-references"
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
@@ -24,6 +28,7 @@ interface StandardSeed {
   name: string
   description: string
   version: string
+  standardType?: "MANAGEMENT_SYSTEM" | "STATUTORY" | "PROFESSIONAL_BODY"
 }
 
 interface ClauseData {
@@ -88,24 +93,58 @@ const STANDARDS: StandardSeed[] = [
     name: "MHSA (Act 29 of 1996)",
     description: "Mine Health and Safety Act — South African regulatory framework for mining sector health, safety, and compliance",
     version: "1996",
+    standardType: "STATUTORY",
   },
   {
     code: "POPIA",
     name: "POPIA (Act 4 of 2013)",
     description: "Protection of Personal Information Act — South African data protection legislation for lawful processing of personal information",
     version: "2013",
+    standardType: "STATUTORY",
   },
   {
     code: "ECSA",
     name: "ECSA (Act 46 of 2000)",
     description: "Engineering Council of South Africa — Professional regulatory framework for registration, conduct, and practice standards of engineering practitioners",
     version: "2000",
+    standardType: "PROFESSIONAL_BODY",
   },
   {
     code: "SACPCMP",
     name: "SACPCMP (Act 48 of 2000)",
     description: "South African Council for Project and Construction Management Professions — Regulatory framework for project and construction management practitioners",
     version: "2000",
+    standardType: "PROFESSIONAL_BODY",
+  },
+
+  // ── SA Statutory Frameworks (Enterprise) ──
+  {
+    code: "OHS_ACT",
+    name: "OHS Act (Act 85 of 1993)",
+    description: "Occupational Health and Safety Act — General statutory framework for workplace health and safety in all South African workplaces (excludes mines governed by MHSA)",
+    version: "1993",
+    standardType: "STATUTORY",
+  },
+  {
+    code: "NEMA",
+    name: "NEMA (Act 107 of 1998)",
+    description: "National Environmental Management Act — Principal environmental legislation covering EIA, duty of care, waste management (NEM:WA), air quality (NEM:AQA), and water integration",
+    version: "1998",
+    standardType: "STATUTORY",
+  },
+  {
+    code: "NWA",
+    name: "NWA (Act 36 of 1998)",
+    description: "National Water Act — Water resource management, water use authorisation (Section 21), pollution prevention, and water quality monitoring",
+    version: "1998",
+    standardType: "STATUTORY",
+  },
+  {
+    code: "CARBON_TAX",
+    name: "Carbon Tax Act (Act 15 of 2019)",
+    description: "Carbon Tax Act — Greenhouse gas emissions levy, carbon budgets, tax-free allowances, and Phase 2 mandatory reporting effective January 2026",
+    version: "2019",
+    standardType: "STATUTORY",
   },
 ]
 
@@ -558,6 +597,180 @@ const STANDARD_CLAUSES: Record<string, ClauseData[]> = {
       description: "Standards for construction project management including stakeholder management, risk management, programme management, and project close-out and handover.",
     },
   ],
+
+  // ── SA Statutory Frameworks (Enterprise) ──
+
+  OHS_ACT: [
+    {
+      clauseNumber: "1",
+      title: "Definitions and Application",
+      description: "Definitions of key terms and scope of application. The Act applies to every employer, employee, self-employed person, and workplace in South Africa, excluding mines (governed by MHSA).",
+    },
+    {
+      clauseNumber: "2",
+      title: "General Duties",
+      description: "General duties of employers (Section 8), duties regarding premises (Section 9), duties of employees (Section 10), duty not to interfere with safety (Section 14), and duty to inform (Section 15).",
+    },
+    {
+      clauseNumber: "3",
+      title: "Mandatory Agreements and Appointments",
+      description: "CEO responsibility (Section 16(1)), competent person appointments (Section 16(2)), employer liability for contractors (Section 37(1)), and mandatory agreements with mandataries (Section 37(2)).",
+    },
+    {
+      clauseNumber: "4",
+      title: "Health and Safety Representatives and Committees",
+      description: "Designation of health and safety representatives (Section 17), their functions (Section 18), establishment of health and safety committees (Section 19), and committee powers (Section 20).",
+    },
+    {
+      clauseNumber: "5",
+      title: "Incident Reporting",
+      description: "Reporting to inspectors regarding incidents (Section 24), scene preservation (Section 24(3)), and reporting to chief inspector regarding major incidents (Section 25).",
+    },
+    {
+      clauseNumber: "6",
+      title: "Inspectors and Enforcement",
+      description: "Powers of inspectors (Section 28), prohibition notices (Section 29), improvement notices (Section 30), and formal inquiries (Section 31).",
+    },
+    {
+      clauseNumber: "7",
+      title: "Regulations",
+      description: "Key regulations including General Safety, General Administrative, Construction (2014), Driven Machinery, Hazardous Chemical Substances, Noise (2024), Physical Agents (2025), and Pressure Equipment.",
+    },
+    {
+      clauseNumber: "8",
+      title: "Offences and Penalties",
+      description: "Offences under the Act (Section 38), penalties including fines and imprisonment up to 2 years, vicarious liability (Section 39), and director/officer personal liability.",
+    },
+  ],
+
+  NEMA: [
+    {
+      clauseNumber: "1",
+      title: "National Environmental Management Principles",
+      description: "Section 2 principles: sustainable development, polluter pays, precautionary approach, integration of social/economic/environmental factors, and environmental justice.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Institutions",
+      description: "National Environmental Advisory Forum, Committee for Environmental Coordination, and coordination across government spheres.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Environmental Planning",
+      description: "Environmental implementation plans and environmental management plans required from national and provincial government departments.",
+    },
+    {
+      clauseNumber: "4",
+      title: "Environmental Impact Assessment",
+      description: "Environmental authorisations (Section 24), Basic Assessment (Listing Notice 1), Full Scoping and EIA (Listing Notice 2), rectification of unlawful commencement (Section 24G), EMPr, and audit reports.",
+    },
+    {
+      clauseNumber: "5",
+      title: "Duty of Care and Remediation",
+      description: "Section 28 duty of care for pollution prevention, directives from competent authority (Section 28(4)), and emergency incident reporting (Section 30).",
+    },
+    {
+      clauseNumber: "6",
+      title: "Compliance and Enforcement",
+      description: "Environmental management inspectors (Section 31A), compliance notices (Section 31H), and admission of guilt fines (Section 31L).",
+    },
+    {
+      clauseNumber: "7",
+      title: "Air Quality (NEM:AQA)",
+      description: "Atmospheric Emission Licences, air quality monitoring and reporting, and National Ambient Air Quality Standards (PM10, PM2.5, SO2, NO2, O3, CO, lead, benzene).",
+    },
+    {
+      clauseNumber: "8",
+      title: "Waste Management (NEM:WA)",
+      description: "Waste Management Licences, waste classification (SANS 10234), hazardous waste handling, and South African Waste Information System (SAWIS) reporting.",
+    },
+    {
+      clauseNumber: "9",
+      title: "Water Integration",
+      description: "Integrated water and environmental management, NEMA principles applied to NWA, and pollution prevention for water resources (Section 19 NWA read with Section 28 NEMA).",
+    },
+    {
+      clauseNumber: "10",
+      title: "Offences and Penalties",
+      description: "Section 49A offences, penalties up to 10 years imprisonment or R10 million fine, continuing offence daily fines, and director/officer personal liability (Section 34).",
+    },
+  ],
+
+  NWA: [
+    {
+      clauseNumber: "1",
+      title: "Interpretation and Fundamental Principles",
+      description: "Definitions of key terms, public trusteeship of water resources (Section 3), and fundamental principle that no person may own water resources.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Water Management Strategy",
+      description: "National Water Resource Strategy and catchment management strategies setting water allocation priorities and resource management plans.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Protection of Water Resources",
+      description: "Classification of water resources (Section 12), resource quality objectives (Section 16), the Reserve (Section 17), pollution prevention (Section 19), and emergency pollution incidents (Section 20).",
+    },
+    {
+      clauseNumber: "4",
+      title: "Water Use Authorisation",
+      description: "Section 21 water uses (11 categories), Schedule 1 permissible use, General Authorisations, Water Use Licence applications, and conditions of authorisation (Section 29).",
+    },
+    {
+      clauseNumber: "5",
+      title: "Monitoring and Compliance",
+      description: "Self-monitoring by water users (Section 137), qualified oversight under Regulation 3630, and compliance monitoring and enforcement including penalties.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Financial Provisions",
+      description: "Water use charges (raw water tariff, waste discharge charge), and financial provision for rehabilitation of water resources.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Offences and Penalties",
+      description: "Section 151 offences, penalties up to 5 years imprisonment (first offence) or 10 years (subsequent), and continuing offence daily fines.",
+    },
+  ],
+
+  CARBON_TAX: [
+    {
+      clauseNumber: "1",
+      title: "Definitions and Scope",
+      description: "Key terms (GHG, CO2e, carbon budget, taxpayer), scope of application to entities with GHG emissions above thresholds, and registration as customs and excise manufacturing warehouses.",
+    },
+    {
+      clauseNumber: "2",
+      title: "Tax Base and Rates",
+      description: "Carbon tax levy (Section 4) on Scope 1 emissions in tCO2e, tax rates (R236/tCO2e in 2025, R308/tCO2e in 2026, escalating annually), and GHG types covered.",
+    },
+    {
+      clauseNumber: "3",
+      title: "Tax-Free Allowances",
+      description: "Basic tax-free allowance (60% dropping in Phase 2), process/fugitive emissions allowance (10%), trade exposure allowance (10%), performance allowance (5%), and carbon budget allowance (phased out in Phase 2).",
+    },
+    {
+      clauseNumber: "4",
+      title: "Carbon Offsets",
+      description: "Carbon offset allowance (20-25% in Phase 2), eligible offset project standards (VCS, Gold Standard, CDM), South African project requirement, and additionality criteria.",
+    },
+    {
+      clauseNumber: "5",
+      title: "Carbon Budgets (Phase 2)",
+      description: "Mandatory carbon budget registration from January 2026, company-level budget determination, exceedance penalty (R640/tCO2e), and annual mitigation plan requirements.",
+    },
+    {
+      clauseNumber: "6",
+      title: "Reporting and Filing",
+      description: "GHG emissions reporting via SAGERS (due 31 March), tax filing via SARS eFiling (due 31 July), Scope 1 emission calculation methods (tier 1-3), and third-party verification.",
+    },
+    {
+      clauseNumber: "7",
+      title: "Incentives and Transition",
+      description: "Section 12L energy efficiency incentive (expires Dec 2025), revenue recycling mechanisms, and just transition considerations for Phase 2.",
+    },
+  ],
 }
 
 // ─────────────────────────────────────────────
@@ -809,12 +1022,14 @@ async function main() {
         name: std.name,
         description: std.description,
         version: std.version,
+        standardType: std.standardType ?? "MANAGEMENT_SYSTEM",
       },
       create: {
         code: std.code,
         name: std.name,
         description: std.description,
         version: std.version,
+        standardType: std.standardType ?? "MANAGEMENT_SYSTEM",
       },
     })
 
@@ -866,6 +1081,10 @@ async function main() {
     POPIA: POPIA_SUB_CLAUSES,
     ECSA: ECSA_SUB_CLAUSES,
     SACPCMP: SACPCMP_SUB_CLAUSES,
+    OHS_ACT: OHS_ACT_SUB_CLAUSES,
+    NEMA: NEMA_SUB_CLAUSES,
+    NWA: NWA_SUB_CLAUSES,
+    CARBON_TAX: CARBON_TAX_SUB_CLAUSES,
   }
 
   let totalSubClauses = 0
