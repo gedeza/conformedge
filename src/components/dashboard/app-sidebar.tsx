@@ -65,6 +65,7 @@ const coreItems = [
 ]
 
 const analysisItems = [
+  { title: "Corporate", href: "/corporate", icon: Building2 },
   { title: "IMS Dashboard", href: "/ims", icon: Layers },
   { title: "Gap Analysis", href: "/gap-analysis", icon: SearchCheck },
   { title: "Cross-References", href: "/cross-references", icon: GitCompareArrows },
