@@ -14,9 +14,10 @@ import { CertificationActions } from "./certification-actions"
 import { CertReviewActions } from "./cert-review-actions"
 import { ComplianceScoreCard } from "./compliance-score-card"
 import { InviteToPortalButton } from "./invite-to-portal-button"
+import { BeeTab } from "./bee-tab"
 import { isR2Key } from "@/lib/r2-utils"
 import { getAuthContext } from "@/lib/auth"
-import { canManageOrg } from "@/lib/permissions"
+import { canManageOrg, canEdit } from "@/lib/permissions"
 import { db } from "@/lib/db"
 
 function getExpiryBadge(expiresAt: Date | null) {
@@ -47,10 +48,12 @@ export default async function VendorDetailPage({
   if (!sub) notFound()
 
   let isAdmin = false
+  let userRole = "VIEWER"
   let customWeights: Partial<VendorScoringWeights> | undefined
   try {
     const ctx = await getAuthContext()
     isAdmin = canManageOrg(ctx.role)
+    userRole = ctx.role
     const org = await db.organization.findUnique({
       where: { id: ctx.dbOrgId },
       select: { settings: true },
@@ -97,6 +100,7 @@ export default async function VendorDetailPage({
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="certifications">Certifications ({sub.certifications.length})</TabsTrigger>
+          <TabsTrigger value="bbbee">B-BBEE</TabsTrigger>
           <TabsTrigger value="obligations">Obligations ({obligations.length})</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
@@ -190,6 +194,20 @@ export default async function VendorDetailPage({
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="bbbee" className="space-y-4">
+          <BeeTab
+            vendorId={sub.id}
+            beeLevel={sub.beeLevel}
+            beeEntityType={sub.beeEntityType}
+            beeScore={sub.beeScore}
+            beeScorecard={sub.beeScorecard}
+            beeCertExpiry={sub.beeCertExpiry}
+            beeVerifier={sub.beeVerifier}
+            beeBlackOwnership={sub.beeBlackOwnership}
+            canEdit={canEdit(userRole)}
+          />
         </TabsContent>
 
         <TabsContent value="obligations" className="space-y-4">

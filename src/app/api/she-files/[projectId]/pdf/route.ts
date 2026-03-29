@@ -5,6 +5,7 @@ import React from "react"
 import { db } from "@/lib/db"
 import { getAuthContext } from "@/lib/auth"
 import { SHEFilePDF } from "@/lib/pdf/she-file-pdf"
+import { getBeeRecognition } from "@/app/(app)/(dashboard)/vendors/bee-calculator"
 import { captureError } from "@/lib/error-tracking"
 
 export async function GET(
@@ -286,6 +287,7 @@ export async function GET(
         name: v.name,
         tier: v.tier,
         beeLevel: v.beeLevel,
+        beeRecognition: v.beeLevel ? getBeeRecognition(Number(v.beeLevel)) : null,
         safetyRating: v.safetyRating,
         certCount: v.certifications.length,
         expiredCerts: v.certifications.filter((c) => c.expiresAt && new Date(c.expiresAt) < now).length,

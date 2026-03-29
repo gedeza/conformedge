@@ -960,6 +960,14 @@ model Vendor {
   contactPhone       String?           @map("contact_phone")
   physicalAddress    String?           @map("physical_address")
 
+  // B-BBEE scorecard
+  beeEntityType      String?           @map("bee_entity_type")      // EME, QSE, GENERIC
+  beeScore           Float?            @map("bee_score")             // Total scorecard points (0-109)
+  beeScorecard       Json?             @map("bee_scorecard")         // Element breakdown JSON
+  beeCertExpiry      DateTime?         @map("bee_cert_expiry")       // Certificate validity (12 months)
+  beeVerifier        String?           @map("bee_verifier")          // Verification agency name
+  beeBlackOwnership  Float?            @map("bee_black_ownership")   // % black ownership (EME auto-level)
+
   // Trade & compliance
   tradeTypes         Json?             @map("trade_types") // string[] — Civil, Electrical, Mechanical, etc.
   taxClearanceExpiry DateTime?         @map("tax_clearance_expiry")

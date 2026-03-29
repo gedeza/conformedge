@@ -144,6 +144,7 @@ export interface SHEFilePDFProps {
     name: string
     tier: string
     beeLevel: number | string | null
+    beeRecognition: number | null
     safetyRating: number | null
     certCount: number
     expiredCerts: number
@@ -822,7 +823,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
               <View key={i} style={i % 2 === 0 ? styles.row : styles.rowAlt} wrap={false}>
                 <Text style={{ ...styles.cell, flex: 2.5 }}>{v.name}</Text>
                 <Text style={{ ...styles.cell, flex: 1 }}>{statusLabel(v.tier)}</Text>
-                <Text style={{ ...styles.cell, flex: 0.8 }}>{v.beeLevel ? `L${v.beeLevel}` : "—"}</Text>
+                <Text style={{ ...styles.cell, flex: 0.8 }}>{v.beeLevel ? `L${v.beeLevel}${v.beeRecognition ? ` (${v.beeRecognition}%)` : ""}` : "—"}</Text>
                 <Text style={{ ...styles.cell, flex: 1, color: (v.safetyRating ?? 0) >= 80 ? colors.green : (v.safetyRating ?? 0) >= 50 ? colors.yellow : colors.red }}>
                   {v.safetyRating !== null ? `${v.safetyRating}%` : "—"}
                 </Text>
