@@ -73,6 +73,13 @@ export const OBLIGATION_STATUSES = {
   NOT_APPLICABLE: { label: "N/A",            color: "bg-slate-100 text-slate-800" },
 } as const
 
+export const TRAINING_STATUSES = {
+  PLANNED:   { label: "Planned",   color: "bg-blue-100 text-blue-800" },
+  COMPLETED: { label: "Completed", color: "bg-green-100 text-green-800" },
+  EXPIRED:   { label: "Expired",   color: "bg-red-100 text-red-800" },
+  REVOKED:   { label: "Revoked",   color: "bg-gray-100 text-gray-800" },
+} as const
+
 export const CONTRIBUTING_FACTORS = [
   "Inadequate training",
   "PPE failure/not worn",

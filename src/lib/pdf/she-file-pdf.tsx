@@ -149,6 +149,18 @@ export interface SHEFilePDFProps {
     expiredCerts: number
   }>
 
+  // Training records
+  trainingRecords: Array<{
+    title: string
+    category: string
+    status: string
+    traineeName: string
+    trainingDate: string | null
+    expiryDate: string | null
+    certificateNumber: string | null
+    assessmentResult: string | null
+  }>
+
   // Documents by classification (used across multiple sections)
   documents: Array<{
     title: string
@@ -215,6 +227,7 @@ const TOC_SECTIONS = [
   "Permits to Work",
   "Incident Register",
   "Inspection & Checklists",
+  "Training Records",
   "Environmental Compliance",
   "Sub-Contractor Register",
   "Corrective Actions (CAPAs)",
@@ -230,7 +243,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
     organizationName, projectName, projectDescription, projectLocation,
     generatedDate, generatedBy,
     obligations, members, assessments, permits, incidents,
-    checklists, capas, vendors, documents, stats,
+    checklists, capas, vendors, trainingRecords, documents, stats,
   } = props
 
   const legalObligations = obligations.filter((o) => LEGAL_STANDING_TYPES.includes(o.obligationType))
@@ -715,9 +728,52 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
         <PageFooter />
       </Page>
 
-      {/* ═══════════════════ 12. ENVIRONMENTAL COMPLIANCE ═══════════════════ */}
+      {/* ═══════════════════ 12. TRAINING RECORDS ═══════════════════ */}
       <Page size="A4" style={styles.page} wrap>
-        <Text style={styles.sectionTitle}>12. Environmental Compliance</Text>
+        <Text style={styles.sectionTitle}>12. Training Records</Text>
+        <Text style={styles.regulatoryRef}>Ref: OHS Act s8(2)(e) — employers must provide training; Construction Reg 9 — competency certificates required.</Text>
+
+        {trainingRecords.length === 0 ? (
+          <Text style={styles.emptyText}>No training records captured. Add records via the Training module.</Text>
+        ) : (
+          <>
+            <View style={styles.summaryBox}>
+              <Text style={styles.text}>Total training records: {trainingRecords.length}</Text>
+              <Text style={styles.text}>
+                Completed: {trainingRecords.filter((t) => t.status === "COMPLETED").length} |
+                Expired: {trainingRecords.filter((t) => t.status === "EXPIRED").length} |
+                Planned: {trainingRecords.filter((t) => t.status === "PLANNED").length}
+              </Text>
+            </View>
+
+            <View style={styles.headerRow}>
+              <Text style={{ ...styles.headerCell, flex: 2.5 }}>Training</Text>
+              <Text style={{ ...styles.headerCell, flex: 1.5 }}>Category</Text>
+              <Text style={{ ...styles.headerCell, flex: 2 }}>Trainee</Text>
+              <Text style={{ ...styles.headerCell, flex: 1 }}>Status</Text>
+              <Text style={{ ...styles.headerCell, flex: 1.5 }}>Date</Text>
+              <Text style={{ ...styles.headerCell, flex: 1.5 }}>Expiry</Text>
+            </View>
+            {trainingRecords.map((t, i) => (
+              <View key={i} style={i % 2 === 0 ? styles.row : styles.rowAlt} wrap={false}>
+                <Text style={{ ...styles.cell, flex: 2.5 }}>{t.title}</Text>
+                <Text style={{ ...styles.cell, flex: 1.5 }}>{statusLabel(t.category)}</Text>
+                <Text style={{ ...styles.cell, flex: 2 }}>{t.traineeName}</Text>
+                <Text style={{ ...styles.cell, flex: 1, color: t.status === "COMPLETED" ? colors.green : t.status === "EXPIRED" ? colors.red : colors.yellow }}>
+                  {statusLabel(t.status)}
+                </Text>
+                <Text style={{ ...styles.cell, flex: 1.5 }}>{t.trainingDate ?? "—"}</Text>
+                <Text style={{ ...styles.cell, flex: 1.5 }}>{t.expiryDate ?? "No expiry"}</Text>
+              </View>
+            ))}
+          </>
+        )}
+        <PageFooter />
+      </Page>
+
+      {/* ═══════════════════ 13. ENVIRONMENTAL COMPLIANCE ═══════════════════ */}
+      <Page size="A4" style={styles.page} wrap>
+        <Text style={styles.sectionTitle}>13. Environmental Compliance</Text>
         <Text style={styles.regulatoryRef}>Ref: NEMA s24; NWA s21; NEM:AQA s22; NEM:WA s20 — Environmental authorisations and licences.</Text>
 
         {environmentalObligations.length === 0 ? (
@@ -747,7 +803,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
 
       {/* ═══════════════════ 13. SUB-CONTRACTOR REGISTER ═══════════════════ */}
       <Page size="A4" style={styles.page} wrap>
-        <Text style={styles.sectionTitle}>13. Sub-Contractor Register</Text>
+        <Text style={styles.sectionTitle}>14. Sub-Contractor Register</Text>
         <Text style={styles.regulatoryRef}>Ref: OHS Act s37(2); Construction Reg 7(1)(e) — Contractor management and file verification.</Text>
 
         {vendors.length === 0 ? (
@@ -783,7 +839,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
 
       {/* ═══════════════════ 14. CAPAs ═══════════════════ */}
       <Page size="A4" style={styles.page} wrap>
-        <Text style={styles.sectionTitle}>14. Corrective Actions (CAPAs)</Text>
+        <Text style={styles.sectionTitle}>15. Corrective Actions (CAPAs)</Text>
         <Text style={styles.regulatoryRef}>Ref: ISO 45001 §10.2; OHS Act s8(2)(d) — Corrective and preventive measures.</Text>
 
         {capas.length === 0 ? (
@@ -823,7 +879,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
 
       {/* ═══════════════════ 15. SAFETY STATISTICS ═══════════════════ */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.sectionTitle}>15. Safety Statistics</Text>
+        <Text style={styles.sectionTitle}>16. Safety Statistics</Text>
         <Text style={styles.regulatoryRef}>Ref: Construction Reg 7(1)(e) — Monthly safety statistics. LTIFR = (LTIs × 200,000) / hours worked.</Text>
 
         <View style={styles.statsRow}>
@@ -869,7 +925,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
 
       {/* ═══════════════════ 16. DOCUMENT REGISTER ═══════════════════ */}
       <Page size="A4" style={styles.page} wrap>
-        <Text style={styles.sectionTitle}>16. Document Register</Text>
+        <Text style={styles.sectionTitle}>17. Document Register</Text>
 
         {documents.length === 0 ? (
           <Text style={styles.emptyText}>No documents on file.</Text>
@@ -896,7 +952,7 @@ export function SHEFilePDF(props: SHEFilePDFProps) {
 
       {/* ═══════════════════ 17. SIGN-OFF ═══════════════════ */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.sectionTitle}>17. Sign-Off</Text>
+        <Text style={styles.sectionTitle}>18. Sign-Off</Text>
 
         <View style={styles.summaryBox}>
           <Text style={{ ...styles.text, fontSize: 10 }}>

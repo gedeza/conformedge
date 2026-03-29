@@ -1874,6 +1874,69 @@ export async function GET(request: NextRequest) {
       captureError(err, { source: "cron.workPermitExpiry" })
     }
 
+    // ── 9. Training certificate expiry ──────────────
+    let trainingExpired = 0
+    let trainingWarned = 0
+    try {
+      // Auto-expire training past expiry date
+      const expiredTraining = await db.trainingRecord.updateMany({
+        where: {
+          status: "COMPLETED",
+          expiryDate: { lt: now },
+        },
+        data: { status: "EXPIRED" },
+      })
+      trainingExpired = expiredTraining.count
+
+      // Warn about training expiring within 30 days
+      const expiringTraining = await db.trainingRecord.findMany({
+        where: {
+          status: "COMPLETED",
+          expiryDate: { gte: now, lte: in30Days },
+        },
+        include: {
+          trainee: { select: { id: true, firstName: true, lastName: true } },
+          organization: { select: { id: true, name: true } },
+        },
+      })
+
+      for (const record of expiringTraining) {
+        const daysLeft = Math.ceil(
+          (new Date(record.expiryDate!).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
+
+        // Dedup check
+        const existingNotif = await db.notification.findFirst({
+          where: {
+            userId: record.traineeId,
+            organizationId: record.organizationId,
+            type: "TRAINING_EXPIRING",
+            createdAt: { gte: addDays(now, -1) },
+          },
+        })
+        if (existingNotif) continue
+
+        const title = `Training certificate expiring in ${daysLeft} days`
+        const message = `Your "${record.title}" certificate expires on ${new Date(record.expiryDate!).toLocaleDateString("en-ZA")}. Please arrange renewal.`
+        const userId = record.traineeId
+
+        const inAppEnabled = await isNotificationEnabled(userId, "TRAINING_EXPIRING", "IN_APP")
+        if (inAppEnabled) {
+          await db.notification.create({
+            data: { title, message, type: "TRAINING_EXPIRING", userId, organizationId: record.organizationId },
+          })
+          trainingWarned++
+        }
+
+        const emailEnabled = await isNotificationEnabled(userId, "TRAINING_EXPIRING", "EMAIL")
+        if (emailEnabled) {
+          sendNotificationEmail({ userId, title, message, type: "TRAINING_EXPIRING" })
+        }
+      }
+    } catch (err) {
+      captureError(err, { source: "cron.trainingExpiry" })
+    }
+
     Sentry.captureCheckIn({
       checkInId,
       monitorSlug: "check-expiries",
@@ -1892,6 +1955,8 @@ export async function GET(request: NextRequest) {
       permitsExpired,
       permitsWarned,
       shareLinksExpired: expiredLinks.count,
+      trainingExpired,
+      trainingWarned,
       billing: {
         trialsExpired,
         gracePeriodsCancelled,

@@ -111,6 +111,10 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Vendor Compliance Alert",
     description: "When a vendor's compliance obligation requires attention",
   },
+  TRAINING_EXPIRING: {
+    label: "Training Certificate Expiring",
+    description: "When a training certificate is approaching its expiry date",
+  },
 }
 
 // Must match NOTIFICATION_TYPES in notification-actions.ts

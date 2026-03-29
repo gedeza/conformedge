@@ -114,6 +114,7 @@ enum NotificationType {
   TEAM_INVITATION
   OBLIGATION_EXPIRING
   VENDOR_COMPLIANCE_ALERT
+  TRAINING_EXPIRING
 }
 
 enum ApprovalStepStatus {
@@ -424,6 +425,32 @@ enum ObligationStatus {
   NOT_APPLICABLE
 }
 
+enum TrainingStatus {
+  PLANNED
+  COMPLETED
+  EXPIRED
+  REVOKED
+}
+
+enum TrainingCategory {
+  INDUCTION
+  FIRST_AID
+  FIRE_FIGHTING
+  WORKING_AT_HEIGHTS
+  SCAFFOLDING
+  CRANE_OPERATOR
+  FORKLIFT_OPERATOR
+  CONFINED_SPACE
+  HAZARDOUS_CHEMICALS
+  ELECTRICAL
+  EXCAVATION
+  H_AND_S_REPRESENTATIVE
+  TOOLBOX_TALK
+  COMPETENCY
+  REFRESHER
+  OTHER
+}
+
 // ─────────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────────
@@ -474,6 +501,7 @@ model Organization {
   complianceObligations ComplianceObligation[]
   monitoringPoints      MonitoringPoint[]
   sites                 Site[]
+  trainingRecords       TrainingRecord[]
 
   // Billing
   subscription        Subscription?
@@ -546,6 +574,8 @@ model User {
   responsibleObligations     ComplianceObligation[]   @relation("ObligationResponsible")
   reviewedObligations        ComplianceObligation[]   @relation("ObligationReviewer")
   managedSites               Site[]                   @relation("SiteManager")
+  trainingCompleted          TrainingRecord[]         @relation("Trainee")
+  trainingRecorded           TrainingRecord[]         @relation("TrainingRecorder")
 
   @@map("users")
 }
@@ -595,6 +625,7 @@ model Site {
   workPermits           WorkPermit[]
   equipment             Equipment[]
   complianceObligations ComplianceObligation[]
+  trainingRecords       TrainingRecord[]
 
   @@unique([organizationId, code])
   @@index([parentSiteId], map: "idx_site_parent")
@@ -2336,4 +2367,51 @@ model MonitoringPoint {
 
   @@index([organizationId, pointType], map: "idx_monitoring_org_type")
   @@map("monitoring_points")
+}
+
+// ─────────────────────────────────────────────
+// TRAINING RECORDS
+// ─────────────────────────────────────────────
+
+model TrainingRecord {
+  id                      String           @id @default(uuid())
+  title                   String
+  category                TrainingCategory
+  status                  TrainingStatus   @default(PLANNED)
+  description             String?          @db.Text
+  trainingDate            DateTime         @map("training_date")
+  duration                String?
+  location                String?
+  trainerName             String?          @map("trainer_name")
+  trainerAccreditation    String?          @map("trainer_accreditation")
+  trainingProvider        String?          @map("training_provider")
+  providerAccreditationNo String?          @map("provider_accreditation_no")
+  certificateNumber       String?          @map("certificate_number")
+  certificateFileKey      String?          @map("certificate_file_key")
+  certificateFileName     String?          @map("certificate_file_name")
+  issuedDate              DateTime?        @map("issued_date")
+  expiryDate              DateTime?        @map("expiry_date")
+  assessmentResult        String?          @map("assessment_result")
+  saqaUnitStandard        String?          @map("saqa_unit_standard")
+  nqfLevel                Int?             @map("nqf_level")
+  notes                   String?          @db.Text
+
+  traineeId               String           @map("trainee_id")
+  organizationId          String           @map("organization_id")
+  siteId                  String?          @map("site_id")
+  recordedById            String           @map("recorded_by_id")
+  createdAt               DateTime         @default(now()) @map("created_at")
+  updatedAt               DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  trainee        User         @relation("Trainee", fields: [traineeId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  site           Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  recordedBy     User         @relation("TrainingRecorder", fields: [recordedById], references: [id])
+
+  @@index([organizationId, traineeId], map: "idx_training_org_trainee")
+  @@index([organizationId, category], map: "idx_training_org_category")
+  @@index([organizationId, expiryDate], map: "idx_training_org_expiry")
+  @@index([organizationId, status], map: "idx_training_org_status")
+  @@map("training_records")
 }

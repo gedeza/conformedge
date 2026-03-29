@@ -271,6 +271,7 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     equipmentManagement: "Equipment & Asset Management",
     complianceObligations: "Compliance Obligations & Regulatory Tracking",
     environmentalMonitoring: "Environmental Monitoring",
+    trainingRecords: "Training Records & Competency Matrix",
     multiSiteHierarchy: "Multi-Site Hierarchy",
     apiAccess: "API Access",
     sso: "Single Sign-On",

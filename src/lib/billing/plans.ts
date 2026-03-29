@@ -32,6 +32,7 @@ export interface FeatureGates {
   equipmentManagement: boolean
   complianceObligations: boolean           // Section 37(2), licences, environmental permits
   environmentalMonitoring: boolean         // Monitoring points, emissions tracking
+  trainingRecords: boolean                 // Per-employee training history, competency matrix
   multiSiteHierarchy: boolean              // Corporate → Division → Site
   apiAccess: boolean
   sso: boolean
@@ -79,6 +80,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       equipmentManagement: false,
       complianceObligations: false,
       environmentalMonitoring: false,
+      trainingRecords: false,
       multiSiteHierarchy: false,
       apiAccess: false,
       sso: false,
@@ -116,6 +118,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       equipmentManagement: true,
       complianceObligations: false,
       environmentalMonitoring: false,
+      trainingRecords: true,
       multiSiteHierarchy: false,
       apiAccess: false,
       sso: false,
@@ -153,6 +156,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       equipmentManagement: true,
       complianceObligations: false,
       environmentalMonitoring: false,
+      trainingRecords: true,
       multiSiteHierarchy: false,
       apiAccess: true,
       sso: false,
@@ -190,6 +194,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       equipmentManagement: true,
       complianceObligations: true,
       environmentalMonitoring: true,
+      trainingRecords: true,
       multiSiteHierarchy: true,             // Corporate → Division → Site
       apiAccess: true,
       sso: true,

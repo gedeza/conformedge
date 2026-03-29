@@ -149,6 +149,25 @@ export async function GET(
       orderBy: { name: "asc" },
     })
 
+    // ── Fetch training records (org-wide, optionally site-scoped) ──
+    const trainingRecords = await db.trainingRecord.findMany({
+      where: {
+        organizationId: dbOrgId,
+        ...(project.siteId ? { OR: [{ siteId: project.siteId }, { siteId: null }] } : {}),
+      },
+      select: {
+        title: true,
+        category: true,
+        status: true,
+        trainingDate: true,
+        expiryDate: true,
+        certificateNumber: true,
+        assessmentResult: true,
+        trainee: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { trainingDate: "desc" },
+    })
+
     // ── Fetch documents (project-scoped) ──
     const documents = await db.document.findMany({
       where: { projectId, organizationId: dbOrgId },
@@ -270,6 +289,17 @@ export async function GET(
         safetyRating: v.safetyRating,
         certCount: v.certifications.length,
         expiredCerts: v.certifications.filter((c) => c.expiresAt && new Date(c.expiresAt) < now).length,
+      })),
+
+      trainingRecords: trainingRecords.map((t) => ({
+        title: t.title,
+        category: t.category,
+        status: t.status,
+        traineeName: `${t.trainee.firstName} ${t.trainee.lastName}`,
+        trainingDate: t.trainingDate ? format(t.trainingDate, "PP") : null,
+        expiryDate: t.expiryDate ? format(t.expiryDate, "PP") : null,
+        certificateNumber: t.certificateNumber,
+        assessmentResult: t.assessmentResult,
       })),
 
       documents: documents.map((d) => ({

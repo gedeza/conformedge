@@ -138,6 +138,11 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Vendor Compliance Alert",
     hint: "A vendor's compliance obligation requires urgent attention.",
   },
+  TRAINING_EXPIRING: {
+    color: "#f59e0b",
+    label: "Training Certificate Expiring",
+    hint: "A training certificate is approaching its expiry date. Please arrange renewal.",
+  },
 }
 
 /* ─────────────────────────────────────────────
