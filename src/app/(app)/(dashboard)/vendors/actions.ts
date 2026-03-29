@@ -190,6 +190,51 @@ export async function updateVendor(id: string, values: VendorFormValues): Promis
   }
 }
 
+export async function updateBeeScorecard(id: string, values: {
+  beeEntityType: string | null
+  beeBlackOwnership: number | null
+  beeScorecard: Record<string, unknown> | null
+  beeScore: number | null
+  beeCertExpiry: Date | null
+  beeVerifier: string | null
+  beeLevel: number | null
+}): Promise<ActionResult> {
+  try {
+    const { dbUserId, dbOrgId, role } = await getAuthContext()
+    if (!canEdit(role)) return { success: false, error: "Insufficient permissions" }
+
+    const existing = await db.vendor.findFirst({ where: { id, organizationId: dbOrgId } })
+    if (!existing) return { success: false, error: "Vendor not found" }
+
+    await db.vendor.update({
+      where: { id },
+      data: {
+        beeEntityType: values.beeEntityType,
+        beeBlackOwnership: values.beeBlackOwnership,
+        beeScorecard: (values.beeScorecard as any) ?? undefined,
+        beeScore: values.beeScore,
+        beeCertExpiry: values.beeCertExpiry,
+        beeVerifier: values.beeVerifier,
+        beeLevel: values.beeLevel?.toString() ?? null,
+      },
+    })
+
+    logAuditEvent({
+      action: "UPDATE",
+      entityType: "Vendor",
+      entityId: id,
+      metadata: { action: "bee_scorecard_update", beeLevel: values.beeLevel, beeScore: values.beeScore },
+      userId: dbUserId,
+      organizationId: dbOrgId,
+    })
+
+    revalidatePath(`/vendors/${id}`)
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update B-BBEE scorecard" }
+  }
+}
+
 export async function deleteVendor(id: string): Promise<ActionResult> {
   try {
     const { dbUserId, dbOrgId, role } = await getAuthContext()

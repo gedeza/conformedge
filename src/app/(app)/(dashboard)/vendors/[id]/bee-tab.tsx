@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
-import { updateVendor } from "../actions"
+import { updateBeeScorecard } from "../actions"
 import {
   BEE_ELEMENTS,
   BEE_ENTITY_TYPES,
@@ -82,16 +82,15 @@ export function BeeTab({
   function handleSave() {
     startTransition(async () => {
       const sc = buildScorecard(elements)
-      const res = await updateVendor(vendorId, {
-        name: "", // Will be ignored — updateVendor merges
+      const res = await updateBeeScorecard(vendorId, {
         beeEntityType: entityType || null,
         beeBlackOwnership: blackOwnership || null,
-        beeScorecard: sc as any,
+        beeScorecard: sc as unknown as Record<string, unknown>,
         beeScore: sc.totalScore,
         beeCertExpiry: certExpiry ? new Date(certExpiry) : null,
         beeVerifier: verifier || null,
-        beeLevel: liveResult.level ?? undefined,
-      } as any)
+        beeLevel: liveResult.level,
+      })
       if (res.success) {
         toast.success("B-BBEE scorecard updated")
         setEditing(false)
