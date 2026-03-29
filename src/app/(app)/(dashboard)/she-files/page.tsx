@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { EmptyState } from "@/components/shared/empty-state"
+import { SHEFilesHelpPanel } from "./she-files-help-panel"
 
 async function getSHEFileData(dbOrgId: string, siteId?: string | null) {
   const projects = await db.project.findMany({
@@ -97,10 +98,13 @@ export default async function SHEFilesPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="SHE Files" description="Generate Safety, Health & Environment files per OHS Act 85/1993 and Construction Regulations 2014">
-        <Badge variant="outline" className="bg-blue-50 text-blue-700">
-          <HardHat className="mr-1 h-3 w-3" />
-          {projects.length} Active Project{projects.length !== 1 ? "s" : ""}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <SHEFilesHelpPanel />
+          <Badge variant="outline" className="bg-blue-50 text-blue-700">
+            <HardHat className="mr-1 h-3 w-3" />
+            {projects.length} Active Project{projects.length !== 1 ? "s" : ""}
+          </Badge>
+        </div>
       </PageHeader>
 
       {projects.length === 0 ? (

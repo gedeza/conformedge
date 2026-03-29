@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { getObligations, getObligationOptions, getObligationStats } from "./actions"
 import { ObligationTable } from "./obligation-table"
 import { ObligationFormTrigger } from "./obligation-form-trigger"
+import { ObligationsHelpPanel } from "./obligations-help-panel"
 import type { UserRole } from "@/types"
 
 interface Props {
@@ -60,12 +61,15 @@ export default async function ObligationsPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <PageHeader heading="Compliance Obligations" description="Track regulatory obligations, agreements, licences, and permits.">
+        <div className="flex items-center gap-2">
+        <ObligationsHelpPanel />
         <ObligationFormTrigger
           vendors={options.vendors}
           projects={options.projects}
           members={options.members}
           clauses={options.clauses}
         />
+        </div>
       </PageHeader>
 
       {/* Stats cards */}

@@ -14,6 +14,10 @@ import {
   Target,
   ClipboardList,
   Smartphone,
+  GraduationCap,
+  FileCheck2,
+  HardHat,
+  Award,
   type LucideIcon,
 } from "lucide-react"
 
@@ -35,6 +39,10 @@ export const ISO_STANDARDS = [
   { code: "POPIA", name: "Data Protection", clauses: 40 },
   { code: "ECSA", name: "Engineering Council", clauses: 28 },
   { code: "SACPCMP", name: "Construction Management", clauses: 25 },
+  { code: "OHS Act", name: "Occupational Health & Safety", clauses: 43 },
+  { code: "NEMA", name: "Environmental Management", clauses: 38 },
+  { code: "NWA", name: "National Water Act", clauses: 29 },
+  { code: "Carbon Tax", name: "Carbon Tax Act", clauses: 18 },
 ] as const
 
 export const PAIN_POINTS = [
@@ -155,6 +163,26 @@ export const FEATURES: FeatureItem[] = [
     description: "Progressive web app with offline sync, camera integration for evidence capture, and digital signatures. Works on any device without app store downloads.",
     icon: Smartphone,
   },
+  {
+    title: "Training Records & Competency",
+    description: "Track employee training by 16 SA statutory categories (first aid, heights, scaffolding, crane, etc.) with certificate expiry alerts, SAQA unit standards, NQF levels, and a visual competency matrix.",
+    icon: GraduationCap,
+  },
+  {
+    title: "Compliance Obligations",
+    description: "Track Section 37(2) agreements, water use licences, AELs, COIDA, tax clearance, CIDB grading, and B-BBEE certificates with automated expiry alerts and vendor notifications.",
+    icon: FileCheck2,
+  },
+  {
+    title: "SHE File Generator",
+    description: "Generate an 18-section Safety, Health & Environment file per OHS Act 85/1993 and Construction Regulations 2014. Compiled on-demand from your existing ConformEdge data.",
+    icon: HardHat,
+  },
+  {
+    title: "B-BBEE Scorecard",
+    description: "Element-by-element B-BBEE tracking per Amended Codes of Good Practice. 5-element scorecard, EME/QSE/Generic classification, priority sub-minimum checks, and recognition % calculation.",
+    icon: Award,
+  },
 ] as const
 
 export const FEATURE_DETAILS = [
@@ -230,10 +258,10 @@ export const FEATURE_DETAILS = [
 ] as const
 
 export const METRICS = [
-  { value: 11, suffix: "", label: "Compliance Frameworks", prefix: "" },
-  { value: 395, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
+  { value: 15, suffix: "", label: "Compliance Frameworks", prefix: "" },
+  { value: 534, suffix: "+", label: "Sub-Clauses Tracked", prefix: "" },
   { value: 85, suffix: "%", label: "Faster Audit Prep", prefix: "" },
-  { value: 36, suffix: "", label: "Integrated Modules", prefix: "" },
+  { value: 40, suffix: "+", label: "Integrated Modules", prefix: "" },
 ] as const
 
 // Billing constants
@@ -284,6 +312,9 @@ export const PRICING_TIERS: PricingTier[] = [
       "Objectives & KPI tracking",
       "Work permits (all 7 types)",
       "Equipment & asset management",
+      "Training records & competency matrix",
+      "SHE file generator (18 sections)",
+      "B-BBEE scorecard tracking",
       "Custom form builder",
       "Management reviews",
       "Investigation sign-off workflow",
@@ -302,14 +333,13 @@ export const PRICING_TIERS: PricingTier[] = [
     description: "For multi-site firms with SA regulatory compliance needs.",
     features: [
       "10 users included (+R349/additional user)",
-      "All 11 frameworks (incl. DMRE, POPIA, ECSA & SACPCMP)",
+      "All 15 frameworks (incl. OHS Act, NEMA, NWA, Carbon Tax)",
       "500 AI classifications/month",
       "Everything in Professional",
-      "Equipment & asset management",
-      "Custom form builder",
-      "Management reviews",
+      "Training records & competency matrix",
+      "SHE file generator (18 sections)",
+      "B-BBEE scorecard tracking",
       "SA statutory forms (W.Cl.2, SAPS 277)",
-      "Work permits (all 7 types)",
       "Vendor compliance portal",
       "Advanced reports & analytics",
       "API access",
@@ -325,7 +355,11 @@ export const PRICING_TIERS: PricingTier[] = [
     features: [
       "25 users included (+R299/additional user)",
       "Unlimited AI classifications",
-      "Equipment & asset management",
+      "Everything in Business",
+      "Multi-site hierarchy (corporate/division/site)",
+      "Corporate dashboard (cross-site LTIFR, compliance)",
+      "Compliance obligations tracking",
+      "Environmental monitoring",
       "SSO & advanced security",
       "Full API access (read/write)",
       "Custom integrations",

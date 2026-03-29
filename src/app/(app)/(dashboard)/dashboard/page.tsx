@@ -23,6 +23,8 @@ import { ObjectivesWidget } from "@/components/dashboard/objectives-widget"
 import { ManagementReviewsWidget } from "@/components/dashboard/management-reviews-widget"
 import { WorkPermitsWidget } from "@/components/dashboard/work-permits-widget"
 import { EquipmentWidget } from "@/components/dashboard/equipment-widget"
+import { TrainingWidget } from "@/components/dashboard/training-widget"
+import { ObligationsWidget } from "@/components/dashboard/obligations-widget"
 import { getActivePermitsSummary } from "../permits/actions"
 import { getEquipmentMetrics } from "../equipment/actions"
 import { DashboardHelpPanel } from "./dashboard-help-panel"
@@ -313,6 +315,10 @@ export default async function DashboardPage() {
         <WorkPermitsWidget data={permitsSummary} />
 
         <EquipmentWidget data={equipmentMetrics} />
+
+        <TrainingWidget />
+
+        <ObligationsWidget />
 
         <Card className="border-border/50 transition-all hover:shadow-md">
           <CardHeader>

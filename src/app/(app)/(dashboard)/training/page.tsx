@@ -9,6 +9,7 @@ import { Pagination } from "@/components/shared/pagination"
 import { getTrainingRecords, getTrainingStats, getTrainingOptions } from "./actions"
 import { TrainingTable } from "./training-table"
 import { TrainingFormTrigger } from "./training-form-trigger"
+import { TrainingHelpPanel } from "./training-help-panel"
 import type { UserRole } from "@/types"
 import { canCreate } from "@/lib/permissions"
 
@@ -58,6 +59,7 @@ export default async function TrainingPage({ searchParams }: Props) {
     <div className="space-y-6">
       <PageHeader heading="Training Records" description="Per OHS Act s8(2)(e) — employee training history, certificates, and competency tracking">
         <div className="flex items-center gap-2">
+          <TrainingHelpPanel />
           <Button variant="outline" size="sm" asChild>
             <Link href="/training/matrix">
               <Users className="mr-2 h-4 w-4" />

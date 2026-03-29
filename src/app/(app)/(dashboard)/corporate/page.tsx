@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/shared/empty-state"
 import { getCorporateDashboardData } from "./actions"
 import { SiteComparisonTable } from "./site-comparison-table"
 import { CorporateCharts } from "./corporate-charts"
+import { CorporateHelpPanel } from "./corporate-help-panel"
 
 export default async function CorporateDashboardPage() {
   const data = await getCorporateDashboardData()
@@ -42,11 +43,14 @@ export default async function CorporateDashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader heading="Corporate Dashboard" description="Cross-site compliance and safety overview">
+        <div className="flex items-center gap-2">
+        <CorporateHelpPanel />
         <Button variant="outline" size="sm" asChild>
           <a href="/api/corporate/csv" target="_blank" rel="noopener noreferrer">
             Export CSV
           </a>
         </Button>
+        </div>
       </PageHeader>
 
       {/* ── KPI Cards ── */}
