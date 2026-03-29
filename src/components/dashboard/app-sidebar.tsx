@@ -28,6 +28,7 @@ import {
   ShieldCheck,
   Handshake,
   Wrench,
+  FileCheck2,
 } from "lucide-react"
 
 import {
@@ -58,6 +59,7 @@ const coreItems = [
   { title: "Checklists", href: "/checklists", icon: CheckSquare },
   { title: "Equipment", href: "/equipment", icon: Wrench },
   { title: "Vendors", href: "/vendors", icon: Building2 },
+  { title: "Obligations", href: "/obligations", icon: FileCheck2 },
 ]
 
 const analysisItems = [

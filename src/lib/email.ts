@@ -158,6 +158,39 @@ export function sendPartnerEmail({
 }
 
 /**
+ * Send an email to an external stakeholder (vendor, contractor, etc.).
+ * Fire-and-forget. Used for obligation expiry alerts and compliance notifications.
+ */
+export function sendExternalEmail({
+  to,
+  subject,
+  text,
+  html,
+}: {
+  to: string
+  subject: string
+  text: string
+  html?: string
+}) {
+  resend.emails
+    .send({
+      from: FROM_ADDRESS,
+      to,
+      subject,
+      text,
+      html: html ?? undefined,
+    })
+    .then((result) => {
+      if (result && "error" in result && result.error) {
+        captureError(new Error(result.error.message), { source: "email.external" })
+      }
+    })
+    .catch((err) => {
+      captureError(err, { source: "email.external" })
+    })
+}
+
+/**
  * Send an audit pack PDF via email.
  * NOT fire-and-forget — returns result for UI feedback.
  */

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { format, differenceInDays } from "date-fns"
-import { ArrowLeft, Shield, FileDown, ExternalLink } from "lucide-react"
+import { ArrowLeft, Shield, FileDown, ExternalLink, FileCheck2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -61,6 +61,20 @@ export default async function VendorDetailPage({
 
   const complianceScore = calculateComplianceScore(sub, customWeights)
 
+  // Fetch obligations linked to this vendor
+  const obligations = await db.complianceObligation.findMany({
+    where: { vendorId: sub.id },
+    orderBy: { expiryDate: "asc" },
+    select: {
+      id: true,
+      title: true,
+      obligationType: true,
+      status: true,
+      effectiveDate: true,
+      expiryDate: true,
+    },
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -83,6 +97,7 @@ export default async function VendorDetailPage({
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="certifications">Certifications ({sub.certifications.length})</TabsTrigger>
+          <TabsTrigger value="obligations">Obligations ({obligations.length})</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
@@ -171,6 +186,57 @@ export default async function VendorDetailPage({
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="obligations" className="space-y-4">
+          <Card className="border-border/50 transition-all hover:shadow-md">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Compliance Obligations</CardTitle>
+              <Button variant="outline" size="sm" asChild>
+                <Link href={`/obligations?vendorId=${sub.id}`}>
+                  View All <ExternalLink className="ml-2 h-3 w-3" />
+                </Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {obligations.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No compliance obligations linked to this vendor.</p>
+              ) : (
+                <div className="space-y-3">
+                  {obligations.map((ob) => {
+                    const daysLeft = ob.expiryDate
+                      ? differenceInDays(new Date(ob.expiryDate), new Date())
+                      : null
+                    return (
+                      <Link
+                        key={ob.id}
+                        href={`/obligations/${ob.id}`}
+                        className="flex items-start justify-between rounded-md border p-4 hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <FileCheck2 className="h-4 w-4 text-blue-500" />
+                            <span className="font-medium">{ob.title}</span>
+                            <StatusBadge type="obligationStatus" value={ob.status} />
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {ob.obligationType}
+                            {ob.expiryDate && ` — Expires ${format(ob.expiryDate, "PPP")}`}
+                            {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && (
+                              <span className="text-yellow-600 font-medium"> ({daysLeft}d remaining)</span>
+                            )}
+                            {daysLeft !== null && daysLeft < 0 && (
+                              <span className="text-red-600 font-medium"> (expired)</span>
+                            )}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  })}
                 </div>
               )}
             </CardContent>

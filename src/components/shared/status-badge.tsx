@@ -31,6 +31,7 @@ import {
   REPAIR_PRIORITIES,
   CAPA_TYPES,
   TREATMENT_TYPES,
+  OBLIGATION_STATUSES,
 } from "@/lib/constants"
 
 type StatusMap = Record<string, { label: string; color: string }>
@@ -66,6 +67,7 @@ const STATUS_MAPS: Record<string, StatusMap> = {
   repairPriority: REPAIR_PRIORITIES,
   capaType: CAPA_TYPES,
   treatment: TREATMENT_TYPES,
+  obligationStatus: OBLIGATION_STATUSES,
 }
 
 interface StatusBadgeProps {

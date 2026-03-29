@@ -65,6 +65,14 @@ export const TREATMENT_TYPES = {
   HOSPITALIZED: { label: "Hospitalized",      color: "bg-red-100 text-red-800" },
 } as const
 
+export const OBLIGATION_STATUSES = {
+  PENDING:        { label: "Pending",        color: "bg-yellow-100 text-yellow-800" },
+  ACTIVE:         { label: "Active",         color: "bg-green-100 text-green-800" },
+  EXPIRED:        { label: "Expired",        color: "bg-red-100 text-red-800" },
+  REVOKED:        { label: "Revoked",        color: "bg-gray-100 text-gray-800" },
+  NOT_APPLICABLE: { label: "N/A",            color: "bg-slate-100 text-slate-800" },
+} as const
+
 export const CONTRIBUTING_FACTORS = [
   "Inadequate training",
   "PPE failure/not worn",

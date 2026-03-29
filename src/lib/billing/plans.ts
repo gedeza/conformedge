@@ -114,7 +114,7 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: true,
       permitToWork: true,
       equipmentManagement: true,
-      complianceObligations: true,          // Section 37(2), licences, permits
+      complianceObligations: false,
       environmentalMonitoring: false,
       multiSiteHierarchy: false,
       apiAccess: false,
@@ -151,8 +151,8 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: true,
       permitToWork: true,
       equipmentManagement: true,
-      complianceObligations: true,
-      environmentalMonitoring: true,        // Monitoring points, emissions
+      complianceObligations: false,
+      environmentalMonitoring: false,
       multiSiteHierarchy: false,
       apiAccess: true,
       sso: false,
