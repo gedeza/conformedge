@@ -8,6 +8,7 @@ import { ReferralAttribution } from "@/components/shared/referral-attribution"
 import { AdminNavLink } from "@/components/admin/admin-nav-link"
 import { MobileFAB } from "@/components/dashboard/mobile-fab"
 import { MobileBottomNav } from "@/components/dashboard/mobile-bottom-nav"
+import { SiteSelectorWrapper } from "@/components/dashboard/site-selector-wrapper"
 
 export default function DashboardLayout({
   children,
@@ -16,7 +17,11 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar>
+        <Suspense fallback={null}>
+          <SiteSelectorWrapper />
+        </Suspense>
+      </AppSidebar>
       <SidebarInset>
         <DashboardHeader />
         <Suspense fallback={null}>

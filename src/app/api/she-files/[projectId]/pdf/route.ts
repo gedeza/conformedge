@@ -18,7 +18,7 @@ export async function GET(
     // ── Fetch project ──
     const project = await db.project.findFirst({
       where: { id: projectId, organizationId: dbOrgId },
-      select: { id: true, name: true, description: true },
+      select: { id: true, name: true, description: true, siteId: true, site: { select: { name: true, code: true } } },
     })
 
     if (!project) {
@@ -197,7 +197,7 @@ export async function GET(
       organizationName: org?.name ?? "Organisation",
       projectName: project.name,
       projectDescription: project.description ?? undefined,
-      projectLocation: undefined,
+      projectLocation: project.site ? `${project.site.name} (${project.site.code})` : undefined,
       generatedDate: format(now, "PPP"),
       generatedBy: currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "System",
 

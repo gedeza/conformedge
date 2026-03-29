@@ -73,7 +73,7 @@ const PAGE_SIZE = 50
 
 export async function getIncidents(
   page = 1,
-  filters?: { status?: string; type?: string; severity?: string; projectId?: string }
+  filters?: { status?: string; type?: string; severity?: string; projectId?: string; siteId?: string | null }
 ) {
   const { dbOrgId } = await getAuthContext()
 
@@ -82,6 +82,7 @@ export async function getIncidents(
   if (filters?.type) where.incidentType = filters.type
   if (filters?.severity) where.severity = filters.severity
   if (filters?.projectId) where.projectId = filters.projectId
+  if (filters?.siteId) where.siteId = filters.siteId
 
   const [incidents, total] = await Promise.all([
     db.incident.findMany({

@@ -21,6 +21,7 @@ export async function getObligations(page = 1, filters?: {
   obligationType?: string
   vendorId?: string
   projectId?: string
+  siteId?: string | null
 }) {
   const { dbOrgId } = await getAuthContext()
 
@@ -29,6 +30,7 @@ export async function getObligations(page = 1, filters?: {
   if (filters?.obligationType) where.obligationType = filters.obligationType
   if (filters?.vendorId) where.vendorId = filters.vendorId
   if (filters?.projectId) where.projectId = filters.projectId
+  if (filters?.siteId) where.siteId = filters.siteId
 
   const [obligations, total] = await Promise.all([
     db.complianceObligation.findMany({

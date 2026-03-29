@@ -1,6 +1,7 @@
 import { FileDown, HardHat, AlertTriangle, CheckCircle2, Clock } from "lucide-react"
 import { format } from "date-fns"
 import { getAuthContext } from "@/lib/auth"
+import { getSiteId } from "@/lib/site-context"
 import { db } from "@/lib/db"
 import { PageHeader } from "@/components/shared/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,9 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { EmptyState } from "@/components/shared/empty-state"
 
-async function getSHEFileData(dbOrgId: string) {
+async function getSHEFileData(dbOrgId: string, siteId?: string | null) {
   const projects = await db.project.findMany({
-    where: { organizationId: dbOrgId, status: { in: ["ACTIVE", "PLANNING"] } },
+    where: {
+      organizationId: dbOrgId,
+      status: { in: ["ACTIVE", "PLANNING"] },
+      ...(siteId ? { siteId } : {}),
+    },
     select: {
       id: true,
       name: true,
@@ -74,7 +79,8 @@ export default async function SHEFilesPage() {
 
   try {
     const { dbOrgId } = await getAuthContext()
-    projects = await getSHEFileData(dbOrgId)
+    const siteId = await getSiteId()
+    projects = await getSHEFileData(dbOrgId, siteId)
   } catch {
     authError = true
   }

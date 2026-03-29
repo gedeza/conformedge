@@ -79,7 +79,7 @@ const footerItems = [
   { title: "Settings", href: "/settings", icon: Settings },
 ]
 
-export function AppSidebar() {
+export function AppSidebar({ children }: { children?: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
@@ -101,6 +101,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
         <OrgSwitcher />
+        {children}
       </SidebarHeader>
 
       <SidebarContent>

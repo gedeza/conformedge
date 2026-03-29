@@ -57,12 +57,13 @@ async function generateAssetNumber(orgId: string): Promise<string> {
 // READ
 // ─────────────────────────────────────────────
 
-export async function getEquipment(page = 1, filters?: { status?: string; category?: string }) {
+export async function getEquipment(page = 1, filters?: { status?: string; category?: string; siteId?: string | null }) {
   const { dbOrgId } = await getAuthContext()
 
   const where: Record<string, unknown> = { organizationId: dbOrgId }
   if (filters?.status) where.status = filters.status
   if (filters?.category) where.category = filters.category
+  if (filters?.siteId) where.siteId = filters.siteId
 
   const [equipment, total] = await Promise.all([
     db.equipment.findMany({

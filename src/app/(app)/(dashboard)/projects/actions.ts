@@ -19,11 +19,14 @@ const projectSchema = z.object({
 
 export type ProjectFormValues = z.infer<typeof projectSchema>
 
-export async function getProjects() {
+export async function getProjects(filters?: { siteId?: string | null }) {
   const { dbOrgId } = await getAuthContext()
 
   return db.project.findMany({
-    where: { organizationId: dbOrgId },
+    where: {
+      organizationId: dbOrgId,
+      ...(filters?.siteId ? { siteId: filters.siteId } : {}),
+    },
     include: {
       _count: {
         select: {

@@ -53,9 +53,10 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 // READ
 // ─────────────────────────────────────────────
 
-export async function getPermits(page = 1) {
+export async function getPermits(page = 1, filters?: { siteId?: string | null }) {
   const { dbOrgId } = await getAuthContext()
-  const where = { organizationId: dbOrgId }
+  const where: Record<string, unknown> = { organizationId: dbOrgId }
+  if (filters?.siteId) where.siteId = filters.siteId
 
   const [permits, total] = await Promise.all([
     db.workPermit.findMany({

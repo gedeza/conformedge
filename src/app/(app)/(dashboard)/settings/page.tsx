@@ -4,14 +4,17 @@ import { getOrgSettings, getMembers, getStandardsList } from "./actions"
 import { getNotificationPreferences, type NotificationPreferenceMap } from "./notification-actions"
 import { getWorkflowTemplates, type WorkflowTemplate } from "./workflow-template-actions"
 import { getShareLinks, type ShareLinkItem } from "./share-link-actions"
+import { getSites } from "./site-actions"
 import { OrgSettingsForm } from "./org-settings-form"
 import { MembersList } from "./members-list"
 import { StandardsList } from "./standards-list"
 import { NotificationPreferences } from "./notification-preferences"
 import { WorkflowTemplates } from "./workflow-templates"
 import { ShareLinks } from "./share-links"
+import { SiteManagement } from "./site-management"
 import { SettingsHelpPanel } from "./settings-help-panel"
 import { canManageOrg } from "@/lib/permissions"
+import { getBillingContext, checkFeatureAccess } from "@/lib/billing"
 import { db } from "@/lib/db"
 
 export default async function SettingsPage() {
@@ -27,6 +30,9 @@ export default async function SettingsPage() {
   let role = "VIEWER"
   let currentUserId = ""
   let authError = false
+  let siteFeatureEnabled = false
+  let sitesList: Awaited<ReturnType<typeof getSites>> = []
+  let membersList: Array<{ id: string; firstName: string; lastName: string }> = []
 
   try {
     ;[org, members, standards, notifPrefs, workflowTemplates, shareLinks] = await Promise.all([
@@ -36,6 +42,14 @@ export default async function SettingsPage() {
     const ctx = await getAuthContext()
     role = ctx.role
     currentUserId = ctx.dbUserId
+    // Check multi-site feature gate
+    const billing = await getBillingContext(ctx.dbOrgId)
+    const siteAccess = checkFeatureAccess(billing, "multiSiteHierarchy")
+    siteFeatureEnabled = siteAccess.allowed
+    if (siteFeatureEnabled) {
+      sitesList = await getSites()
+      membersList = members.map((m: any) => ({ id: m.userId, firstName: m.firstName, lastName: m.lastName }))
+    }
     // Fetch entity pickers for share link dialog
     ;[shareDocs, shareAuditPacks, shareVendors] = await Promise.all([
       db.document.findMany({ where: { organizationId: ctx.dbOrgId }, select: { id: true, title: true }, orderBy: { title: "asc" }, take: 200 }),
@@ -117,6 +131,17 @@ export default async function SettingsPage() {
             )}
           </CardContent>
         </Card>
+        {siteFeatureEnabled && (
+          <Card className="border-border/50 transition-all hover:shadow-md md:col-span-2">
+            <CardHeader>
+              <CardTitle>Multi-Site Hierarchy</CardTitle>
+              <CardDescription>Manage divisions, sites, plants, and depots within your organisation</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SiteManagement sites={sitesList} members={membersList} canManage={canManageOrg(role)} />
+            </CardContent>
+          </Card>
+        )}
         <Card className="border-border/50 transition-all hover:shadow-md md:col-span-2">
           <CardHeader>
             <CardTitle>External Sharing</CardTitle>

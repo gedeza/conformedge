@@ -406,6 +406,16 @@ enum OrganizationType {
   SITE
 }
 
+enum SiteType {
+  HEADQUARTERS
+  DIVISION
+  REGIONAL_OFFICE
+  SITE
+  PLANT
+  DEPOT
+  WAREHOUSE
+}
+
 enum ObligationStatus {
   PENDING
   ACTIVE
@@ -460,9 +470,10 @@ model Organization {
   referrals                  Referral[]
   equipment                  Equipment[]
 
-  // Enterprise — compliance obligations & monitoring
+  // Enterprise — compliance obligations, monitoring, sites
   complianceObligations ComplianceObligation[]
   monitoringPoints      MonitoringPoint[]
+  sites                 Site[]
 
   // Billing
   subscription        Subscription?
@@ -534,6 +545,7 @@ model User {
   recordedRepairs            RepairRecord[]           @relation("RepairRecorder")
   responsibleObligations     ComplianceObligation[]   @relation("ObligationResponsible")
   reviewedObligations        ComplianceObligation[]   @relation("ObligationReviewer")
+  managedSites               Site[]                   @relation("SiteManager")
 
   @@map("users")
 }
@@ -555,6 +567,41 @@ model OrganizationUser {
   @@map("organization_users")
 }
 
+model Site {
+  id             String    @id @default(uuid())
+  name           String
+  code           String
+  siteType       SiteType  @default(SITE) @map("site_type")
+  address        String?
+  parentSiteId   String?   @map("parent_site_id")
+  organizationId String    @map("organization_id")
+  managerId      String?   @map("manager_id")
+  isActive       Boolean   @default(true) @map("is_active")
+  metadata       Json?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Hierarchy
+  parentSite     Site?     @relation("SiteHierarchy", fields: [parentSiteId], references: [id])
+  childSites     Site[]    @relation("SiteHierarchy")
+
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  manager        User?        @relation("SiteManager", fields: [managerId], references: [id])
+
+  // Module relations
+  projects              Project[]
+  incidents             Incident[]
+  workPermits           WorkPermit[]
+  equipment             Equipment[]
+  complianceObligations ComplianceObligation[]
+
+  @@unique([organizationId, code])
+  @@index([parentSiteId], map: "idx_site_parent")
+  @@index([organizationId, isActive], map: "idx_site_org_active")
+  @@map("sites")
+}
+
 model Project {
   id             String        @id @default(uuid())
   name           String
@@ -563,11 +610,13 @@ model Project {
   startDate      DateTime?     @map("start_date")
   endDate        DateTime?     @map("end_date")
   organizationId String        @map("organization_id")
+  siteId         String?       @map("site_id")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
 
   // Relations
   organization       Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  site               Site?                 @relation(fields: [siteId], references: [id], onDelete: SetNull)
   documents          Document[]
   assessments        Assessment[]
   capas              Capa[]
@@ -1251,6 +1300,7 @@ model Incident {
 
   organizationId   String         @map("organization_id")
   projectId        String?        @map("project_id")
+  siteId           String?        @map("site_id")
   reportedById     String         @map("reported_by_id")
   investigatorId   String?        @map("investigator_id")
   capaId           String?        @map("capa_id")
@@ -1260,6 +1310,7 @@ model Incident {
   // Relations
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   project      Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  site         Site?        @relation(fields: [siteId], references: [id], onDelete: SetNull)
   reportedBy   User         @relation("IncidentReporter", fields: [reportedById], references: [id])
   investigator User?        @relation("IncidentInvestigator", fields: [investigatorId], references: [id])
   capa         Capa?        @relation(fields: [capaId], references: [id], onDelete: SetNull)
@@ -1347,6 +1398,7 @@ model WorkPermit {
   closureNotes        String?          @map("closure_notes")
   organizationId      String           @map("organization_id")
   projectId           String?          @map("project_id")
+  siteId              String?          @map("site_id")
   requestedById       String           @map("requested_by_id")
   issuedById          String?          @map("issued_by_id")
   createdAt           DateTime         @default(now()) @map("created_at")
@@ -1354,6 +1406,7 @@ model WorkPermit {
 
   organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   project        Project?              @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  site           Site?                 @relation(fields: [siteId], references: [id], onDelete: SetNull)
   requestedBy    User                  @relation("PermitRequester", fields: [requestedById], references: [id])
   issuedBy       User?                 @relation("PermitIssuer", fields: [issuedById], references: [id])
   checklistItems WorkPermitChecklist[]
@@ -2098,11 +2151,13 @@ model Equipment {
 
   organizationId   String          @map("organization_id")
   projectId        String?         @map("project_id")
+  siteId           String?         @map("site_id")
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
 
   organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   project          Project?        @relation(fields: [projectId], references: [id])
+  site             Site?           @relation(fields: [siteId], references: [id], onDelete: SetNull)
 
   calibrationRecords CalibrationRecord[]
   maintenanceRecords MaintenanceRecord[]
@@ -2225,6 +2280,7 @@ model ComplianceObligation {
   organizationId    String           @map("organization_id")
   vendorId          String?          @map("vendor_id")
   projectId         String?          @map("project_id")
+  siteId            String?          @map("site_id")
   responsibleUserId String?          @map("responsible_user_id")
   status            ObligationStatus @default(PENDING)
   effectiveDate     DateTime?        @map("effective_date")
@@ -2242,6 +2298,7 @@ model ComplianceObligation {
   organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   vendor          Vendor?         @relation(fields: [vendorId], references: [id], onDelete: SetNull)
   project         Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  site            Site?           @relation(fields: [siteId], references: [id], onDelete: SetNull)
   standardClause  StandardClause? @relation(fields: [standardClauseId], references: [id], onDelete: SetNull)
   document        Document?       @relation(fields: [documentId], references: [id], onDelete: SetNull)
   responsibleUser User?           @relation("ObligationResponsible", fields: [responsibleUserId], references: [id])
