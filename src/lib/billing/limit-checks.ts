@@ -269,6 +269,9 @@ function formatFeatureName(feature: keyof FeatureGates): string {
     objectivesTracking: "Objectives & KPI Tracking",
     permitToWork: "Permit to Work",
     equipmentManagement: "Equipment & Asset Management",
+    complianceObligations: "Compliance Obligations & Regulatory Tracking",
+    environmentalMonitoring: "Environmental Monitoring",
+    multiSiteHierarchy: "Multi-Site Hierarchy",
     apiAccess: "API Access",
     sso: "Single Sign-On",
   }

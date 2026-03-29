@@ -30,6 +30,9 @@ export interface FeatureGates {
   objectivesTracking: boolean
   permitToWork: boolean
   equipmentManagement: boolean
+  complianceObligations: boolean           // Section 37(2), licences, environmental permits
+  environmentalMonitoring: boolean         // Monitoring points, emissions tracking
+  multiSiteHierarchy: boolean              // Corporate → Division → Site
   apiAccess: boolean
   sso: boolean
 }
@@ -74,6 +77,9 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: false,
       permitToWork: false,
       equipmentManagement: false,
+      complianceObligations: false,
+      environmentalMonitoring: false,
+      multiSiteHierarchy: false,
       apiAccess: false,
       sso: false,
     },
@@ -108,6 +114,9 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: true,
       permitToWork: true,
       equipmentManagement: true,
+      complianceObligations: true,          // Section 37(2), licences, permits
+      environmentalMonitoring: false,
+      multiSiteHierarchy: false,
       apiAccess: false,
       sso: false,
     },
@@ -142,6 +151,9 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: true,
       permitToWork: true,
       equipmentManagement: true,
+      complianceObligations: true,
+      environmentalMonitoring: true,        // Monitoring points, emissions
+      multiSiteHierarchy: false,
       apiAccess: true,
       sso: false,
     },
@@ -176,6 +188,9 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
       objectivesTracking: true,
       permitToWork: true,
       equipmentManagement: true,
+      complianceObligations: true,
+      environmentalMonitoring: true,
+      multiSiteHierarchy: true,             // Corporate → Division → Site
       apiAccess: true,
       sso: true,
     },

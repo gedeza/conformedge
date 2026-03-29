@@ -128,6 +128,16 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; label: string; hint
     label: "Equipment Quarantined",
     hint: "Equipment has been quarantined due to safety concerns. Do not use until resolved.",
   },
+  OBLIGATION_EXPIRING: {
+    color: "#f59e0b",
+    label: "Compliance Obligation Expiring",
+    hint: "A regulatory obligation (licence, agreement, or permit) is approaching its expiry date. Review and renew.",
+  },
+  VENDOR_COMPLIANCE_ALERT: {
+    color: "#ef4444",
+    label: "Vendor Compliance Alert",
+    hint: "A vendor's compliance obligation requires urgent attention.",
+  },
 }
 
 /* ─────────────────────────────────────────────

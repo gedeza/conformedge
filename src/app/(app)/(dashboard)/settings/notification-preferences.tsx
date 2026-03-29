@@ -103,6 +103,14 @@ const NOTIFICATION_LABELS: Record<NotificationType, { label: string; description
     label: "Equipment Quarantined",
     description: "When equipment is quarantined due to safety concerns",
   },
+  OBLIGATION_EXPIRING: {
+    label: "Compliance Obligation Expiring",
+    description: "When a regulatory obligation (licence, agreement, permit) is approaching expiry",
+  },
+  VENDOR_COMPLIANCE_ALERT: {
+    label: "Vendor Compliance Alert",
+    description: "When a vendor's compliance obligation requires attention",
+  },
 }
 
 // Must match NOTIFICATION_TYPES in notification-actions.ts
@@ -126,6 +134,8 @@ const TYPES: NotificationType[] = [
   "CALIBRATION_OVERDUE",
   "MAINTENANCE_DUE",
   "EQUIPMENT_QUARANTINED",
+  "OBLIGATION_EXPIRING",
+  "VENDOR_COMPLIANCE_ALERT",
 ]
 
 interface Props {
