@@ -7,6 +7,8 @@ const db = new PrismaClient({ adapter })
 
 async function main() {
   // ── Find the org ──
+  const targetName = process.argv[2] // Optional: pass org name as argument
+
   const orgs = await db.organization.findMany({
     select: { id: true, name: true, slug: true },
   })
@@ -17,7 +19,19 @@ async function main() {
     return
   }
 
-  const org = orgs[0]
+  // Use targeted org or first with members
+  let org = targetName
+    ? orgs.find((o) => o.name.toLowerCase().includes(targetName.toLowerCase())) ?? orgs[0]
+    : orgs[0]
+
+  // If no target specified, prefer org with active members
+  if (!targetName) {
+    for (const o of orgs) {
+      const memberCount = await db.organizationUser.count({ where: { organizationId: o.id, isActive: true } })
+      if (memberCount > 0) { org = o; break }
+    }
+  }
+
   console.log(`\nUsing org: ${org.name} (${org.id})`)
 
   // ── 1. Upgrade to Enterprise ──
