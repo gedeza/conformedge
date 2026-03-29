@@ -29,6 +29,7 @@ import {
   Handshake,
   Wrench,
   FileCheck2,
+  HardHat,
 } from "lucide-react"
 
 import {
@@ -60,6 +61,7 @@ const coreItems = [
   { title: "Equipment", href: "/equipment", icon: Wrench },
   { title: "Vendors", href: "/vendors", icon: Building2 },
   { title: "Obligations", href: "/obligations", icon: FileCheck2 },
+  { title: "SHE Files", href: "/she-files", icon: HardHat },
 ]
 
 const analysisItems = [

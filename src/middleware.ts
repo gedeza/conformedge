@@ -25,6 +25,7 @@ const isProtectedRoute = createRouteMatcher([
   "/permits(.*)",
   "/equipment(.*)",
   "/obligations(.*)",
+  "/she-files(.*)",
   "/partner/(.*)",
   "/partner",
   "/admin(.*)",
@@ -66,7 +67,7 @@ export default hasClerkKey
         "/incidents", "/objectives", "/checklists", "/vendors",
         "/audit-packs", "/audit-trail", "/reports", "/gap-analysis",
         "/settings", "/billing", "/notifications", "/calendar", "/ims",
-        "/cross-references", "/management-reviews", "/permits", "/equipment", "/obligations", "/partner/", "/admin", "/api/download",
+        "/cross-references", "/management-reviews", "/permits", "/equipment", "/obligations", "/she-files", "/partner/", "/admin", "/api/download",
       ].some((p) => pathname.startsWith(p))
 
       if (isProtected) {
