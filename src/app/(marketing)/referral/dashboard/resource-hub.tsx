@@ -130,21 +130,10 @@ function HowYouEarnTab({ commissionPercent }: { commissionPercent: number }) {
               </thead>
               <tbody>
                 {[
-                  { plan: "Essentials", fee: 2299, badge: "Small firms" },
-                  {
-                    plan: "Professional",
-                    fee: 5499,
-                    badge: "Most common",
-                    highlight: true,
-                  },
-                  { plan: "Business", fee: 8499, badge: "Large contractors" },
-                  { plan: "Enterprise", fee: 16999, badge: "Mining / SOEs" },
-                ].map((row) => {
-                  const monthlyEarn = Math.round(
-                    row.fee * (commissionPercent / 100)
-                  )
-                  const annualEarn = monthlyEarn * 12
-                  return (
+                  { plan: "Essentials", fee: 2299, monthlyEarn: 230, annualEarn: 2760, badge: "Small firms" },
+                  { plan: "Professional", fee: 5499, monthlyEarn: 550, annualEarn: 6600, badge: "Most common", highlight: true },
+                  { plan: "Business", fee: 8499, monthlyEarn: 850, annualEarn: 10200, badge: "Large contractors" },
+                ].map((row) => (
                     <tr
                       key={row.plan}
                       className={`border-b last:border-0 ${row.highlight ? "bg-green-50/50" : ""}`}
@@ -164,14 +153,13 @@ function HowYouEarnTab({ commissionPercent }: { commissionPercent: number }) {
                         R{row.fee.toLocaleString()}/mo
                       </td>
                       <td className="py-3 px-4">
-                        R{monthlyEarn.toLocaleString()}/mo
+                        R{row.monthlyEarn.toLocaleString()}/mo
                       </td>
                       <td className="py-3 px-4 font-bold text-green-700">
-                        R{annualEarn.toLocaleString()}
+                        R{row.annualEarn.toLocaleString()}
                       </td>
                     </tr>
-                  )
-                })}
+                ))}
               </tbody>
             </table>
           </div>
@@ -184,28 +172,28 @@ function HowYouEarnTab({ commissionPercent }: { commissionPercent: number }) {
             </h4>
             <div className="grid gap-3 sm:grid-cols-3">
               {[
-                { refs: 3, plan: "Professional", perClient: 6599 },
-                { refs: 5, plan: "Professional", perClient: 6599 },
-                { refs: 10, plan: "Mixed", perClient: 5500 },
+                { refs: 3, label: "3 Professional clients", annual: 19800 },
+                { refs: 5, label: "5 Professional clients", annual: 33000 },
+                { refs: 10, label: "10 Professional clients", annual: 66000 },
               ].map((ex) => (
                 <div
                   key={ex.refs}
                   className="rounded-md bg-white/80 p-3 text-center border border-green-100"
                 >
                   <p className="text-2xl font-bold text-green-700">
-                    R{(ex.refs * ex.perClient).toLocaleString()}
+                    R{ex.annual.toLocaleString()}
                   </p>
                   <p className="text-xs text-green-600 font-medium">
                     per year
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {ex.refs} {ex.plan} clients
+                    {ex.label}
                   </p>
                 </div>
               ))}
             </div>
             <p className="mt-3 text-xs text-green-700">
-              No cap on referrals. The more you refer, the more you earn.
+              No cap on referrals. The more you refer, the more you earn. Annual = 10 months (17% annual discount).
             </p>
           </div>
         </CardContent>
@@ -679,9 +667,9 @@ function ProductOverviewTab() {
                   },
                   {
                     tier: "Enterprise",
-                    price: "From R16,999",
-                    users: "25",
-                    best: "Mining, SOEs, multi-site",
+                    price: "Custom",
+                    users: "25+",
+                    best: "Mining, SOEs, multi-site — contact us",
                   },
                 ].map((row) => (
                   <tr
