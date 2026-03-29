@@ -14,8 +14,8 @@ async function getSHEFileData(dbOrgId: string, siteId?: string | null) {
   const projects = await db.project.findMany({
     where: {
       organizationId: dbOrgId,
-      status: { in: ["ACTIVE", "PLANNING"] },
-      ...(siteId ? { siteId } : {}),
+      status: { in: ["ACTIVE", "PLANNING", "COMPLETED"] },
+      ...(siteId ? { OR: [{ siteId }, { siteId: null }] } : {}),
     },
     select: {
       id: true,
