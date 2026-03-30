@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { TrainingForm } from "./training-form"
 
 interface TrainingFormTriggerProps {
@@ -25,6 +25,7 @@ export function TrainingFormTrigger({ members, sites }: TrainingFormTriggerProps
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Training Record</DialogTitle>
+          <DialogDescription>Record employee training with certificate and competency details.</DialogDescription>
         </DialogHeader>
         <TrainingForm members={members} sites={sites} onSuccess={() => setOpen(false)} />
       </DialogContent>

@@ -40,20 +40,26 @@ export function TrainingForm({ members, sites, initialData, onSuccess }: Trainin
       certificateNumber: initialData?.certificateNumber ?? "",
       issuedDate: initialData?.issuedDate ?? null,
       expiryDate: initialData?.expiryDate ?? null,
-      assessmentResult: initialData?.assessmentResult ?? "",
+      assessmentResult: initialData?.assessmentResult ?? "none",
       saqaUnitStandard: initialData?.saqaUnitStandard ?? "",
       nqfLevel: initialData?.nqfLevel ?? null,
       notes: initialData?.notes ?? "",
       traineeId: initialData?.traineeId ?? "",
-      siteId: initialData?.siteId ?? "",
+      siteId: initialData?.siteId ?? "none",
     },
   })
 
   function onSubmit(values: TrainingFormValues) {
+    // Convert "none" sentinel values back to null
+    const cleaned = {
+      ...values,
+      siteId: values.siteId === "none" ? null : values.siteId,
+      assessmentResult: values.assessmentResult === "none" ? null : values.assessmentResult,
+    }
     startTransition(async () => {
       const result = isEdit
-        ? await updateTrainingRecord(initialData!.id!, values)
-        : await createTrainingRecord(values)
+        ? await updateTrainingRecord(initialData!.id!, cleaned)
+        : await createTrainingRecord(cleaned)
 
       if (result.success) {
         toast.success(isEdit ? "Training record updated" : "Training record created")
@@ -152,7 +158,7 @@ export function TrainingForm({ members, sites, initialData, onSuccess }: Trainin
                     <SelectTrigger><SelectValue placeholder="Optional" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">No site</SelectItem>
+                    <SelectItem value="none">No site</SelectItem>
                     {sites.map((s) => (
                       <SelectItem key={s.id} value={s.id}>{s.name} ({s.code})</SelectItem>
                     ))}
@@ -223,7 +229,7 @@ export function TrainingForm({ members, sites, initialData, onSuccess }: Trainin
                     <SelectTrigger><SelectValue placeholder="Select result" /></SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="">Not assessed</SelectItem>
+                    <SelectItem value="none">Not assessed</SelectItem>
                     <SelectItem value="Competent">Competent</SelectItem>
                     <SelectItem value="Not Yet Competent">Not Yet Competent</SelectItem>
                   </SelectContent>
