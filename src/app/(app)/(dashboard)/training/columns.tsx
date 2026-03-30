@@ -69,13 +69,11 @@ export const columns: ColumnDef<TrainingRow>[] = [
     cell: ({ row }) => {
       const expiry = row.original.expiryDate
       if (!expiry) return <span className="text-muted-foreground">—</span>
-      const now = new Date()
-      const daysLeft = Math.ceil((new Date(expiry).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+      const isExpired = row.original.status === "EXPIRED"
       return (
         <div>
           <span>{format(expiry, "PP")}</span>
-          {daysLeft < 0 && <Badge variant="destructive" className="ml-2 text-xs">Expired</Badge>}
-          {daysLeft >= 0 && daysLeft <= 60 && <Badge variant="outline" className="ml-2 text-xs border-yellow-500 text-yellow-600">{daysLeft}d</Badge>}
+          {isExpired && <Badge variant="destructive" className="ml-2 text-xs">Expired</Badge>}
         </div>
       )
     },
