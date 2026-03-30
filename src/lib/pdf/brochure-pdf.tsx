@@ -420,7 +420,7 @@ export function BrochurePDF() {
               <Text style={st.coverStatLabel}>Standards</Text>
             </View>
             <View style={st.coverStat}>
-              <Text style={st.coverStatNumber}>395+</Text>
+              <Text style={st.coverStatNumber}>534+</Text>
               <Text style={st.coverStatLabel}>Sub-clauses</Text>
             </View>
             <View style={st.coverStat}>
@@ -456,7 +456,7 @@ export function BrochurePDF() {
           </Text>
         </View>
 
-        <Text style={st.sectionTitle}>11 Compliance Frameworks</Text>
+        <Text style={st.sectionTitle}>15 Compliance Frameworks</Text>
         <View style={st.standardsBar}>
           {standards.map((s) => (
             <View key={s} style={st.standardBadge}>

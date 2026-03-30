@@ -512,7 +512,7 @@ function MarketingKitTab({ referralLink }: { referralLink: string }) {
             {[
               { stat: "36", label: "Modules" },
               { stat: "11", label: "Standards" },
-              { stat: "395+", label: "Sub-clauses covered" },
+              { stat: "534+", label: "Sub-clauses covered" },
               { stat: "7", label: "Work permit types" },
               { stat: "13", label: "Inspection templates" },
               { stat: "R2,299", label: "Starting price/mo" },
@@ -580,7 +580,7 @@ function ProductOverviewTab() {
                 desc: "Upload any document — AI reads it, identifies the ISO clause, and files it automatically. No manual tagging.",
               },
               {
-                title: "11 Compliance Frameworks",
+                title: "15 Compliance Frameworks",
                 desc: "ISO 9001, 14001, 45001, 22301, 27001, 37001, 39001, MHSA/DMRE, POPIA, ECSA, SACPCMP — all built in.",
               },
               {
