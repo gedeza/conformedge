@@ -340,7 +340,10 @@ export function PartnerOpportunityPDF() {
         <Bullet>Equipment register with calibration and maintenance tracking</Bullet>
         <Bullet>AI-powered document classification — upload and auto-file</Bullet>
         <Bullet>Mobile/offline access — your consultants work on-site with the PWA app</Bullet>
-        <Bullet>11 SA-relevant standards — ISO 9001, 14001, 45001, MHSA, POPIA, and more</Bullet>
+        <Bullet>15 SA-relevant standards — ISO 9001, 14001, 45001, OHS Act, NEMA, MHSA, POPIA, and more</Bullet>
+        <Bullet>SHE file generator — 18-section PDF per OHS Act and Construction Regulations</Bullet>
+        <Bullet>Training records with competency matrix and certificate expiry tracking</Bullet>
+        <Bullet>B-BBEE scorecard — 5-element tracking per Amended Codes of Good Practice</Bullet>
 
         <PageFooter />
       </Page>

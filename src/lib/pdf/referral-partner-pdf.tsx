@@ -376,8 +376,9 @@ export function ReferralPartnerPDF() {
         </View>
 
         <Text style={st.sectionSubtitle}>What ConformEdge Offers Your Referrals</Text>
-        <Bullet>AI-powered SHEQ compliance platform — 11 SA standards, 36 modules</Bullet>
-        <Bullet>Incident management, work permits, equipment tracking, audit packs</Bullet>
+        <Bullet>AI-powered SHEQ compliance platform — 15 SA standards, 40+ modules</Bullet>
+        <Bullet>Incident management, work permits, equipment tracking, training records, audit packs</Bullet>
+        <Bullet>SHE file generator, B-BBEE scorecard, compliance obligation tracking</Bullet>
         <Bullet>Mobile/offline access for on-site safety work (PWA)</Bullet>
         <Bullet>Built for SA construction — from R2,299/mo</Bullet>
 
