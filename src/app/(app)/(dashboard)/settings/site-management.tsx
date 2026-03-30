@@ -214,8 +214,8 @@ function SiteForm({
       code: formData.get("code") as string,
       siteType: formData.get("siteType") as string,
       address: (formData.get("address") as string) || null,
-      parentSiteId: (formData.get("parentSiteId") as string) || null,
-      managerId: (formData.get("managerId") as string) || null,
+      parentSiteId: ((formData.get("parentSiteId") as string) === "none" ? null : (formData.get("parentSiteId") as string)) || null,
+      managerId: ((formData.get("managerId") as string) === "none" ? null : (formData.get("managerId") as string)) || null,
     }
 
     startTransition(async () => {
@@ -264,12 +264,12 @@ function SiteForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="parentSiteId">Parent Site</Label>
-          <Select name="parentSiteId" defaultValue={site?.parentSiteId ?? ""}>
+          <Select name="parentSiteId" defaultValue={site?.parentSiteId ?? "none"}>
             <SelectTrigger>
               <SelectValue placeholder="None (top-level)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None (top-level)</SelectItem>
+              <SelectItem value="none">None (top-level)</SelectItem>
               {parentOptions.map((s) => (
                 <SelectItem key={s.id} value={s.id}>{s.name} ({s.code})</SelectItem>
               ))}
@@ -285,12 +285,12 @@ function SiteForm({
 
       <div className="space-y-2">
         <Label htmlFor="managerId">Site Manager</Label>
-        <Select name="managerId" defaultValue={site?.managerId ?? ""}>
+        <Select name="managerId" defaultValue={site?.managerId ?? "none"}>
           <SelectTrigger>
             <SelectValue placeholder="No manager assigned" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">No manager assigned</SelectItem>
+            <SelectItem value="none">No manager assigned</SelectItem>
             {members.map((m) => (
               <SelectItem key={m.id} value={m.id}>{m.firstName} {m.lastName}</SelectItem>
             ))}
