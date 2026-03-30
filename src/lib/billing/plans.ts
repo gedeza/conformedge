@@ -168,13 +168,13 @@ export const PLAN_DEFINITIONS: Record<PlanTier, PlanDefinition> = {
     monthlyPriceZar: null,
     description: "For large organisations needing full control and scale.",
     limits: {
-      maxUsers: 25,
+      maxUsers: 20,
       additionalUserFeeZar: 299_00,   // R299/additional user/month (negotiable)
       maxStandards: null,
       maxDocuments: null,
       maxProjects: null,
       maxVendors: null,
-      aiClassificationsPerMonth: null,
+      aiClassificationsPerMonth: 2000,
     },
     features: {
       ims: true,
