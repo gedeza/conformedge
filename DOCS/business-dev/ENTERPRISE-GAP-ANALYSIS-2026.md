@@ -28,13 +28,13 @@ The architecture is sound (multi-tenant, IMS engine, AI classification, modular 
 
 | Claim | Actual | Status |
 |---|---|---|
-| 36 modules | ~35 pages/routes | Accurate |
-| 11 standards | 11 standards (7 ISO + 4 SA regulatory) | Exact |
-| 395+ sub-clauses | 403 (118 main + 285 sub) | Exceeds |
+| 40+ modules | ~40 pages/routes | Accurate |
+| 15 standards | 15 standards (7 ISO + 4 SA regulatory + 4 SA statutory) | Exact |
+| 534+ sub-clauses | 534 (114 main + 420 sub) | Exact |
 | 7 permit types | 7 types (HOT_WORK, CONFINED_SPACE, WORKING_AT_HEIGHTS, ELECTRICAL, EXCAVATION, LIFTING, GENERAL) | Exact |
 | 13 WRC templates | 13 templates (294 inspection items) | Exact |
 | R2,299 / R5,499 / R8,499 / R16,999 pricing | Matches plans.ts | Verified |
-| 3 / 5 / 10 / 25 included users | Matches plans.ts | Verified |
+| 3 / 5 / 10 / 20 included users | Matches plans.ts | Verified |
 | R399 / R449 / R349 / R299 additional users | Matches plans.ts | Verified |
 | 17% annual discount | 16.67% (10/12 months) — rounds to 17% | Accurate |
 | Implementation fees (R0/R7,499/R24,499/R49,499) | Not in codebase — marketing/sales collateral only | Not in code |
@@ -46,7 +46,7 @@ All verified against actual code, Prisma models, and UI components:
 | # | Capability | Key Evidence |
 |---|---|---|
 | 1 | AI Document Classification | Claude Haiku API, `classify-document.ts`, confidence scoring, 30K char processing |
-| 2 | 11 Compliance Standards | Seeded: ISO 9001/14001/45001/22301/27001/37001/39001, MHSA, POPIA, ECSA, SACPCMP |
+| 2 | 15 Compliance Standards | Seeded: ISO 9001/14001/45001/22301/27001/37001/39001, MHSA, POPIA, ECSA, SACPCMP, COIDA, OHS Act, NEMA, BCEA |
 | 3 | IMS Cross-Standard Engine | Union-Find algorithm (`ims-engine.ts`), shared clause detection, gap cascades |
 | 4 | Gap Analysis (clause-by-clause) | Per-clause COVERED/PARTIAL/GAP, per-standard %, weighted org-level scoring |
 | 5 | Audit Pack Generation | 8-page branded PDF (cover, TOC, summary, documents, assessments, CAPAs, checklists, sign-off) |
@@ -200,7 +200,7 @@ All verified against actual code, Prisma models, and UI components:
 4. **Transparent ZAR pricing** — vs IsoMetrix's opaque enterprise-only quotes
 5. **Mobile/PWA with offline** — vs desktop-first incumbents
 6. **Modern tech stack** — Next.js 15, React, TypeScript vs legacy Java/C#
-7. **Rapid iteration** — single developer shipping 36 modules in months vs enterprise vendor timelines
+7. **Rapid iteration** — single developer shipping 40+ modules in months vs enterprise vendor timelines
 
 ### 3.3 The Sweet Spot — Underserved Mid-Market
 

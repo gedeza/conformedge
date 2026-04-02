@@ -46,7 +46,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 - **SAQI** (SA Quality Institute) — National quality body. Membership gives access to consulting firm network. Low-cost visibility channel.
 
 ### Competitor to Watch
-- **Ariscu** (Pretoria) — Digital SHEQ management software. ConformEdge differentiators: AI classification, IMS engine, SA regulatory breadth (11 frameworks).
+- **Ariscu** (Pretoria) — Digital SHEQ management software. ConformEdge differentiators: AI classification, IMS engine, SA regulatory breadth (15 frameworks).
 
 ---
 
@@ -113,7 +113,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 
 | Platform | Monthly Cost | AI | SA Regulatory | Standards |
 |----------|-------------|-----|---------------|-----------|
-| **ConformEdge Professional** | **R5,499** | **Yes** | **11 frameworks** | **5 (up to 11)** |
+| **ConformEdge Professional** | **R5,499** | **Yes** | **15 frameworks** | **5 (up to 15)** |
 | Effivity | R450–R4,800 | No | No | Basic |
 | SHEQX | R5,000 | No | Partial | SHEQ only |
 | SafetyCulture | R5,250 | Template only | No | Inspections only |
@@ -127,7 +127,7 @@ ConformEdge has **zero direct competitors** combining AI document classification
 
 1. **No AI document classification** — Zero competitors offer Claude-powered document classification with gap analysis
 2. **No IMS cross-standard engine** — No competitor has Union-Find equivalence mapping
-3. **No SA regulatory breadth** — Only IsoMetrix and Ariscu touch SA regulations; neither covers 11 frameworks
+3. **No SA regulatory breadth** — Only IsoMetrix and Ariscu touch SA regulations; neither covers 15 frameworks
 4. **Outdated UIs** — Qualio, MasterControl, Ideagen Q-Pulse all have recurring UI complaints
 5. **Expensive implementation** — MasterControl: $10K–$100K setup. ConformEdge: zero
 6. **Construction/infrastructure gap** — Most global platforms target pharma/life sciences

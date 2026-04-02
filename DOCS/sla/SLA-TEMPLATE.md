@@ -57,8 +57,8 @@ ISU Technologies provides [CLIENT COMPANY NAME] with access to the ConformEdge S
 <!-- - 250 AI classifications/month -->
 
 <!-- Business Tier -->
-<!-- - Up to 25 users (+R199/user beyond) -->
-<!-- - All 11 compliance frameworks (ISO 9001, 14001, 45001, 27001, 19011, 31000, 44001, DMRE/MHSA, POPIA, ECSA, SACPCMP) -->
+<!-- - Up to 20 users (+R299/user beyond) -->
+<!-- - All 15 compliance frameworks (ISO 9001, 14001, 45001, 22301, 27001, 37001, 39001, DMRE/MHSA, POPIA, ECSA, SACPCMP, COIDA, OHS Act, NEMA, BCEA) -->
 <!-- - Full incident management suite with COIDA and MHSA statutory reporting -->
 <!-- - Work permits (7 types), compliance checklists, subcontractor management -->
 <!-- - AI-powered document classification (500 classifications/month) -->
@@ -68,7 +68,7 @@ ISU Technologies provides [CLIENT COMPANY NAME] with access to the ConformEdge S
 
 <!-- Enterprise Tier -->
 <!-- - Unlimited users -->
-<!-- - All 11 compliance frameworks -->
+<!-- - All 15 compliance frameworks -->
 <!-- - Full platform access with SSO -->
 <!-- - Unlimited AI classifications -->
 <!-- - Dedicated support + API access -->

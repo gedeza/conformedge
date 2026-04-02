@@ -3,7 +3,7 @@
 > **Date:** 11 March 2026 (Revised)
 > **Author:** ISU Technologies
 > **Status:** Final — verified by multi-agent pricing analysis
-> **Context:** 34-module AI-powered SHEQ compliance platform, 39 data models, 11 standards (7 ISO + DMRE/MHSA + POPIA + ECSA + SACPCMP), SA market focus
+> **Context:** 40+ module AI-powered SHEQ compliance platform, 70 data models, 15 standards (7 ISO + 4 SA regulatory + 4 SA statutory), SA market focus
 
 ---
 

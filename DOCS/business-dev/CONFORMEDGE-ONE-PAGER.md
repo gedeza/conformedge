@@ -19,8 +19,8 @@ ConformEdge is an AI-powered platform that centralises your entire compliance op
 ### AI Document Classification
 Upload any document — our AI reads it, identifies the relevant ISO clauses, and files it automatically. No manual tagging. No misfiled records.
 
-### 11 Compliance Frameworks
-ISO 9001 | ISO 14001 | ISO 45001 | ISO 22301 | ISO 27001 | ISO 37001 | ISO 39001 | MHSA/DMRE | POPIA | ECSA | SACPCMP
+### 15 Compliance Frameworks
+ISO 9001 | ISO 14001 | ISO 45001 | ISO 22301 | ISO 27001 | ISO 37001 | ISO 39001 | MHSA/DMRE | POPIA | ECSA | SACPCMP | COIDA | OHS Act | NEMA | BCEA
 
 ### Incident Management
 Full investigation workflow with evidence capture, witness statements, fishbone analysis, COIDA W.Cl.2 export, LTIFR dashboards, and statutory MHSA form generation.
@@ -62,7 +62,7 @@ Works on any device — capture data on-site with camera integration, digital si
 | **Essentials** | R2,299 | 3 users | Small firms, single standard |
 | **Professional** | R5,499 | 5 users | Multi-standard, growing teams |
 | **Business** | R8,499 | 10 users | Large contractors, full feature set |
-| **Enterprise** | From R16,999 | 25 users | Mining, SOEs, multi-site operations |
+| **Enterprise** | From R16,999 | 20 users | Mining, SOEs, multi-site operations |
 
 All tiers include: AI document classification, unlimited document storage, audit pack generation, incident management, email notifications, and mobile access.
 
@@ -110,4 +110,4 @@ Are you an ISO consultant or SHEQ advisor? Offer ConformEdge to your clients and
 ---
 
 *ConformEdge is developed by ISU Technologies (Pty) Ltd, South Africa.*
-*36 modules | 11 standards | 395+ sub-clauses | AI-powered*
+*40+ modules | 15 standards | 534+ sub-clauses | AI-powered*

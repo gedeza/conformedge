@@ -298,7 +298,7 @@ Transnet mandates ConformEdge for high-risk contractors (construction, engineeri
 | Deployment | Estimated Cost |
 |---|---|
 | **Individual contractor** (self-funded) | R2,299–R8,499/mo depending on size |
-| **Enterprise division** (Transnet-managed) | From R16,999/mo (25 users, negotiable) |
+| **Enterprise division** (Transnet-managed) | From R16,999/mo (20 users, negotiable) |
 | **Multi-division Enterprise** | Custom pricing based on scope — typically R40,000–R80,000/mo |
 | **Implementation** | From R49,499 (Enterprise tier) — includes configuration, data migration, training |
 | **Annual billing** | 17% discount (pay 10 months for 12) |
@@ -311,7 +311,7 @@ All prices in ZAR, excluding 15% VAT.
 
 ISU Technologies (Pty) Ltd is a South African software development company specialising in compliance and enterprise technology. ConformEdge is our flagship SHEQ & compliance management platform, purpose-built for SA construction, mining, and infrastructure companies.
 
-- **36 modules** | **11 compliance standards** | **395+ sub-clauses**
+- **40+ modules** | **15 compliance standards** | **534+ sub-clauses**
 - **AI-powered** document classification and gap analysis
 - **SA-hosted** infrastructure with local support
 

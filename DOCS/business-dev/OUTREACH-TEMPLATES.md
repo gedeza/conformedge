@@ -89,7 +89,7 @@ Hi [Name],
 
 I came across [Company Name] on [Advisera / SAIOSH / LinkedIn] and saw that you work with SA companies on ISO implementation and compliance.
 
-I'm the founder of ConformEdge — an AI-powered SHEQ compliance platform built for the South African market. We cover 11 standards (ISO 9001, 14001, 45001, 22301, 27001 + MHSA, POPIA, ECSA, SACPCMP) with features like:
+I'm the founder of ConformEdge — an AI-powered SHEQ compliance platform built for the South African market. We cover 15 standards (7 ISO + 4 SA regulatory + 4 SA statutory) with features like:
 
 - AI document classification to ISO clauses
 - Integrated audit management with gap analysis
@@ -160,7 +160,7 @@ Dear [Name / Sir/Madam],
 
 ISU Technologies is a South African software company that has developed ConformEdge, an AI-powered SHEQ & compliance management platform designed for South African organisations.
 
-ConformEdge supports 11 compliance frameworks including ISO 9001, 14001, 45001, 22301, 27001, as well as SA-specific regulations (MHSA, POPIA, ECSA, SACPCMP). The platform provides:
+ConformEdge supports 15 compliance frameworks including ISO 9001, 14001, 45001, 22301, 27001, 37001, 39001, as well as SA-specific regulations (MHSA, POPIA, ECSA, SACPCMP) and statutory frameworks (COIDA, OHS Act, NEMA, BCEA). The platform provides:
 
 - Centralised document management with AI-powered classification
 - Compliance assessments and gap analysis across multiple standards

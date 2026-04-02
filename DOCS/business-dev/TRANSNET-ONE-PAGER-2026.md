@@ -55,7 +55,7 @@ ConformEdge is an AI-powered SHEQ & Compliance Management platform built for Sou
 - **AI-powered** — Document classification, gap detection, compliance scoring
 - **Rand pricing** — No forex risk. Enterprise from R16,999/mo
 - **Rapid deployment** — Cloud SaaS, operational in weeks
-- **36 modules** | **11 standards** | **395+ sub-clauses** | **Mobile-first**
+- **40+ modules** | **15 standards** | **534+ sub-clauses** | **Mobile-first**
 
 ---
 

@@ -89,7 +89,7 @@ Research revealed that ConformEdge's original flat per-client partner pricing (R
 | AutoSHEQ | ~R37,000/mo | Yes |
 | Mango QHSE | ~R4,600/mo | NZ-based, SA presence |
 | Effivity (MyEasyISO) | R450 - R4,800/mo | No |
-| **ConformEdge Professional** | **R5,499/mo (5 users incl.)** | **Yes (11 frameworks)** |
+| **ConformEdge Professional** | **R5,499/mo (5 users incl.)** | **Yes (15 frameworks)** |
 
 ### Sources
 - Glassdoor SA SHEQ Officer Salaries

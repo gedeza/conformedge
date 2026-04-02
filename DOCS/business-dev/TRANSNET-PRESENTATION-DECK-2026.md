@@ -64,9 +64,9 @@ Visual: Single dashboard showing red/amber/green compliance status across all di
 
 Visual: Platform screenshot or logo + key stats
 
-- 36 modules
-- 11 compliance standards (7 ISO + 4 SA regulatory)
-- 395+ sub-clauses mapped
+- 40+ modules
+- 15 compliance standards (7 ISO + 4 SA regulatory + 4 SA statutory)
+- 534+ sub-clauses mapped
 - AI document classification
 - Mobile-first (works offline at ports, rail sites, construction sites)
 - Built by a South African team, for South African regulations
@@ -176,7 +176,7 @@ Visual: Document upload flow
 - No manual tagging or filing
 - No misfiled documents
 - Every document linked to the correct compliance requirement
-- Works across all 11 standards and 395+ sub-clauses
+- Works across all 15 standards and 534+ sub-clauses
 
 **Speaker notes:** If doing a live demo, upload a real safety policy and show the AI classification in action. This is the "wow moment."
 
@@ -265,7 +265,7 @@ Visual: Platform screenshot + ConformEdge logo
 - Implementation: from R49,499 (Enterprise)
 - All prices ZAR excl. 15% VAT
 
-### A2 — 11 Compliance Standards
+### A2 — 15 Compliance Standards
 
 | Standard | Type |
 |---|---|

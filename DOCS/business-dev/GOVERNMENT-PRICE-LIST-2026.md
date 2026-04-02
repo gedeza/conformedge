@@ -16,7 +16,7 @@ B-BBEE Level: [To be inserted]
 
 **ConformEdge** — AI-Powered SHEQ & Compliance Management Platform
 
-A cloud-based, multi-standard compliance management system designed for South African organisations. ConformEdge automates document classification, gap analysis, incident management, and audit preparation across 11 compliance standards, including MHSA, POPIA, ECSA, SACPCMP, and 7 ISO frameworks.
+A cloud-based, multi-standard compliance management system designed for South African organisations. ConformEdge automates document classification, gap analysis, incident management, and audit preparation across 15 compliance standards, including MHSA, POPIA, ECSA, SACPCMP, 7 ISO frameworks, and 4 SA statutory frameworks (COIDA, OHS Act, NEMA, BCEA).
 
 ---
 
@@ -27,11 +27,11 @@ A cloud-based, multi-standard compliance management system designed for South Af
 | Essentials | R2,299 | 3 | R399/user/month | R22,900/year (R1,908/month effective) |
 | Professional | R5,499 | 5 | R449/user/month | R54,790/year (R4,566/month effective) |
 | Business | R8,499 | 10 | R349/user/month | R84,690/year (R7,058/month effective) |
-| Enterprise | From R16,999 | 25 | R299/user/month | Negotiable |
+| Enterprise | From R16,999 | 20 | R299/user/month | Negotiable |
 
 **Notes:**
 - The Professional tier is recommended for most government departments and SOEs.
-- Enterprise pricing is negotiable for deployments exceeding 25 users or requiring multi-site configuration.
+- Enterprise pricing is negotiable for deployments exceeding 20 users or requiring multi-site configuration.
 - Annual billing requires upfront payment of 10 months to receive 12 months of service.
 
 ---
@@ -86,7 +86,7 @@ Payment methods accepted: EFT (direct bank transfer), invoice billing, prepaid c
 
 ## 5. Compliance Standards Supported
 
-ConformEdge provides full clause-level coverage for the following 11 standards and regulatory frameworks:
+ConformEdge provides full clause-level coverage for the following 15 standards and regulatory frameworks:
 
 | # | Standard / Framework | Description |
 |---|---|---|
